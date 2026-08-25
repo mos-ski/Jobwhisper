@@ -291,7 +291,7 @@ export default function MyDocuments() {
                   <button className="relative inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-primary bg-primary/5 text-sm font-semibold text-primary transition hover:bg-primary/10">
                     <span className="absolute -top-4 rounded-full border border-primary bg-white px-2 py-0.5 text-[9px] font-bold text-primary">RECOMMENDED</span>
                     <Sparkles className="h-4 w-4" />
-                    Use Lightforth Resume
+                    Use Jobwhisper Resume
                   </button>
                 </div>
                 <p className="mt-3 text-xs text-muted-foreground">PDF files only · Max size: 10MB</p>

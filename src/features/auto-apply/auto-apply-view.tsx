@@ -32,7 +32,7 @@ import {
   FormSearchSelectField,
   FormSelectField,
   FormTextArea,
-  LightforthAiIcon,
+  JobwhisperAiIcon,
   ListPickerDialog,
   ReviewSummaryList,
   ShellBar,
@@ -144,7 +144,7 @@ export function AutoApplyUploadView({ homeHref, contactHref, agentHref, uploaded
             title="Upload a resume"
             options={[
               { label: 'Upload a Resume', hint: 'PDF, DOC, DOCX or TXT', onClick: () => setUploadDialogOpen(true) },
-              { label: 'Use Lightforth Resume', icon: <LightforthAiIcon className="size-5" />, emphasis: 'strong', onClick: () => setPickerOpen(true) },
+              { label: 'Use Jobwhisper Resume', icon: <JobwhisperAiIcon className="size-5" />, emphasis: 'strong', onClick: () => setPickerOpen(true) },
             ]}
             historyLink={{ label: 'Continue to saved agent', href: agentHref }}
           />
@@ -154,11 +154,11 @@ export function AutoApplyUploadView({ homeHref, contactHref, agentHref, uploaded
       <ListPickerDialog
         open={pickerOpen}
         onOpenChange={setPickerOpen}
-        title="Use a Lightforth Resume"
+        title="Use a Jobwhisper Resume"
         description="Pick a resume from your history to continue with."
         items={savedResumes.map((resume) => ({ id: resume.id, title: resume.title, subtitle: resume.company, meta: `ATS ${resume.atsScore}` }))}
         emptyLabel="No saved resumes yet. Upload one to get started."
-        icon={<LightforthAiIcon className="size-4" />}
+        icon={<JobwhisperAiIcon className="size-4" />}
         onSelect={() => {
           setPickerOpen(false)
           setUploadDialogOpen(true)
@@ -303,7 +303,7 @@ export function AutoApplyReviewView({ homeHref, contactHref, additionalHref, age
             ]}
           />
           <p className="mt-4 text-xs leading-5 text-ink-muted">
-            Lightforth only charges for successful applications.
+            Jobwhisper only charges for successful applications.
           </p>
         </FormPanel>
       </section>
@@ -670,7 +670,7 @@ function AdditionalForm({ setup }: { readonly setup: AutoApplySetup }) {
     <div className="grid gap-2">
       <p className="text-sm leading-6 text-ink-muted">
         A few employers ask equal-opportunity and background questions on their applications. These are optional — answer what
-        you&apos;re comfortable sharing, or skip and Lightforth will leave them blank when it applies on your behalf. Your answers
+        you&apos;re comfortable sharing, or skip and Jobwhisper will leave them blank when it applies on your behalf. Your answers
         are never shared outside the application itself.
       </p>
       <CollapsibleSection
@@ -1655,7 +1655,7 @@ function AutoApplySettingsDialog({
           </span>
           <DialogTitle className="mt-4">Upgrade to Premium</DialogTitle>
           <p className="mt-1 text-sm text-ink-muted">
-            Automating job applications is available on our Premium plan. Upgrade to save this quota and let Lightforth apply to matching jobs for you automatically.
+            Automating job applications is available on our Premium plan. Upgrade to save this quota and let Jobwhisper apply to matching jobs for you automatically.
           </p>
           <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <button
@@ -1689,7 +1689,7 @@ function AutoApplySettingsDialog({
         <DialogClose />
         <DialogTitle>Automate job applications</DialogTitle>
         <p className="mt-1 text-sm text-ink-muted">
-          Let Lightforth automatically apply to jobs that match your preferences, up to a daily limit you set.
+          Let Jobwhisper automatically apply to jobs that match your preferences, up to a daily limit you set.
         </p>
         <label className="mt-5 flex items-center justify-between gap-3 rounded-lg border border-border p-4">
           <span className="min-w-0">
@@ -1733,7 +1733,7 @@ function AutoApplySettingsDialog({
             />
           </div>
         </div>
-        <p className="mt-2 text-xs text-ink-muted">Lightforth will start submitting applications at this time each day, until your daily quota is reached.</p>
+        <p className="mt-2 text-xs text-ink-muted">Jobwhisper will start submitting applications at this time each day, until your daily quota is reached.</p>
         <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button
             type="button"

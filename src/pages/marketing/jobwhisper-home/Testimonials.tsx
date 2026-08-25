@@ -3,24 +3,24 @@ import { motion } from 'framer-motion'
 const testimonials = [
   {
     quote:
-      "I had been applying for months with no callbacks. Lightforth's AI Resume Tailoring helped me customize my resume for each application, and Auto-Apply handled the submissions. Two weeks later, I landed a startup role in New York above my expected salary.",
+      "I had been applying for months with no callbacks. Jobwhisper's AI Resume Tailoring helped me customize my resume for each application, and Auto-Apply handled the submissions. Two weeks later, I landed a startup role in New York above my expected salary.",
     name: 'Jessica M.',
     title: 'Startup Employee at New York, USA',
-    image: '/lightforth-home/images/woman-testimonial.png',
+    image: '/jobwhisper-home/images/woman-testimonial.png',
   },
   {
     quote:
-      "I kept freezing in interviews despite having the skills. Lightforth's Interview Prep with STAR method training helped me structure my answers confidently. Within two weeks, I received three offers in London.",
+      "I kept freezing in interviews despite having the skills. Jobwhisper's Interview Prep with STAR method training helped me structure my answers confidently. Within two weeks, I received three offers in London.",
     name: 'Omar K.',
     title: 'Professional at London, UK',
-    image: '/lightforth-home/images/woman-testimonial.png',
+    image: '/jobwhisper-home/images/woman-testimonial.png',
   },
   {
     quote:
-      "My CV was getting ignored. Lightforth's AI Resume Tailoring optimized it for ATS and matched it to my dream roles. Within a week, I had three interview invites and now I'm a Product Manager at an international firm.",
+      "My CV was getting ignored. Jobwhisper's AI Resume Tailoring optimized it for ATS and matched it to my dream roles. Within a week, I had three interview invites and now I'm a Product Manager at an international firm.",
     name: 'Chinonso E.',
     title: 'Product Manager at Lagos, Nigeria',
-    image: '/lightforth-home/images/woman-testimonial.png',
+    image: '/jobwhisper-home/images/woman-testimonial.png',
   },
 ]
 

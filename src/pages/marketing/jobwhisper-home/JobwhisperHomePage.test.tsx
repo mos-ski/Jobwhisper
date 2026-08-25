@@ -1,12 +1,12 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { vi } from 'vitest'
-import LightforthHomePage from './LightforthHomePage'
+import JobwhisperHomePage from './JobwhisperHomePage'
 
 const downloadUrls = [
-  'https://lightforth-copilot-downloads.nyc3.digitaloceanspaces.com/Lightforth_Copilot_1.0.1_arm64.dmg',
-  'https://lightforth-copilot-downloads.nyc3.digitaloceanspaces.com/Lightforth_Copilot_1.0.1_x64.dmg',
-  'https://lightforth-copilot-downloads.nyc3.digitaloceanspaces.com/Lightforth-Copilot-Windows-Installer.exe',
+  'https://jobwhisper-copilot-downloads.nyc3.digitaloceanspaces.com/Jobwhisper_Copilot_1.0.1_arm64.dmg',
+  'https://jobwhisper-copilot-downloads.nyc3.digitaloceanspaces.com/Jobwhisper_Copilot_1.0.1_x64.dmg',
+  'https://jobwhisper-copilot-downloads.nyc3.digitaloceanspaces.com/Jobwhisper-Copilot-Windows-Installer.exe',
 ]
 
 beforeAll(() => {
@@ -32,13 +32,13 @@ beforeAll(() => {
 it('links each download option directly to the latest installer', () => {
   render(
     <MemoryRouter>
-      <LightforthHomePage />
+      <JobwhisperHomePage />
     </MemoryRouter>,
   )
 
   fireEvent.click(screen.getAllByRole('button', { name: /download now/i })[0])
 
-  const dialog = screen.getByRole('dialog', { name: 'Download Lightforth Copilot' })
+  const dialog = screen.getByRole('dialog', { name: 'Download Jobwhisper Copilot' })
   const links = within(dialog).getAllByRole('link')
 
   expect(links.map((link) => link.getAttribute('href'))).toEqual(downloadUrls)
@@ -47,14 +47,14 @@ it('links each download option directly to the latest installer', () => {
 it('opens and closes the selected Google Drive quick demo', () => {
   render(
     <MemoryRouter>
-      <LightforthHomePage />
+      <JobwhisperHomePage />
     </MemoryRouter>,
   )
 
   fireEvent.click(screen.getByRole('button', { name: 'Watch Quick Demo' }))
 
-  const dialog = screen.getByRole('dialog', { name: 'Lightforth quick demo' })
-  const player = within(dialog).getByTitle('Lightforth quick demo video')
+  const dialog = screen.getByRole('dialog', { name: 'Jobwhisper quick demo' })
+  const player = within(dialog).getByTitle('Jobwhisper quick demo video')
   const playerFrame = within(dialog).getByTestId('quick-demo-player')
 
   expect(player).toHaveAttribute(
@@ -65,13 +65,13 @@ it('opens and closes the selected Google Drive quick demo', () => {
   expect(within(dialog).getByTestId('drive-popout-mask')).toBeInTheDocument()
 
   fireEvent.click(within(dialog).getByRole('button', { name: 'Close quick demo' }))
-  expect(screen.queryByRole('dialog', { name: 'Lightforth quick demo' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('dialog', { name: 'Jobwhisper quick demo' })).not.toBeInTheDocument()
 })
 
 it('groups the three copilot feature sections for scroll overlap', () => {
   render(
     <MemoryRouter>
-      <LightforthHomePage />
+      <JobwhisperHomePage />
     </MemoryRouter>,
   )
 

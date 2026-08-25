@@ -1,5 +1,5 @@
 import { ArrowRight, Check, Code2, EyeOff, Monitor, PlayCircle, ShieldCheck, Sparkles, Video } from 'lucide-react'
-import LightforthLogo from '@/components/shared/LightforthLogo'
+import JobwhisperLogo from '@/components/shared/JobwhisperLogo'
 
 const trustedBy = ['Product managers', 'Software engineers', 'Analysts', 'Consultants', 'Graduates', 'Career switchers']
 
@@ -14,7 +14,7 @@ const features = [
   {
     icon: Video,
     title: 'Interview answers while you talk',
-    text: 'Lightforth listens to the question and gives you a clear, ready-to-say response before the silence gets awkward.',
+    text: 'Jobwhisper listens to the question and gives you a clear, ready-to-say response before the silence gets awkward.',
   },
   {
     icon: Code2,
@@ -43,7 +43,7 @@ export default function FigmaInteriorLanding() {
       <section className="bg-primary text-primary-foreground">
         <div className="mx-auto w-full max-w-[1220px] px-6">
           <header className="flex h-16 items-center justify-between">
-            <LightforthLogo to="/copilot" className="h-8 brightness-0 invert" />
+            <JobwhisperLogo to="/copilot" className="h-8 brightness-0 invert" />
             <nav className="hidden items-center gap-7 text-sm font-semibold text-white/75 md:flex">
               <a href="#features" className="hover:text-white">Features</a>
               <a href="#proof" className="hover:text-white">Proof</a>
@@ -72,7 +72,7 @@ export default function FigmaInteriorLanding() {
                 Nobody on the call can see it. That&apos;s the point.
               </h1>
               <p className="mt-7 max-w-[342px] text-base leading-7 text-white/75 sm:max-w-xl sm:text-lg">
-                Lightforth gives you live answers during interviews and coding rounds, while staying hidden from screen shares, recordings, and the pressure of the moment.
+                Jobwhisper gives you live answers during interviews and coding rounds, while staying hidden from screen shares, recordings, and the pressure of the moment.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a href="/copilot" className="inline-flex h-12 items-center gap-2 rounded-lg bg-white px-5 text-sm font-bold text-primary shadow-sm hover:bg-white/90">
@@ -97,7 +97,7 @@ export default function FigmaInteriorLanding() {
                     <p className="mt-2 text-sm leading-6 text-slate-700">Tell me about a time you handled conflict with a teammate.</p>
                   </div>
                   <div className="min-w-0 rounded-lg border border-primary/20 bg-primary/5 p-4">
-                    <p className="text-xs font-bold uppercase text-primary">Lightforth</p>
+                    <p className="text-xs font-bold uppercase text-primary">Jobwhisper</p>
                     <p className="mt-2 text-sm leading-6 text-slate-800">
                       Frame it as alignment, not conflict: context, what you disagreed on, how you kept the relationship intact, and the result.
                     </p>
@@ -138,7 +138,7 @@ export default function FigmaInteriorLanding() {
               <p className="text-sm font-bold text-primary">What it does</p>
               <h2 className="mt-3 text-4xl font-bold leading-tight tracking-normal text-slate-900">A private answer layer for interviews and coding rounds</h2>
               <p className="mt-5 max-w-[342px] text-base leading-7 text-slate-600 sm:max-w-xl sm:text-lg">
-                You stay present in the conversation. Lightforth handles the recall, structure, and speed when the question lands.
+                You stay present in the conversation. Jobwhisper handles the recall, structure, and speed when the question lands.
               </p>
             </div>
             <div className="grid gap-10">
@@ -203,7 +203,7 @@ export default function FigmaInteriorLanding() {
         <div className="mx-auto grid max-w-[1220px] gap-16 px-6 lg:grid-cols-2">
           <div className="rounded-lg border border-border bg-slate-50 p-8">
             <h2 className="text-4xl font-bold tracking-normal text-slate-900">Ready before the next question lands</h2>
-            <p className="mt-4 text-lg leading-7 text-slate-600">Use Lightforth for live interviews, coding assessments, and high-pressure calls where speed matters.</p>
+            <p className="mt-4 text-lg leading-7 text-slate-600">Use Jobwhisper for live interviews, coding assessments, and high-pressure calls where speed matters.</p>
             <ul className="mt-8 space-y-4 text-sm leading-6 text-slate-700">
               {['Interview and Coding included on Pro', 'Meeting Copilot included on Premium', 'Credits based on session length', 'Cancel anytime'].map(item => (
                 <li key={item} className="flex gap-3"><Check className="mt-0.5 h-4 w-4 text-emerald-500" />{item}</li>
@@ -225,11 +225,11 @@ export default function FigmaInteriorLanding() {
 
       <footer className="border-t border-slate-200 bg-white py-12">
         <div className="mx-auto flex max-w-[1220px] flex-col justify-between gap-8 px-6 sm:flex-row sm:items-center">
-          <LightforthLogo to="/copilot" />
+          <JobwhisperLogo to="/copilot" />
           <nav className="flex flex-wrap gap-x-8 gap-y-3 text-sm font-semibold text-slate-600">
             {['Features', 'Plans', 'Stealth', 'Preview'].map(item => <a key={item} href="#home">{item}</a>)}
           </nav>
-          <p className="text-sm text-slate-500">© 2026 Lightforth. All rights reserved.</p>
+          <p className="text-sm text-slate-500">© 2026 Jobwhisper. All rights reserved.</p>
         </div>
       </footer>
     </main>

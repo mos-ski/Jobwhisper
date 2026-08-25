@@ -1238,7 +1238,7 @@
   text-align: center;
 }
 
-.lf-comparison-lightforth-header {
+.lf-comparison-jobwhisper-header {
   border-left: 2px solid #1f8bff;
   border-right: 2px solid #1f8bff;
   border-top: 2px solid #1f8bff;
@@ -1250,21 +1250,21 @@
   background: #fff;
 }
 
-.lf-comparison-lightforth-brand {
+.lf-comparison-jobwhisper-brand {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
 }
 
-.lf-comparison-lightforth-mark {
+.lf-comparison-jobwhisper-mark {
   display: block;
   width: 34px;
   height: 33px;
   flex: 0 0 auto;
 }
 
-.lf-comparison-lightforth-name {
+.lf-comparison-jobwhisper-name {
   color: #181925;
   font-size: 14px;
   font-weight: 500;
@@ -2322,7 +2322,7 @@
     background: #fff;
   }
 
-  .lf-comparison-mobile-brand-head.is-lightforth {
+  .lf-comparison-mobile-brand-head.is-jobwhisper {
     border-left: 2px solid #1f8bff;
     border-right: 2px solid #1f8bff;
     border-top: 2px solid #1f8bff;
@@ -2345,12 +2345,12 @@
     background: #fff;
   }
 
-  .lf-comparison-mobile-status.is-lightforth {
+  .lf-comparison-mobile-status.is-jobwhisper {
     border-left: 2px solid #1f8bff;
     border-right: 2px solid #1f8bff;
   }
 
-  .lf-comparison-mobile-status.is-lightforth:nth-last-child(-n + 4) {
+  .lf-comparison-mobile-status.is-jobwhisper:nth-last-child(-n + 4) {
     border-bottom: 2px solid #1f8bff;
     border-radius: 0 0 16px 16px;
   }

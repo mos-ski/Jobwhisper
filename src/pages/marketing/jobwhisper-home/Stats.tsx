@@ -39,7 +39,7 @@ export function Stats({ onGetStarted }: { onGetStarted: () => void }) {
             Real Results. Real Careers. Real Impact.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-slate-600">
-            Every number reflects the success of job seekers who accelerated their careers with Lightforth.
+            Every number reflects the success of job seekers who accelerated their careers with Jobwhisper.
           </p>
         </div>
 
@@ -67,9 +67,9 @@ export function Stats({ onGetStarted }: { onGetStarted: () => void }) {
 
         <div className="mt-12 rounded-2xl border border-blue-100 bg-gradient-to-r from-blue-50 to-blue-100/50 p-6 text-center">
           <div className="flex items-center justify-center gap-3">
-            <img src="/lightforth-home/images/coin.png" alt="Coin" className="h-8 w-8" />
+            <img src="/jobwhisper-home/images/coin.png" alt="Coin" className="h-8 w-8" />
             <p className="text-base font-semibold text-slate-800">
-              <span className="text-[#0494fc]">Get 5 monthly credits</span> as a non-subscriber — explore Lightforth before choosing a plan
+              <span className="text-[#0494fc]">Get 5 monthly credits</span> as a non-subscriber — explore Jobwhisper before choosing a plan
             </p>
           </div>
           <p className="mt-2 text-sm text-slate-600">Access premium features and apply to top roles with your available credits.</p>

@@ -13,7 +13,7 @@ export default function UpgradeCard() {
       <p className="mb-1 text-sm font-semibold">Upgrade to Premium!</p>
       <p className="mb-3 text-xs leading-relaxed text-blue-200">
         You're currently on a starter credit. Upgrade to Premium to unlock more credits and get the
-        most out of Lightforth's tools.
+        most out of Jobwhisper's tools.
       </p>
       <button
         onClick={() => navigate('/billing')}

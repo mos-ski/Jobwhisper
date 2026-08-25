@@ -1,10 +1,10 @@
 import { Faq } from '@/components/marketing/ProofStrip'
 
-const SUPPORT_EMAIL = 'support@lightforth.org'
+const SUPPORT_EMAIL = 'support@jobwhisper.org'
 
 export const NEW_FAQ_ITEMS: { q: string; a: string }[] = [
   {
-    q: 'What is Lightforth Interview Copilot?',
+    q: 'What is Jobwhisper Interview Copilot?',
     a: "An invisible overlay that only your display shows. It listens to the conversation and feeds you real-time answers across three moments — live interview questions, coding problems you screenshot, and multi-person meetings — without ever appearing on a screen share, recording, or the video feed you're sending out.",
   },
   {

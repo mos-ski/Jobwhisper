@@ -18,7 +18,7 @@ interface DocumentPickerModalProps {
 
 export default function DocumentPickerModal({ onClose, onAdd }: DocumentPickerModalProps) {
   const [step, setStep]             = useState<DocPickerStep>('choose')
-  const [cvType, setCvType]         = useState<'lightforth' | 'upload'>('lightforth')
+  const [cvType, setCvType]         = useState<'jobwhisper' | 'upload'>('jobwhisper')
   const [selected, setSelected]     = useState<Set<string>>(new Set())
 
   const toggleContext = (id: string) => {
@@ -73,7 +73,7 @@ export default function DocumentPickerModal({ onClose, onAdd }: DocumentPickerMo
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-foreground">CV / Resume</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Upload a new resume or use your Lightforth resume</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Upload a new resume or use your Jobwhisper resume</p>
                 </div>
               </button>
 
@@ -107,16 +107,16 @@ export default function DocumentPickerModal({ onClose, onAdd }: DocumentPickerMo
               <p className="lf-label mb-3">Choose resume</p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <button
-                  onClick={() => setCvType('lightforth')}
+                  onClick={() => setCvType('jobwhisper')}
                   className={cn(
                     'relative flex h-11 items-center justify-center gap-2 rounded-lg border text-sm font-semibold transition-colors',
-                    cvType === 'lightforth' ? 'border-primary bg-primary/5 text-primary' : 'border-border text-muted-foreground hover:bg-muted',
+                    cvType === 'jobwhisper' ? 'border-primary bg-primary/5 text-primary' : 'border-border text-muted-foreground hover:bg-muted',
                   )}
                 >
-                  {cvType === 'lightforth' && (
+                  {cvType === 'jobwhisper' && (
                     <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full border border-primary bg-white px-2 py-0.5 text-[9px] font-bold text-primary">RECOMMENDED</span>
                   )}
-                  <Sparkles className="h-4 w-4" /> Use Lightforth Resume
+                  <Sparkles className="h-4 w-4" /> Use Jobwhisper Resume
                 </button>
                 <button
                   onClick={() => setCvType('upload')}
@@ -129,7 +129,7 @@ export default function DocumentPickerModal({ onClose, onAdd }: DocumentPickerMo
                 </button>
               </div>
 
-              {cvType === 'lightforth' && (
+              {cvType === 'jobwhisper' && (
                 <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/30 px-3 py-2.5 text-sm text-muted-foreground">
                   <FileText className="h-4 w-4 fill-red-500 text-red-500 shrink-0" />
                   <span className="flex-1 truncate">Darnell_Smith_resume.pdf</span>
@@ -156,7 +156,7 @@ export default function DocumentPickerModal({ onClose, onAdd }: DocumentPickerMo
                   Back
                 </button>
                 <button
-                  onClick={() => { onAdd({ name: cvType === 'lightforth' ? 'Darnell_Smith_resume.pdf' : 'Resume', type: 'CV' }); onClose() }}
+                  onClick={() => { onAdd({ name: cvType === 'jobwhisper' ? 'Darnell_Smith_resume.pdf' : 'Resume', type: 'CV' }); onClose() }}
                   className="flex-1 rounded-lg bg-primary py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90"
                 >
                   Add Resume →

@@ -201,10 +201,10 @@ describe('DesktopCopilotPreview end to end', () => {
     setAccount('me@example.com', { accountType: 'regular', planId: 'premium' })
     renderApp()
     await act(async () => { vi.advanceTimersByTime(2300) })
-    expect(screen.getByText('Welcome to Lightforth Co-Pilot')).toBeInTheDocument()
+    expect(screen.getByText('Welcome to Jobwhisper Co-Pilot')).toBeInTheDocument()
 
     fireEvent.click(screen.getByText('Continue'))
-    expect(screen.getByText('Welcome to Lightforth Copilot')).toBeInTheDocument()
+    expect(screen.getByText('Welcome to Jobwhisper Copilot')).toBeInTheDocument()
     fireEvent.click(screen.getByText('Sign in'))
     fireEvent.change(screen.getByPlaceholderText('Enter your email'), { target: { value: 'me@example.com' } })
     fireEvent.change(screen.getByPlaceholderText('Enter your password'), { target: { value: 'secret123' } })

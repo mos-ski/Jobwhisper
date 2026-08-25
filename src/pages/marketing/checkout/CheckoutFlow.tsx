@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import LightforthLogo from '@/components/shared/LightforthLogo'
+import JobwhisperLogo from '@/components/shared/JobwhisperLogo'
 
 export interface LineItem {
   label: string
@@ -86,7 +86,7 @@ export function CheckoutFlow({
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-6 py-16">
       <div className="w-full max-w-md">
         <div className="mb-8 flex items-center justify-between">
-          <LightforthLogo to="/" />
+          <JobwhisperLogo to="/" />
           <button
             onClick={() => (step === 'payment' ? setStep('form') : onCancel())}
             className="flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-900"

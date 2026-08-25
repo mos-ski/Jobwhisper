@@ -1,7 +1,7 @@
 import { Outlet, NavLink } from 'react-router-dom'
 import { LayoutDashboard, Users, User, ClipboardList, Briefcase, Settings, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import LightforthLogo from '@/components/shared/LightforthLogo'
+import JobwhisperLogo from '@/components/shared/JobwhisperLogo'
 
 const NAV = [
   { to: '/career-specialist',               label: 'Overview',          icon: LayoutDashboard, end: true },
@@ -17,7 +17,7 @@ export default function CareerSpecialistLayout() {
     <div className="flex min-h-screen">
       <aside className="w-[220px] shrink-0 border-r border-gray-200 bg-white flex flex-col">
         <div className="flex items-center gap-2 border-b border-gray-100 px-5 py-4">
-          <LightforthLogo className="h-6" />
+          <JobwhisperLogo className="h-6" />
         </div>
         <nav className="flex-1 px-3 py-4 space-y-0.5">
           {NAV.map(({ to, label, icon: Icon, end }) => (

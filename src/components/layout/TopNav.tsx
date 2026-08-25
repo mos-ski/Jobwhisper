@@ -213,7 +213,7 @@ export default function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
             <p className="text-base font-bold text-emerald-600">Whats new? *</p>
             <button
               className="text-sm text-slate-500 hover:text-foreground"
-              onClick={() => window.open('https://help.lightforth.ai/updates', '_blank')}
+              onClick={() => window.open('https://help.jobwhisper.ai/updates', '_blank')}
             >
               See Latest Updates {'>'}
             </button>
@@ -227,7 +227,7 @@ export default function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
             </section>
             <button
               className="block w-full px-4 py-3 text-left hover:bg-muted/50"
-              onClick={() => window.open('https://help.lightforth.ai', '_blank')}
+              onClick={() => window.open('https://help.jobwhisper.ai', '_blank')}
             >
               <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 Search on help center
@@ -240,12 +240,12 @@ export default function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
             <section className="px-4 py-3">
               <h3 className="text-sm font-semibold text-foreground">Give feedback?</h3>
               <p className="mt-1.5 text-sm leading-5 text-slate-500">
-                <a className="text-primary underline-offset-2 hover:underline" href="https://help.lightforth.ai/feedback" target="_blank" rel="noreferrer">
+                <a className="text-primary underline-offset-2 hover:underline" href="https://help.jobwhisper.ai/feedback" target="_blank" rel="noreferrer">
                   Fill this form
                 </a>{' '}
                 or Join Discord for support and community interaction or send us an email to{' '}
-                <a className="text-primary hover:underline" href="mailto:support@lightforth.org">
-                  support@lightforth.org
+                <a className="text-primary hover:underline" href="mailto:support@jobwhisper.org">
+                  support@jobwhisper.org
                 </a>
               </p>
             </section>
@@ -260,14 +260,14 @@ export default function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
           </div>
           <button
             className="flex h-12 w-full items-center justify-center gap-3 border-t bg-white text-sm font-medium text-primary hover:bg-blue-50"
-            onClick={() => window.location.href = 'mailto:support@lightforth.org'}
+            onClick={() => window.location.href = 'mailto:support@jobwhisper.org'}
           >
             <Mail className="h-5 w-5" />
             Send us an email
           </button>
           <button
             className="flex h-12 w-full items-center justify-center gap-3 rounded-b-xl bg-[#1298ee] text-sm font-medium text-white hover:bg-[#0b8add]"
-            onClick={() => window.open('https://discord.gg/lightforth', '_blank')}
+            onClick={() => window.open('https://discord.gg/jobwhisper', '_blank')}
           >
             <MessageCircle className="h-5 w-5" />
             Join community

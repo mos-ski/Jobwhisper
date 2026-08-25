@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
+import { JobwhisperMark } from '@/ui'
 
-export default function LightforthLogo({
+export default function JobwhisperLogo({
   className,
   linked = true,
   to = '/',
@@ -10,13 +11,7 @@ export default function LightforthLogo({
   linked?: boolean
   to?: string
 }) {
-  const logo = (
-    <img
-      src="/logo-B1uc6Mmo.svg"
-      alt="Lightforth"
-      className={cn('h-8 w-auto object-contain', className)}
-    />
-  )
+  const logo = <JobwhisperMark className={cn('h-8 w-auto text-accent', className)} />
 
   if (!linked) return logo
 

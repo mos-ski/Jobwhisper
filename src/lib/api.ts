@@ -4,7 +4,7 @@ import axios from 'axios'
 export const TOKEN_KEY = 'lf_token'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? 'https://api.lightforth.ai',
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? 'https://api.jobwhisper.ai',
 })
 
 api.interceptors.request.use((config) => {

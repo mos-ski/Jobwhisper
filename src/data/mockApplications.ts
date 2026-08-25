@@ -66,7 +66,7 @@ export interface MockApplication {
 const TRACE_FAILED: TraceEvent[] = [
   { time: '03:53:14', event: 'APPLICATION_STARTED',        detail: '{"submissionUrl":"https://jobs.wd1.myworkdayjobs.com/..."}',                                color: 'blue'   },
   { time: '03:53:14', event: 'RESUME_TAILORING_STARTED',   detail: undefined,                                                                                   color: 'yellow' },
-  { time: '03:54:02', event: 'RESUME_TAILORED',            detail: '{"resumeUrl":"https://lightforth-prod-resume-bucket.nyc3.digitaloceanspaces.com/tailored/…"}', color: 'green'  },
+  { time: '03:54:02', event: 'RESUME_TAILORED',            detail: '{"resumeUrl":"https://jobwhisper-prod-resume-bucket.nyc3.digitaloceanspaces.com/tailored/…"}', color: 'green'  },
   { time: '03:54:03', event: 'NAVIGATE',                   detail: undefined,                                                                                   color: 'blue'   },
   { time: '03:54:10', event: 'ATS_DETECTED',               detail: '{"atsType":"workday"}',                                                                     color: 'purple' },
   { time: '03:54:20', event: 'FORM_ANALYZED',              detail: undefined,                                                                                   color: 'cyan'   },
@@ -77,7 +77,7 @@ const TRACE_FAILED: TraceEvent[] = [
 const TRACE_COMPLETED: TraceEvent[] = [
   { time: '09:12:05', event: 'APPLICATION_STARTED',        detail: '{"submissionUrl":"https://apply.workable.com/idexcorp/..."}',                               color: 'blue'   },
   { time: '09:12:05', event: 'RESUME_TAILORING_STARTED',   detail: undefined,                                                                                   color: 'yellow' },
-  { time: '09:12:51', event: 'RESUME_TAILORED',            detail: '{"resumeUrl":"https://lightforth-prod-resume-bucket.nyc3.digitaloceanspaces.com/tailored/…"}', color: 'green'  },
+  { time: '09:12:51', event: 'RESUME_TAILORED',            detail: '{"resumeUrl":"https://jobwhisper-prod-resume-bucket.nyc3.digitaloceanspaces.com/tailored/…"}', color: 'green'  },
   { time: '09:12:52', event: 'NAVIGATE',                   detail: undefined,                                                                                   color: 'blue'   },
   { time: '09:12:58', event: 'ATS_DETECTED',               detail: '{"atsType":"workable"}',                                                                    color: 'purple' },
   { time: '09:13:10', event: 'FORM_ANALYZED',              detail: undefined,                                                                                   color: 'cyan'   },
@@ -87,10 +87,10 @@ const TRACE_COMPLETED: TraceEvent[] = [
 
 const LOGS_FAILED = [
   '[2026-06-12T02:53:13.601Z] [DEBUG] [ApplicationProcessor] [Jitter] Delaying start by 306ms to stagger concurrent jobs',
-  '[2026-06-12T02:53:14.389Z] [LOG] [ApplicationProcessor] [Resume Tailoring] MS_RESUME_URL=https://api.lightforth.org/resume, has description=true',
+  '[2026-06-12T02:53:14.389Z] [LOG] [ApplicationProcessor] [Resume Tailoring] MS_RESUME_URL=https://api.jobwhisper.org/resume, has description=true',
   '[2026-06-12T02:53:14.389Z] [LOG] [ApplicationProcessor] Tailoring resume for application 6a2b401de47c656c09eb26a6',
-  '[2026-06-12T02:54:02.850Z] [LOG] [ApplicationProcessor] Resume tailored: https://lightforth-prod-resume-bucket.nyc3.digitaloceanspaces.com/tailored/…',
-  '[2026-06-12T02:54:03.069Z] [LOG] [AutomationOrchestrator] Downloading resume from https://lightforth-prod-resume-bucket.nyc3.digitaloceanspaces.com/tailored/…',
+  '[2026-06-12T02:54:02.850Z] [LOG] [ApplicationProcessor] Resume tailored: https://jobwhisper-prod-resume-bucket.nyc3.digitaloceanspaces.com/tailored/…',
+  '[2026-06-12T02:54:03.069Z] [LOG] [AutomationOrchestrator] Downloading resume from https://jobwhisper-prod-resume-bucket.nyc3.digitaloceanspaces.com/tailored/…',
   '[2026-06-12T02:54:03.511Z] [LOG] [AutomationOrchestrator] Resume downloaded to /tmp/resume-1781232843510.pdf',
   '[2026-06-12T02:54:03.511Z] [LOG] [AutomationOrchestrator] Browser context: proxy=NO for https://raymondjames.wd1.myworkdayjobs.com/…',
   '[2026-06-12T02:54:03.520Z] [DEBUG] [BrowserPoolService] Context acquired for session on browser 2',

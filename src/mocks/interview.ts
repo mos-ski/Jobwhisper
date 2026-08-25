@@ -111,7 +111,7 @@ export const interviewHistoryRows: readonly InterviewHistoryRow[] = [
   { id: 'interview-history-6', title: 'Recruiter Screen - Compliance Analyst', company: 'Goldman Sachs', score: 71, duration: '14m', dateTime: 'July 23rd 2026, 9:52 am' },
   { id: 'interview-history-7', title: 'Data Analyst', company: 'Airbnb', score: 89, duration: '31m', dateTime: 'July 18th 2026, 1:37 pm' },
   { id: 'interview-history-8', title: 'Marketing Manager, Lifecycle', company: 'HubSpot', score: 62, duration: '26m', dateTime: 'July 13th 2026, 4:09 pm' },
-  { id: 'interview-history-9', title: 'Director of Product', company: 'Lightforth', score: 95, duration: '52m', dateTime: 'July 8th 2026, 10:47 am' },
+  { id: 'interview-history-9', title: 'Director of Product', company: 'Jobwhisper', score: 95, duration: '52m', dateTime: 'July 8th 2026, 10:47 am' },
   { id: 'interview-history-10', title: 'Head of Product', company: 'DeeXoptions', score: 79, duration: '20m', dateTime: 'July 2nd 2026, 6:15 pm' },
 ]
 

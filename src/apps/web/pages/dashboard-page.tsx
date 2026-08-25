@@ -11,7 +11,7 @@ export function DashboardPage() {
   const creditParam = params.get('credit')
   const activeDropdown = dropdownParam === 'help' || dropdownParam === 'credits' || dropdownParam === 'profile' ? dropdownParam : undefined
   const creditNotice = creditParam === 'low' || creditParam === 'empty' ? creditParam : undefined
-  // `credit=trial` demos a user with no active plan: Lightforth still grants 5 free credits every month by default.
+  // `credit=trial` demos a user with no active plan: Jobwhisper still grants 5 free credits every month by default.
   const isTrial = creditParam === 'trial'
   const totalCreditsCents = isTrial ? TRIAL_TOTAL_CENTS : CREDIT_WALLET.totalCents
   const creditBalanceCents = activeDropdown === 'credits' || creditNotice === 'empty'
@@ -23,7 +23,7 @@ export function DashboardPage() {
         : CREDIT_WALLET.balanceCents
   const user = candidateSession.status === 'authenticated' ? candidateSession.user : {
     id: 'review-user',
-    email: 'review@lightforth.ai',
+    email: 'review@jobwhisper.ai',
     name: 'Review User',
     role: 'candidate' as const,
     permissions: ['app:view'] as const,

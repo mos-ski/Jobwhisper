@@ -54,8 +54,8 @@ const INT_LABEL: Record<string, string> = {
 
 export default function AdminSettings() {
   const { flags, toggleFlag } = useSettings()
-  const [appName, setAppName] = useState('Lightforth')
-  const [supportEmail, setSupportEmail] = useState('support@lightforth.ai')
+  const [appName, setAppName] = useState('Jobwhisper')
+  const [supportEmail, setSupportEmail] = useState('support@jobwhisper.ai')
   const [timezone, setTimezone] = useState('lag')
 
   const FLAG_LABELS: Record<keyof typeof flags, string> = {

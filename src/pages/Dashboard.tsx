@@ -10,7 +10,7 @@ const featureFlows = [
   {
     title: 'For Resume Builder',
     steps: [
-      'Upload a resume or build one with Lightforth.',
+      'Upload a resume or build one with Jobwhisper.',
       'Paste the job description and tailor your resume to the role.',
       'Score your resume with ATS checker and download as PDF, DOCX, or text.',
     ],
@@ -36,8 +36,8 @@ const featureFlows = [
     title: 'For Auto-Apply',
     steps: [
       'Choose your target roles, locations, and preferences.',
-      'Attach the resume you want Lightforth to use.',
-      'Review matched jobs and let Lightforth apply for you.',
+      'Attach the resume you want Jobwhisper to use.',
+      'Review matched jobs and let Jobwhisper apply for you.',
     ],
   },
 ]
@@ -114,7 +114,7 @@ export default function Dashboard() {
             <ActionCard
               Icon={FileText}
               title="Tailor my Resume"
-              description="Let Lightforth craft your perfect resume tailored to every role and optimized for results."
+              description="Let Jobwhisper craft your perfect resume tailored to every role and optimized for results."
               to="/resume-builder?mode=tailor"
             />
             <ActionCard
@@ -132,7 +132,7 @@ export default function Dashboard() {
             <ActionCard
               Icon={Send}
               title="Auto-Apply"
-              description="Let Lightforth auto-apply to relevant roles based on your preferences — no more job hunting stress."
+              description="Let Jobwhisper auto-apply to relevant roles based on your preferences — no more job hunting stress."
               to="/app/auto-apply"
               badge="NEW"
             />
@@ -180,23 +180,23 @@ export default function Dashboard() {
       {/* Help links */}
       <div className="space-y-3 pb-4">
         <a
-          href="https://help.lightforth.ai"
+          href="https://help.jobwhisper.ai"
           target="_blank"
           rel="noopener noreferrer"
           className="block text-sm font-bold text-primary hover:underline"
         >
           Visit Help Desk{' '}
-          <span className="font-normal text-muted-foreground">(help.lightforth.ai)</span>
+          <span className="font-normal text-muted-foreground">(help.jobwhisper.ai)</span>
         </a>
         <a href="#" className="block text-sm font-bold text-primary hover:underline">
           Watch Quick Tutorial
         </a>
         <a
-          href="mailto:support@lightforth.org"
+          href="mailto:support@jobwhisper.org"
           className="block text-sm font-bold text-primary hover:underline"
         >
           Contact us for support{' '}
-          <span className="font-normal text-muted-foreground">(support@lightforth.org)</span>
+          <span className="font-normal text-muted-foreground">(support@jobwhisper.org)</span>
         </a>
       </div>
     </div>

@@ -41,7 +41,7 @@ export const DEFAULT_AUTO_APPLY_SETUP: AutoApplySetup = {
   uploadedFileName: 'Darnell_Smith_Product_Manager_2026.pdf',
   firstName: 'Darnell',
   lastName: 'Smith',
-  email: 'demo@lightforth.ai',
+  email: 'demo@jobwhisper.ai',
   phone: '',
   gender: '',
   dob: '',

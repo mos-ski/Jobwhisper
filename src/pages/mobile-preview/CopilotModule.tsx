@@ -186,7 +186,7 @@ function SetupScreen({ onBack, onContinue }: { onBack: () => void; onContinue: (
             </div>
           ) : (
             <button onClick={() => setResume(MOCK_RESUMES[0]?.name ?? null)} className="mt-1 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-white/20 py-3 text-sm text-white/70">
-              <Upload size={14} />Upload or use Lightforth resume
+              <Upload size={14} />Upload or use Jobwhisper resume
             </button>
           )}
         </div>

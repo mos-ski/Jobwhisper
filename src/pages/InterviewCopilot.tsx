@@ -155,7 +155,7 @@ function PreferenceModal({
               <p><strong>• Task:</strong> I led a cross-functional team to redesign the app and improve usability.</p>
               <p><strong>• Action:</strong> Conducted user interviews → Redesigned UI → Simplified navigation → Personalized dashboard.</p>
               <p><strong>• Result:</strong> Engagement increased by <span className="text-green-600 font-medium">30% in 3 months</span>, customer satisfaction improved.</p>
-              <p className="italic text-muted-foreground">This project reinforced my skills in user-centered design and collaboration. How does your team at Lightforth incorporate user feedback into product design?</p>
+              <p className="italic text-muted-foreground">This project reinforced my skills in user-centered design and collaboration. How does your team at Jobwhisper incorporate user feedback into product design?</p>
             </div>
           )}
           {responseType === 'coaching' && (
@@ -313,8 +313,8 @@ function SetupContent({
   setJobTitle: (v: string) => void
   company: string
   setCompany: (v: string) => void
-  resumeType: 'upload' | 'lightforth'
-  setResumeType: (v: 'upload' | 'lightforth') => void
+  resumeType: 'upload' | 'jobwhisper'
+  setResumeType: (v: 'upload' | 'jobwhisper') => void
   jobDesc: string
   setJobDesc: (v: string) => void
   audioConnected: boolean
@@ -397,22 +397,22 @@ function SetupContent({
               <Upload className="h-4 w-4" /> Upload a new resume
             </button>
             <button
-              onClick={() => setResumeType('lightforth')}
+              onClick={() => setResumeType('jobwhisper')}
               className={cn(
                 'relative flex h-11 items-center justify-center gap-2 rounded-lg border text-sm font-semibold transition-colors',
-                resumeType === 'lightforth' ? 'border-primary bg-primary/5 text-primary' : 'border-border text-muted-foreground hover:bg-muted',
+                resumeType === 'jobwhisper' ? 'border-primary bg-primary/5 text-primary' : 'border-border text-muted-foreground hover:bg-muted',
               )}
             >
-              {resumeType === 'lightforth' && (
+              {resumeType === 'jobwhisper' && (
                 <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full border border-primary bg-white px-2 py-0.5 text-[9px] font-bold text-primary">
                   RECOMMENDED
                 </span>
               )}
-              <Sparkles className="h-4 w-4" /> Use Lightforth Resume
+              <Sparkles className="h-4 w-4" /> Use Jobwhisper Resume
             </button>
           </div>
 
-          {resumeType === 'lightforth' && (
+          {resumeType === 'jobwhisper' && (
             <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
               <FileText className="h-4 w-4 fill-red-500 text-red-500" />
               <span>Darnell_Smith_resume.pdf</span>
@@ -894,7 +894,7 @@ function LiveInterview({
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-500">Resume</span>
-                      <span className="font-medium text-slate-200">Lightforth Resume</span>
+                      <span className="font-medium text-slate-200">Jobwhisper Resume</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-500">Skip setup</span>
@@ -977,7 +977,7 @@ function LiveInterview({
                 <p className="max-w-[260px] text-center text-sm leading-relaxed text-slate-500">
                   {liveState === 'sharing'
                     ? 'Connecting to audio...'
-                    : 'Lightforth will analyze your interview questions and generate target responses in real time.'}
+                    : 'Jobwhisper will analyze your interview questions and generate target responses in real time.'}
                 </p>
               </div>
             )}
@@ -1139,7 +1139,7 @@ export default function InterviewCopilot() {
   const [liveState, setLiveState] = useState<LiveState>('waiting')
   const [jobTitle, setJobTitle] = useState('')
   const [company, setCompany]   = useState('')
-  const [resumeType, setResumeType] = useState<'upload' | 'lightforth'>('lightforth')
+  const [resumeType, setResumeType] = useState<'upload' | 'jobwhisper'>('jobwhisper')
   const [jobDesc, setJobDesc] = useState('')
   const [audioConnected, setAudioConnected] = useState(false)
   const [dontAskAgain, setDontAskAgain] = useState(false)

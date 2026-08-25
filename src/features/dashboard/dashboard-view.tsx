@@ -6,7 +6,7 @@ import { useState, type ReactNode } from 'react'
 import type { DashboardAction, DashboardActionId, DashboardInstallPrompt, DashboardNavItem } from '@/contracts/dashboard.draft'
 import type { UserIdentity } from '@/contracts/identity'
 import { formatCredits, usagePercent } from '@/lib/credits'
-import { Button, cn, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, LightforthMark, SideMenu } from '@/ui'
+import { Button, cn, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, JobwhisperMark, SideMenu } from '@/ui'
 import { BriefcaseActionIcon, CopilotActionIcon, MonitorActionIcon, ResumeActionIcon } from './dashboard-action-icons'
 import {
   AutoApplyIcon,
@@ -67,7 +67,7 @@ function MobileNavDrawer({ navItems }: { readonly navItems: readonly DashboardNa
       </DialogTrigger>
       <DialogPopup placement="start" aria-label="Navigation" className="p-0">
         <div className="flex h-14 items-center justify-between border-b border-border px-4">
-          <LightforthMark className="h-6 w-auto text-brand-mark" />
+          <JobwhisperMark className="h-6 w-auto text-brand-mark" />
           <DialogClose aria-label="Close navigation menu" className="static" />
         </div>
         <SideMenu items={toSideMenuItems(navItems)} className="block h-[calc(100%-3.5rem)] w-full" />
@@ -110,7 +110,7 @@ function HelpDropdown({ forceOpen = false }: { readonly forceOpen?: boolean }) {
           <p className="mt-1 text-xs leading-5 text-ink-muted">
             <a href="/v3/feedback" className="font-medium text-accent underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Fill this form</a>
             {' '}or Join Discord for support and community interaction or send us an email to{' '}
-            <a href="mailto:support@lightforth.org" className="font-medium text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">support@lightforth.org</a>
+            <a href="mailto:support@jobwhisper.org" className="font-medium text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">support@jobwhisper.org</a>
           </p>
         </article>
         <article className="border-t border-border px-4 py-2">
@@ -122,7 +122,7 @@ function HelpDropdown({ forceOpen = false }: { readonly forceOpen?: boolean }) {
         <Play aria-hidden="true" className="size-4" />
         Tutorial Videos
       </a>
-      <a href="mailto:support@lightforth.org" className="flex min-h-12 items-center justify-center gap-2 bg-accent px-3 text-sm font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+      <a href="mailto:support@jobwhisper.org" className="flex min-h-12 items-center justify-center gap-2 bg-accent px-3 text-sm font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
         <Mail aria-hidden="true" className="size-4" />
         Send us an email
       </a>
@@ -160,7 +160,7 @@ function HelpModal({ open, onOpenChange }: { readonly open: boolean; readonly on
             <p className="mt-1 text-xs leading-5 text-ink-muted">
               <a href="/v3/feedback" className="font-medium text-accent underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Fill this form</a>
               {' '}or Join Discord for support and community interaction or send us an email to{' '}
-              <a href="mailto:support@lightforth.org" className="font-medium text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">support@lightforth.org</a>
+              <a href="mailto:support@jobwhisper.org" className="font-medium text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">support@jobwhisper.org</a>
             </p>
           </article>
           <article className="border-t border-border px-4 py-3">
@@ -173,7 +173,7 @@ function HelpModal({ open, onOpenChange }: { readonly open: boolean; readonly on
             <Play aria-hidden="true" className="size-4" />
             Tutorial Videos
           </a>
-          <a href="mailto:support@lightforth.org" className="flex min-h-11 items-center justify-center gap-2 rounded-lg bg-accent text-sm font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+          <a href="mailto:support@jobwhisper.org" className="flex min-h-11 items-center justify-center gap-2 rounded-lg bg-accent text-sm font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
             <Mail aria-hidden="true" className="size-4" />
             Send us an email
           </a>
@@ -311,11 +311,11 @@ function DashboardHeader({
     <header className="relative flex h-14 items-center justify-between border-b border-border bg-surface px-4 lg:px-5">
       <div className="flex items-center gap-2">
         <MobileNavDrawer navItems={navItems} />
-        <a href="/v3" className="inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus" aria-label="Lightforth home">
+        <a href="/v3" className="inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus" aria-label="Jobwhisper home">
           {collapsed ? (
             <img src="/v3-assets/Logo%20icon.svg" alt="" className="size-7" />
           ) : (
-            <LightforthMark className="h-7 w-auto text-brand-mark" />
+            <JobwhisperMark className="h-7 w-auto text-brand-mark" />
           )}
         </a>
         <button
@@ -496,7 +496,7 @@ function InstallPrompt({ installPrompt }: { readonly installPrompt: DashboardIns
   return (
     <section className="rounded-panel bg-accent-subtle p-3 lg:absolute lg:bottom-14 lg:end-8" aria-label="Install apps">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <img src={installPrompt.qrSrc} alt="QR code to install Lightforth apps" className="size-28 rounded-soft object-cover" />
+        <img src={installPrompt.qrSrc} alt="QR code to install Jobwhisper apps" className="size-28 rounded-soft object-cover" />
         <div className="grid gap-3">
           <p className="text-base font-medium text-accent">{installPrompt.title}</p>
           <div className="flex flex-wrap gap-2">

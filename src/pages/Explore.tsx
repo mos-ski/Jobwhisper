@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 const featureCards = [
   {
     title: 'Build a Resume That Gets You Hired',
-    description: 'Let Lightforth craft your perfect resume tailored to every role and optimized for results.',
+    description: 'Let Jobwhisper craft your perfect resume tailored to every role and optimized for results.',
     action: 'Build a Resume',
     to: '/resume-builder',
     color: 'text-violet-700',
@@ -14,7 +14,7 @@ const featureCards = [
   },
   {
     title: 'Auto-Apply 50+ Jobs in Minutes',
-    description: 'Let Lightforth auto-apply to relevant roles based on your preferences. No more job hunting stress.',
+    description: 'Let Jobwhisper auto-apply to relevant roles based on your preferences. No more job hunting stress.',
     action: 'Apply for Jobs',
     to: '/auto-apply',
     color: 'text-emerald-700',
@@ -129,7 +129,7 @@ export default function Explore() {
                     {tag}
                   </span>
                   <h3 className="mt-2 font-semibold text-foreground">{title}</h3>
-                  <p className="text-sm text-muted-foreground">Optimized with Lightforth AI - ATS score: 92%</p>
+                  <p className="text-sm text-muted-foreground">Optimized with Jobwhisper AI - ATS score: 92%</p>
                 </div>
               </div>
               <Link to="/resume-builder" className="text-sm font-semibold text-primary hover:underline">

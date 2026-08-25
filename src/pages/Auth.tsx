@@ -4,7 +4,7 @@ import { Check, EyeOff, Headphones, HelpCircle, Mail, X } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import LightforthLogo from '@/components/shared/LightforthLogo'
+import JobwhisperLogo from '@/components/shared/JobwhisperLogo'
 
 type AuthMode = 'choice' | 'email' | 'password' | 'sent' | 'login' | 'forgot'
 
@@ -12,9 +12,9 @@ function AuthShell({ children, showFooter = true }: { children: React.ReactNode;
   return (
     <div className="flex min-h-screen flex-col bg-white font-sans">
       <header className="flex min-h-16 items-center justify-between gap-3 border-b px-4 py-3 md:h-20 md:px-16">
-        <LightforthLogo className="h-8" />
+        <JobwhisperLogo className="h-8" />
         <a
-          href="https://help.lightforth.ai"
+          href="https://help.jobwhisper.ai"
           target="_blank"
           rel="noreferrer"
           className="flex h-10 shrink-0 items-center gap-2 rounded-full border border-primary/50 px-4 text-sm font-semibold text-primary hover:bg-blue-50 sm:px-5"
@@ -28,10 +28,10 @@ function AuthShell({ children, showFooter = true }: { children: React.ReactNode;
 
       {showFooter && (
         <footer className="flex flex-col items-center justify-between gap-3 px-4 py-5 text-sm font-medium text-muted-foreground sm:flex-row md:px-16">
-          <span>© Lightforth AI 2026</span>
-          <a href="mailto:support@lightforth.org" className="flex items-center gap-2 hover:text-primary">
+          <span>© Jobwhisper AI 2026</span>
+          <a href="mailto:support@jobwhisper.org" className="flex items-center gap-2 hover:text-primary">
             <Mail className="h-4 w-4" />
-            support@lightforth.org
+            support@jobwhisper.org
           </a>
         </footer>
       )}
@@ -201,7 +201,7 @@ export default function Auth() {
       <AuthShell showFooter={false}>
         <section className="w-full max-w-[520px] bg-white px-0 py-8 sm:px-8">
           <h1 className="lf-page-title">Log in</h1>
-          <p className="mt-3 text-sm text-slate-600">Welcome back. Continue your job search with Lightforth.</p>
+          <p className="mt-3 text-sm text-slate-600">Welcome back. Continue your job search with Jobwhisper.</p>
           <div className="mt-7 space-y-4">
             <Field label="Email" placeholder="Enter your email" value={email} onChange={setEmail} />
             <Field label="Password" placeholder="Enter password" type="password" value={password} onChange={setPassword} />
@@ -217,7 +217,7 @@ export default function Auth() {
             <AuthButton onClick={handleLogin}><LinkedInMark /> Continue with LinkedIn</AuthButton>
           </div>
           <p className="mt-4 text-center text-sm text-slate-600">
-            New to Lightforth?{' '}
+            New to Jobwhisper?{' '}
             <button className="font-semibold text-primary hover:underline" onClick={() => setMode('choice')}>
               Create account
             </button>
@@ -245,7 +245,7 @@ export default function Auth() {
           </div>
           <label className="mt-5 flex flex-wrap items-center gap-2 text-sm text-slate-600 sm:gap-3">
             <input className="h-5 w-5 rounded accent-primary" type="checkbox" checked={accepted} onChange={(event) => setAccepted(event.target.checked)} />
-            By signing up, you agree with Lightforth's
+            By signing up, you agree with Jobwhisper's
             <a className="font-semibold text-primary underline" href="#">Terms & Conditions</a>
           </label>
           <Button className="mt-6 h-11 w-full" onClick={handleEmailContinue} disabled={!accepted}>Continue</Button>

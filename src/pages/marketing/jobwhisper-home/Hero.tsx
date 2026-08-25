@@ -2,11 +2,11 @@ import { motion } from 'framer-motion'
 import { Sparkles } from 'lucide-react'
 
 const avatars = [
-  '/lightforth-home/images/avatar1.png',
-  '/lightforth-home/images/avatar2.png',
-  '/lightforth-home/images/avatar3.png',
-  '/lightforth-home/images/avatar4.png',
-  '/lightforth-home/images/avatar5.png',
+  '/jobwhisper-home/images/avatar1.png',
+  '/jobwhisper-home/images/avatar2.png',
+  '/jobwhisper-home/images/avatar3.png',
+  '/jobwhisper-home/images/avatar4.png',
+  '/jobwhisper-home/images/avatar5.png',
 ]
 
 export function Hero() {
@@ -41,7 +41,7 @@ export function Hero() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="mx-auto mt-6 max-w-2xl text-base text-slate-600 md:text-lg"
         >
-          Lightforth is an AI-powered career acceleration platform. We optimize your resume for any job,
+          Jobwhisper is an AI-powered career acceleration platform. We optimize your resume for any job,
           automatically apply to matching opportunities, and prepare you to ace every interview – all in one place.
         </motion.p>
 
@@ -90,8 +90,8 @@ export function Hero() {
           className="mx-auto mt-12 max-w-4xl overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl shadow-slate-200/50"
         >
           <img
-            src="/lightforth-home/images/hero-image.png"
-            alt="Lightforth Dashboard"
+            src="/jobwhisper-home/images/hero-image.png"
+            alt="Jobwhisper Dashboard"
             className="w-full object-cover"
           />
         </motion.div>

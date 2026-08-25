@@ -8,7 +8,7 @@ export function OnboardingCompleteScreen({ onStart }: { onStart: () => void }) {
       </div>
       <h1 className="mt-6 text-xl font-bold text-neutral-900">You're all set!</h1>
       <p className="mt-2 text-sm leading-relaxed text-neutral-500">
-        Start exploring opportunities with Lightforth. Your matches are waiting.
+        Start exploring opportunities with Jobwhisper. Your matches are waiting.
       </p>
       <button
         onClick={onStart}

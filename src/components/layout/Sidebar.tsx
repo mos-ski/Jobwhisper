@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import UpgradeCard from '@/components/shared/UpgradeCard'
-import LightforthLogo from '@/components/shared/LightforthLogo'
+import JobwhisperLogo from '@/components/shared/JobwhisperLogo'
 import { useAuth } from '@/hooks/useAuth'
 
 const DOCS_SUB_NAV = [
@@ -172,7 +172,7 @@ function MobileSidebar({ open, onClose }: { open: boolean; onClose: () => void }
         )}
       >
         <div className="flex h-14 items-center justify-between px-4">
-          <LightforthLogo to="/app" className="h-7" />
+          <JobwhisperLogo to="/app" className="h-7" />
           <button onClick={onClose} className="rounded-md p-1.5 hover:bg-muted" aria-label="Close menu">
             <X className="h-5 w-5" />
           </button>
@@ -232,7 +232,7 @@ export default function Sidebar() {
   return (
     <aside className="hidden h-screen w-56 flex-shrink-0 flex-col border-r border-border bg-white md:flex">
       <div className="flex h-14 items-center gap-2 px-4">
-        <LightforthLogo to="/app" className="h-7" />
+        <JobwhisperLogo to="/app" className="h-7" />
       </div>
 
       <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-2">

@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion'
 
 const logos = [
-  { src: '/lightforth-home/images/odeaolabs.svg', alt: 'OdeaoLabs' },
-  { src: '/lightforth-home/images/kintsugi.svg', alt: 'Kintsugi' },
-  { src: '/lightforth-home/images/stackedlab.svg', alt: 'StackedLab' },
-  { src: '/lightforth-home/images/magnolia.svg', alt: 'Magnolia' },
-  { src: '/lightforth-home/images/warpspeed.svg', alt: 'Warpspeed' },
-  { src: '/lightforth-home/images/sisyphus.svg', alt: 'Sisyphus' },
+  { src: '/jobwhisper-home/images/odeaolabs.svg', alt: 'OdeaoLabs' },
+  { src: '/jobwhisper-home/images/kintsugi.svg', alt: 'Kintsugi' },
+  { src: '/jobwhisper-home/images/stackedlab.svg', alt: 'StackedLab' },
+  { src: '/jobwhisper-home/images/magnolia.svg', alt: 'Magnolia' },
+  { src: '/jobwhisper-home/images/warpspeed.svg', alt: 'Warpspeed' },
+  { src: '/jobwhisper-home/images/sisyphus.svg', alt: 'Sisyphus' },
 ]
 
 export function LogoCloud() {

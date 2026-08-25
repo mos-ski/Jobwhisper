@@ -34,7 +34,7 @@ export const resumeDocument: ResumeDocument = {
     'Rewrite my professional summary to open with the target role title and my years of product-management experience, then add specific metrics to my three most recent roles. Replace vague phrases like "significantly improved" or "drove growth" with hard numbers, and expand the skills section to include the tools mentioned in the job description. Keep the tone professional and concise.',
   roles: [
     {
-      company: 'Lightforth',
+      company: 'Jobwhisper',
       location: 'Dallas',
       title: 'Director of Product',
       period: 'Aug 2024 - Present',
@@ -156,7 +156,7 @@ export const resumeDocument: ResumeDocument = {
   ],
   projects: [
     {
-      name: 'Lightforth AI Career Platform',
+      name: 'Jobwhisper AI Career Platform',
       description:
         'Product-led design and launch of an AI-powered career platform combining resume building, interview preparation, and a real-time interview copilot. Grew the beta community to 5,000+ users, achieved a 4.6/5 user satisfaction score, and established the foundation for a freemium monetization model.',
       year: '2024',

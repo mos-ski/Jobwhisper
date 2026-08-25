@@ -1,5 +1,5 @@
-import { Navbar } from '@/pages/marketing/lightforth-home/Navbar'
-import { Footer } from '@/pages/marketing/lightforth-home/Footer'
+import { Navbar } from '@/pages/marketing/jobwhisper-home/Navbar'
+import { Footer } from '@/pages/marketing/jobwhisper-home/Footer'
 
 function scrollToPricing() {
   document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })

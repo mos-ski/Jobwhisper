@@ -9,7 +9,7 @@ describe('SignInScreen', () => {
 
   it('defaults to a welcome screen offering sign-up methods and a sign-in link, with email listed first', () => {
     render(<SignInScreen onBack={() => {}} onContinue={() => {}} onSignUp={() => {}} />)
-    expect(screen.getByText('Welcome to Lightforth Copilot')).toBeInTheDocument()
+    expect(screen.getByText('Welcome to Jobwhisper Copilot')).toBeInTheDocument()
     const buttons = screen.getAllByRole('button').map(b => b.textContent ?? '')
     const emailIdx = buttons.findIndex(t => t.includes('Continue with Email'))
     const googleIdx = buttons.findIndex(t => t.includes('Continue with Google'))

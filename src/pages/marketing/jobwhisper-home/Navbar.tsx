@@ -25,7 +25,7 @@ const navLinks = [
   {
     label: 'Resources',
     children: [
-      { label: 'Blog', href: 'https://blog.lightforth.org/' },
+      { label: 'Blog', href: 'https://blog.jobwhisper.org/' },
       { label: 'Guides', href: 'https://youtube.com/playlist?list=PL53nAg9VnMz38WxJIAB3XVW6rKm9ioYJ2&feature=shared' },
       { label: 'FAQ', href: '#faq' },
     ],
@@ -40,7 +40,7 @@ export function Navbar({ onGetStarted }: { onGetStarted: () => void }) {
     <nav className="fixed top-0 left-0 z-50 w-full border-b border-slate-100 bg-white/80 backdrop-blur-lg">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <Link to="/" className="flex items-center gap-2">
-          <img src="/lightforth-home/images/lightforth-logo-2.svg" alt="Lightforth" className="h-7 w-auto" />
+          <img src="/jobwhisper-home/images/jobwhisper-logo-2.svg" alt="Jobwhisper" className="h-7 w-auto" />
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">

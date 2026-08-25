@@ -16,7 +16,7 @@ export const dashboardActions: readonly DashboardAction[] = [
   {
     id: 'resume-tailor',
     title: 'Tailor my Resume',
-    description: 'Let Lightforth craft your perfect resume tailored to every role and optimized for results.',
+    description: 'Let Jobwhisper craft your perfect resume tailored to every role and optimized for results.',
     href: '/v3/resume',
     featured: true,
   },
@@ -35,7 +35,7 @@ export const dashboardActions: readonly DashboardAction[] = [
   {
     id: 'auto-apply',
     title: 'Apply for Jobs',
-    description: 'Let Lightforth auto-apply to relevant roles based on your preferences no more job hunting stress.',
+    description: 'Let Jobwhisper auto-apply to relevant roles based on your preferences no more job hunting stress.',
     href: '/v3/auto-apply',
     badge: 'BETA',
   },
@@ -55,7 +55,7 @@ export const dashboardActions: readonly DashboardAction[] = [
 ]
 
 export const dashboardInstallPrompt: DashboardInstallPrompt = {
-  title: 'Install the Lightforth desktop or mobile app to get live Copilot assistance wherever you interview.',
+  title: 'Install the Jobwhisper desktop or mobile app to get live Copilot assistance wherever you interview.',
   qrSrc: '/v3-assets/Barcode.png',
   desktopHref: '/v3/downloads/desktop',
   mobileHref: '/v3/downloads/mobile',

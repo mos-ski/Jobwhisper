@@ -85,7 +85,7 @@ import {
   TooltipContent,
   toast,
   Toaster,
-  LightforthAiIcon,
+  JobwhisperAiIcon,
 } from '@/ui'
 import type {
   DataTableColumn,
@@ -243,7 +243,7 @@ function LibraryPageInner() {
           <div className="mb-10 flex items-start justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-accent-text">Design System</p>
-              <h1 className="mt-3 text-4xl font-semibold tracking-normal">Lightforth Component Library</h1>
+              <h1 className="mt-3 text-4xl font-semibold tracking-normal">Jobwhisper Component Library</h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-ink-muted">
                 Every UI primitive, its variants, and all states. Use this as the reference for building screens.
               </p>
@@ -587,10 +587,10 @@ function LibraryPageInner() {
             <Accordion defaultValue={['item-1']}>
               <AccordionItem value="item-1">
                 <AccordionHeader>
-                  <AccordionTrigger>What is Lightforth?</AccordionTrigger>
+                  <AccordionTrigger>What is Jobwhisper?</AccordionTrigger>
                 </AccordionHeader>
                 <AccordionPanel>
-                  Lightforth is an AI-powered career platform that helps you build resumes, prepare for interviews, and auto-apply to jobs.
+                  Jobwhisper is an AI-powered career platform that helps you build resumes, prepare for interviews, and auto-apply to jobs.
                 </AccordionPanel>
               </AccordionItem>
               <AccordionItem value="item-2">
@@ -722,7 +722,7 @@ function LibraryPageInner() {
               </div>
               <div className="flex justify-start">
                 <div className="flex items-start gap-2 max-w-sm rounded-2xl rounded-ss-sm bg-surface-subtle px-4 py-2.5 text-sm text-ink">
-                  <LightforthAiIcon className="mt-0.5 size-4 shrink-0" />
+                  <JobwhisperAiIcon className="mt-0.5 size-4 shrink-0" />
                   <span>The AI assistant icon appears on assistant messages for brand recognition.</span>
                 </div>
               </div>
@@ -812,7 +812,7 @@ function LibraryPageInner() {
             <div className="grid gap-4">
               <Row label="AI suggestion trigger">
                 <button className="inline-flex items-center gap-1.5 bg-gradient-to-r from-accent to-[#7c3aed] bg-clip-text text-sm font-bold text-transparent transition-opacity hover:opacity-80">
-                  <LightforthAiIcon className="size-4" />
+                  <JobwhisperAiIcon className="size-4" />
                   AI Suggest
                 </button>
               </Row>
@@ -828,7 +828,7 @@ function LibraryPageInner() {
               </Row>
               <Row label="Change count badge">
                 <span className="inline-flex items-center gap-1.5 rounded-pill bg-accent-subtle px-2 py-0.5 text-[10px] font-bold text-accent-text">
-                  <LightforthAiIcon className="size-3" /> 3 changes
+                  <JobwhisperAiIcon className="size-3" /> 3 changes
                 </span>
               </Row>
             </div>

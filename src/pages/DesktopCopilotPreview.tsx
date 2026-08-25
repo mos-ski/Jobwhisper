@@ -43,7 +43,7 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
       <div className="flex flex-col items-center gap-4">
         <div className="flex items-center gap-3">
           <LightningLogo size={42} />
-          <span className="text-3xl font-bold text-white tracking-tight">Lightforth</span>
+          <span className="text-3xl font-bold text-white tracking-tight">Jobwhisper</span>
         </div>
         <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>Connecting...</p>
       </div>
@@ -65,7 +65,7 @@ function OnboardingScreen({ onContinue }: { onContinue: () => void }) {
 
   return (
     <div className="flex min-h-[580px] flex-col items-center px-12 py-10" style={{ background: BG }}>
-      <h1 className="mb-3 text-center text-3xl font-bold text-white">Welcome to Lightforth Co-Pilot</h1>
+      <h1 className="mb-3 text-center text-3xl font-bold text-white">Welcome to Jobwhisper Co-Pilot</h1>
       <p className="mb-10 max-w-lg text-center text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>
         Copilot listens to your interview in real time and quietly displays the right answer on your screen — invisible to your interviewer, even during a full screen share.
       </p>
@@ -96,7 +96,7 @@ function OnboardingScreen({ onContinue }: { onContinue: () => void }) {
         </div>
 
         <p className="mb-8 text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>
-          If Lightforth Copilot doesn't appear in your system permissions list, click "+" and select it from your Applications folder. The app will restart automatically once permissions are granted — your audio will connect correctly after restart.
+          If Jobwhisper Copilot doesn't appear in your system permissions list, click "+" and select it from your Applications folder. The app will restart automatically once permissions are granted — your audio will connect correctly after restart.
         </p>
 
         <div className="flex items-center justify-center gap-3">
@@ -298,7 +298,7 @@ export function RegularSetupScreen({ email, onBack, onContinue, unlockedUseCases
             <ArrowLeft className="h-4 w-4" />
           </button>
           <LightningLogo size={24} />
-          <span className="text-base font-bold text-white">Lightforth</span>
+          <span className="text-base font-bold text-white">Jobwhisper</span>
         </div>
         <div className="flex items-center gap-3">
           <button className="flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10" style={{ borderColor: BORDER }}>
@@ -867,7 +867,7 @@ export function LiveCanvas({ useCaseId, primaryLabel, onEnd, onBack, transparenc
                       </p>
                     </div>
                   )}
-                  <TranscriptMessage speaker="Lightforth AI" text={item.a} kind="ai" transparency={transparency} fontSize={fontSize} />
+                  <TranscriptMessage speaker="Jobwhisper AI" text={item.a} kind="ai" transparency={transparency} fontSize={fontSize} />
                 </div>
               ))}
               <div className="space-y-[19.5px]">
@@ -893,7 +893,7 @@ export function LiveCanvas({ useCaseId, primaryLabel, onEnd, onBack, transparenc
                 {copilotStatus === 'processing' && <div className="flex items-center gap-1.5 py-1">{[0,1,2].map(i => <div key={i} className="h-2 w-2 rounded-full bg-slate-500" style={{ animation: 'processingDot 0.9s ease-in-out infinite', animationDelay: `${i * 0.18}s` }} />)}</div>}
                 {copilotStatus === 'answering' && aDisplayed && (
                   <TranscriptMessage
-                    speaker="Lightforth AI"
+                    speaker="Jobwhisper AI"
                     text={`${aDisplayed}${aDisplayed.length < bank[questionIndex].a.length ? '|' : ''}`}
                     kind="ai"
                     transparency={transparency}

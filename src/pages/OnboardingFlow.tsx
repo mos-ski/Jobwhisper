@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Check, X, Upload, FileText, Search, ChevronRight, MapPin, Briefcase, Zap, Target } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import LightforthLogo from '@/components/shared/LightforthLogo'
+import JobwhisperLogo from '@/components/shared/JobwhisperLogo'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -94,7 +94,7 @@ const STEP_META: Record<'roles' | 'location' | 'resume', {
     number: 3,
     label: 'Resume',
     heading: 'Level up your applications.',
-    sub: 'Your resume helps Lightforth craft a tailored pitch for every single job — automatically.',
+    sub: 'Your resume helps Jobwhisper craft a tailored pitch for every single job — automatically.',
     Icon: ({ className }) => <FileText className={className} />,
   },
 }
@@ -115,7 +115,7 @@ function LeftPanel({ step }: { step: 'roles' | 'location' | 'resume' }) {
   return (
     <div className="hidden lg:flex w-[440px] shrink-0 flex-col bg-primary px-10 py-10 text-white">
       {/* Logo */}
-      <LightforthLogo linked={false} className="mb-12 brightness-0 invert" />
+      <JobwhisperLogo linked={false} className="mb-12 brightness-0 invert" />
 
       {/* Step pill */}
       <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-white/80">
@@ -610,7 +610,7 @@ function MatchingScreen({ onComplete }: { onComplete: () => void }) {
     <div className="flex min-h-screen">
       {/* Left: solid primary */}
       <div className="hidden lg:flex w-[440px] shrink-0 flex-col items-center justify-center bg-primary px-10 py-10 text-white">
-        <LightforthLogo linked={false} className="mb-12 brightness-0 invert" />
+        <JobwhisperLogo linked={false} className="mb-12 brightness-0 invert" />
         <div className="w-full space-y-3">
           {FEATURE_HIGHLIGHTS.map((f, i) => (
             <div
@@ -636,7 +636,7 @@ function MatchingScreen({ onComplete }: { onComplete: () => void }) {
 
       {/* Right: loading state */}
       <div className="flex flex-1 flex-col items-center justify-center bg-background px-6 text-center">
-        <LightforthLogo linked={false} className="mb-10 lg:hidden" />
+        <JobwhisperLogo linked={false} className="mb-10 lg:hidden" />
 
         {/* Spinner ring */}
         <div className="relative mb-8">
@@ -801,7 +801,7 @@ export default function OnboardingFlow() {
       <div className="flex flex-1 flex-col">
         {/* Mobile-only header */}
         <header className="flex h-14 items-center border-b border-border bg-white px-6 lg:hidden">
-          <LightforthLogo linked={false} />
+          <JobwhisperLogo linked={false} />
         </header>
 
         {/* Form area */}

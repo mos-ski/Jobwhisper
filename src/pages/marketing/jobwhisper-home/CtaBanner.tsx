@@ -8,7 +8,7 @@ export function CtaBanner({ onGetStarted }: { onGetStarted: () => void }) {
           Join the 10,000+ who said goodbye to job rejections in 21 days.
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-slate-600">
-          Take the first step toward your dream job today—sign up for Lightforth and let us handle the hard work
+          Take the first step toward your dream job today—sign up for Jobwhisper and let us handle the hard work
           while you focus on landing your next big opportunity!
         </p>
         <button

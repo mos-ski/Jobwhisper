@@ -180,7 +180,7 @@ export default function PricingPage() {
         <div className="mx-auto max-w-6xl px-6 text-center">
           <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#0494fc]">Pricing</p>
           <h1 className="mx-auto mt-4 max-w-3xl text-4xl font-black leading-tight text-slate-950 md:text-6xl">
-            Compare Lightforth plans
+            Compare Jobwhisper plans
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-slate-600 md:text-lg">
             Choose the level of resume, application, interview, and live Copilot support you need.
@@ -376,7 +376,7 @@ export default function PricingPage() {
         <div className="mx-auto max-w-6xl px-6">
           <div className="rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-center">
             <p className="text-sm font-semibold leading-6 text-slate-700">
-              Credits are simple: <span className="text-slate-950">1 credit = 1 completed action.</span> Start for free with 5 credits to try Lightforth.
+              Credits are simple: <span className="text-slate-950">1 credit = 1 completed action.</span> Start for free with 5 credits to try Jobwhisper.
             </p>
           </div>
         </div>

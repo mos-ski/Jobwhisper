@@ -204,7 +204,7 @@ export default function AdminUsers() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-lg font-bold text-foreground">Invite User</h2>
-                <p className="text-sm text-muted-foreground mt-0.5">Send an invitation to join Lightforth</p>
+                <p className="text-sm text-muted-foreground mt-0.5">Send an invitation to join Jobwhisper</p>
               </div>
               <button onClick={() => setShowInviteModal(false)} className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted transition-colors">
                 <X className="h-5 w-5" />
@@ -262,7 +262,7 @@ export default function AdminUsers() {
                 <textarea
                   value={inviteForm.message}
                   onChange={e => setInviteForm(prev => ({ ...prev, message: e.target.value }))}
-                  placeholder="Welcome to Lightforth! We're excited to have you on board."
+                  placeholder="Welcome to Jobwhisper! We're excited to have you on board."
                   className="lf-input w-full min-h-[80px] resize-none"
                 />
               </div>

@@ -863,7 +863,7 @@ function PaywallView() {
         Your job search, on autopilot
       </h1>
       <p className="text-sm text-muted-foreground mb-8 text-center max-w-md">
-        Auto-Apply is available on Pro and Premium. Pick the plan that fits and let Lightforth do the heavy lifting.
+        Auto-Apply is available on Pro and Premium. Pick the plan that fits and let Jobwhisper do the heavy lifting.
       </p>
 
       {/* Feature cards */}
@@ -1034,7 +1034,7 @@ function IssuesPanel({
           <h2 className="flex items-center gap-2 text-base font-bold text-foreground">
             <AlertTriangle className="h-4 w-4 text-amber-500" /> Auto-apply issues
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">These applications need your attention before Lightforth can finish them.</p>
+          <p className="mt-1 text-sm text-muted-foreground">These applications need your attention before Jobwhisper can finish them.</p>
         </div>
         <button onClick={onClose} className="rounded-md p-1 text-muted-foreground hover:bg-white hover:text-foreground" aria-label="Close issues">
           <X className="h-4 w-4" />
@@ -1457,7 +1457,7 @@ function JobDetailPanel({
           <div className="mb-4 rounded-lg border border-border p-3">
             <p className="text-xs font-semibold text-foreground mb-0.5">24/50 Credit Left</p>
             <p className="text-xs text-muted-foreground mb-1.5">
-              Lightforth will only deduct credit for successful applications
+              Jobwhisper will only deduct credit for successful applications
             </p>
             <button className="text-xs text-primary font-medium hover:underline">Upgrade</button>
           </div>
@@ -1800,7 +1800,7 @@ export default function AutoApply() {
   // Form state — kept at top level to preserve across steps
   const [resumeFile] = useState('Darnell_Smith_Product_Manager_2026.pdf')
   const [contact, setContact] = useState<ContactState>({
-    email: 'demo@lightforth.ai',
+    email: 'demo@jobwhisper.ai',
     phone: '',
     firstName: 'Darnell',
     lastName: 'Smith',
@@ -1896,7 +1896,7 @@ export default function AutoApply() {
         <div className="lf-page-header">
           <h1 className="lf-page-title">Auto-Apply</h1>
           <p className="mt-2 text-base text-muted-foreground">
-            Set your preferences and let Lightforth apply for you
+            Set your preferences and let Jobwhisper apply for you
           </p>
         </div>
         <StatsRow issueCount={activeIssueCount} onSeeIssues={() => setIssuesOpen((open) => !open)} />

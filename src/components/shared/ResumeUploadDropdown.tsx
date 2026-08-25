@@ -63,13 +63,13 @@ export default function ResumeUploadDropdown({ onUpload }: Props) {
             </button>
             <button
               onClick={() => {
-                onUpload({ name: 'Lightforth_Resume.pdf', size: '1.2MB' })
+                onUpload({ name: 'Jobwhisper_Resume.pdf', size: '1.2MB' })
                 setOpen(false)
               }}
               className="flex w-full items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-muted transition-colors"
             >
               <Zap className="h-4 w-4 fill-primary text-primary" />
-              Use Lightforth Resume
+              Use Jobwhisper Resume
             </button>
           </div>
         </>

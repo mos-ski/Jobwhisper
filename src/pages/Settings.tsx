@@ -98,7 +98,7 @@ function SecurityTab() {
       <section className="lf-panel flex flex-col items-start justify-between gap-4 p-4 sm:flex-row sm:items-center sm:p-8">
         <div>
           <h2 className="font-bold text-foreground">Delete Account</h2>
-          <p className="text-sm text-muted-foreground">Permanently delete your Lightforth account.</p>
+          <p className="text-sm text-muted-foreground">Permanently delete your Jobwhisper account.</p>
         </div>
         <Button variant="outline" className="border-red-300 text-red-500 hover:bg-red-50">Delete Account</Button>
       </section>
@@ -147,7 +147,7 @@ function ReferralTab() {
           {['Know someone job hunting?', 'Got friends frustrated with job boards?', 'Have a WhatsApp group filled with job seekers?'].map((title) => (
             <div key={title} className="lf-panel p-5">
               <h4 className="text-lg font-bold text-foreground">{title}</h4>
-              <p className="mt-4 text-sm leading-6 text-muted-foreground">Share Lightforth and help others discover a better way to get hired while you accumulate credits.</p>
+              <p className="mt-4 text-sm leading-6 text-muted-foreground">Share Jobwhisper and help others discover a better way to get hired while you accumulate credits.</p>
               <button className="mt-6 text-sm font-bold text-primary">Share your referral link</button>
             </div>
           ))}

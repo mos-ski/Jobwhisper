@@ -28,14 +28,14 @@ export default function ResumeMarketingPage() {
 
       <section className="py-8">
         <div className="mx-auto max-w-4xl px-6">
-          <img src="/lightforth-home/images/aiSuggestion.gif" alt="AI Resume" className="w-full rounded-xl shadow-lg" />
+          <img src="/jobwhisper-home/images/aiSuggestion.gif" alt="AI Resume" className="w-full rounded-xl shadow-lg" />
         </div>
       </section>
 
       {[
-        { title: 'AI Suggester', subtitle: "Give your resume the 'WOW' effect with AI Suggestions", desc: 'Turn any resume into something powerful with real-time suggestions, keyword optimization, and expert-backed insights to help you land more jobs.', image: '/lightforth-home/images/aiSuggestion.gif' },
-        { title: 'ATS Tips', subtitle: 'Beat ATS bots with strong ATS Tips', desc: 'Our powerful ATS Tips transform your resume into a job-winning document that beats the system, grabs recruiters\' attention, and gets you in the door faster.', image: '/lightforth-home/images/atsTips.gif' },
-        { title: 'ATS Scorer', subtitle: 'See your resume through the eyes of ATS', desc: 'Analyse your resume the way a recruiter would and see how well it performs so you never make mistakes and beat the silence.', image: '/lightforth-home/images/resume3.png' },
+        { title: 'AI Suggester', subtitle: "Give your resume the 'WOW' effect with AI Suggestions", desc: 'Turn any resume into something powerful with real-time suggestions, keyword optimization, and expert-backed insights to help you land more jobs.', image: '/jobwhisper-home/images/aiSuggestion.gif' },
+        { title: 'ATS Tips', subtitle: 'Beat ATS bots with strong ATS Tips', desc: 'Our powerful ATS Tips transform your resume into a job-winning document that beats the system, grabs recruiters\' attention, and gets you in the door faster.', image: '/jobwhisper-home/images/atsTips.gif' },
+        { title: 'ATS Scorer', subtitle: 'See your resume through the eyes of ATS', desc: 'Analyse your resume the way a recruiter would and see how well it performs so you never make mistakes and beat the silence.', image: '/jobwhisper-home/images/resume3.png' },
       ].map((item, i) => (
         <section key={item.title} className={`py-16 ${i % 2 === 1 ? 'bg-slate-50' : ''}`}>
           <div className={`mx-auto max-w-6xl px-6 flex flex-col items-center gap-8 md:flex-row ${i % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
@@ -61,9 +61,9 @@ export default function ResumeMarketingPage() {
           </h2>
           <div className="mt-10 grid gap-8 md:grid-cols-3">
             {[
-              { icon: '/lightforth-home/images/resumex1.svg', title: 'Resume That Gets Results', desc: 'LightResume ensures your resume is crafted to catch recruiters\' eyes and meet job requirements with precision.', tag: 'Get best result', tagIcon: '/lightforth-home/images/tagicon1.svg' },
-              { icon: '/lightforth-home/images/resumex2.svg', title: 'Get an Instant ATS Score', desc: 'See how well your resume matches job requirements and get personalized suggestions for improvement.', tag: 'AI-driven evaluation', tagIcon: '/lightforth-home/images/tagicon2.svg' },
-              { icon: '/lightforth-home/images/resumex3.svg', title: 'Tailored to Every Job', desc: 'We customize each resume to match the job description, increasing your chances of success.', tag: 'High success rate', tagIcon: '/lightforth-home/images/tagicon3.svg' },
+              { icon: '/jobwhisper-home/images/resumex1.svg', title: 'Resume That Gets Results', desc: 'LightResume ensures your resume is crafted to catch recruiters\' eyes and meet job requirements with precision.', tag: 'Get best result', tagIcon: '/jobwhisper-home/images/tagicon1.svg' },
+              { icon: '/jobwhisper-home/images/resumex2.svg', title: 'Get an Instant ATS Score', desc: 'See how well your resume matches job requirements and get personalized suggestions for improvement.', tag: 'AI-driven evaluation', tagIcon: '/jobwhisper-home/images/tagicon2.svg' },
+              { icon: '/jobwhisper-home/images/resumex3.svg', title: 'Tailored to Every Job', desc: 'We customize each resume to match the job description, increasing your chances of success.', tag: 'High success rate', tagIcon: '/jobwhisper-home/images/tagicon3.svg' },
             ].map((f) => (
               <div key={f.title} className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
                 <img src={f.icon} alt="" className="mb-4 h-12 w-12" />

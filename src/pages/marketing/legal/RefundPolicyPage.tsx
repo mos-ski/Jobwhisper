@@ -25,7 +25,7 @@ export default function RefundPolicyPage() {
           <div className="prose prose-slate mt-8 max-w-none text-sm leading-7 text-slate-700">
             <p className="font-semibold">Updated at March 14th, 2025</p>
             <p>
-              At Lightforth, we deliver digital services including AI-assisted resume curation, automated job
+              At Jobwhisper, we deliver digital services including AI-assisted resume curation, automated job
               applications, and interview preparation tools through a subscription-based model. Our services begin
               the moment users activate their accounts or features, and because they are <strong>intangible,
               personalized, and consumed in real-time</strong> refunds are generally <strong>not offered</strong>.
@@ -34,7 +34,7 @@ export default function RefundPolicyPage() {
             </p>
 
             <h2 className="text-xl font-bold text-slate-900 mt-8">1. Refund Eligibility</h2>
-            <p>Lightforth does <strong>not issue refunds</strong> under the following circumstances:</p>
+            <p>Jobwhisper does <strong>not issue refunds</strong> under the following circumstances:</p>
             <ul className="list-disc pl-5 space-y-2">
               <li><strong>AI-powered Job Applications:</strong> Once our system begins applying to jobs on your behalf.</li>
               <li><strong>Interview Copilot Usage:</strong> If you've accessed or used the Interview Copilot.</li>
@@ -82,13 +82,13 @@ export default function RefundPolicyPage() {
             <h2 className="text-xl font-bold text-slate-900 mt-8">5. Support & Resolution</h2>
             <p>
               We're here to help. If you encounter any issues or have questions, please contact us at:
-              support@lightforth.org
+              support@jobwhisper.org
             </p>
             <p>We aim to respond within 24–48 business hours and are committed to resolving all concerns promptly.</p>
 
             <h2 className="text-xl font-bold text-slate-900 mt-8">6. Acceptance of Policy</h2>
             <p>
-              By subscribing to and using Lightforth's services, you acknowledge and agree to this Refund and
+              By subscribing to and using Jobwhisper's services, you acknowledge and agree to this Refund and
               Cancellation Policy.
             </p>
           </div>

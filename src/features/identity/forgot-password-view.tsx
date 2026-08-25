@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Mail } from 'lucide-react'
 
-import { FormField } from '@/ui'
+import { FormField, JobwhisperMark } from '@/ui'
 
 export type ForgotPasswordViewProps = {
   readonly emailValue: string
@@ -22,8 +22,8 @@ export function ForgotPasswordView({ emailValue, signInHref }: ForgotPasswordVie
       <section className="relative min-h-screen overflow-hidden">
         <div className="absolute inset-x-0 top-0 h-80 bg-brand-bar" />
         <div className="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-9">
-          <a href="/v3" aria-label="Lightforth UI Studio home" className="inline-flex w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-            <img src="/v3-assets/lightforth-logo.svg" alt="Lightforth" className="h-10 w-auto" />
+          <a href="/v3" aria-label="Jobwhisper UI Studio home" className="inline-flex w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+            <JobwhisperMark className="h-10 w-auto text-brand-bar-text" />
           </a>
 
           <div className="mx-auto mt-12 flex w-full max-w-md flex-1 flex-col items-center">

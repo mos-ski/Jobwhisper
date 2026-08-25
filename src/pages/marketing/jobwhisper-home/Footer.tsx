@@ -8,7 +8,7 @@ const footerLinks = {
   ],
   partner: [
     { label: 'Refer with Friends', href: '#' },
-    { label: 'Become a Partner', href: 'https://partners.lightforth.org' },
+    { label: 'Become a Partner', href: 'https://partners.jobwhisper.org' },
   ],
   solutions: [
     { label: 'AI Resume Builder', href: '/resume' },
@@ -19,14 +19,14 @@ const footerLinks = {
     { label: 'AI Interview Prep', href: '/interview-prep' },
   ],
   social: [
-    { label: 'Twitter', href: 'https://twitter.com/joinLightforth' },
-    { label: 'Instagram', href: 'https://www.instagram.com/iamlightforth/' },
-    { label: 'Tiktok', href: 'https://www.tiktok.com/@lightforth' },
-    { label: 'Facebook', href: 'https://m.facebook.com/Lightforth.org' },
-    { label: 'Youtube', href: 'https://youtube.com/@iamlightforth' },
+    { label: 'Twitter', href: 'https://twitter.com/joinJobwhisper' },
+    { label: 'Instagram', href: 'https://www.instagram.com/iamjobwhisper/' },
+    { label: 'Tiktok', href: 'https://www.tiktok.com/@jobwhisper' },
+    { label: 'Facebook', href: 'https://m.facebook.com/Jobwhisper.org' },
+    { label: 'Youtube', href: 'https://youtube.com/@iamjobwhisper' },
   ],
   resources: [
-    { label: 'Blog', href: 'https://blog.lightforth.org/' },
+    { label: 'Blog', href: 'https://blog.jobwhisper.org/' },
     { label: 'Guides', href: 'https://youtube.com/playlist?list=PL53nAg9VnMz38WxJIAB3XVW6rKm9ioYJ2&feature=shared' },
     { label: 'FAQ', href: '#faq' },
     { label: 'Privacy & Terms', href: '/privacy-policy' },
@@ -36,7 +36,7 @@ const footerLinks = {
     { label: 'Vision Board', href: '/vision-board' },
   ],
   support: [
-    { label: 'Help Center', href: 'https://help.lightforth.org' },
+    { label: 'Help Center', href: 'https://help.jobwhisper.org' },
     { label: 'Contact Sales', href: '/contact-us' },
     { label: 'Support Center', href: '/contact-us' },
     { label: 'Refund Policy', href: '/refund-policy' },
@@ -50,17 +50,17 @@ export function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-4">
             <Link to="/" className="inline-block">
-              <img src="/lightforth-home/images/lightforth-logo-2.svg" alt="Lightforth" className="h-8 w-auto brightness-0 invert" />
+              <img src="/jobwhisper-home/images/jobwhisper-logo-2.svg" alt="Jobwhisper" className="h-8 w-auto brightness-0 invert" />
             </Link>
             <p className="text-sm text-gray-400">
               14160 N Dallas Parkway, Suite 760
               <br />
               Dallas TX 75254
             </p>
-            <a href="mailto:support@lightforth.org" className="block text-sm text-gray-400 hover:text-white">
-              support@lightforth.org
+            <a href="mailto:support@jobwhisper.org" className="block text-sm text-gray-400 hover:text-white">
+              support@jobwhisper.org
             </a>
-            <p className="text-xs text-gray-500">© 2025 Lightforth, Inc.</p>
+            <p className="text-xs text-gray-500">© 2025 Jobwhisper, Inc.</p>
           </div>
 
           <div>

@@ -4,7 +4,7 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
   return (
     <div className="flex h-full flex-col px-6 pb-8 pt-16">
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-neutral-900">Welcome to Lightforth</h1>
+        <h1 className="text-2xl font-bold text-neutral-900">Welcome to Jobwhisper</h1>
         <p className="mt-2 text-sm text-neutral-500">Find your next opportunity</p>
       </div>
 

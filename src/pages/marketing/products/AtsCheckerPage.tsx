@@ -48,7 +48,7 @@ export default function AtsCheckerPage() {
             </div>
           </div>
           <div className="mt-10">
-            <img src="/lightforth-home/images/atsTips.gif" alt="ATS-friendly resume builder" className="w-full rounded-xl shadow-lg" />
+            <img src="/jobwhisper-home/images/atsTips.gif" alt="ATS-friendly resume builder" className="w-full rounded-xl shadow-lg" />
           </div>
         </div>
       </section>
@@ -77,7 +77,7 @@ export default function AtsCheckerPage() {
             ))}
           </div>
           <div className="mt-10">
-            <img src="/lightforth-home/images/aiTailor.png" alt="AI Tailor" className="w-full rounded-xl shadow-lg" />
+            <img src="/jobwhisper-home/images/aiTailor.png" alt="AI Tailor" className="w-full rounded-xl shadow-lg" />
           </div>
         </div>
       </section>

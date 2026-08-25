@@ -8,7 +8,7 @@ const SLIDES = [
     icon: Briefcase,
     title: 'Auto Apply',
     headline: 'Get more interviews',
-    body: 'Submit your resume once and let Lightforth automatically apply to matching positions. No more repetitive forms — just real results.',
+    body: 'Submit your resume once and let Jobwhisper automatically apply to matching positions. No more repetitive forms — just real results.',
   },
   {
     key: 'copilot',

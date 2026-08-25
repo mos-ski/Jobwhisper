@@ -1,6 +1,6 @@
 import type { FormEvent } from 'react'
 
-import { Checkbox, FormDividerLabel, FormField, GoogleAuthButton } from '@/ui'
+import { Checkbox, FormDividerLabel, FormField, GoogleAuthButton, JobwhisperMark } from '@/ui'
 
 export type SignUpViewProps = {
   readonly emailValue: string
@@ -50,12 +50,12 @@ export function SignUpView({
       <section className="relative min-h-screen overflow-hidden">
         <div className="absolute inset-x-0 top-0 h-80 bg-brand-bar" />
         <div className="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-9">
-          <a href="/v3" aria-label="Lightforth UI Studio home" className="inline-flex w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-            <img src="/v3-assets/lightforth-logo.svg" alt="Lightforth" className="h-10 w-auto" />
+          <a href="/v3" aria-label="Jobwhisper UI Studio home" className="inline-flex w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+            <JobwhisperMark className="h-10 w-auto text-brand-bar-text" />
           </a>
 
           <div className="mx-auto mt-12 flex w-full max-w-md flex-1 flex-col items-center">
-            <h1 className="text-center text-2xl font-semibold leading-tight text-brand-bar-text">Create your Lightforth account</h1>
+            <h1 className="text-center text-2xl font-semibold leading-tight text-brand-bar-text">Create your Jobwhisper account</h1>
 
             <form onSubmit={handleSubmit} className="mt-10 grid w-full gap-6 border border-border bg-surface p-8 shadow-panel">
               <GoogleAuthButton onClick={onGoogleSignUp}>Sign up with Google</GoogleAuthButton>
@@ -83,7 +83,7 @@ export function SignUpView({
               <label className="flex items-start gap-2.5">
                 <Checkbox checked={acceptedTerms} onCheckedChange={onAcceptedTermsChange} className="mt-0.5" />
                 <span className="text-sm leading-5 text-ink-muted">
-                  I agree to Lightforth's{' '}
+                  I agree to Jobwhisper's{' '}
                   <a href={termsHref} target="_blank" rel="noreferrer" className="font-semibold text-accent underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                     Terms of Service
                   </a>{' '}

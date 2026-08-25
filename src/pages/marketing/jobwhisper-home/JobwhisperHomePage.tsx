@@ -1,4 +1,4 @@
-import './lightforth-home.css'
+import './jobwhisper-home.css'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FaApple, FaWindows } from 'react-icons/fa'
@@ -115,9 +115,9 @@ const downloadOptions = [
     extension: 'dmg',
     cta: 'Desktop app for macOS',
     meta: 'Silicon (M-series)',
-    image: '/lightforth-home/download-modal/mac-silicon.png',
+    image: '/jobwhisper-home/download-modal/mac-silicon.png',
     icon: FaApple,
-    href: 'https://lightforth-copilot-downloads.nyc3.digitaloceanspaces.com/Lightforth_Copilot_1.0.1_arm64.dmg',
+    href: 'https://jobwhisper-copilot-downloads.nyc3.digitaloceanspaces.com/Jobwhisper_Copilot_1.0.1_arm64.dmg',
   },
   {
     title: 'Copilot Desktop App',
@@ -125,9 +125,9 @@ const downloadOptions = [
     extension: 'dmg',
     cta: 'Desktop app for macOS',
     meta: 'Intel • macOS 13+',
-    image: '/lightforth-home/download-modal/mac-intel.png',
+    image: '/jobwhisper-home/download-modal/mac-intel.png',
     icon: FaApple,
-    href: 'https://lightforth-copilot-downloads.nyc3.digitaloceanspaces.com/Lightforth_Copilot_1.0.1_x64.dmg',
+    href: 'https://jobwhisper-copilot-downloads.nyc3.digitaloceanspaces.com/Jobwhisper_Copilot_1.0.1_x64.dmg',
   },
   {
     title: 'Copilot Extension (Windows)',
@@ -135,17 +135,17 @@ const downloadOptions = [
     extension: 'exe',
     cta: 'Desktop app for Windows',
     meta: '',
-    image: '/lightforth-home/download-modal/windows.png',
+    image: '/jobwhisper-home/download-modal/windows.png',
     icon: FaWindows,
-    href: 'https://lightforth-copilot-downloads.nyc3.digitaloceanspaces.com/Lightforth-Copilot-Windows-Installer.exe',
+    href: 'https://jobwhisper-copilot-downloads.nyc3.digitaloceanspaces.com/Jobwhisper-Copilot-Windows-Installer.exe',
   },
 ]
 
 const copilotPills = [
   { label: 'Practice Mode', iconSrc: '/comparison/icon-practice.svg' },
   { label: 'Resume-Aware Answers', iconSrc: '/comparison/icon-resume.svg' },
-  { label: 'Live Transcription', iconSrc: '/lightforth-home/images/tagicon1.svg' },
-  { label: 'Speech Clarity', iconSrc: '/lightforth-home/images/tagicon2.svg' },
+  { label: 'Live Transcription', iconSrc: '/jobwhisper-home/images/tagicon1.svg' },
+  { label: 'Speech Clarity', iconSrc: '/jobwhisper-home/images/tagicon2.svg' },
   { label: 'Undetectable Overlay', iconSrc: '/comparison/icon-undetectable.svg' },
 ]
 
@@ -203,7 +203,7 @@ const meetingCopilotFeatures = [
 const prepSteps = [
   {
     title: 'Connect your resume',
-    text: 'Upload your CV once so Lightforth can ground every answer in your own experience.',
+    text: 'Upload your CV once so Jobwhisper can ground every answer in your own experience.',
     icon: FileText,
   },
   {
@@ -256,7 +256,7 @@ function playMutedVideo(video: HTMLVideoElement | null) {
   })
 }
 
-function useLightforthMotion() {
+function useJobwhisperMotion() {
   useEffect(() => {
     const root = document.querySelector('.lf-home')
     if (!root) return
@@ -371,8 +371,8 @@ function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/90 backdrop-blur-xl">
       <div className="mx-auto flex h-16 w-full max-w-[1280px] items-center justify-between px-5 lg:px-0">
-        <Link to="/" aria-label="Lightforth home">
-          <img src="/lightforth-home/images/lightforth-logo-2.svg" alt="Lightforth" className="h-8 w-auto" />
+        <Link to="/" aria-label="Jobwhisper home">
+          <img src="/jobwhisper-home/images/jobwhisper-logo-2.svg" alt="Jobwhisper" className="h-8 w-auto" />
         </Link>
 
         <nav className="hidden items-center gap-8 text-sm font-medium text-slate-700 md:flex">
@@ -526,10 +526,10 @@ function ProductMockup({ compact = false }: { compact?: boolean }) {
               </p>
             </div>
 
-            {/* Lightforth AI bubble */}
+            {/* Jobwhisper AI bubble */}
             <div className="rounded-[4.5px] border border-[#244978] bg-[#0c1b2b] p-[9px]">
               <p style={{ fontFamily: "'Martian Mono', monospace" }} className="text-[6.75px] font-bold leading-[10.125px] text-white">
-                Lightforth AI
+                Jobwhisper AI
               </p>
               <div style={{ fontFamily: "'Kumbh Sans', sans-serif" }} className="mt-[5px] text-[12px] leading-[18px] text-white">
                 <p className="font-normal">
@@ -578,7 +578,7 @@ function InterviewScenarioMockup({ scenario }: { scenario: InterviewScenario }) 
         </div>
 
         <div className="lf-scenario-card lf-scenario-answer">
-          <span>Lightforth AI</span>
+          <span>Jobwhisper AI</span>
           <p>{scenario.response}</p>
           <ul>
             {scenario.bullets.map((bullet) => (
@@ -600,7 +600,7 @@ function Hero({ onDownload }: { onDownload: () => void }) {
             What&apos;s your next interview really <span className="text-[#2388ff]">worth</span>?
           </h1>
           <p className="mt-8 max-w-[483px] text-[17px] leading-[1.48] text-[#4b5565]">
-            The wrong answer doesn&apos;t just lose the job — it costs the timeline, the leverage, and the next six months. Lightforth{' '}
+            The wrong answer doesn&apos;t just lose the job — it costs the timeline, the leverage, and the next six months. Jobwhisper{' '}
             <em className="font-medium text-[#2388ff] underline decoration-[#2388ff]/50 underline-offset-2">listens</em> and answers in real time, completely{' '}
             <strong className="font-bold text-[#344054]">undetectable</strong>, on any call.
           </p>
@@ -614,7 +614,7 @@ function Hero({ onDownload }: { onDownload: () => void }) {
 
         <img
           src="/hero-interview-response.png"
-          alt="Lightforth live interview response shown over a mountain backdrop"
+          alt="Jobwhisper live interview response shown over a mountain backdrop"
           className="mt-14 block w-full max-w-[1280px]"
         />
       </div>
@@ -921,7 +921,7 @@ function InterviewCopilotFeature() {
             preload="auto"
             onLoadedMetadata={(event) => playMutedVideo(event.currentTarget)}
             onCanPlay={(event) => playMutedVideo(event.currentTarget)}
-            aria-label="Lightforth desktop copilot in use"
+            aria-label="Jobwhisper desktop copilot in use"
           />
         </div>
       </div>
@@ -1032,7 +1032,7 @@ function StorySections() {
             <ul className="mt-6 space-y-4 text-sm leading-6 text-slate-600">
               <li><CheckCircle2 className="mr-2 inline h-4 w-4 text-[#0494fc]" />Live question detection turns the interview into structured prompts.</li>
               <li><CheckCircle2 className="mr-2 inline h-4 w-4 text-[#0494fc]" />Resume-aware answers keep every response specific to your experience.</li>
-              <li><CheckCircle2 className="mr-2 inline h-4 w-4 text-[#0494fc]" />Talk naturally while Lightforth keeps the answer close to your eyeline.</li>
+              <li><CheckCircle2 className="mr-2 inline h-4 w-4 text-[#0494fc]" />Talk naturally while Jobwhisper keeps the answer close to your eyeline.</li>
             </ul>
           </div>
           <div className="bg-gradient-to-b from-[#f7fbff] to-[#dceeff] p-8">
@@ -1075,14 +1075,14 @@ function PrepSection({ onDownload }: { onDownload: () => void }) {
       image: '/image%2045%20%5BVectorized%5D.svg',
       imageClass: 'lf-how-step-image-permissions',
       title: 'Grant permissions.',
-      text: "Allow Lightforth to see your screen and hear the call — that's what lets it listen and answer in real time.",
+      text: "Allow Jobwhisper to see your screen and hear the call — that's what lets it listen and answer in real time.",
     },
     {
       number: '03',
       image: '/appicon_light-JdYyUE_2%201.svg',
       imageClass: 'lf-how-step-image-start',
       title: 'Start the interview.',
-      text: 'Join the call as normal. Lightforth listens, answers, and stays invisible the whole time.',
+      text: 'Join the call as normal. Jobwhisper listens, answers, and stays invisible the whole time.',
     },
   ]
 
@@ -1091,7 +1091,7 @@ function PrepSection({ onDownload }: { onDownload: () => void }) {
       <div className="lf-how-header mx-auto">
         <p className="lf-how-eyebrow">HOW IT WORKS</p>
         <h2 className="lf-how-heading">Get interview-ready in minutes</h2>
-        <p className="lf-how-copy">Download the app, allow the right permissions, and bring Lightforth into your next interview in minutes.</p>
+        <p className="lf-how-copy">Download the app, allow the right permissions, and bring Jobwhisper into your next interview in minutes.</p>
       </div>
 
       <div className="lf-how-grid mx-auto">
@@ -1131,16 +1131,16 @@ function CellIcon({ value }: { value: CellValue }) {
 
 function Comparison() {
   return (
-    <section id="comparison" className="bg-white px-5 py-24 lg:px-0" aria-label="Lightforth competitor comparison">
+    <section id="comparison" className="bg-white px-5 py-24 lg:px-0" aria-label="Jobwhisper competitor comparison">
       <div className="mx-auto max-w-[1280px]">
         <div className="lf-comparison-scroll lf-comparison-desktop overflow-x-auto">
           <div className="lf-comparison-table mx-auto">
             <div className="flex">
               <div className="lf-comparison-feature-col" />
-              <div className="lf-comparison-brand-cell lf-comparison-lightforth-header">
-                <div className="lf-comparison-lightforth-brand">
-                  <img src="/comparison/lightforth-mark.svg" alt="" className="lf-comparison-lightforth-mark" />
-                  <span className="lf-comparison-lightforth-name">Lightforth</span>
+              <div className="lf-comparison-brand-cell lf-comparison-jobwhisper-header">
+                <div className="lf-comparison-jobwhisper-brand">
+                  <img src="/comparison/jobwhisper-mark.svg" alt="" className="lf-comparison-jobwhisper-mark" />
+                  <span className="lf-comparison-jobwhisper-name">Jobwhisper</span>
                 </div>
               </div>
               {competitors.map((c) => (
@@ -1179,7 +1179,7 @@ function Comparison() {
           </div>
         </div>
 
-        <div className="lf-comparison-mobile" aria-label="Lightforth comparison">
+        <div className="lf-comparison-mobile" aria-label="Jobwhisper comparison">
           <div className="lf-comparison-mobile-features">
             <div className="lf-comparison-mobile-head">Features</div>
             {comparisonRows.map((row) => (
@@ -1195,14 +1195,14 @@ function Comparison() {
           </div>
           <div className="lf-comparison-mobile-scroll">
             <div className="lf-comparison-mobile-values">
-              {['Lightforth', ...competitors.map((competitor) => competitor.name)].map((name, index) => (
-                <div key={name} className={`lf-comparison-mobile-brand-head ${index === 0 ? 'is-lightforth' : ''}`}>
+              {['Jobwhisper', ...competitors.map((competitor) => competitor.name)].map((name, index) => (
+                <div key={name} className={`lf-comparison-mobile-brand-head ${index === 0 ? 'is-jobwhisper' : ''}`}>
                   <span>{name}</span>
                 </div>
               ))}
               {comparisonRows.map((row) =>
                 row.values.map((value, index) => (
-                  <div key={`${row.label}-${index}`} className={`lf-comparison-mobile-status ${index === 0 ? 'is-lightforth' : ''}`}>
+                  <div key={`${row.label}-${index}`} className={`lf-comparison-mobile-status ${index === 0 ? 'is-jobwhisper' : ''}`}>
                     <CellIcon value={value} />
                   </div>
                 )),
@@ -1217,40 +1217,40 @@ function Comparison() {
 
 const faqItems = [
   {
-    q: 'How does Lightforth support the full interview process?',
-    a: "Lightforth covers every stage — building a tailored resume, auto-applying to matching jobs, and giving you live answer support during any call. It's the only tool built for the entire journey from application to offer, not just one step of it.",
+    q: 'How does Jobwhisper support the full interview process?',
+    a: "Jobwhisper covers every stage — building a tailored resume, auto-applying to matching jobs, and giving you live answer support during any call. It's the only tool built for the entire journey from application to offer, not just one step of it.",
   },
   {
-    q: 'What is Stealth Mode in Lightforth?',
-    a: 'Stealth Mode keeps Lightforth invisible during screen shares and recordings. Interviewers on Zoom, Teams, or any other platform can\'t see the overlay — only you can.',
+    q: 'What is Stealth Mode in Jobwhisper?',
+    a: 'Stealth Mode keeps Jobwhisper invisible during screen shares and recordings. Interviewers on Zoom, Teams, or any other platform can\'t see the overlay — only you can.',
   },
   {
-    q: 'Is Lightforth detectable during interviews?',
-    a: 'No. Lightforth runs as a transparent overlay that doesn\'t appear on screen recordings or screen shares. It\'s been tested across all major video platforms including Zoom, Teams, Google Meet, and HireVue.',
+    q: 'Is Jobwhisper detectable during interviews?',
+    a: 'No. Jobwhisper runs as a transparent overlay that doesn\'t appear on screen recordings or screen shares. It\'s been tested across all major video platforms including Zoom, Teams, Google Meet, and HireVue.',
   },
   {
     q: 'Do you have a free plan?',
-    a: 'No. Lightforth does not have a free plan. Non-subscribers receive 5 credits per month to test or use limited product actions, and first-time users may be eligible to activate Pro for $10 for the first month before it renews at $49/month.',
+    a: 'No. Jobwhisper does not have a free plan. Non-subscribers receive 5 credits per month to test or use limited product actions, and first-time users may be eligible to activate Pro for $10 for the first month before it renews at $49/month.',
   },
   {
-    q: 'Is Lightforth a downloadable application?',
-    a: 'Yes — Lightforth is a desktop app for Mac and Windows. The download takes under a minute and you\'re set up in two steps.',
+    q: 'Is Jobwhisper a downloadable application?',
+    a: 'Yes — Jobwhisper is a desktop app for Mac and Windows. The download takes under a minute and you\'re set up in two steps.',
   },
   {
-    q: 'Can Lightforth help with coding interviews?',
-    a: 'Yes. Lightforth detects the coding question on screen, generates a complete solution with a plain-English explanation and time/space complexity breakdown, and keeps it visible while your assessment window stays active.',
+    q: 'Can Jobwhisper help with coding interviews?',
+    a: 'Yes. Jobwhisper detects the coding question on screen, generates a complete solution with a plain-English explanation and time/space complexity breakdown, and keeps it visible while your assessment window stays active.',
   },
   {
-    q: 'What types of interviews does Lightforth assist with?',
-    a: 'Behavioral, technical, situational, case study, coding, and salary negotiation. If there\'s a question being asked, Lightforth has an answer ready.',
+    q: 'What types of interviews does Jobwhisper assist with?',
+    a: 'Behavioral, technical, situational, case study, coding, and salary negotiation. If there\'s a question being asked, Jobwhisper has an answer ready.',
   },
   {
-    q: 'Is Lightforth legit?',
-    a: 'Yes. Thousands of candidates have used Lightforth to land roles at top companies. It\'s designed to help you perform at your best — the same way prep books and coaches do.',
+    q: 'Is Jobwhisper legit?',
+    a: 'Yes. Thousands of candidates have used Jobwhisper to land roles at top companies. It\'s designed to help you perform at your best — the same way prep books and coaches do.',
   },
   {
-    q: 'Is Lightforth worth it?',
-    a: 'One well-answered interview can be worth months of salary difference. Lightforth pays for itself the first time it helps you land an offer you might have otherwise missed.',
+    q: 'Is Jobwhisper worth it?',
+    a: 'One well-answered interview can be worth months of salary difference. Jobwhisper pays for itself the first time it helps you land an offer you might have otherwise missed.',
   },
 ]
 
@@ -1268,8 +1268,8 @@ function FaqSection() {
         </h2>
         <p className="mt-1 text-[16px] text-[#4a5565]" style={{ letterSpacing: '-0.3125px' }}>
           Still curious? Reach out anytime at{' '}
-          <a href="mailto:support@lightforth.org" className="text-[#1f8bff] hover:underline">
-            support@lightforth.org
+          <a href="mailto:support@jobwhisper.org" className="text-[#1f8bff] hover:underline">
+            support@jobwhisper.org
           </a>
         </p>
         <div className="mt-10 flex flex-col gap-[2px] text-left">
@@ -1390,8 +1390,8 @@ function Footer() {
     <footer className="lf-footer bg-white">
       <div className="lf-footer-inner mx-auto">
         <div className="lf-footer-brand">
-          <a href="/" aria-label="Lightforth home" className="lf-footer-logo-link">
-            <img src="/lightforth-home/images/lightforth-logo-2.svg" alt="Lightforth" className="lf-footer-logo" />
+          <a href="/" aria-label="Jobwhisper home" className="lf-footer-logo-link">
+            <img src="/jobwhisper-home/images/jobwhisper-logo-2.svg" alt="Jobwhisper" className="lf-footer-logo" />
           </a>
 
           <div className="lf-footer-contact">
@@ -1403,13 +1403,13 @@ function Footer() {
                 Dallas TX 75254
               </p>
             </div>
-            <a href="mailto:support@lightforth.org" className="lf-footer-contact-row">
+            <a href="mailto:support@jobwhisper.org" className="lf-footer-contact-row">
               <Mail className="lf-footer-contact-icon" aria-hidden="true" />
-              <span>support@lightforth.org</span>
+              <span>support@jobwhisper.org</span>
             </a>
           </div>
 
-          <p className="lf-footer-copyright">© 2025 Lightforth, Inc.</p>
+          <p className="lf-footer-copyright">© 2025 Jobwhisper, Inc.</p>
         </div>
 
         <div className="lf-footer-column">{renderGroups(productGroups)}</div>
@@ -1445,7 +1445,7 @@ function DownloadModal({ open, onClose }: { open: boolean; onClose: () => void }
     <div className="lf-download-modal-shell" role="presentation" onMouseDown={onClose}>
       <div className="lf-download-modal" role="dialog" aria-modal="true" aria-labelledby="download-modal-title" onMouseDown={(event) => event.stopPropagation()}>
         <div className="lf-download-modal-header">
-          <h2 id="download-modal-title">Download Lightforth Copilot</h2>
+          <h2 id="download-modal-title">Download Jobwhisper Copilot</h2>
           <button type="button" className="lf-download-modal-close" onClick={onClose} aria-label="Close download modal">
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
@@ -1477,7 +1477,7 @@ function DownloadModal({ open, onClose }: { open: boolean; onClose: () => void }
         </div>
 
         <p className="lf-download-modal-legal">
-          By downloading a Lightforth application, you agree that our Terms of Service apply to your use of that application. If you have entered a different agreement with Lightforth that covers our applications, that agreement will apply instead.
+          By downloading a Jobwhisper application, you agree that our Terms of Service apply to your use of that application. If you have entered a different agreement with Jobwhisper that covers our applications, that agreement will apply instead.
         </p>
       </div>
     </div>
@@ -1511,7 +1511,7 @@ function QuickDemoModal({ open, onClose }: { open: boolean; onClose: () => void 
         className="lf-quick-demo-modal"
         role="dialog"
         aria-modal="true"
-        aria-label="Lightforth quick demo"
+        aria-label="Jobwhisper quick demo"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <button type="button" className="lf-quick-demo-modal-close" onClick={onClose} aria-label="Close quick demo">
@@ -1520,7 +1520,7 @@ function QuickDemoModal({ open, onClose }: { open: boolean; onClose: () => void 
         <div className="lf-quick-demo-player" data-testid="quick-demo-player" data-mobile-layout="fullscreen">
           <iframe
             src="https://drive.google.com/file/d/118_lmiPcoUBvDzsglUGqZc2uZDDmIJQs/preview"
-            title="Lightforth quick demo video"
+            title="Jobwhisper quick demo video"
             allow="autoplay; encrypted-media; picture-in-picture"
             allowFullScreen
           />
@@ -1531,15 +1531,15 @@ function QuickDemoModal({ open, onClose }: { open: boolean; onClose: () => void 
   )
 }
 
-export default function LightforthHomePage() {
-  useLightforthMotion()
+export default function JobwhisperHomePage() {
+  useJobwhisperMotion()
   const [downloadModalOpen, setDownloadModalOpen] = useState(false)
   const [quickDemoOpen, setQuickDemoOpen] = useState(false)
 
   return (
     <div className="lf-home min-h-screen bg-white font-sans text-slate-950">
       <Header />
-      <Hero />
+      <Hero onDownload={() => setDownloadModalOpen(true)} />
       <SupportSection />
       <InterviewTypes />
       <StatsStrip />

@@ -12,7 +12,7 @@ describe('v3 web auth flow', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByRole('heading', { name: 'Lightforth UI Studio' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Jobwhisper UI Studio' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/v3/auth/sign-in')
     expect(screen.getByRole('link', { name: 'Choose a plan' })).toHaveAttribute('href', '/v3/auth/choose-plan')
     expect(screen.getByRole('link', { name: 'Dashboard' })).toHaveAttribute('href', '/v3/app')
@@ -26,7 +26,7 @@ describe('v3 web auth flow', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByRole('heading', { name: 'Log in to your Lightforth account' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Log in to your Jobwhisper account' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Sign in with Google' })).toBeInTheDocument()
     expect(screen.getByLabelText('Email')).toHaveDisplayValue('olivia@untitledui.com')
     expect(screen.getByLabelText('Password')).toHaveDisplayValue('password')
@@ -397,11 +397,11 @@ describe('v3 web auth flow', () => {
     const uploadTarget = screen.getByRole('button', { name: /Click to upload/ })
 
     expect(screen.queryByRole('link', { name: 'Upload a Resume' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: 'Use Lightforth Resume' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Use Jobwhisper Resume' })).not.toBeInTheDocument()
 
     await user.click(uploadTarget)
 
     expect(screen.getByRole('link', { name: 'Upload a Resume' })).toHaveAttribute('href', '/v3/resume/configure')
-    expect(screen.getByRole('link', { name: 'Use Lightforth Resume' })).toHaveAttribute('href', '/v3/resume/configure')
+    expect(screen.getByRole('link', { name: 'Use Jobwhisper Resume' })).toHaveAttribute('href', '/v3/resume/configure')
   })
 })

@@ -1,5 +1,5 @@
-export { LightforthAiIcon, LightforthMark } from './brand-mark'
-export type { LightforthAiIconProps } from './brand-mark'
+export { JobwhisperAiIcon, JobwhisperMark } from './brand-mark'
+export type { JobwhisperAiIconProps } from './brand-mark'
 export { Badge } from './badge'
 export type { BadgeProps, BadgeSize, BadgeVariant } from './badge'
 export { Button } from './button'

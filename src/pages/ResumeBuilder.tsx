@@ -33,7 +33,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
-import LightforthLogo from '@/components/shared/LightforthLogo'
+import JobwhisperLogo from '@/components/shared/JobwhisperLogo'
 
 type BuilderScreen =
   | 'upload'
@@ -439,8 +439,8 @@ function CreateResumeSteps({ active }: { active: CreateResumeStepId }) {
 function CreateResumeFooter() {
   return (
     <footer className="hidden fixed bottom-5 left-6 space-y-0.5 text-xs text-muted-foreground md:block">
-      <p>© Lightforth AI 2026</p>
-      <p>support@lightforth.org</p>
+      <p>© Jobwhisper AI 2026</p>
+      <p>support@jobwhisper.org</p>
     </footer>
   )
 }
@@ -512,7 +512,7 @@ function SummaryStep({ setScreen }: { setScreen: (screen: BuilderScreen) => void
 
 function ExperienceList({ setScreen }: { setScreen: (screen: BuilderScreen) => void }) {
   const items = [
-    { title: 'Product Manager', company: 'Lightforth', period: 'Nov 2021 – Present' },
+    { title: 'Product Manager', company: 'Jobwhisper', period: 'Nov 2021 – Present' },
     { title: 'Product Designer', company: 'Freelance', period: 'Jan 2019 – Oct 2021' },
     { title: 'UI/UX Designer', company: 'StartupCo', period: 'Jun 2017 – Dec 2018' },
   ]
@@ -984,7 +984,7 @@ function ResumeExperienceSection({
       <div className="mt-3">
         <div className="mb-2 flex justify-between gap-6">
           <div>
-            <p className={cn('font-bold text-black', fitViewport && 'text-xs')}>Lightforth</p>
+            <p className={cn('font-bold text-black', fitViewport && 'text-xs')}>Jobwhisper</p>
             <p className={cn('text-[#424242]', fitViewport ? 'text-xs' : 'text-[14px]')}>Dallas</p>
             <p
               contentEditable={editable}
@@ -1612,7 +1612,7 @@ function CanvasScreen({
                       onChange={(event) => setChatDraft(event.target.value)}
                       rows={2}
                       className="min-w-0 flex-1 resize-none text-base leading-6 text-slate-700 outline-none"
-                      placeholder={walkthroughStep === 1 ? "Paste a job description here to get started..." : "Message Lightforth AI..."}
+                      placeholder={walkthroughStep === 1 ? "Paste a job description here to get started..." : "Message Jobwhisper AI..."}
                     />
                     <div className="flex items-end gap-1.5">
                       <TooltipProvider>
@@ -1816,7 +1816,7 @@ function CanvasScreen({
                       }}
                       rows={3}
                       className="min-w-0 w-full resize-none px-3 pt-2.5 text-sm leading-5 text-slate-700 outline-none placeholder:text-[#9ca3af]"
-                      placeholder={chatMessages.length === 0 ? "Paste a job description here to get started…" : "Message Lightforth AI..."}
+                      placeholder={chatMessages.length === 0 ? "Paste a job description here to get started…" : "Message Jobwhisper AI..."}
                     />
                     <div className="flex items-center justify-end gap-1.5 px-2 pb-2">
                       <TooltipProvider>
@@ -2161,7 +2161,7 @@ function CanvasScreen({
         <WalkthroughTooltip
           targetId="walkthrough-chat-input"
           title="Send your First Message"
-          description="Chat or paste a job description and Lightforth will rewrite your resume to match key words"
+          description="Chat or paste a job description and Jobwhisper will rewrite your resume to match key words"
           onSkip={handleWalkthroughSkip}
         />
       )}
@@ -2884,7 +2884,7 @@ function CanvasRightPanel({
       {/* Job Description — optional, always visible */}
       <section className="rounded-md border border-slate-200 p-3">
         <h3 className="text-sm font-black text-slate-900">Job Description <span className="font-normal text-slate-400">(optional)</span></h3>
-        <p className="mt-1 text-[11px] leading-4 text-slate-500">Paste the job description here — Lightforth scores your resume against it for a more accurate ATS report.</p>
+        <p className="mt-1 text-[11px] leading-4 text-slate-500">Paste the job description here — Jobwhisper scores your resume against it for a more accurate ATS report.</p>
         <textarea
           value={jobDescription}
           onChange={(e) => setJobDescription(e.target.value)}
@@ -3380,7 +3380,7 @@ function DiffResumePaper({
         <div className="mt-4">
           <div className="flex justify-between gap-4">
             <div>
-              <p className="font-bold"><span className="bg-red-100 text-red-700 line-through">Lightforth</span><span className="bg-emerald-100 text-emerald-800">DeeXoptions</span></p>
+              <p className="font-bold"><span className="bg-red-100 text-red-700 line-through">Jobwhisper</span><span className="bg-emerald-100 text-emerald-800">DeeXoptions</span></p>
               <p className="italic"><span className="bg-red-100 text-red-700 line-through">Product Manager</span> <span className="bg-emerald-100 text-emerald-800">Head of Product & Design Engineering</span></p>
             </div>
             <span className="text-sm text-slate-500">Jan 2024 - Present</span>
@@ -3475,7 +3475,7 @@ function PreviewScreen({
     {
       id: 'role',
       title: 'Experience headline',
-      removed: 'Product Manager at Lightforth',
+      removed: 'Product Manager at Jobwhisper',
       added: 'Head of Product & Design Engineering at DeeXoptions',
     },
     {
@@ -3599,7 +3599,7 @@ function PreviewScreen({
 
       <div className="hidden h-screen flex-col overflow-hidden bg-[#f3f3f4] font-sans lg:flex">
         <header className="flex h-20 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-8">
-          <LightforthLogo to="/app" className="h-8" />
+          <JobwhisperLogo to="/app" className="h-8" />
           <div className="flex items-center gap-3">
             <button onClick={() => { setAccepted(false); setAcceptedWebSections([]) }} className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-5 text-sm font-bold text-[#149cf2] shadow-sm transition hover:bg-slate-50">
               Regenerate <RotateCcw className="h-4 w-4" />

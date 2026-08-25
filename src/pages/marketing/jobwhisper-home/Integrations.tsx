@@ -1,13 +1,13 @@
 export function Integrations() {
   const logos = [
-    { src: '/lightforth-home/images/logo-lightforth-small.png', alt: 'Lightforth' },
-    { src: '/lightforth-home/images/logo-linkedin.png', alt: 'LinkedIn' },
-    { src: '/lightforth-home/images/logo-indeed.png', alt: 'Indeed' },
-    { src: '/lightforth-home/images/logo-workable.png', alt: 'Workable' },
-    { src: '/lightforth-home/images/logo-jooble.png', alt: 'Jooble' },
-    { src: '/lightforth-home/images/logo-reed.png', alt: 'Reed' },
-    { src: '/lightforth-home/images/logo-twitter.png', alt: 'Twitter' },
-    { src: '/lightforth-home/images/logo-job.png', alt: 'Job' },
+    { src: '/jobwhisper-home/images/logo-jobwhisper-small.png', alt: 'Jobwhisper' },
+    { src: '/jobwhisper-home/images/logo-linkedin.png', alt: 'LinkedIn' },
+    { src: '/jobwhisper-home/images/logo-indeed.png', alt: 'Indeed' },
+    { src: '/jobwhisper-home/images/logo-workable.png', alt: 'Workable' },
+    { src: '/jobwhisper-home/images/logo-jooble.png', alt: 'Jooble' },
+    { src: '/jobwhisper-home/images/logo-reed.png', alt: 'Reed' },
+    { src: '/jobwhisper-home/images/logo-twitter.png', alt: 'Twitter' },
+    { src: '/jobwhisper-home/images/logo-job.png', alt: 'Job' },
   ]
 
   return (
@@ -19,7 +19,7 @@ export function Integrations() {
           Integrations
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-slate-600">
-          Lightforth integrates with LinkedIn, Indeed, Glassdoor, Workable, Jooble, Reed, and more to find and apply
+          Jobwhisper integrates with LinkedIn, Indeed, Glassdoor, Workable, Jooble, Reed, and more to find and apply
           to opportunities across the web.
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-8">

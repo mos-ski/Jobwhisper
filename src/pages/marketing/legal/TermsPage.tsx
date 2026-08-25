@@ -27,14 +27,14 @@ export default function TermsPage() {
 
             <h2 className="text-xl font-bold text-slate-900 mt-8">General Terms</h2>
             <p>
-              By accessing and placing an order with LightForth, you confirm that you are in agreement with and bound
+              By accessing and placing an order with Jobwhisper, you confirm that you are in agreement with and bound
               by the terms of service contained in the Terms & Conditions outlined below. These terms apply to the
-              entire website and any email or other type of communication between you and LightForth.
+              entire website and any email or other type of communication between you and Jobwhisper.
             </p>
 
             <h2 className="text-xl font-bold text-slate-900 mt-8">License</h2>
             <p>
-              LightForth grants you a revocable, non-exclusive, non-transferable, limited license to download, install
+              Jobwhisper grants you a revocable, non-exclusive, non-transferable, limited license to download, install
               and use the app strictly in accordance with the terms of this Agreement.
             </p>
 
@@ -47,32 +47,32 @@ export default function TermsPage() {
 
             <h2 className="text-xl font-bold text-slate-900 mt-8">Return and Refund Policy</h2>
             <p>
-              At Lightforth, we provide AI-assisted resume curation, automated job applications, and interview
+              At Jobwhisper, we provide AI-assisted resume curation, automated job applications, and interview
               Copilot support through a subscription-based service. Due to the nature of our digital and
               subscription-based offerings, refunds are not provided once the service has been initiated.
             </p>
 
             <h2 className="text-xl font-bold text-slate-900 mt-8">Your Suggestions</h2>
             <p>
-              Any feedback, comments, ideas, improvements, or suggestions provided by you to LightForth with respect
-              to the app shall remain the sole and exclusive property of LightForth.
+              Any feedback, comments, ideas, improvements, or suggestions provided by you to Jobwhisper with respect
+              to the app shall remain the sole and exclusive property of Jobwhisper.
             </p>
 
             <h2 className="text-xl font-bold text-slate-900 mt-8">Links to Other Websites</h2>
             <p>
               This Terms & Conditions applies only to the Services. The Services may contain links to other websites
-              not operated or controlled by LightForth.
+              not operated or controlled by Jobwhisper.
             </p>
 
             <h2 className="text-xl font-bold text-slate-900 mt-8">Termination</h2>
             <p>
-              This Agreement shall remain in effect until terminated by you or LightForth. LightForth may, in its
+              This Agreement shall remain in effect until terminated by you or Jobwhisper. Jobwhisper may, in its
               sole discretion, at any time and for any or no reason, suspend or terminate this Agreement.
             </p>
 
             <h2 className="text-xl font-bold text-slate-900 mt-8">Indemnification</h2>
             <p>
-              You agree to indemnify and hold LightForth and its parents, subsidiaries, affiliates, officers,
+              You agree to indemnify and hold Jobwhisper and its parents, subsidiaries, affiliates, officers,
               employees, agents, partners, and licensors harmless from any claim or demand.
             </p>
 
@@ -84,7 +84,7 @@ export default function TermsPage() {
 
             <h2 className="text-xl font-bold text-slate-900 mt-8">Limitation of Liability</h2>
             <p>
-              Notwithstanding any damages that you might incur, the entire liability of LightForth and any of its
+              Notwithstanding any damages that you might incur, the entire liability of Jobwhisper and any of its
               suppliers under any provision of this Agreement shall be limited to the amount actually paid by you for
               the app.
             </p>
@@ -98,8 +98,8 @@ export default function TermsPage() {
 
             <h2 className="text-xl font-bold text-slate-900 mt-8">Contact Us</h2>
             <p>Don't hesitate to contact us if you have any questions.</p>
-            <p>Via Email: support@lightforth.org</p>
-            <p>Via this Link: https://www.lightforth.org/contact</p>
+            <p>Via Email: support@jobwhisper.org</p>
+            <p>Via this Link: https://www.jobwhisper.org/contact</p>
           </div>
         </div>
       </section>

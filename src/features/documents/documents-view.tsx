@@ -110,7 +110,7 @@ export function DocumentsAddView({ homeHref, documentsHref, manualHref }: Docume
               { id: 'manual', label: 'Input Manually', href: manualHref, iconSrc: '/v3-assets/figma/form-pencil.svg' },
             ]}
           />
-          <p className="text-xs font-medium leading-5 text-ink-muted">Add a file, webpage, or custom context for Lightforth to use across resumes and interviews.</p>
+          <p className="text-xs font-medium leading-5 text-ink-muted">Add a file, webpage, or custom context for Jobwhisper to use across resumes and interviews.</p>
         </FormPanel>
       </section>
     </div>

@@ -1,4 +1,4 @@
-export const lightforthTokens = {
+export const jobwhisperTokens = {
   light: {
     canvas: '#f3f4f6',
     surface: '#ffffff',

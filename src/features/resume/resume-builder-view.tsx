@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, Download, FileText, HelpCircle, Minus, Plus, Target, X } from 'lucide-react'
 
 import type { ResumeBuilderSession, ResumeBuilderTab, ResumeChatState, ResumeDocument, ResumeHistoryRow, ResumeSectionId, ResumeTemplate } from '@/contracts/resume.draft'
-import { AiSuggestionAction, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, FormField, FormPanel, FormPanelFooter, FormTextArea, LightforthAiIcon, ListPickerDialog, ShellBar, SourcePicker, TipModal, TipModalTrigger, UploadedFileDialog } from '@/ui'
+import { AiSuggestionAction, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, FormField, FormPanel, FormPanelFooter, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, TipModal, TipModalTrigger, UploadedFileDialog } from '@/ui'
 import { useTypewriter } from '@/hooks/useTypewriter'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 
@@ -177,7 +177,7 @@ function AiSuggestionLabel({ onClick }: { readonly onClick?: () => void }) {
       onClick={onClick}
       className="inline-flex min-h-8 items-center gap-1.5 self-start text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
     >
-      <LightforthAiIcon className="size-3.5 shrink-0" />
+      <JobwhisperAiIcon className="size-3.5 shrink-0" />
       <span className="bg-gradient-to-r from-accent to-accent-tertiary bg-clip-text text-transparent">AI Suggestion</span>
     </button>
   )
@@ -197,7 +197,7 @@ export function ResumeUploadView({ homeHref, configureHref, historyHref, uploade
             title="Upload a resume"
             options={[
               { label: 'Upload a Resume', hint: 'PDF, DOC, DOCX or TXT', onClick: () => setUploadDialogOpen(true) },
-              { label: 'Use Lightforth Resume', icon: <LightforthAiIcon className="size-5" />, emphasis: 'strong', onClick: () => setPickerOpen(true) },
+              { label: 'Use Jobwhisper Resume', icon: <JobwhisperAiIcon className="size-5" />, emphasis: 'strong', onClick: () => setPickerOpen(true) },
             ]}
             historyLink={{ label: 'View past resumes', href: historyHref }}
           />
@@ -207,11 +207,11 @@ export function ResumeUploadView({ homeHref, configureHref, historyHref, uploade
       <ListPickerDialog
         open={pickerOpen}
         onOpenChange={setPickerOpen}
-        title="Use a Lightforth Resume"
+        title="Use a Jobwhisper Resume"
         description="Pick a resume from your history to continue with."
         items={savedResumes.map((resume) => ({ id: resume.id, title: resume.title, subtitle: resume.company, meta: `ATS ${resume.atsScore}` }))}
         emptyLabel="No saved resumes yet. Upload one to get started."
-        icon={<LightforthAiIcon className="size-4" />}
+        icon={<JobwhisperAiIcon className="size-4" />}
         onSelect={() => {
           setPickerOpen(false)
           setUploadDialogOpen(true)
@@ -393,7 +393,7 @@ export function ResumeConfigureView({ homeHref, editorHref, uploadHref, session 
                   </button>
                 <p className="text-sm font-semibold">Tailor your resume</p>
                 <p className="mt-1 text-xs leading-relaxed text-brand-bar-text/80">
-                  Paste a job description and Lightforth will automatically rewrite your resume to match key words.
+                  Paste a job description and Jobwhisper will automatically rewrite your resume to match key words.
                 </p>
               </div>
               )}
@@ -403,7 +403,7 @@ export function ResumeConfigureView({ homeHref, editorHref, uploadHref, session 
             open={tipModalOpen}
             onOpenChange={handleTipModalOpenChange}
             title="Tailor your resume"
-            body="Paste a job description and Lightforth will automatically rewrite your resume to match key words."
+            body="Paste a job description and Jobwhisper will automatically rewrite your resume to match key words."
           />
           <AiSuggestionAction onClick={handleAiSuggestion} disabled={isTyping} />
         </FormPanel>
@@ -473,7 +473,7 @@ function ChatEmptyState() {
 type ChatMessage = { readonly id: string; readonly author: 'candidate' | 'assistant'; readonly text: string }
 
 const CHAT_PLACEHOLDER_EMPTY = 'Send a message for more adjustments…'
-const CHAT_PLACEHOLDER_ACTIVE = 'Message Lightforth AI...'
+const CHAT_PLACEHOLDER_ACTIVE = 'Message Jobwhisper AI...'
 
 function ChatComposer({
   prompts,
@@ -519,8 +519,8 @@ function ChatComposer({
           />
           <TipModalTrigger
             label="Show chat tips"
-            title="Chat with Lightforth AI"
-            body="Ask for rewrites, tone changes, or keyword targeting — Lightforth updates your resume in real time. Accept the changes, or keep editing."
+            title="Chat with Jobwhisper AI"
+            body="Ask for rewrites, tone changes, or keyword targeting — Jobwhisper updates your resume in real time. Accept the changes, or keep editing."
             className="mb-1.5 shrink-0 sm:hidden"
           />
           <button
@@ -633,7 +633,7 @@ const sectionFields: Record<ResumeSectionId, readonly { readonly id: string; rea
     { id: 'summary', label: 'Summary', placeholder: 'A brief overview of your professional background and key strengths...', multiline: true },
   ],
   experience: [
-    { id: 'company', label: 'Company', placeholder: 'Lightforth' },
+    { id: 'company', label: 'Company', placeholder: 'Jobwhisper' },
     { id: 'title', label: 'Job Title', placeholder: 'Director of Product' },
     { id: 'bullets', label: 'Achievements', placeholder: 'Led a cross-functional team of 12 to ship...', multiline: true },
   ],
@@ -1092,7 +1092,7 @@ function ResumePreviewDialog({
       <DialogPopup placement="center" aria-label="Resume preview" className="flex max-h-[85vh] flex-col p-0 sm:max-h-[calc(100vh-4rem)]">
         <div className="flex shrink-0 items-center justify-between border-b border-border px-4 pb-3 pt-6">
           <div className="flex items-center gap-2">
-            {pendingSuggestion ? <LightforthAiIcon className="size-4" /> : <FileText aria-hidden="true" className="size-4 text-ink-muted" />}
+            {pendingSuggestion ? <JobwhisperAiIcon className="size-4" /> : <FileText aria-hidden="true" className="size-4 text-ink-muted" />}
             <DialogTitle className="text-sm">{pendingSuggestion ? 'Review Changes' : 'Resume Preview'}</DialogTitle>
             {pendingSuggestion ? (
               <span className="rounded-pill bg-accent-subtle px-2 py-0.5 text-[10px] font-bold text-accent-text">{changes.length}</span>

@@ -222,7 +222,7 @@ export function PlanSelectionView({
             </a>
           </p>
           <p className="mt-1.5 text-center text-sm text-ink-muted">
-            No plan? You&apos;ll still get 5 credits every month to try Lightforth.
+            No plan? You&apos;ll still get 5 credits every month to try Jobwhisper.
           </p>
         </div>
       </section>

@@ -9,7 +9,7 @@ export interface MockAccountRecord {
   planId?: 'starter' | 'pro' | 'premium'
 }
 
-const STORAGE_KEY = 'lightforth-desktop-mock-accounts'
+const STORAGE_KEY = 'jobwhisper-desktop-mock-accounts'
 
 function readStore(): Record<string, MockAccountRecord> {
   try {

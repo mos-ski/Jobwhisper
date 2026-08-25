@@ -8,8 +8,8 @@ export const downloadItems: readonly DownloadItem[] = [
     extension: 'dmg',
     cta: 'Desktop app for macOS',
     support: 'Silicon (M-series)',
-    imageSrc: '/lightforth-home/download-modal/mac-silicon.png',
-    href: 'https://lightforth-copilot-downloads.nyc3.digitaloceanspaces.com/Lightforth_Copilot_1.0.1_arm64.dmg',
+    imageSrc: '/jobwhisper-home/download-modal/mac-silicon.png',
+    href: 'https://jobwhisper-copilot-downloads.nyc3.digitaloceanspaces.com/Jobwhisper_Copilot_1.0.1_arm64.dmg',
   },
   {
     id: 'mac-intel',
@@ -18,8 +18,8 @@ export const downloadItems: readonly DownloadItem[] = [
     extension: 'dmg',
     cta: 'Desktop app for macOS',
     support: 'Intel - macOS 13+',
-    imageSrc: '/lightforth-home/download-modal/mac-intel.png',
-    href: 'https://lightforth-copilot-downloads.nyc3.digitaloceanspaces.com/Lightforth_Copilot_1.0.1_x64.dmg',
+    imageSrc: '/jobwhisper-home/download-modal/mac-intel.png',
+    href: 'https://jobwhisper-copilot-downloads.nyc3.digitaloceanspaces.com/Jobwhisper_Copilot_1.0.1_x64.dmg',
   },
   {
     id: 'windows',
@@ -28,8 +28,8 @@ export const downloadItems: readonly DownloadItem[] = [
     extension: 'exe',
     cta: 'Desktop app for Windows',
     support: 'Windows 10+',
-    imageSrc: '/lightforth-home/download-modal/windows.png',
-    href: 'https://lightforth-copilot-downloads.nyc3.digitaloceanspaces.com/Lightforth_Copilot_Setup_1.0.1.exe',
+    imageSrc: '/jobwhisper-home/download-modal/windows.png',
+    href: 'https://jobwhisper-copilot-downloads.nyc3.digitaloceanspaces.com/Jobwhisper_Copilot_Setup_1.0.1.exe',
   },
 ]
 
@@ -173,9 +173,9 @@ export const referralRows: readonly ReferralRow[] = [
 ]
 
 export const tutorialItems: readonly TutorialItem[] = [
-  { id: 'getting-started', title: 'Getting Started', href: 'https://lightforth.ai/docs/getting-started', kind: 'external', tone: 'accent' },
-  { id: 'interview-copilot', title: 'Interview Copilot', href: 'https://lightforth.ai/tutorials/interview-copilot', kind: 'video', tone: 'accent' },
-  { id: 'auto-apply', title: 'Auto Apply', href: 'https://lightforth.ai/tutorials/auto-apply', kind: 'video', tone: 'positive' },
-  { id: 'resume-builder', title: 'Resume Builder', href: 'https://lightforth.ai/tutorials/resume-builder', kind: 'video', tone: 'accent-secondary' },
-  { id: 'interview-prep', title: 'Interview Prep', href: 'https://lightforth.ai/tutorials/interview-prep', kind: 'video', tone: 'danger' },
+  { id: 'getting-started', title: 'Getting Started', href: 'https://jobwhisper.ai/docs/getting-started', kind: 'external', tone: 'accent' },
+  { id: 'interview-copilot', title: 'Interview Copilot', href: 'https://jobwhisper.ai/tutorials/interview-copilot', kind: 'video', tone: 'accent' },
+  { id: 'auto-apply', title: 'Auto Apply', href: 'https://jobwhisper.ai/tutorials/auto-apply', kind: 'video', tone: 'positive' },
+  { id: 'resume-builder', title: 'Resume Builder', href: 'https://jobwhisper.ai/tutorials/resume-builder', kind: 'video', tone: 'accent-secondary' },
+  { id: 'interview-prep', title: 'Interview Prep', href: 'https://jobwhisper.ai/tutorials/interview-prep', kind: 'video', tone: 'danger' },
 ]

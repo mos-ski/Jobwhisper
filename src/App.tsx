@@ -6,7 +6,7 @@ import AppLayout from '@/components/layout/AppLayout'
 import { lazy, Suspense } from 'react'
 import Auth from '@/pages/Auth'
 import Dashboard from '@/pages/Dashboard'
-import LightforthHomePage from '@/pages/marketing/lightforth-home/LightforthHomePage'
+import JobwhisperHomePage from '@/pages/marketing/jobwhisper-home/JobwhisperHomePage'
 
 const OnboardingFlow = lazy(() => import('@/pages/OnboardingFlow'))
 const MyDocuments = lazy(() => import('@/pages/MyDocuments'))
@@ -92,7 +92,7 @@ export default function App() {
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<LightforthHomePage />} />
+            <Route path="/" element={<JobwhisperHomePage />} />
             <Route path="/ats-checker" element={<Suspense fallback={null}><AtsCheckerPage /></Suspense>} />
             <Route path="/resume" element={<Suspense fallback={null}><ResumeMarketingPage /></Suspense>} />
             <Route path="/co-pilot" element={<Suspense fallback={null}><CopilotMarketingPage /></Suspense>} />

@@ -11,7 +11,7 @@ export function SplashScreen({ onComplete }: { onComplete: () => void }) {
     <div className="flex h-full flex-col items-center justify-center gap-4" style={{ background: '#0c1d48' }}>
       <div className="flex items-center gap-2">
         <Sparkles className="text-blue-300" size={28} />
-        <span className="text-2xl font-bold tracking-tight text-white">Lightforth</span>
+        <span className="text-2xl font-bold tracking-tight text-white">Jobwhisper</span>
       </div>
       <p className="text-sm text-white/50">AI-powered job search</p>
     </div>

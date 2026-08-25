@@ -30,7 +30,7 @@ import type {
 import type { ContextDocumentRow } from '@/contracts/documents.draft'
 import type { ResumeHistoryRow } from '@/contracts/resume.draft'
 import { centsToCredits, creditsToCents, formatCreditAmountWithUsd } from '@/lib/credits'
-import { AddFundsDialog, AiSuggestionAction, Avatar, Badge, Button, Checkbox, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, LightforthAiIcon, ListPickerDialog, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, UploadedFileDialog } from '@/ui'
+import { AddFundsDialog, AiSuggestionAction, Avatar, Badge, Button, Checkbox, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, UploadedFileDialog } from '@/ui'
 import { useCameraStream } from '@/hooks/useCameraStream'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 import { useTypewriter } from '@/hooks/useTypewriter'
@@ -161,7 +161,7 @@ export function InterviewUploadView({ homeHref, configureHref, historyHref, uplo
             title="Upload a resume"
             options={[
               { label: 'Upload a Resume', hint: 'PDF, DOC, DOCX or TXT', onClick: () => setUploadDialogOpen(true) },
-              { label: 'Use Lightforth Resume', icon: <LightforthAiIcon className="size-5" />, emphasis: 'strong', onClick: () => setPickerOpen(true) },
+              { label: 'Use Jobwhisper Resume', icon: <JobwhisperAiIcon className="size-5" />, emphasis: 'strong', onClick: () => setPickerOpen(true) },
             ]}
             historyLink={{ label: 'View interview history', href: historyHref }}
           />
@@ -171,11 +171,11 @@ export function InterviewUploadView({ homeHref, configureHref, historyHref, uplo
       <ListPickerDialog
         open={pickerOpen}
         onOpenChange={setPickerOpen}
-        title="Use a Lightforth Resume"
+        title="Use a Jobwhisper Resume"
         description="Pick a resume from your history to continue with."
         items={savedResumes.map((resume) => ({ id: resume.id, title: resume.title, subtitle: resume.company, meta: `ATS ${resume.atsScore}` }))}
         emptyLabel="No saved resumes yet. Upload one to get started."
-        icon={<LightforthAiIcon className="size-4" />}
+        icon={<JobwhisperAiIcon className="size-4" />}
         onSelect={() => {
           setPickerOpen(false)
           setUploadDialogOpen(true)
@@ -746,7 +746,7 @@ function InterviewLiveSettingsModal({
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-slate-400">Resume</span>
-                  <span className="text-sm font-semibold">Lightforth Resume</span>
+                  <span className="text-sm font-semibold">Jobwhisper Resume</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-slate-400">Skip setup</span>
@@ -1201,7 +1201,7 @@ export function InterviewCompleteView({ homeHref, sessionHref, preparingReportHr
               Thank you for completing your AI interview{companyName ? ` with ${companyName}` : ''}.
             </p>
             <p className="mx-auto max-w-md rounded-panel bg-surface-subtle px-5 py-5 text-sm leading-6 text-ink-muted">
-              Your responses have been recorded and evaluated by Lightforth AI. Review the coaching report for your strengths, gaps, transcript, and next practice step.
+              Your responses have been recorded and evaluated by Jobwhisper AI. Review the coaching report for your strengths, gaps, transcript, and next practice step.
             </p>
           </div>
           <FooterActions backHref={sessionHref} continueHref={preparingReportHref} continueLabel="See Report" />

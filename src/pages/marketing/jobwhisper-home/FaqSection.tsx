@@ -109,7 +109,7 @@ export function FaqSection() {
             <br />
             Questions
           </h2>
-          <p className="mt-4 text-slate-600">Get answers to common questions about Lightforth</p>
+          <p className="mt-4 text-slate-600">Get answers to common questions about Jobwhisper</p>
         </div>
 
         <div className="mt-12 space-y-3">

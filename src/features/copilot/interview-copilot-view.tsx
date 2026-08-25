@@ -41,7 +41,7 @@ import {
   FormPanelFooter,
   FormSelectField,
   FormTextArea,
-  LightforthAiIcon,
+  JobwhisperAiIcon,
   ListPickerDialog,
   PermissionSteps,
   ShellBar,
@@ -198,7 +198,7 @@ export function CopilotUploadView({ homeHref, configureHref, historyHref, mode, 
               title={mode === 'interview' ? 'Upload a resume' : mode === 'coding' ? 'Upload a job description' : 'Upload meeting agenda'}
               options={
                 mode === 'interview'
-                  ? [uploadOption, { label: 'Use Lightforth Resume', icon: <LightforthAiIcon className="size-5" />, emphasis: 'strong', onClick: () => setPickerOpen(true) }]
+                  ? [uploadOption, { label: 'Use Jobwhisper Resume', icon: <JobwhisperAiIcon className="size-5" />, emphasis: 'strong', onClick: () => setPickerOpen(true) }]
                   : [uploadOption]
               }
               historyLink={{ label: 'View copilot history', href: historyHref }}
@@ -212,11 +212,11 @@ export function CopilotUploadView({ homeHref, configureHref, historyHref, mode, 
           <ListPickerDialog
             open={pickerOpen}
             onOpenChange={setPickerOpen}
-            title="Use a Lightforth Resume"
+            title="Use a Jobwhisper Resume"
             description="Pick a resume from your history to continue with."
             items={savedResumes.map((resume) => ({ id: resume.id, title: resume.title, subtitle: resume.company, meta: `ATS ${resume.atsScore}` }))}
             emptyLabel="No saved resumes yet. Upload one to get started."
-            icon={<LightforthAiIcon className="size-4" />}
+            icon={<JobwhisperAiIcon className="size-4" />}
             onSelect={() => {
               setPickerOpen(false)
               setUploadDialogOpen(true)
@@ -567,7 +567,7 @@ export function CopilotPermissionView({ homeHref, backHref, nextHref, steps, pre
           />
           {previewSrc ? (
             <p className="mt-4 text-xs leading-5 text-ink-muted">
-              Lightforth listens to your shared screen and audio only while the session is live, and keeps a transcript so you
+              Jobwhisper listens to your shared screen and audio only while the session is live, and keeps a transcript so you
               can review it afterward. Nothing is recorded once you end the session. You'll only be charged for the time
               you're in session.
             </p>
@@ -885,7 +885,7 @@ function CopilotLiveSettingsModal({
                 {mode === 'interview' ? (
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-slate-400">Resume</span>
-                    <span className="text-sm font-semibold">Lightforth Resume</span>
+                    <span className="text-sm font-semibold">Jobwhisper Resume</span>
                   </div>
                 ) : null}
                 <div className="flex items-center justify-between">
@@ -1217,7 +1217,7 @@ const COPILOT_PROMPT_RESPONSES: Record<string, string> = {
 function copilotResponseFor(prompt: string): string {
   return (
     COPILOT_PROMPT_RESPONSES[prompt] ??
-    `Lightforth is analyzing "${prompt}" against the live transcript and will surface a response shortly.`
+    `Jobwhisper is analyzing "${prompt}" against the live transcript and will surface a response shortly.`
   )
 }
 
@@ -1420,7 +1420,7 @@ function CopilotTranscriptPanel({
               </p>
             </div>
           ) : null}
-          <TranscriptBubble speaker="Lightforth AI" text={turn.answer} kind="ai" fontSize={fontSize} />
+          <TranscriptBubble speaker="Jobwhisper AI" text={turn.answer} kind="ai" fontSize={fontSize} />
         </div>
       ))}
 
@@ -1458,7 +1458,7 @@ function CopilotTranscriptPanel({
           ) : null}
           {status === 'answering' && aDisplayed ? (
             <TranscriptBubble
-              speaker="Lightforth AI"
+              speaker="Jobwhisper AI"
               text={`${aDisplayed}${aDisplayed.length < currentTurn.answer.length ? '|' : ''}`}
               kind="ai"
               fontSize={fontSize}
@@ -1979,7 +1979,7 @@ export function CopilotCompleteView({ homeHref, sessionHref, historyHref, report
             <p className="text-base leading-6 text-ink-muted">
               Thank you for completing your AI {meta.sessionNoun}{companyName ? ` with ${companyName}` : ''}.
             </p>
-            <p className="text-base leading-6 text-ink-muted">Your responses have been recorded and will be evaluated by our Lightforth AI.</p>
+            <p className="text-base leading-6 text-ink-muted">Your responses have been recorded and will be evaluated by our Jobwhisper AI.</p>
           </div>
           <FooterActions backHref={sessionHref} nextHref={reportHref} nextLabel="See Report" />
         </form>

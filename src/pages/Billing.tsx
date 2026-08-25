@@ -147,7 +147,7 @@ export default function Billing() {
       <section className="lf-panel p-6">
         <h2 className="lf-section-title">How credits works</h2>
         <p className="mt-2 max-w-5xl text-sm leading-6 text-muted-foreground">
-          This outlines how credits are deducted per feature usage across the Lightforth platform. Each core product feature deducts 1 credit per use, regardless of plan tier.
+          This outlines how credits are deducted per feature usage across the Jobwhisper platform. Each core product feature deducts 1 credit per use, regardless of plan tier.
         </p>
         <div className="mt-6 lf-table-wrap">
           <table className="lf-table">

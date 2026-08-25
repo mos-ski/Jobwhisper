@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useRef, useState, type AnchorHTMLAttributes, type ButtonHTMLAttributes, type FormHTMLAttributes, type InputHTMLAttributes, type MouseEvent, type ReactNode, type TextareaHTMLAttributes } from 'react'
 import { ArrowLeft, ArrowRight, ChevronDown, ChevronRight, Check, FileText, Pencil } from 'lucide-react'
 
-import { LightforthAiIcon } from './brand-mark'
+import { JobwhisperAiIcon } from './brand-mark'
 import { cn } from './cn'
 import { Dialog, DialogPopup, DialogTitle } from './dialog'
 import { SelectField } from './select-field'
@@ -373,7 +373,7 @@ export const AiSuggestionAction = forwardRef<HTMLButtonElement, AiSuggestionActi
         className={cn('ms-auto inline-flex min-h-7 items-center gap-1.5 rounded-soft px-1 text-sm font-bold leading-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus', className)}
         {...props}
       >
-        <LightforthAiIcon className="size-3.5 shrink-0" />
+        <JobwhisperAiIcon className="size-3.5 shrink-0" />
         <span className="bg-gradient-to-r from-accent to-accent-tertiary bg-clip-text text-transparent">{children}</span>
       </button>
     )

@@ -309,7 +309,7 @@ export function OnboardingInterestsView({ homeHref, backHref, onComplete }: Onbo
             />
           }
         >
-          <p className="text-sm leading-6 text-ink-muted">Help us tailor Lightforth to what you're looking for.</p>
+          <p className="text-sm leading-6 text-ink-muted">Help us tailor Jobwhisper to what you're looking for.</p>
           <FormSearchSelectField
             id="onboarding-job-role"
             label="Job Role"
@@ -323,7 +323,7 @@ export function OnboardingInterestsView({ homeHref, backHref, onComplete }: Onbo
           />
           <FormSearchSelectField
             id="onboarding-looking-for"
-            label="What brings you to Lightforth?"
+            label="What brings you to Jobwhisper?"
             placeholder="Search..."
             searchPlaceholder="Search..."
             options={LOOKING_FOR_OPTIONS}
@@ -331,7 +331,7 @@ export function OnboardingInterestsView({ homeHref, backHref, onComplete }: Onbo
             onSelectedChange={setLookingFor}
             dropdownPlacement="top"
           />
-          <CheckboxGrid label="How did you hear about Lightforth?" options={HEARD_ABOUT_OPTIONS} selected={heardAbout} onSelectedChange={setHeardAbout} />
+          <CheckboxGrid label="How did you hear about Jobwhisper?" options={HEARD_ABOUT_OPTIONS} selected={heardAbout} onSelectedChange={setHeardAbout} />
         </FormPanel>
       </section>
     </Workspace>

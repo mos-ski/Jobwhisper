@@ -35,7 +35,7 @@ export function SignInScreen({
 
   const canContinue = mode === 'signin' ? email.trim().length > 0 && password.length > 0 : false
 
-  const heading = mode === 'signin' ? 'Welcome back' : 'Welcome to Lightforth Copilot'
+  const heading = mode === 'signin' ? 'Welcome back' : 'Welcome to Jobwhisper Copilot'
 
   function handleContinue() {
     if (!canContinue) return
@@ -53,7 +53,7 @@ export function SignInScreen({
       <h1 className="mb-3 text-center text-3xl font-bold text-white">{heading}</h1>
       <p className="mb-8 max-w-lg text-center text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>
         {mode === 'signin'
-          ? 'Sign in with the email and password you created on lightforth.com.'
+          ? 'Sign in with the email and password you created on jobwhisper.com.'
           : 'Sign up on the web to get started, or sign in below if you already have an account.'}
       </p>
 

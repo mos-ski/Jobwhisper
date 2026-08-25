@@ -2,28 +2,28 @@ import { motion } from 'framer-motion'
 
 const steps = [
   {
-    icon: '/lightforth-home/images/process-icon-1.svg',
+    icon: '/jobwhisper-home/images/process-icon-1.svg',
     title: 'Upload Your Resume',
     description: 'Upload your existing PDF resume or build one instantly with our AI-powered templates. ATS-friendly formats that impress employers.',
-    image: '/lightforth-home/images/process-1.png',
+    image: '/jobwhisper-home/images/process-1.png',
   },
   {
-    icon: '/lightforth-home/images/process-icon-2.svg',
+    icon: '/jobwhisper-home/images/process-icon-2.svg',
     title: 'Tailor With AI',
     description: 'Paste any job description and our AI analyzes it against your resume, optimizing every section to match what employers are looking for.',
-    image: '/lightforth-home/images/process-2.png',
+    image: '/jobwhisper-home/images/process-2.png',
   },
   {
-    icon: '/lightforth-home/images/process-icon-3.svg',
+    icon: '/jobwhisper-home/images/process-icon-3.svg',
     title: 'Activate Auto-Apply',
     description: 'Set up your job preferences once. Auto-Apply finds matching opportunities across multiple job boards and submits tailored applications on your behalf.',
-    image: '/lightforth-home/images/process-3.png',
+    image: '/jobwhisper-home/images/process-3.png',
   },
   {
-    icon: '/lightforth-home/images/process-icon-4.svg',
+    icon: '/jobwhisper-home/images/process-icon-4.svg',
     title: 'Ace Your Interviews',
     description: 'Practice with our voice-enabled AI interviewer. Get real-time feedback, performance reports, and use Interview Copilot during live interviews for guidance.',
-    image: '/lightforth-home/images/process-4.png',
+    image: '/jobwhisper-home/images/process-4.png',
   },
 ]
 

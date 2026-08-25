@@ -11,7 +11,7 @@ export default function HowToUse() {
   return (
     <div className="lf-page-shell">
       <div className="lf-page-header">
-        <h1 className="lf-page-title">How to use Lightforth</h1>
+        <h1 className="lf-page-title">How to use Jobwhisper</h1>
         <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
           Start by setting up a job profile by providing all the necessary information needed to build your resume.
         </p>

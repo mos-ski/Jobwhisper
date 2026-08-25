@@ -131,7 +131,7 @@ export function DownloadsView({ homeHref, downloads }: DownloadsViewProps) {
           </div>
 
           <p className="mt-8 max-w-3xl text-xs leading-5 text-ink-muted">
-            By downloading a Lightforth application, you agree that our Terms of Service apply to your use of that application. If you have entered a different agreement with Lightforth that covers our applications, that agreement will apply instead.
+            By downloading a Jobwhisper application, you agree that our Terms of Service apply to your use of that application. If you have entered a different agreement with Jobwhisper that covers our applications, that agreement will apply instead.
           </p>
         </TitledPanel>
       </ContentShell>
@@ -394,14 +394,14 @@ function AnnualToggle({ annual, onToggle }: { readonly annual: boolean; readonly
 }
 
 const billingFaqs: readonly { readonly question: string; readonly answer: string }[] = [
-  { question: 'How does usage-based pricing work?', answer: 'Each feature is metered by what it actually costs to run — per message for Resume Builder, per successful application for Auto-Apply, per minute for live Interview Prep and Copilot sessions. See the rate table above for exact pricing. Lightforth only charges for successful actions, so a failed Auto-Apply submission never costs anything.' },
+  { question: 'How does usage-based pricing work?', answer: 'Each feature is metered by what it actually costs to run — per message for Resume Builder, per successful application for Auto-Apply, per minute for live Interview Prep and Copilot sessions. See the rate table above for exact pricing. Jobwhisper only charges for successful actions, so a failed Auto-Apply submission never costs anything.' },
   { question: 'Does unused balance roll over to next month?', answer: 'Your plan’s monthly included usage resets on your renewal date and does not carry forward. Any balance you’ve added yourself through a top-up is different — that stays on your account until you spend it.' },
   { question: 'What’s the difference between monthly and annual billing?', answer: 'Annual billing charges you once a year at a 20% discount off the monthly rate. Monthly billing charges the full rate every month. You can switch between them at any time using the toggle above the plan cards.' },
   { question: 'Can I change plans at any time?', answer: 'Yes. Upgrades take effect immediately and unlock the new plan’s features right away. Downgrades take effect at the start of your next billing cycle, so you keep your current plan’s benefits until then.' },
   { question: 'How do I cancel my subscription?', answer: 'Use the Cancel Subscription button above. You’ll keep full access until your current billing period ends, after which your account moves to the Free plan. You can renew at any time before then.' },
   { question: 'What happens to my data if I cancel?', answer: 'Your saved resumes, cover letters, application history, and interview reports stay in your account. You just lose access to paid features like Auto-Apply and Copilot sessions until you resubscribe.' },
   { question: 'Is the first-time offer available more than once?', answer: 'No. The $10 first-time Pro offer is available once per account, only before the countdown on this page expires. After it’s redeemed or the timer runs out, your plan renews at the regular price.' },
-  { question: 'What payment methods do you accept?', answer: 'We accept all major debit and credit cards. Payments are processed securely and your card details are never stored on Lightforth’s servers.' },
+  { question: 'What payment methods do you accept?', answer: 'We accept all major debit and credit cards. Payments are processed securely and your card details are never stored on Jobwhisper’s servers.' },
   { question: 'Do you offer refunds?', answer: 'We don’t offer refunds for partial billing periods, but you can cancel at any time to stop future charges — you’ll keep access through the end of the period you already paid for.' },
   { question: 'Can I add more balance without upgrading my plan?', answer: 'Yes. Use the Add Funds link above to earn bonus balance through referrals, or add a one-time top-up from the usage details page — it stays on your account until you spend it.' },
 ]
@@ -835,7 +835,7 @@ function ProfileSettings({ profile, activeTab }: { readonly profile: SettingsPro
 
 type Theme = 'light' | 'dark'
 
-const THEME_STORAGE_KEY = 'lightforth-theme'
+const THEME_STORAGE_KEY = 'jobwhisper-theme'
 
 function readStoredTheme(): Theme {
   if (typeof window === 'undefined') return 'light'
@@ -862,7 +862,7 @@ function AppearanceSettings() {
         <h1 className="text-xl font-medium leading-5 text-ink">Appearance</h1>
       </div>
       <div className="p-8">
-        <p className="text-sm text-ink-muted">Choose how Lightforth looks on this device.</p>
+        <p className="text-sm text-ink-muted">Choose how Jobwhisper looks on this device.</p>
         <div className="mt-6 inline-flex gap-2 rounded-lg border border-border bg-surface-subtle p-1">
           {options.map((option) => {
             const Icon = option.icon
@@ -925,7 +925,7 @@ function SecuritySettings({ activeTab }: { readonly activeTab: SettingsTab }) {
           <div className="flex flex-col items-start justify-between gap-4 border-t border-border pt-6 sm:flex-row sm:items-center">
             <div>
               <h2 className="font-bold">Delete Account</h2>
-              <p className="text-sm text-ink-muted">Permanently delete your Lightforth account.</p>
+              <p className="text-sm text-ink-muted">Permanently delete your Jobwhisper account.</p>
             </div>
             <button type="button" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-danger bg-surface px-4 py-2.5 text-base font-semibold text-danger shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
               Delete Account
@@ -948,7 +948,7 @@ function ReferralSettings({ referrals, activeTab }: { readonly referrals: readon
           <h2 className="text-3xl font-bold leading-tight text-ink">Earn 3 credits in free balance</h2>
           <p className="mt-2 text-sm text-ink-muted">You get 3 credits added to your balance when your referral signs up and subscribes.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {['https://app.lightforth.ai/auth/signup?code=Adedamolaiosmk', 'Adedamolaiosmk'].map((value, index) => (
+            {['https://app.jobwhisper.ai/auth/signup?code=Adedamolaiosmk', 'Adedamolaiosmk'].map((value, index) => (
               <div key={value} className="min-w-0 rounded-soft border border-accent bg-surface px-3 py-2">
                 <p className="text-xs text-ink-muted">{index === 0 ? 'Referral Link' : 'Referral Code'}</p>
                 <div className="mt-1 flex items-center gap-3">

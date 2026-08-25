@@ -4,7 +4,7 @@ import { Navigate, useLocation } from 'react-router-dom'
 import api, { TOKEN_KEY } from '../lib/api'
 import { getAccount } from '@/pages/desktopCopilot/mockAccounts'
 
-export const DEMO_EMAIL = 'demo@lightforth.ai'
+export const DEMO_EMAIL = 'demo@jobwhisper.ai'
 
 export interface User {
   id: string

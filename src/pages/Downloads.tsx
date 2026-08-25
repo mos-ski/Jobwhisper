@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/useAuth'
 
 const downloads = [
   {
-    title: 'Getting Started - Lightforth',
+    title: 'Getting Started - Jobwhisper',
     meta: 'Guide · help',
     action: 'Get Started',
     icon: FileText,

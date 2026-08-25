@@ -23,15 +23,15 @@ export default function InterviewPrepMarketingPage() {
 
       <section className="py-8">
         <div className="mx-auto max-w-4xl px-6">
-          <img src="/lightforth-home/images/heroSessionAI-Interview.gif" alt="AI Interview" className="w-full rounded-xl shadow-lg" />
+          <img src="/jobwhisper-home/images/heroSessionAI-Interview.gif" alt="AI Interview" className="w-full rounded-xl shadow-lg" />
         </div>
       </section>
 
       {[
-        { title: 'Interview details', subtitle: 'Set the Job details you wish to interview for', desc: 'To get the best out of this interview, start by entering the job details you wish to interview for to help us tailor your interview experience.', image: '/lightforth-home/images/interviewDetails.gif' },
-        { title: 'Permission', subtitle: 'Set permission and choose your preferred Interviewer', desc: "Customise your interview experience by giving permission and choosing your preferred interviewer's voice.", image: '/lightforth-home/images/interview2.png' },
-        { title: 'Interview session', subtitle: 'Start the Interview and respond accordingly', desc: 'Instantly begin your interview and respond accordingly while our AI takes note of your responses and body language to provide accurate feedback.', image: '/lightforth-home/images/interview3.png' },
-        { title: 'Insights', subtitle: 'Get insights about interview performance', desc: 'This will help you understand your strengths and areas for improvement after interviews. It provides feedback, analytics, or tips to enhance your chances of success.', image: '/lightforth-home/images/seeReport.gif' },
+        { title: 'Interview details', subtitle: 'Set the Job details you wish to interview for', desc: 'To get the best out of this interview, start by entering the job details you wish to interview for to help us tailor your interview experience.', image: '/jobwhisper-home/images/interviewDetails.gif' },
+        { title: 'Permission', subtitle: 'Set permission and choose your preferred Interviewer', desc: "Customise your interview experience by giving permission and choosing your preferred interviewer's voice.", image: '/jobwhisper-home/images/interview2.png' },
+        { title: 'Interview session', subtitle: 'Start the Interview and respond accordingly', desc: 'Instantly begin your interview and respond accordingly while our AI takes note of your responses and body language to provide accurate feedback.', image: '/jobwhisper-home/images/interview3.png' },
+        { title: 'Insights', subtitle: 'Get insights about interview performance', desc: 'This will help you understand your strengths and areas for improvement after interviews. It provides feedback, analytics, or tips to enhance your chances of success.', image: '/jobwhisper-home/images/seeReport.gif' },
       ].map((item, i) => (
         <section key={item.title} className={`py-16 ${i % 2 === 1 ? 'bg-slate-50' : ''}`}>
           <div className={`mx-auto max-w-6xl px-6 flex flex-col items-center gap-8 md:flex-row ${i % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
@@ -60,7 +60,7 @@ export default function InterviewPrepMarketingPage() {
               { title: '24/7 Availability', desc: 'Allows you to practice anytime, anywhere, without needing a human interviewer.' },
             ].map((f) => (
               <div key={f.title} className="text-center">
-                <img src="/lightforth-home/images/arrow1.svg" alt="" className="mx-auto mb-4 h-10 w-10" />
+                <img src="/jobwhisper-home/images/arrow1.svg" alt="" className="mx-auto mb-4 h-10 w-10" />
                 <h3 className="font-bold text-slate-900">{f.title}</h3>
                 <p className="mt-2 text-sm text-slate-600">{f.desc}</p>
               </div>
