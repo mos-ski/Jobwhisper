@@ -1,0 +1,41 @@
+<h2>How much should we build?</h2>
+<p class="subtitle">The Agents tab needs a home. How much of the Career Specialist section should we build around it?</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Agents Tab Only <span style="background:#22c55e22;color:#22c55e;font-size:11px;padding:2px 6px;border-radius:4px;font-weight:600;">Recommended</span></h3>
+      <p>Build just the Agents tab as a fully working component — with the 3 sections (summary stats, agent status cards, live feed). A minimal student profile shell and <code>/career-specialist</code> route will be scaffolded to hold it, but the focus is entirely on the Agents tab itself. Fast to build, can slot the full profile in later.</p>
+      <div style="margin-top:8px;font-size:12px;color:#64748b;">
+        New routes: <code>/career-specialist</code> → <code>/career-specialist/students/:id</code> (Agents tab as default)
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Agents Tab + Full Student Profile</h3>
+      <p>Build the Agents tab plus a complete student profile page with multiple tabs: Overview, Agents, Applications, Documents. The <code>/career-specialist</code> landing also gets a student list with search and filters.</p>
+      <div style="margin-top:8px;font-size:12px;color:#64748b;">
+        New routes: <code>/career-specialist</code> (student list) → <code>/career-specialist/students/:id</code> (tabbed profile with Overview, Agents, Applications, Documents)
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Full Career Specialist Section</h3>
+      <p>The complete SSM experience — student list, profile, all tabs, plus a Career Specialist dashboard overview (total active students, jobs applied across all students today, agent health). Everything the SSM needs in one go.</p>
+      <div style="margin-top:8px;font-size:12px;color:#64748b;">
+        New routes: <code>/career-specialist</code> (overview dashboard) + <code>/career-specialist/students</code> (list) + <code>/career-specialist/students/:id</code> (full profile)
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px;">Click your choice above or reply in the terminal.</p>

@@ -1,0 +1,772 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Lightforth//SBU MD Contextual//EN
+BEGIN:VEVENT
+DTSTART:20260610T090000
+DTEND:20260610T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260610T150000
+DTEND:20260610T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260610T100000
+DTEND:20260610T103000
+SUMMARY:SBU Core Team Standup (Eng, Design, QA Leads)
+DESCRIPTION:CONTEXT: Engineering and Design tactical alignment.\nTOPICS:\n1. Squashing 8 Critical Production Bugs.\n2. AI Response Latency (4s -> 1.5s target).\n3. Weekly sprint velocity check.\nCOLLABORATORS: FE Lead, FS Lead, QA Lead, Design Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260610T103000
+DTEND:20260610T113000
+SUMMARY:Growth & Marketing Strategy (w/ Growth Lead)
+DESCRIPTION:CONTEXT: Managing the Acquisition Engine.\nTOPICS:\n1. Influencer / UGC acquisition system status.\n2. Landing Page 18% Conversion strategy.\n3. Approve Copy/Pricing experiments for 6.0% Paywall target.\nCOLLABORATOR: Growth Marketing Manager.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260610T130000
+DTEND:20260610T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260610T151500
+DTEND:20260610T164500
+SUMMARY:CVO Strategic Deep Dive (w/ Tolulope Michael)
+DESCRIPTION:CONTEXT: Primary strategic alignment (Bi-Weekly, CST Priority).\nTOPICS:\n1. SBU Revenue Contribution Rationale.\n2. Scaling the Agent Swarm for the US Market.\n3. High-level SBU organizational health.\nCOLLABORATOR: Tolulope Michael (CVO).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260611T090000
+DTEND:20260611T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260611T150000
+DTEND:20260611T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260611T110000
+DTEND:20260611T120000
+SUMMARY:QA Testing & Product Talk (w/ QA Lead)
+DESCRIPTION:CONTEXT: Technical reliability check.\nACTION:\n1. Production bug triage (8 -> 0 target).\n2. Automated testing coverage for Agent Swarm.\n3. Pre-launch feature validation.\nCOLLABORATOR: QA Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260611T130000
+DTEND:20260611T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260611T143000
+DTEND:20260611T153000
+SUMMARY:SSM Sync: Agent AI & Desktop App (w/ Senior SSM Manager)
+DESCRIPTION:CONTEXT: Service Delivery & Student Success.\nACTION:\n1. Scaling Career-Specialist Agent AI for 45 students.\n2. Ensure 100% Desktop App adoption for interview students.\n3. Audit Auto-Application engine success rate.\nCOLLABORATORS: Senior SSM Manager, Agent Ops Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260611T160000
+DTEND:20260611T170000
+SUMMARY:Ops Strategy: KPI/OKR Tracking (w/ Ops Lead)
+DESCRIPTION:CONTEXT: Maintaining Infrastructure & System Performance.\nAGREEMENTS:\n1. Solution for 22% Payment Failure Rate.\n2. Stabilize Digital Ocean production env.\n3. Track Weekly task completion & Operational OKRs.\nCOLLABORATORS: Ops Lead, Infrastructure/DevOps Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260612T090000
+DTEND:20260612T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260612T150000
+DTEND:20260612T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260612T100000
+DTEND:20260612T103000
+SUMMARY:SBU Core Team Standup (Eng, Design, QA Leads)
+DESCRIPTION:CONTEXT: Engineering and Design tactical alignment.\nTOPICS:\n1. Squashing 8 Critical Production Bugs.\n2. AI Response Latency (4s -> 1.5s target).\n3. Weekly sprint velocity check.\nCOLLABORATORS: FE Lead, FS Lead, QA Lead, Design Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260612T130000
+DTEND:20260612T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260612T143000
+DTEND:20260612T160000
+SUMMARY:HOP Strategic Alignment (w/ Head of Product)
+DESCRIPTION:CONTEXT: Product strategy and SBU budgeting session.\nTOPICS:\n1. Resource allocation for upcoming 8-week milestones.\n2. Feature prioritisation based on revenue impact.\n3. SBU Roadmap health check.\nCOLLABORATOR: Head of Product (HOP).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260612T160000
+DTEND:20260612T173000
+SUMMARY:Performance Tracking & Stakeholder Report (CST)
+DESCRIPTION:CONTEXT: Weekly Quarter Tracking for CST-based leadership.\nTOPICS:\n1. Total Revenue Growth (+35% MoM status).\n2. Strategic roadblocks in US Market expansion.\n3. Resource allocation & SBU P&L health.\nCOLLABORATORS: Tolulope Michael (CVO), HOP, Stakeholders.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260615T090000
+DTEND:20260615T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260615T150000
+DTEND:20260615T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260615T100000
+DTEND:20260615T103000
+SUMMARY:SBU Core Team Standup (Eng, Design, QA Leads)
+DESCRIPTION:CONTEXT: Engineering and Design tactical alignment.\nTOPICS:\n1. Squashing 8 Critical Production Bugs.\n2. AI Response Latency (4s -> 1.5s target).\n3. Weekly sprint velocity check.\nCOLLABORATORS: FE Lead, FS Lead, QA Lead, Design Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260615T130000
+DTEND:20260615T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260615T143000
+DTEND:20260615T153000
+SUMMARY:SSM Sync: Agent AI & Desktop App (w/ Senior SSM Manager)
+DESCRIPTION:CONTEXT: Service Delivery & Student Success.\nACTION:\n1. Scaling Career-Specialist Agent AI for 45 students.\n2. Ensure 100% Desktop App adoption for interview students.\n3. Audit Auto-Application engine success rate.\nCOLLABORATORS: Senior SSM Manager, Agent Ops Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260615T160000
+DTEND:20260615T173000
+SUMMARY:Performance Tracking & Stakeholder Report (CST)
+DESCRIPTION:CONTEXT: Weekly Quarter Tracking for CST-based leadership.\nTOPICS:\n1. Total Revenue Growth (+35% MoM status).\n2. Strategic roadblocks in US Market expansion.\n3. Resource allocation & SBU P&L health.\nCOLLABORATORS: Tolulope Michael (CVO), HOP, Stakeholders.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260616T090000
+DTEND:20260616T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260616T150000
+DTEND:20260616T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260616T103000
+DTEND:20260616T123000
+SUMMARY:Eng Blitz: Talk & Test (w/ FE & FS Leads)
+DESCRIPTION:CONTEXT: Quality control and feature validation.\nACTION:\n1. Hands-on testing of Agent AI Swarm performance.\n2. Test 'Chat with Resume' and 'Resume Section Acceptance'.\n3. Ensure premium Student Experience standards.\nCOLLABORATORS: Front-End (FE) Lead, Full-Stack (FS) Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260616T130000
+DTEND:20260616T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260616T151500
+DTEND:20260616T161500
+SUMMARY:Design Strategy: Conversion Layer (w/ Lead Designer)
+DESCRIPTION:CONTEXT: Optimising visual conversion flows.\nAGREEMENTS:\n1. Redesign Paywall/Checkout for 49% drop-off reduction.\n2. 'Premium' visual audit for Mobile and Web app.\n3. Visual identity for UGC campaigns.\nCOLLABORATOR: Lead Product Designer.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260617T090000
+DTEND:20260617T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260617T150000
+DTEND:20260617T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260617T100000
+DTEND:20260617T103000
+SUMMARY:SBU Core Team Standup (Eng, Design, QA Leads)
+DESCRIPTION:CONTEXT: Engineering and Design tactical alignment.\nTOPICS:\n1. Squashing 8 Critical Production Bugs.\n2. AI Response Latency (4s -> 1.5s target).\n3. Weekly sprint velocity check.\nCOLLABORATORS: FE Lead, FS Lead, QA Lead, Design Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260617T103000
+DTEND:20260617T113000
+SUMMARY:Growth & Marketing Strategy (w/ Growth Lead)
+DESCRIPTION:CONTEXT: Managing the Acquisition Engine.\nTOPICS:\n1. Influencer / UGC acquisition system status.\n2. Landing Page 18% Conversion strategy.\n3. Approve Copy/Pricing experiments for 6.0% Paywall target.\nCOLLABORATOR: Growth Marketing Manager.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260617T130000
+DTEND:20260617T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260617T151500
+DTEND:20260617T164500
+SUMMARY:CVO Strategic Deep Dive (w/ Tolulope Michael)
+DESCRIPTION:CONTEXT: Primary strategic alignment (Bi-Weekly, CST Priority).\nTOPICS:\n1. SBU Revenue Contribution Rationale.\n2. Scaling the Agent Swarm for the US Market.\n3. High-level SBU organizational health.\nCOLLABORATOR: Tolulope Michael (CVO).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260618T090000
+DTEND:20260618T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260618T150000
+DTEND:20260618T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260618T110000
+DTEND:20260618T120000
+SUMMARY:QA Testing & Product Talk (w/ QA Lead)
+DESCRIPTION:CONTEXT: Technical reliability check.\nACTION:\n1. Production bug triage (8 -> 0 target).\n2. Automated testing coverage for Agent Swarm.\n3. Pre-launch feature validation.\nCOLLABORATOR: QA Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260618T130000
+DTEND:20260618T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260618T143000
+DTEND:20260618T153000
+SUMMARY:SSM Sync: Agent AI & Desktop App (w/ Senior SSM Manager)
+DESCRIPTION:CONTEXT: Service Delivery & Student Success.\nACTION:\n1. Scaling Career-Specialist Agent AI for 45 students.\n2. Ensure 100% Desktop App adoption for interview students.\n3. Audit Auto-Application engine success rate.\nCOLLABORATORS: Senior SSM Manager, Agent Ops Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260618T160000
+DTEND:20260618T170000
+SUMMARY:Ops Strategy: KPI/OKR Tracking (w/ Ops Lead)
+DESCRIPTION:CONTEXT: Maintaining Infrastructure & System Performance.\nAGREEMENTS:\n1. Solution for 22% Payment Failure Rate.\n2. Stabilize Digital Ocean production env.\n3. Track Weekly task completion & Operational OKRs.\nCOLLABORATORS: Ops Lead, Infrastructure/DevOps Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260619T090000
+DTEND:20260619T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260619T150000
+DTEND:20260619T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260619T100000
+DTEND:20260619T103000
+SUMMARY:SBU Core Team Standup (Eng, Design, QA Leads)
+DESCRIPTION:CONTEXT: Engineering and Design tactical alignment.\nTOPICS:\n1. Squashing 8 Critical Production Bugs.\n2. AI Response Latency (4s -> 1.5s target).\n3. Weekly sprint velocity check.\nCOLLABORATORS: FE Lead, FS Lead, QA Lead, Design Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260619T130000
+DTEND:20260619T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260619T143000
+DTEND:20260619T160000
+SUMMARY:HOP Strategic Alignment (w/ Head of Product)
+DESCRIPTION:CONTEXT: Product strategy and SBU budgeting session.\nTOPICS:\n1. Resource allocation for upcoming 8-week milestones.\n2. Feature prioritisation based on revenue impact.\n3. SBU Roadmap health check.\nCOLLABORATOR: Head of Product (HOP).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260619T160000
+DTEND:20260619T173000
+SUMMARY:Performance Tracking & Stakeholder Report (CST)
+DESCRIPTION:CONTEXT: Weekly Quarter Tracking for CST-based leadership.\nTOPICS:\n1. Total Revenue Growth (+35% MoM status).\n2. Strategic roadblocks in US Market expansion.\n3. Resource allocation & SBU P&L health.\nCOLLABORATORS: Tolulope Michael (CVO), HOP, Stakeholders.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260622T090000
+DTEND:20260622T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260622T150000
+DTEND:20260622T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260622T100000
+DTEND:20260622T103000
+SUMMARY:SBU Core Team Standup (Eng, Design, QA Leads)
+DESCRIPTION:CONTEXT: Engineering and Design tactical alignment.\nTOPICS:\n1. Squashing 8 Critical Production Bugs.\n2. AI Response Latency (4s -> 1.5s target).\n3. Weekly sprint velocity check.\nCOLLABORATORS: FE Lead, FS Lead, QA Lead, Design Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260622T130000
+DTEND:20260622T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260622T143000
+DTEND:20260622T153000
+SUMMARY:SSM Sync: Agent AI & Desktop App (w/ Senior SSM Manager)
+DESCRIPTION:CONTEXT: Service Delivery & Student Success.\nACTION:\n1. Scaling Career-Specialist Agent AI for 45 students.\n2. Ensure 100% Desktop App adoption for interview students.\n3. Audit Auto-Application engine success rate.\nCOLLABORATORS: Senior SSM Manager, Agent Ops Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260622T160000
+DTEND:20260622T173000
+SUMMARY:Performance Tracking & Stakeholder Report (CST)
+DESCRIPTION:CONTEXT: Weekly Quarter Tracking for CST-based leadership.\nTOPICS:\n1. Total Revenue Growth (+35% MoM status).\n2. Strategic roadblocks in US Market expansion.\n3. Resource allocation & SBU P&L health.\nCOLLABORATORS: Tolulope Michael (CVO), HOP, Stakeholders.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260623T090000
+DTEND:20260623T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260623T150000
+DTEND:20260623T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260623T103000
+DTEND:20260623T123000
+SUMMARY:Eng Blitz: Talk & Test (w/ FE & FS Leads)
+DESCRIPTION:CONTEXT: Quality control and feature validation.\nACTION:\n1. Hands-on testing of Agent AI Swarm performance.\n2. Test 'Chat with Resume' and 'Resume Section Acceptance'.\n3. Ensure premium Student Experience standards.\nCOLLABORATORS: Front-End (FE) Lead, Full-Stack (FS) Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260623T130000
+DTEND:20260623T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260623T151500
+DTEND:20260623T161500
+SUMMARY:Design Strategy: Conversion Layer (w/ Lead Designer)
+DESCRIPTION:CONTEXT: Optimising visual conversion flows.\nAGREEMENTS:\n1. Redesign Paywall/Checkout for 49% drop-off reduction.\n2. 'Premium' visual audit for Mobile and Web app.\n3. Visual identity for UGC campaigns.\nCOLLABORATOR: Lead Product Designer.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260624T090000
+DTEND:20260624T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260624T150000
+DTEND:20260624T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260624T100000
+DTEND:20260624T103000
+SUMMARY:SBU Core Team Standup (Eng, Design, QA Leads)
+DESCRIPTION:CONTEXT: Engineering and Design tactical alignment.\nTOPICS:\n1. Squashing 8 Critical Production Bugs.\n2. AI Response Latency (4s -> 1.5s target).\n3. Weekly sprint velocity check.\nCOLLABORATORS: FE Lead, FS Lead, QA Lead, Design Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260624T103000
+DTEND:20260624T113000
+SUMMARY:Growth & Marketing Strategy (w/ Growth Lead)
+DESCRIPTION:CONTEXT: Managing the Acquisition Engine.\nTOPICS:\n1. Influencer / UGC acquisition system status.\n2. Landing Page 18% Conversion strategy.\n3. Approve Copy/Pricing experiments for 6.0% Paywall target.\nCOLLABORATOR: Growth Marketing Manager.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260624T130000
+DTEND:20260624T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260624T151500
+DTEND:20260624T164500
+SUMMARY:CVO Strategic Deep Dive (w/ Tolulope Michael)
+DESCRIPTION:CONTEXT: Primary strategic alignment (Bi-Weekly, CST Priority).\nTOPICS:\n1. SBU Revenue Contribution Rationale.\n2. Scaling the Agent Swarm for the US Market.\n3. High-level SBU organizational health.\nCOLLABORATOR: Tolulope Michael (CVO).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260625T090000
+DTEND:20260625T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260625T150000
+DTEND:20260625T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260625T110000
+DTEND:20260625T120000
+SUMMARY:QA Testing & Product Talk (w/ QA Lead)
+DESCRIPTION:CONTEXT: Technical reliability check.\nACTION:\n1. Production bug triage (8 -> 0 target).\n2. Automated testing coverage for Agent Swarm.\n3. Pre-launch feature validation.\nCOLLABORATOR: QA Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260625T130000
+DTEND:20260625T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260625T143000
+DTEND:20260625T153000
+SUMMARY:SSM Sync: Agent AI & Desktop App (w/ Senior SSM Manager)
+DESCRIPTION:CONTEXT: Service Delivery & Student Success.\nACTION:\n1. Scaling Career-Specialist Agent AI for 45 students.\n2. Ensure 100% Desktop App adoption for interview students.\n3. Audit Auto-Application engine success rate.\nCOLLABORATORS: Senior SSM Manager, Agent Ops Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260625T160000
+DTEND:20260625T170000
+SUMMARY:Ops Strategy: KPI/OKR Tracking (w/ Ops Lead)
+DESCRIPTION:CONTEXT: Maintaining Infrastructure & System Performance.\nAGREEMENTS:\n1. Solution for 22% Payment Failure Rate.\n2. Stabilize Digital Ocean production env.\n3. Track Weekly task completion & Operational OKRs.\nCOLLABORATORS: Ops Lead, Infrastructure/DevOps Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260626T090000
+DTEND:20260626T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260626T150000
+DTEND:20260626T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260626T100000
+DTEND:20260626T103000
+SUMMARY:SBU Core Team Standup (Eng, Design, QA Leads)
+DESCRIPTION:CONTEXT: Engineering and Design tactical alignment.\nTOPICS:\n1. Squashing 8 Critical Production Bugs.\n2. AI Response Latency (4s -> 1.5s target).\n3. Weekly sprint velocity check.\nCOLLABORATORS: FE Lead, FS Lead, QA Lead, Design Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260626T130000
+DTEND:20260626T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260626T143000
+DTEND:20260626T160000
+SUMMARY:HOP Strategic Alignment (w/ Head of Product)
+DESCRIPTION:CONTEXT: Product strategy and SBU budgeting session.\nTOPICS:\n1. Resource allocation for upcoming 8-week milestones.\n2. Feature prioritisation based on revenue impact.\n3. SBU Roadmap health check.\nCOLLABORATOR: Head of Product (HOP).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260626T160000
+DTEND:20260626T173000
+SUMMARY:Performance Tracking & Stakeholder Report (CST)
+DESCRIPTION:CONTEXT: Weekly Quarter Tracking for CST-based leadership.\nTOPICS:\n1. Total Revenue Growth (+35% MoM status).\n2. Strategic roadblocks in US Market expansion.\n3. Resource allocation & SBU P&L health.\nCOLLABORATORS: Tolulope Michael (CVO), HOP, Stakeholders.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260629T090000
+DTEND:20260629T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260629T150000
+DTEND:20260629T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260629T100000
+DTEND:20260629T103000
+SUMMARY:SBU Core Team Standup (Eng, Design, QA Leads)
+DESCRIPTION:CONTEXT: Engineering and Design tactical alignment.\nTOPICS:\n1. Squashing 8 Critical Production Bugs.\n2. AI Response Latency (4s -> 1.5s target).\n3. Weekly sprint velocity check.\nCOLLABORATORS: FE Lead, FS Lead, QA Lead, Design Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260629T130000
+DTEND:20260629T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260629T143000
+DTEND:20260629T153000
+SUMMARY:SSM Sync: Agent AI & Desktop App (w/ Senior SSM Manager)
+DESCRIPTION:CONTEXT: Service Delivery & Student Success.\nACTION:\n1. Scaling Career-Specialist Agent AI for 45 students.\n2. Ensure 100% Desktop App adoption for interview students.\n3. Audit Auto-Application engine success rate.\nCOLLABORATORS: Senior SSM Manager, Agent Ops Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260629T160000
+DTEND:20260629T173000
+SUMMARY:Performance Tracking & Stakeholder Report (CST)
+DESCRIPTION:CONTEXT: Weekly Quarter Tracking for CST-based leadership.\nTOPICS:\n1. Total Revenue Growth (+35% MoM status).\n2. Strategic roadblocks in US Market expansion.\n3. Resource allocation & SBU P&L health.\nCOLLABORATORS: Tolulope Michael (CVO), HOP, Stakeholders.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260630T090000
+DTEND:20260630T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260630T150000
+DTEND:20260630T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260630T103000
+DTEND:20260630T123000
+SUMMARY:Eng Blitz: Talk & Test (w/ FE & FS Leads)
+DESCRIPTION:CONTEXT: Quality control and feature validation.\nACTION:\n1. Hands-on testing of Agent AI Swarm performance.\n2. Test 'Chat with Resume' and 'Resume Section Acceptance'.\n3. Ensure premium Student Experience standards.\nCOLLABORATORS: Front-End (FE) Lead, Full-Stack (FS) Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260630T130000
+DTEND:20260630T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260630T151500
+DTEND:20260630T161500
+SUMMARY:Design Strategy: Conversion Layer (w/ Lead Designer)
+DESCRIPTION:CONTEXT: Optimising visual conversion flows.\nAGREEMENTS:\n1. Redesign Paywall/Checkout for 49% drop-off reduction.\n2. 'Premium' visual audit for Mobile and Web app.\n3. Visual identity for UGC campaigns.\nCOLLABORATOR: Lead Product Designer.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260701T090000
+DTEND:20260701T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260701T150000
+DTEND:20260701T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260701T100000
+DTEND:20260701T103000
+SUMMARY:SBU Core Team Standup (Eng, Design, QA Leads)
+DESCRIPTION:CONTEXT: Engineering and Design tactical alignment.\nTOPICS:\n1. Squashing 8 Critical Production Bugs.\n2. AI Response Latency (4s -> 1.5s target).\n3. Weekly sprint velocity check.\nCOLLABORATORS: FE Lead, FS Lead, QA Lead, Design Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260701T103000
+DTEND:20260701T113000
+SUMMARY:Growth & Marketing Strategy (w/ Growth Lead)
+DESCRIPTION:CONTEXT: Managing the Acquisition Engine.\nTOPICS:\n1. Influencer / UGC acquisition system status.\n2. Landing Page 18% Conversion strategy.\n3. Approve Copy/Pricing experiments for 6.0% Paywall target.\nCOLLABORATOR: Growth Marketing Manager.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260701T130000
+DTEND:20260701T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260701T151500
+DTEND:20260701T164500
+SUMMARY:CVO Strategic Deep Dive (w/ Tolulope Michael)
+DESCRIPTION:CONTEXT: Primary strategic alignment (Bi-Weekly, CST Priority).\nTOPICS:\n1. SBU Revenue Contribution Rationale.\n2. Scaling the Agent Swarm for the US Market.\n3. High-level SBU organizational health.\nCOLLABORATOR: Tolulope Michael (CVO).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260702T090000
+DTEND:20260702T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260702T150000
+DTEND:20260702T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260702T110000
+DTEND:20260702T120000
+SUMMARY:QA Testing & Product Talk (w/ QA Lead)
+DESCRIPTION:CONTEXT: Technical reliability check.\nACTION:\n1. Production bug triage (8 -> 0 target).\n2. Automated testing coverage for Agent Swarm.\n3. Pre-launch feature validation.\nCOLLABORATOR: QA Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260702T130000
+DTEND:20260702T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260702T143000
+DTEND:20260702T153000
+SUMMARY:SSM Sync: Agent AI & Desktop App (w/ Senior SSM Manager)
+DESCRIPTION:CONTEXT: Service Delivery & Student Success.\nACTION:\n1. Scaling Career-Specialist Agent AI for 45 students.\n2. Ensure 100% Desktop App adoption for interview students.\n3. Audit Auto-Application engine success rate.\nCOLLABORATORS: Senior SSM Manager, Agent Ops Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260702T160000
+DTEND:20260702T170000
+SUMMARY:Ops Strategy: KPI/OKR Tracking (w/ Ops Lead)
+DESCRIPTION:CONTEXT: Maintaining Infrastructure & System Performance.\nAGREEMENTS:\n1. Solution for 22% Payment Failure Rate.\n2. Stabilize Digital Ocean production env.\n3. Track Weekly task completion & Operational OKRs.\nCOLLABORATORS: Ops Lead, Infrastructure/DevOps Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260703T090000
+DTEND:20260703T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260703T150000
+DTEND:20260703T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260703T100000
+DTEND:20260703T103000
+SUMMARY:SBU Core Team Standup (Eng, Design, QA Leads)
+DESCRIPTION:CONTEXT: Engineering and Design tactical alignment.\nTOPICS:\n1. Squashing 8 Critical Production Bugs.\n2. AI Response Latency (4s -> 1.5s target).\n3. Weekly sprint velocity check.\nCOLLABORATORS: FE Lead, FS Lead, QA Lead, Design Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260703T130000
+DTEND:20260703T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260703T143000
+DTEND:20260703T160000
+SUMMARY:HOP Strategic Alignment (w/ Head of Product)
+DESCRIPTION:CONTEXT: Product strategy and SBU budgeting session.\nTOPICS:\n1. Resource allocation for upcoming 8-week milestones.\n2. Feature prioritisation based on revenue impact.\n3. SBU Roadmap health check.\nCOLLABORATOR: Head of Product (HOP).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260703T160000
+DTEND:20260703T173000
+SUMMARY:Performance Tracking & Stakeholder Report (CST)
+DESCRIPTION:CONTEXT: Weekly Quarter Tracking for CST-based leadership.\nTOPICS:\n1. Total Revenue Growth (+35% MoM status).\n2. Strategic roadblocks in US Market expansion.\n3. Resource allocation & SBU P&L health.\nCOLLABORATORS: Tolulope Michael (CVO), HOP, Stakeholders.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260706T090000
+DTEND:20260706T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260706T150000
+DTEND:20260706T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260706T100000
+DTEND:20260706T103000
+SUMMARY:SBU Core Team Standup (Eng, Design, QA Leads)
+DESCRIPTION:CONTEXT: Engineering and Design tactical alignment.\nTOPICS:\n1. Squashing 8 Critical Production Bugs.\n2. AI Response Latency (4s -> 1.5s target).\n3. Weekly sprint velocity check.\nCOLLABORATORS: FE Lead, FS Lead, QA Lead, Design Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260706T130000
+DTEND:20260706T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260706T143000
+DTEND:20260706T153000
+SUMMARY:SSM Sync: Agent AI & Desktop App (w/ Senior SSM Manager)
+DESCRIPTION:CONTEXT: Service Delivery & Student Success.\nACTION:\n1. Scaling Career-Specialist Agent AI for 45 students.\n2. Ensure 100% Desktop App adoption for interview students.\n3. Audit Auto-Application engine success rate.\nCOLLABORATORS: Senior SSM Manager, Agent Ops Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260706T160000
+DTEND:20260706T173000
+SUMMARY:Performance Tracking & Stakeholder Report (CST)
+DESCRIPTION:CONTEXT: Weekly Quarter Tracking for CST-based leadership.\nTOPICS:\n1. Total Revenue Growth (+35% MoM status).\n2. Strategic roadblocks in US Market expansion.\n3. Resource allocation & SBU P&L health.\nCOLLABORATORS: Tolulope Michael (CVO), HOP, Stakeholders.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260707T090000
+DTEND:20260707T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260707T150000
+DTEND:20260707T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260707T103000
+DTEND:20260707T123000
+SUMMARY:Eng Blitz: Talk & Test (w/ FE & FS Leads)
+DESCRIPTION:CONTEXT: Quality control and feature validation.\nACTION:\n1. Hands-on testing of Agent AI Swarm performance.\n2. Test 'Chat with Resume' and 'Resume Section Acceptance'.\n3. Ensure premium Student Experience standards.\nCOLLABORATORS: Front-End (FE) Lead, Full-Stack (FS) Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260707T130000
+DTEND:20260707T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260707T151500
+DTEND:20260707T161500
+SUMMARY:Design Strategy: Conversion Layer (w/ Lead Designer)
+DESCRIPTION:CONTEXT: Optimising visual conversion flows.\nAGREEMENTS:\n1. Redesign Paywall/Checkout for 49% drop-off reduction.\n2. 'Premium' visual audit for Mobile and Web app.\n3. Visual identity for UGC campaigns.\nCOLLABORATOR: Lead Product Designer.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260708T090000
+DTEND:20260708T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260708T150000
+DTEND:20260708T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260708T100000
+DTEND:20260708T103000
+SUMMARY:SBU Core Team Standup (Eng, Design, QA Leads)
+DESCRIPTION:CONTEXT: Engineering and Design tactical alignment.\nTOPICS:\n1. Squashing 8 Critical Production Bugs.\n2. AI Response Latency (4s -> 1.5s target).\n3. Weekly sprint velocity check.\nCOLLABORATORS: FE Lead, FS Lead, QA Lead, Design Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260708T103000
+DTEND:20260708T113000
+SUMMARY:Growth & Marketing Strategy (w/ Growth Lead)
+DESCRIPTION:CONTEXT: Managing the Acquisition Engine.\nTOPICS:\n1. Influencer / UGC acquisition system status.\n2. Landing Page 18% Conversion strategy.\n3. Approve Copy/Pricing experiments for 6.0% Paywall target.\nCOLLABORATOR: Growth Marketing Manager.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260708T130000
+DTEND:20260708T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260708T151500
+DTEND:20260708T164500
+SUMMARY:CVO Strategic Deep Dive (w/ Tolulope Michael)
+DESCRIPTION:CONTEXT: Primary strategic alignment (Bi-Weekly, CST Priority).\nTOPICS:\n1. SBU Revenue Contribution Rationale.\n2. Scaling the Agent Swarm for the US Market.\n3. High-level SBU organizational health.\nCOLLABORATOR: Tolulope Michael (CVO).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260709T090000
+DTEND:20260709T100000
+SUMMARY:SBU Health Audit (w/ BI Analyst)
+DESCRIPTION:AGENDA:\n1. Audit Q2 OKR Dashboard.\n2. Review Revenue Split: 21% NG vs 79% INT.\n3. Track 5.5% Conversion Target status.\n4. Check CAC status ($31 vs $18 target).\nCOLLABORATOR: BI Analyst.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260709T150000
+DTEND:20260709T151500
+SUMMARY:Executive Daily Report (to Chief of Staff)
+DESCRIPTION:CONTEXT: Strategic written brief on SBU performance.\nAGREEMENTS:\n1. Update on daily wins/blockers.\n2. KPI movement vs Q2 OKRs.\n3. Upcoming high-priority maneuvers.\nCOLLABORATOR: Chief of Staff (COS).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260709T110000
+DTEND:20260709T120000
+SUMMARY:QA Testing & Product Talk (w/ QA Lead)
+DESCRIPTION:CONTEXT: Technical reliability check.\nACTION:\n1. Production bug triage (8 -> 0 target).\n2. Automated testing coverage for Agent Swarm.\n3. Pre-launch feature validation.\nCOLLABORATOR: QA Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260709T130000
+DTEND:20260709T143000
+SUMMARY:Strategic SBU Management (Solo Deep Work)
+DESCRIPTION:FOCUS: High-level SBU strategy and documentation.\nTASKS:\n1. Activation Efficiency Plan (solve 58% onboarding drop-off).\n2. Update PRDs for Week 6 Go-Live.\n3. Forecast 500 Paid User milestone timeline.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260709T143000
+DTEND:20260709T153000
+SUMMARY:SSM Sync: Agent AI & Desktop App (w/ Senior SSM Manager)
+DESCRIPTION:CONTEXT: Service Delivery & Student Success.\nACTION:\n1. Scaling Career-Specialist Agent AI for 45 students.\n2. Ensure 100% Desktop App adoption for interview students.\n3. Audit Auto-Application engine success rate.\nCOLLABORATORS: Senior SSM Manager, Agent Ops Lead.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260709T160000
+DTEND:20260709T170000
+SUMMARY:Ops Strategy: KPI/OKR Tracking (w/ Ops Lead)
+DESCRIPTION:CONTEXT: Maintaining Infrastructure & System Performance.\nAGREEMENTS:\n1. Solution for 22% Payment Failure Rate.\n2. Stabilize Digital Ocean production env.\n3. Track Weekly task completion & Operational OKRs.\nCOLLABORATORS: Ops Lead, Infrastructure/DevOps Lead.
+END:VEVENT
+END:VCALENDAR

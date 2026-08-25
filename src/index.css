@@ -1,0 +1,218 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+@import './tokens/theme.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-size: 90%;
+  }
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+}
+
+@layer components {
+  .lf-page-shell {
+    @apply mx-auto w-full max-w-6xl;
+  }
+
+  .lf-page-stack {
+    @apply mx-auto w-full max-w-6xl space-y-6;
+  }
+
+  .lf-page-header {
+    @apply mb-8;
+  }
+
+  .lf-panel {
+    @apply rounded-lg border border-border bg-surface shadow-sm;
+  }
+
+  .lf-input {
+    @apply h-10 w-full rounded-lg border border-input bg-surface px-3 text-sm text-ink outline-none transition-colors placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-focus disabled:cursor-not-allowed disabled:bg-surface-subtle disabled:text-muted;
+  }
+
+  .lf-select {
+    @apply h-10 w-full appearance-none rounded-lg border border-input bg-surface px-3 pr-9 text-sm text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-focus;
+  }
+
+  .lf-tabs {
+    @apply flex gap-6 overflow-x-auto border-b border-border;
+  }
+
+  .lf-tab {
+    @apply shrink-0 whitespace-nowrap border-b-2 border-transparent pb-2 text-sm font-medium text-ink-muted transition-colors hover:text-ink;
+  }
+
+  .lf-tab-active {
+    @apply border-accent text-accent-text;
+  }
+
+  .lf-table-wrap {
+    @apply overflow-x-auto rounded-lg border border-border bg-surface;
+  }
+
+  .lf-table {
+    @apply min-w-[720px] w-full text-left text-sm;
+  }
+
+  .lf-table-head {
+    @apply bg-surface-subtle text-xs font-semibold text-ink-muted;
+  }
+
+  .lf-table-th {
+    @apply px-4 py-3 font-semibold;
+  }
+
+  .lf-table-row {
+    @apply border-b border-border transition-colors last:border-b-0 hover:bg-surface-subtle;
+  }
+
+  .lf-table-cell {
+    @apply px-4 py-4;
+  }
+
+  .lf-page-title {
+    @apply text-2xl font-bold leading-tight tracking-normal text-ink;
+  }
+
+  .lf-overlay-title {
+    @apply text-2xl font-bold leading-tight tracking-normal text-ink md:text-3xl;
+  }
+
+  .lf-section-title {
+    @apply text-lg font-bold leading-snug tracking-normal text-ink;
+  }
+
+  .lf-card-title {
+    @apply text-base font-bold leading-snug tracking-normal text-ink;
+  }
+
+  .lf-body {
+    @apply text-sm leading-6 text-ink-muted;
+  }
+
+  .lf-label {
+    @apply text-sm font-medium text-ink;
+  }
+
+  .lf-btn {
+    @apply inline-flex h-9 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg bg-accent px-3.5 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .lf-btn-outline {
+    @apply inline-flex h-9 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg border border-border bg-surface px-3.5 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:pointer-events-none disabled:opacity-50;
+  }
+}
+
+@media (max-width: 640px) {
+  .lf-table-wrap,
+  .lf-panel .overflow-x-auto {
+    overflow-x: visible;
+  }
+
+  .lf-table {
+    min-width: 0;
+    display: block;
+  }
+
+  .lf-table-head {
+    display: none;
+  }
+
+  .lf-table tbody {
+    display: block;
+  }
+
+  .lf-table-row {
+    display: block;
+    margin: 0.75rem;
+    border: 1px solid var(--lf-border);
+    border-radius: 0.5rem;
+    background: var(--lf-surface);
+    overflow: hidden;
+  }
+
+  .lf-table-cell {
+    display: block;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--lf-border);
+  }
+
+  .lf-table-cell:last-child {
+    border-bottom: 0;
+  }
+
+  .lf-table-cell.hidden {
+    display: none;
+  }
+}
+
+@layer utilities {
+  @keyframes uploadCtaPulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(19, 74, 190, 0);
+      transform: translateY(0);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(19, 74, 190, 0.08);
+      transform: translateY(-1px);
+    }
+  }
+
+  .upload-cta-pulse {
+    animation: uploadCtaPulse 2.4s ease-in-out infinite;
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.25s ease-out;
+  }
+
+  @keyframes easeInBottom {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-ease-in-bottom {
+    animation: easeInBottom 0.35s ease-out;
+  }
+
+  @keyframes skeletonPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.7; }
+  }
+
+  .animate-skeleton-pulse {
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+  }
+}
