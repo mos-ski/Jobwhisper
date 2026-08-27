@@ -6,7 +6,7 @@ import { useState, type ReactNode } from 'react'
 import type { DashboardAction, DashboardActionId, DashboardInstallPrompt, DashboardNavItem } from '@/contracts/dashboard.draft'
 import type { UserIdentity } from '@/contracts/identity'
 import { formatCredits, usagePercent } from '@/lib/credits'
-import { Button, cn, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, JobwhisperMark, SideMenu } from '@/ui'
+import { Button, cn, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, JobwhisperIcon, JobwhisperMark, SideMenu } from '@/ui'
 import { BriefcaseActionIcon, CopilotActionIcon, MonitorActionIcon, ResumeActionIcon } from './dashboard-action-icons'
 import {
   AutoApplyIcon,
@@ -313,7 +313,7 @@ function DashboardHeader({
         <MobileNavDrawer navItems={navItems} />
         <a href="/v3" className="inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus" aria-label="Jobwhisper home">
           {collapsed ? (
-            <img src="/v3-assets/Logo%20icon.svg" alt="" className="size-7" />
+            <JobwhisperIcon className="size-7 text-brand-mark" />
           ) : (
             <JobwhisperMark className="h-7 w-auto text-brand-mark" />
           )}
