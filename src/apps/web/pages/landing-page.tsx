@@ -131,12 +131,28 @@ function LandingHero() {
 
 function LandingDemo({ onOpenDemo }: { readonly onOpenDemo: () => void }) {
   return (
-    <section className="relative mt-8 sm:mt-16 lg:mt-[120px] mx-4 sm:mx-8 lg:mx-[113px] h-[480px] sm:h-[680px] lg:h-[912px] rounded-xl overflow-hidden">
-      <img
-        src="/landing-demo.png"
-        alt="Jobwhisper app interface"
-        className="absolute inset-0 w-full h-full object-cover object-top"
+    <section
+      onClick={onOpenDemo}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          onOpenDemo()
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label="Open the interactive Jobwhisper demo"
+      className="group relative mt-8 sm:mt-16 lg:mt-[120px] mx-4 sm:mx-8 lg:mx-[113px] h-[480px] sm:h-[680px] lg:h-[912px] rounded-xl overflow-hidden cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+    >
+      <video
+        src="/MacBook-Pro-14-25.mp4"
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.03]"
       />
+      <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20" />
       <div className="absolute bottom-0 left-0 right-0 h-[540px] bg-gradient-to-b from-transparent to-landing-bg" />
       <div className="absolute bottom-[70px] left-0 right-0 flex flex-col items-center gap-4">
         <div className="flex flex-col items-center gap-3">
@@ -148,16 +164,13 @@ function LandingDemo({ onOpenDemo }: { readonly onOpenDemo: () => void }) {
             See how Jobwhisper works
           </h2>
           <p className="text-white/75 text-xs font-normal leading-4">
-            Let our agent walk you through our product
+            Hover to preview, click to try it yourself
           </p>
         </div>
-        <button
-          onClick={onOpenDemo}
-          className="flex items-center gap-2 bg-white rounded-full h-10 px-4 border border-transparent hover:bg-white/90 transition-colors"
-        >
+        <span className="flex items-center gap-2 rounded-full bg-white h-10 px-4 border border-transparent transition-colors group-hover:bg-white/90">
           <Play size={14} fill="black" className="text-black" />
           <span className="text-black text-sm font-normal leading-5 tracking-[-0.13px]">Start demo</span>
-        </button>
+        </span>
       </div>
     </section>
   )
@@ -257,7 +270,7 @@ export function LandingPage() {
 
   return (
     <div className="min-h-screen bg-landing-bg font-rethink overflow-x-hidden">
-      <LandingNav />
+      {demoOpen ? null : <LandingNav />}
       <LandingHero />
       <LandingDemo onOpenDemo={() => setDemoOpen(true)} />
       <LandingFeatures />
