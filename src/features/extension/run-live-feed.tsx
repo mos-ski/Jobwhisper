@@ -30,7 +30,7 @@ export function ExtensionRunLiveFeed({ boards, activeBoardId, appliedJobs, stats
   if (!activeBoard) return null
 
   return (
-    <div className="-mx-4 mt-3 shrink-0 border-t border-border bg-surface">
+    <div className="mt-3 shrink-0 overflow-hidden rounded-lg border border-border bg-surface">
       {expanded ? (
         <div className="max-h-64 overflow-y-auto px-4 py-3">
           {boards.map((board) => {

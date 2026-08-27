@@ -35,7 +35,7 @@ export function ExtensionRunTabView({
   onViewJobHistory,
 }: ExtensionRunTabViewProps) {
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex flex-1 flex-col">
       <div className="flex-1 overflow-y-auto">
         <ul role="list" className="grid gap-2">
           {boards.map((board) => {
