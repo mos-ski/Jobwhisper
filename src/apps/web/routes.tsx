@@ -46,6 +46,7 @@ import { ResumeUploadPage } from './pages/resume-upload-page'
 import { RouteIndexPage } from './pages/route-index-page'
 import { LibraryPage } from './pages/library-page'
 import { SettingsPage } from './pages/settings-page'
+import { ExtensionPage } from './pages/extension-page'
 
 export function WebRoutes() {
   const { pathname } = useLocation()
@@ -233,6 +234,10 @@ export function WebRoutes() {
 
   if (routePath === '/library') {
     return <LibraryPage />
+  }
+
+  if (routePath === '/extension') {
+    return <ExtensionPage />
   }
 
   return <RouteIndexPage />
