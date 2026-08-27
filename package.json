@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
-    "icons:extension": "node scripts/generate-extension-icons.mjs"
+    "icons:extension": "node scripts/generate-extension-icons.mjs",
+    "build:extension": "npm run icons:extension && vite build --config vite.extension.config.ts"
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-rc.0",
