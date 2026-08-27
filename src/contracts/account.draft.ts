@@ -26,6 +26,25 @@ export type BillingPlanCard = {
   readonly current?: boolean
 }
 
+// Resume Builder and Auto Apply — sold separately from every plan tier as recurring unlocks.
+export type BillingAddOnNestedUpsell = {
+  readonly name: string
+  readonly price: string
+  readonly cadence: string
+  readonly description: string
+}
+
+export type BillingAddOn = {
+  readonly id: string
+  readonly name: string
+  readonly price: string
+  readonly cadence: string
+  readonly description: string
+  readonly features: readonly string[]
+  readonly unlocked: boolean
+  readonly nestedUpsell: BillingAddOnNestedUpsell
+}
+
 export type TutorialItem = {
   readonly id: string
   readonly title: string

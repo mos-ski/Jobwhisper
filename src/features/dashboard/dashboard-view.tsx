@@ -399,7 +399,7 @@ function ActionCard({ action, onLockedClick }: { readonly action: DashboardActio
         data-variant="locked"
         onClick={() => onLockedClick(action)}
         className={cardClassName}
-        aria-label={`${action.title}. Requires a plan upgrade. ${action.description}`}
+        aria-label={`${action.title}. Requires an unlock. ${action.description}`}
       >
         {content}
       </button>
@@ -420,26 +420,30 @@ function ActionCard({ action, onLockedClick }: { readonly action: DashboardActio
 }
 
 function UpgradeDialog({ action, onOpenChange }: { readonly action: DashboardAction | null; readonly onOpenChange: (open: boolean) => void }) {
+  const dialogTitle = action?.lockCta ?? 'Upgrade to Premium'
+  const dialogMessage =
+    action?.lockMessage ?? `${action ? action.title : 'This feature'} is available on our Pro and Business plans. Upgrade your plan to unlock live AI assistance during meetings.`
+  const ctaLabel = action?.lockCta ?? 'Upgrade Plan'
+  const ctaHref = action?.lockHref ?? '/v3/billing'
+
   return (
     <Dialog open={action !== null} onOpenChange={onOpenChange}>
-      <DialogPopup aria-label="Upgrade to Premium">
+      <DialogPopup aria-label={dialogTitle}>
         <DialogClose />
         <span aria-hidden="true" className="grid size-11 place-items-center rounded-xl border border-border bg-surface-raised text-ink-muted shadow-control [&>svg]:size-5">
           <Lock aria-hidden="true" />
         </span>
-        <DialogTitle className="mt-4">Upgrade to Premium</DialogTitle>
-        <p className="mt-1 text-sm text-ink-muted">
-          {action ? action.title : 'This feature'} is available on our Pro and Business plans. Upgrade your plan to unlock live AI assistance during meetings.
-        </p>
+        <DialogTitle className="mt-4">{dialogTitle}</DialogTitle>
+        <p className="mt-1 text-sm text-ink-muted">{dialogMessage}</p>
         <div className="mt-6 flex justify-end gap-3">
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Not now
           </Button>
           <a
-            href="/v3/billing"
+            href={ctaHref}
             className="inline-flex min-h-10 items-center justify-center rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
-            Upgrade Plan
+            {ctaLabel}
           </a>
         </div>
       </DialogPopup>
@@ -497,8 +501,8 @@ function InstallPrompt({ installPrompt }: { readonly installPrompt: DashboardIns
     <section className="rounded-panel bg-accent-subtle p-3 lg:absolute lg:bottom-14 lg:end-8" aria-label="Install apps">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <img src={installPrompt.qrSrc} alt="QR code to install Jobwhisper apps" className="size-28 rounded-soft object-cover" />
-        <div className="grid gap-3">
-          <p className="text-base font-medium text-accent">{installPrompt.title}</p>
+        <div className="grid gap-3 pe-14 lg:pe-0">
+          <p className="line-clamp-2 text-base font-medium text-accent">{installPrompt.title}</p>
           <div className="flex flex-wrap gap-2">
             <a href={installPrompt.desktopHref} className="inline-flex min-h-8 items-center justify-center gap-1 rounded-pill bg-accent px-3 text-xs font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
               <Monitor aria-hidden="true" className="size-4" />

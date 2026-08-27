@@ -1,7 +1,7 @@
 import { AlertTriangle, Apple, Check, ChevronDown, Copy, ExternalLink, EyeOff, Monitor, Moon, Play, Sun, Upload } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 
-import type { BillingPlanCard, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
+import type { BillingAddOn, BillingPlanCard, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
 import { formatCredits } from '@/lib/credits'
 import {
   Accordion,
@@ -50,6 +50,7 @@ export type BillingWallet = {
 export type BillingViewProps = {
   readonly homeHref: string
   readonly plans: readonly BillingPlanCard[]
+  readonly addOns: readonly BillingAddOn[]
   readonly usageRows: readonly CreditUsageRow[]
   readonly wallet: BillingWallet
 }
@@ -460,7 +461,52 @@ function CreditUsageTable({ rows }: { readonly rows: readonly CreditUsageRow[] }
   )
 }
 
-export function BillingView({ homeHref, plans, usageRows, wallet }: BillingViewProps) {
+function AddOnCard({ addOn }: { readonly addOn: BillingAddOn }) {
+  const [unlocked, setUnlocked] = useState(addOn.unlocked)
+
+  return (
+    <article className={cn('flex flex-col gap-4 rounded-panel border p-5', unlocked ? 'border-positive bg-positive-surface/40' : 'border-border bg-surface')}>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-bold text-ink">{addOn.name}</h3>
+            {unlocked ? <span className="rounded-pill border border-positive bg-positive-surface px-2.5 py-0.5 text-xs font-semibold text-positive">Unlocked</span> : null}
+          </div>
+          <p className="mt-1 text-sm leading-5 text-ink-muted">{addOn.description}</p>
+        </div>
+        <p className="whitespace-nowrap text-end">
+          <span className="text-2xl font-black text-ink">{addOn.price}</span>{' '}
+          <span className="text-sm text-ink-muted">{addOn.cadence}</span>
+        </p>
+      </div>
+      <ul className="grid gap-1.5 text-sm text-ink-muted">
+        {addOn.features.map((feature) => (
+          <li key={feature} className="flex items-start gap-2">
+            <Check aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent" />
+            <span>{feature}</span>
+          </li>
+        ))}
+      </ul>
+      <Button variant={unlocked ? 'secondary' : 'primary'} disabled={unlocked} onClick={() => setUnlocked(true)} className="w-full sm:w-fit">
+        {unlocked ? 'Unlocked' : `Unlock ${addOn.name} — ${addOn.price}${addOn.cadence ? ` ${addOn.cadence}` : ''}`}
+      </Button>
+      <div className={cn('rounded-soft border border-dashed p-3', unlocked ? 'border-accent-muted bg-accent-subtle' : 'border-border bg-surface-subtle')}>
+        <p className="text-xs font-bold uppercase tracking-wide text-ink-muted">Further unlock</p>
+        <p className="mt-1 text-sm font-semibold text-ink">{addOn.nestedUpsell.name}</p>
+        <p className="mt-0.5 text-sm text-ink-muted">{addOn.nestedUpsell.description}</p>
+        {unlocked ? (
+          <p className="mt-2 text-sm font-semibold text-accent-text">
+            {addOn.nestedUpsell.price}{addOn.nestedUpsell.cadence ? ` ${addOn.nestedUpsell.cadence}` : ''}
+          </p>
+        ) : (
+          <p className="mt-2 text-xs text-ink-muted">Unlock {addOn.name} first to enable this.</p>
+        )}
+      </div>
+    </article>
+  )
+}
+
+export function BillingView({ homeHref, plans, addOns, usageRows, wallet }: BillingViewProps) {
   const [annual, setAnnual] = useState(true)
   const currentPlan = plans.find((plan) => plan.current) ?? plans[0]
   const currentIndex = currentPlan ? plans.indexOf(currentPlan) : 0
@@ -586,6 +632,19 @@ export function BillingView({ homeHref, plans, usageRows, wallet }: BillingViewP
               ))}
             </div>
           </TitledPanel>
+
+          <div id="add-ons">
+            <TitledPanel title="Add-ons">
+              <p className="mb-5 text-sm text-ink-muted">
+                Resume Builder and Auto Apply aren&apos;t included in any plan — unlock them separately, on top of your subscription.
+              </p>
+              <div className="grid gap-5 md:grid-cols-2">
+                {addOns.map((addOn) => (
+                  <AddOnCard key={addOn.id} addOn={addOn} />
+                ))}
+              </div>
+            </TitledPanel>
+          </div>
 
           <CreditUsageTable rows={usageRows} />
 

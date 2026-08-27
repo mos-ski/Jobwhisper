@@ -1,4 +1,4 @@
-import type { BillingPlanCard, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
+import type { BillingAddOn, BillingPlanCard, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
 
 export const downloadItems: readonly DownloadItem[] = [
   {
@@ -37,40 +37,76 @@ export const billingPlans: readonly BillingPlanCard[] = [
   {
     id: 'starter',
     name: 'STARTER',
-    price: '$27',
+    price: '$20',
     cadence: 'per month',
-    annualPrice: '$264',
+    annualPrice: '$192',
     annualCadence: 'per year',
     credits: '20 credits included',
-    description: 'The budget tier to get your job hunt started with the essentials.',
-    features: ['20 credits per month', 'Resume builder', 'Download resumes'],
-    note: 'Ideal for light or occasional job applications',
+    description: 'The interview essentials, on the web.',
+    features: ['20 credits per month', 'Interview Prep', 'Interview Copilot (web)'],
+    note: 'Ideal for light or occasional interview prep',
   },
   {
     id: 'pro',
     name: 'PRO',
-    price: '$49',
+    price: '$100',
     cadence: 'per month',
-    annualPrice: '$468',
+    annualPrice: '$960',
     annualCadence: 'per year',
-    credits: '55 credits included',
-    description: 'More usage included. Unlock our full suite of tools to actively apply and prep for interviews.',
-    features: ['55 credits per month', 'All features from Starter', 'Auto-Apply (Scout, Filter, Tailor & Driver agents)', 'AI Interview prep', 'Interview & Coding Copilot'],
-    note: 'Best for users who want AI + autopilot help consistently',
+    credits: '100 credits included',
+    description: 'More usage included, plus the desktop app and Coding Copilot for technical rounds.',
+    features: ['100 credits per month', 'All features from Starter', 'Web + Desktop app', 'Coding Copilot'],
+    note: 'Best for candidates interviewing across technical and non-technical roles',
     popular: true,
     current: true,
   },
   {
     id: 'premium',
     name: 'PREMIUM',
-    price: '$79',
+    price: '$200',
     cadence: 'per month',
-    annualPrice: '$756',
+    annualPrice: '$1,920',
     annualCadence: 'per year',
-    credits: '100 credits included',
-    description: 'Built for power users who apply daily or want maximum automation.',
-    features: ['100 credits per month', 'All features from PRO', 'Meeting Copilot', 'Automate job applications with a daily quota', 'Priority support'],
-    note: 'Best value for serious job hunters',
+    credits: '200 credits included',
+    description: 'Everything Pro has, plus Meeting Copilot for live client and stakeholder calls.',
+    features: ['200 credits per month', 'All features from PRO', 'Meeting Copilot', 'Priority support'],
+    note: 'Best for power users who live in interviews and meetings',
+  },
+]
+
+// Resume Builder and Auto Apply live outside every plan tier — unlocked separately, billed
+// as their own recurring add-on. Each has a further nested unlock, offered once the base
+// add-on is already active. See docs/PRICING_STRATEGY_PRD.md §3.
+export const billingAddOns: readonly BillingAddOn[] = [
+  {
+    id: 'resume-builder',
+    name: 'Resume Builder',
+    price: '$15',
+    cadence: 'per month',
+    description: 'AI-tailored resumes for every role, with unlimited downloads.',
+    features: ['AI-tailored resumes for every job', 'Unlimited downloads', 'ATS scoring included free'],
+    unlocked: false,
+    nestedUpsell: {
+      name: 'AI Suggestions & Premium Templates',
+      price: 'Coming soon',
+      cadence: '',
+      description: 'AI-generated content suggestions and the full premium template library — available once Resume Builder is unlocked.',
+    },
+  },
+  {
+    id: 'auto-apply',
+    name: 'Auto Apply',
+    price: '$40',
+    cadence: 'per month',
+    description: 'Let Jobwhisper apply to jobs for you — you pick the roles, the agents handle the applications.',
+    features: ['Scout, Filter, Tailor & Driver agents', 'You choose which jobs to apply to'],
+    unlocked: false,
+    nestedUpsell: {
+      name: 'Full-Auto Mode',
+      price: '+$10',
+      cadence: 'per month',
+      description: 'The AI finds and selects jobs for you too — zero manual steps. Available once Auto Apply is unlocked.',
+    },
   },
 ]
 
@@ -162,7 +198,7 @@ export const creditHistoryRows: readonly CreditHistoryRow[] = [
   { id: '30a', feature: 'Auto Apply', description: 'Applied to Google — Senior PM', dateTime: 'Jul 16, 2026, 10:30 am', amount: -15, balanceAfter: 8749 },
   { id: '30b', feature: 'Resume Builder', description: 'Tailored resume for Google — Senior PM', dateTime: 'Jul 16, 2026, 8:00 am', amount: -3, balanceAfter: 8764 },
   { id: '31', feature: 'Bonus Credits', description: 'Referral bonus — Jojo A subscribed', dateTime: 'Jul 15, 2026, 8:15 am', amount: 100, balanceAfter: 8767 },
-  { id: '32', feature: 'Monthly Renewal', description: 'Pro plan credits refreshed', dateTime: 'Jul 1, 2026, 12:00 am', amount: 2200, balanceAfter: 8667 },
+  { id: '32', feature: 'Monthly Renewal', description: 'Pro plan credits refreshed', dateTime: 'Jul 1, 2026, 12:00 am', amount: 4000, balanceAfter: 10467 },
 ]
 
 export const referralRows: readonly ReferralRow[] = [
