@@ -7,8 +7,8 @@ export function ExtensionPage() {
 
   if (!state.signedIn) {
     return (
-      <div className="grid min-h-screen place-items-center bg-canvas">
-        <div className="w-full max-w-[375px]">
+      <div className="min-h-screen bg-canvas">
+        <div className="fixed inset-y-0 right-0 w-[375px] border-l border-border shadow-panel">
           <ExtensionSignInView onSignIn={state.signIn} />
         </div>
       </div>
