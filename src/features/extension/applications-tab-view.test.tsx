@@ -2,25 +2,15 @@ import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 
 import { ExtensionApplicationsTabView } from './applications-tab-view'
-import type { AutoApplyJob } from '@/contracts/auto-apply.draft'
+import type { ExtensionApplicationRow } from '@/contracts/extension.draft'
 
-function makeJob(overrides: Partial<AutoApplyJob>): AutoApplyJob {
+function makeRow(overrides: Partial<ExtensionApplicationRow>): ExtensionApplicationRow {
   return {
     id: 'job-1',
     title: 'Product Manager',
     company: 'Acme',
-    location: 'Remote',
-    type: 'Full-Time',
-    matchPercent: 90,
-    source: 'LinkedIn',
     dateLabel: 'Aug 1',
-    status: 'applied',
-    listingUrl: 'https://example.com',
-    resumeFileName: 'resume.pdf',
-    description: 'Great role',
-    tags: [],
-    creditsRemaining: 10,
-    creditsTotal: 10,
+    outcome: 'success',
     ...overrides,
   }
 }
@@ -33,7 +23,7 @@ describe('ExtensionApplicationsTabView', () => {
   })
 
   it('lists each application with its outcome', () => {
-    render(<ExtensionApplicationsTabView applications={[makeJob({ id: '1', title: 'Backend Engineer', outcome: 'failed' })]} />)
+    render(<ExtensionApplicationsTabView applications={[makeRow({ id: '1', title: 'Backend Engineer', outcome: 'failed' })]} />)
     expect(screen.getByText('Backend Engineer')).toBeInTheDocument()
     expect(screen.getByText('Did not work')).toBeInTheDocument()
   })

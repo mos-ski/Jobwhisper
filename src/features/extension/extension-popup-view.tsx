@@ -1,8 +1,9 @@
+import { useState } from 'react'
 import { Maximize2 } from 'lucide-react'
 
 import { JobwhisperMark, Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui'
 import type { AutoApplyJob } from '@/contracts/auto-apply.draft'
-import type { ExtensionJobBoard } from '@/contracts/extension.draft'
+import type { ExtensionAppliedJob, ExtensionApplicationRow, ExtensionJobBoard, ExtensionRunStats } from '@/contracts/extension.draft'
 import { ExtensionApplicationsTabView } from './applications-tab-view'
 import { ExtensionJobsTabView } from './jobs-tab-view'
 import { ExtensionRunTabView } from './run-tab-view'
@@ -11,12 +12,28 @@ export type ExtensionPopupViewProps = {
   readonly boards: readonly ExtensionJobBoard[]
   readonly jobs: readonly AutoApplyJob[]
   readonly creditBalance: number
-  readonly applications: readonly AutoApplyJob[]
+  readonly applications: readonly ExtensionApplicationRow[]
   readonly onBoardAction: (boardId: string) => void
   readonly onSignOut: () => void
+  readonly activeRunBoardId: string | null
+  readonly runAppliedJobs: readonly ExtensionAppliedJob[]
+  readonly runStats: ExtensionRunStats
 }
 
-export function ExtensionPopupView({ boards, jobs, creditBalance, applications, onBoardAction, onSignOut }: ExtensionPopupViewProps) {
+export function ExtensionPopupView({
+  boards,
+  jobs,
+  creditBalance,
+  applications,
+  onBoardAction,
+  onSignOut,
+  activeRunBoardId,
+  runAppliedJobs,
+  runStats,
+}: ExtensionPopupViewProps) {
+  const [activeTab, setActiveTab] = useState('run')
+  const [feedExpanded, setFeedExpanded] = useState(false)
+
   return (
     <div className="flex min-h-full flex-col bg-canvas text-ink">
       <header className="flex items-center justify-between border-b border-border px-4 py-3">
@@ -29,19 +46,28 @@ export function ExtensionPopupView({ boards, jobs, creditBalance, applications, 
         </div>
       </header>
 
-      <Tabs defaultValue="run" className="flex flex-1 flex-col px-4 pt-3">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-1 flex-col overflow-hidden px-4 pt-3">
         <TabsList>
           <TabsTrigger value="run">Run</TabsTrigger>
           <TabsTrigger value="jobs">Jobs</TabsTrigger>
           <TabsTrigger value="applications">Applications</TabsTrigger>
         </TabsList>
-        <TabsContent value="run" className="flex-1 pb-4">
-          <ExtensionRunTabView boards={boards} onBoardAction={onBoardAction} />
+        <TabsContent value="run" className="flex flex-1 flex-col overflow-hidden pb-4">
+          <ExtensionRunTabView
+            boards={boards}
+            onBoardAction={onBoardAction}
+            activeBoardId={activeRunBoardId}
+            appliedJobs={runAppliedJobs}
+            stats={runStats}
+            feedExpanded={feedExpanded}
+            onToggleFeedExpanded={() => setFeedExpanded((prev) => !prev)}
+            onViewJobHistory={() => setActiveTab('applications')}
+          />
         </TabsContent>
-        <TabsContent value="jobs" className="flex-1 pb-4">
+        <TabsContent value="jobs" className="flex-1 overflow-y-auto pb-4">
           <ExtensionJobsTabView jobs={jobs} />
         </TabsContent>
-        <TabsContent value="applications" className="flex-1 pb-4">
+        <TabsContent value="applications" className="flex-1 overflow-y-auto pb-4">
           <ExtensionApplicationsTabView applications={applications} />
         </TabsContent>
       </Tabs>

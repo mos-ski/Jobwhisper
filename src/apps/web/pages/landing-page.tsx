@@ -257,7 +257,7 @@ export function LandingPage() {
 
   return (
     <div className="min-h-screen bg-landing-bg font-rethink overflow-x-hidden">
-      <LandingNav />
+      {demoOpen ? null : <LandingNav />}
       <LandingHero />
       <LandingDemo onOpenDemo={() => setDemoOpen(true)} />
       <LandingFeatures />

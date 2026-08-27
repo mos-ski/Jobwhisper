@@ -1,13 +1,13 @@
 import { Inbox } from 'lucide-react'
 
 import { Badge, EmptyState } from '@/ui'
-import type { AutoApplyJob } from '@/contracts/auto-apply.draft'
+import type { ExtensionApplicationRow } from '@/contracts/extension.draft'
 
 export type ExtensionApplicationsTabViewProps = {
-  readonly applications: readonly AutoApplyJob[]
+  readonly applications: readonly ExtensionApplicationRow[]
 }
 
-const OUTCOME_LABEL: Record<NonNullable<AutoApplyJob['outcome']>, string> = {
+const OUTCOME_LABEL: Record<ExtensionApplicationRow['outcome'], string> = {
   success: 'Submitted',
   'needs-review': 'Needs review',
   failed: 'Did not work',
@@ -34,7 +34,7 @@ export function ExtensionApplicationsTabView({ applications }: ExtensionApplicat
             {job.company} &middot; {job.dateLabel}
           </p>
           <Badge variant={job.outcome === 'failed' ? 'danger' : 'neutral'} size="sm" className="mt-1.5">
-            {job.outcome ? OUTCOME_LABEL[job.outcome] : 'Submitted'}
+            {OUTCOME_LABEL[job.outcome]}
           </Badge>
         </li>
       ))}
