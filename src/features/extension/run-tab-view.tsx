@@ -19,7 +19,7 @@ export type ExtensionRunTabViewProps = {
 
 export function ExtensionRunTabView({ boards, onBoardAction }: ExtensionRunTabViewProps) {
   return (
-    <ul className="grid gap-2">
+    <ul role="list" className="grid gap-2">
       {boards.map((board) => {
         const Icon = BOARD_ICONS[board.id]
         return (

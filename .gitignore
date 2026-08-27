@@ -30,3 +30,6 @@ playwright-report
 playwright/.cache
 blob-report
 test-results
+
+# Generated extension icons
+public/extension/icons/

@@ -13,7 +13,7 @@ export function ExtensionJobsTabView({ jobs }: ExtensionJobsTabViewProps) {
   }
 
   return (
-    <ul className="grid gap-2">
+    <ul role="list" className="grid gap-2">
       {jobs.map((job) => (
         <li key={job.id} className="rounded-lg border border-border bg-surface px-3 py-2.5">
           <p className="text-sm font-medium text-ink">{job.title}</p>
