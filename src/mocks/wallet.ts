@@ -2,8 +2,8 @@
 // only ever shows credits (1 credit = 40 cents, see src/lib/credits.ts); these cents figures
 // are illustrative pending real per-feature cost sign-off from the product owner.
 export const CREDIT_WALLET = {
-  balanceCents: 1840,
-  totalCents: 2200,
+  balanceCents: 3200,
+  totalCents: 4000,
   resetDateLabel: 'Sep 9, 2026',
 } as const
 

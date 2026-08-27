@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Plan } from '@/contracts/billing'
+import type { AddOnId, Plan } from '@/contracts/billing'
+import type { CheckoutAddOnOffer } from '@/mocks/billing'
 import { formatCredits } from '@/lib/credits'
-import { Badge, Button, cn } from '@/ui'
+import { Badge, Button, Checkbox, cn, Dialog, DialogClose, DialogPopup, DialogTitle } from '@/ui'
 import { X } from 'lucide-react'
 
 export type AuthPlanOption = {
@@ -20,10 +21,11 @@ export type BillingCadence = 'monthly' | 'annual'
 export type PlanSelectionViewProps = {
   readonly cadence: BillingCadence
   readonly plans: readonly AuthPlanOption[]
+  readonly addOns: readonly CheckoutAddOnOffer[]
   readonly selectedPlanId: Plan
   readonly laterHref: string
   readonly onToggleCadence: () => void
-  readonly onSelectPlan: (plan: Plan) => void
+  readonly onSelectPlan: (plan: Plan, addOnIds: readonly AddOnId[]) => void
 }
 
 function PlanCheck() {
@@ -34,13 +36,13 @@ function PlanCard({
   plan,
   selected,
   annual,
-  onSelectPlan,
+  onSubscribeClick,
   cardRef,
 }: {
   readonly plan: AuthPlanOption
   readonly selected: boolean
   readonly annual: boolean
-  readonly onSelectPlan: (plan: Plan) => void
+  readonly onSubscribeClick: (plan: Plan) => void
   readonly cardRef?: (el: HTMLElement | null) => void
 }) {
   const subscribeLabel = `Subscribe to ${plan.name}`
@@ -73,7 +75,7 @@ function PlanCard({
           <Button
             variant={plan.popular ? 'primary' : 'secondary'}
             className="w-full"
-            onClick={() => onSelectPlan(plan.id)}
+            onClick={() => onSubscribeClick(plan.id)}
             aria-label={subscribeLabel}
           >
             Subscribe
@@ -94,9 +96,92 @@ function PlanCard({
   )
 }
 
+function AddOnUpsellDialog({
+  plan,
+  addOns,
+  annual,
+  onOpenChange,
+  onContinue,
+}: {
+  readonly plan: AuthPlanOption | null
+  readonly addOns: readonly CheckoutAddOnOffer[]
+  readonly annual: boolean
+  readonly onOpenChange: (open: boolean) => void
+  readonly onContinue: (addOnIds: readonly AddOnId[]) => void
+}) {
+  const [selected, setSelected] = useState<ReadonlySet<AddOnId>>(new Set())
+
+  useEffect(() => {
+    if (plan) setSelected(new Set())
+  }, [plan])
+
+  if (!plan) return null
+
+  const planPrice = annual ? Math.round(plan.priceMonthly * 0.8) : plan.priceMonthly
+  const addOnsTotal = addOns.filter((addOn) => selected.has(addOn.id)).reduce((sum, addOn) => sum + addOn.priceMonthly, 0)
+  const total = planPrice + addOnsTotal
+
+  function toggle(id: AddOnId) {
+    setSelected((current) => {
+      const next = new Set(current)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  return (
+    <Dialog open={plan !== null} onOpenChange={onOpenChange}>
+      <DialogPopup aria-label="Add optional add-ons">
+        <DialogClose />
+        <DialogTitle>Want to go further than {plan.name}?</DialogTitle>
+        <p className="mt-1 text-sm text-ink-muted">
+          {plan.name} covers interview prep and copilot. Resume Builder and Auto Apply are separate, optional add-ons — add them now or skip and add them later from Billing.
+        </p>
+
+        <div className="mt-5 grid gap-3">
+          {addOns.map((addOn) => (
+            <label
+              key={addOn.id}
+              className={cn(
+                'flex cursor-pointer items-start gap-3 rounded-panel border p-4 transition-colors duration-normal',
+                selected.has(addOn.id) ? 'border-accent bg-accent-subtle' : 'border-border bg-surface',
+              )}
+            >
+              <Checkbox checked={selected.has(addOn.id)} onCheckedChange={() => toggle(addOn.id)} className="mt-0.5" />
+              <span className="flex-1">
+                <span className="flex items-baseline justify-between gap-2">
+                  <span className="text-sm font-semibold text-ink">{addOn.name}</span>
+                  <span className="text-sm font-semibold text-ink">${addOn.priceMonthly}/mo</span>
+                </span>
+                <span className="mt-1 block text-sm text-ink-muted">{addOn.description}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+
+        <div className="mt-5 flex items-baseline justify-between border-t border-border pt-4">
+          <span className="text-sm font-medium text-ink-muted">Total, billed monthly</span>
+          <span className="text-2xl font-semibold text-ink">${total}<span className="text-sm font-medium text-ink-muted">/mo</span></span>
+        </div>
+
+        <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <Button variant="ghost" onClick={() => onContinue([])}>
+            Skip — just {plan.name}
+          </Button>
+          <Button variant="primary" onClick={() => onContinue([...selected])}>
+            Continue{addOnsTotal > 0 ? ` with add-ons` : ''}
+          </Button>
+        </div>
+      </DialogPopup>
+    </Dialog>
+  )
+}
+
 export function PlanSelectionView({
   cadence,
   plans,
+  addOns,
   selectedPlanId,
   laterHref,
   onToggleCadence,
@@ -107,6 +192,8 @@ export function PlanSelectionView({
   const cardRefs = useRef<Partial<Record<Plan, HTMLElement>>>({})
   const recommendedPlanId = plans.find((plan) => plan.popular)?.id ?? plans[0]?.id
   const [activePlanId, setActivePlanId] = useState<Plan | undefined>(recommendedPlanId)
+  const [pendingPlanId, setPendingPlanId] = useState<Plan | null>(null)
+  const pendingPlan = plans.find((plan) => plan.id === pendingPlanId) ?? null
 
   useEffect(() => {
     const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches
@@ -192,7 +279,7 @@ export function PlanSelectionView({
                   plan={plan}
                   selected={plan.id === selectedPlanId}
                   annual={annual}
-                  onSelectPlan={onSelectPlan}
+                  onSubscribeClick={setPendingPlanId}
                   cardRef={(el) => {
                     if (el) cardRefs.current[plan.id] = el
                     else delete cardRefs.current[plan.id]
@@ -226,6 +313,20 @@ export function PlanSelectionView({
           </p>
         </div>
       </section>
+
+      <AddOnUpsellDialog
+        plan={pendingPlan}
+        addOns={addOns}
+        annual={annual}
+        onOpenChange={(open) => {
+          if (!open) setPendingPlanId(null)
+        }}
+        onContinue={(addOnIds) => {
+          if (!pendingPlanId) return
+          onSelectPlan(pendingPlanId, addOnIds)
+          setPendingPlanId(null)
+        }}
+      />
     </main>
   )
 }

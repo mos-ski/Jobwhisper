@@ -14,6 +14,10 @@ export type DashboardAction = {
   readonly featured?: boolean
   readonly badge?: string
   readonly locked?: boolean
+  /** Overrides the default "Upgrade to Premium" dialog copy — e.g. for an add-on unlock instead of a plan upgrade. */
+  readonly lockMessage?: string
+  readonly lockCta?: string
+  readonly lockHref?: string
 }
 
 export type DashboardNavItem = {

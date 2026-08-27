@@ -19,6 +19,11 @@ export const dashboardActions: readonly DashboardAction[] = [
     description: 'Let Jobwhisper craft your perfect resume tailored to every role and optimized for results.',
     href: '/v3/resume',
     featured: true,
+    badge: 'ADD-ON',
+    locked: true,
+    lockMessage: 'Resume Builder is a separate add-on, not included in any plan. Unlock it for $15/mo to get AI-tailored resumes and unlimited downloads.',
+    lockCta: 'Unlock Resume Builder — $15/mo',
+    lockHref: '/v3/billing#add-ons',
   },
   {
     id: 'interview-practice',
@@ -37,7 +42,11 @@ export const dashboardActions: readonly DashboardAction[] = [
     title: 'Apply for Jobs',
     description: 'Let Jobwhisper auto-apply to relevant roles based on your preferences no more job hunting stress.',
     href: '/v3/auto-apply',
-    badge: 'BETA',
+    badge: 'ADD-ON',
+    locked: true,
+    lockMessage: 'Auto Apply is a separate add-on, not included in any plan. Unlock it for $40/mo — you choose the jobs, the agents handle the applications.',
+    lockCta: 'Unlock Auto Apply — $40/mo',
+    lockHref: '/v3/billing#add-ons',
   },
   {
     id: 'coding-copilot',
@@ -51,6 +60,9 @@ export const dashboardActions: readonly DashboardAction[] = [
     description: 'Live AI assistance during meetings — real-time notes and talking points as the conversation happens.',
     href: '/v3/interview-copilot?mode=meeting',
     locked: true,
+    lockMessage: 'Meeting Copilot is available on the Premium plan. Upgrade to unlock live AI assistance during meetings.',
+    lockCta: 'Upgrade to Premium',
+    lockHref: '/v3/billing',
   },
 ]
 
