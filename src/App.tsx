@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
 import { Suspense } from 'react'
 import { WebRoutes } from '@/apps/web/routes'
+import { LandingPage } from '@/apps/web/pages/landing-page'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,7 +21,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/v3" replace />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/v3/*" element={<Suspense fallback={null}><WebRoutes /></Suspense>} />
           <Route path="*" element={<Navigate to="/v3" replace />} />
         </Routes>

@@ -7,6 +7,8 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ['Instrument Sans', 'system-ui', 'sans-serif'],
+        rethink: ['Rethink Sans', 'system-ui', 'sans-serif'],
+        gowun: ['Gowun Batang', 'Georgia', 'serif'],
       },
       colors: {
         canvas: 'var(--lf-canvas)',
@@ -55,6 +57,12 @@ const config: Config = {
           surface: 'var(--lf-danger-surface)',
         },
         'on-danger': 'var(--lf-on-danger)',
+        'landing-bg': 'var(--lf-landing-bg)',
+        'landing-nav': 'var(--lf-landing-nav)',
+        'landing-btn': 'var(--lf-landing-btn)',
+        'landing-footer-frame': 'var(--lf-landing-footer-frame)',
+        'landing-btn-text': 'var(--lf-landing-btn-text)',
+        'landing-ink': 'var(--lf-landing-ink)',
         overlay: 'var(--lf-overlay)',
         'brand-bar': {
           DEFAULT: 'var(--lf-brand-bar)',
