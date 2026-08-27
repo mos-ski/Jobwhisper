@@ -99,6 +99,7 @@ function DemoRoutes({ onClose }: { readonly onClose: () => void }) {
               completeHref="/report"
               session={copilotLiveSession}
               transcriptBank={copilotInterviewTranscript}
+              demoMode
             />
           }
         />

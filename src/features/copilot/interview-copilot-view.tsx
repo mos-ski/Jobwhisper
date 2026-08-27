@@ -111,6 +111,7 @@ export type CopilotLiveViewProps = {
   readonly isLoading?: boolean
   readonly transcriptBank?: readonly CopilotTranscriptTurn[]
   readonly codingBank?: readonly CopilotCodingTurn[]
+  readonly demoMode?: boolean
 }
 
 export type CopilotCompleteViewProps = {
@@ -1625,7 +1626,7 @@ const COPILOT_RATE_CENTS_PER_MIN = 80
 const COPILOT_START_BALANCE_CENTS = 60
 const QUICK_TOPUP_CREDITS = [25, 50, 100]
 
-export function CopilotLiveView({ completeHref, session, isLoading = false, transcriptBank = [], codingBank = [] }: CopilotLiveViewProps) {
+export function CopilotLiveView({ completeHref, session, isLoading = false, transcriptBank = [], codingBank = [], demoMode = false }: CopilotLiveViewProps) {
   const [assistantMessages, setAssistantMessages] = useState<readonly AiAssistantMessage[]>([])
   const [draft, setDraft] = useState('')
   const assistantScrollRef = useRef<HTMLDivElement>(null)
@@ -1656,7 +1657,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
   }, [])
 
   useEffect(() => {
-    if (isLoading || sessionPaused) return
+    if (isLoading || sessionPaused || demoMode) return
     const id = window.setInterval(() => {
       const perTickCents = COPILOT_RATE_CENTS_PER_MIN / 60
       setBalanceCents((prev) => {
@@ -1671,7 +1672,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
     return () => window.clearInterval(id)
   }, [isLoading, sessionPaused])
 
-  const lowBalance = balanceCents > 0 && balanceCents <= COPILOT_START_BALANCE_CENTS * 0.2
+  const lowBalance = !demoMode && balanceCents > 0 && balanceCents <= COPILOT_START_BALANCE_CENTS * 0.2
 
   function handleAddFunds(amountCredits: number) {
     setBalanceCents((prev) => prev + creditsToCents(amountCredits))
@@ -1729,7 +1730,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
           </span>
         </div>
 
-        {session.mode === 'interview' ? <DraggableAvatar name="You" videoEnabled={videoEnabled} /> : null}
+        {session.mode === 'interview' && !demoMode ? <DraggableAvatar name="You" videoEnabled={videoEnabled} /> : null}
 
         {lowBalance && !sessionPaused ? (
           <div role="status" className="fixed inset-x-4 top-20 z-20 flex items-center justify-between gap-3 rounded-lg bg-warning-surface px-4 py-2.5 text-sm text-warning shadow-panel">
@@ -1888,7 +1889,12 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
           </button>
         </div>
       ) : null}
-      <section className="grid gap-3 overflow-hidden p-3 xl:h-[calc(100vh-6.0625rem)] xl:grid-cols-[minmax(0,1fr)_6px_28.5rem]">
+      <section
+        className={cn(
+          'grid gap-3 overflow-hidden p-3 xl:h-[calc(100vh-6.0625rem)]',
+          demoMode ? '' : 'xl:grid-cols-[minmax(0,1fr)_6px_28.5rem]',
+        )}
+      >
         <article className="min-h-[38rem] overflow-hidden rounded-panel border border-[var(--lf-live-border)] bg-[var(--lf-live-panel)]">
           <div className="flex min-h-[57px] items-center justify-between border-b border-[var(--lf-live-border)] px-4 py-3">
             <h2 className="inline-flex items-center gap-2 text-sm font-semibold leading-5">
@@ -1904,38 +1910,42 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
             )}
           </div>
         </article>
-        <div className="hidden h-full bg-[var(--lf-live-divider)] xl:block" />
-        <aside className="grid min-h-[42rem] gap-3 xl:min-h-0 xl:grid-rows-[auto_6px_minmax(0,1fr)]">
-          {session.mode !== 'coding' ? (
-            <>
-              <section className="overflow-hidden rounded-panel bg-[var(--lf-live-panel)]">
-                <h2 className="bg-[var(--lf-live-panel-header)] px-5 py-[13px] text-[18.67px] font-medium leading-[37px]">
-                  {session.mode === 'meeting' ? 'Your Meeting' : 'Your Interview'}
-                </h2>
-                <img src={session.screenPreviewSrc} alt="" className="h-[22.666rem] w-full rounded-b-lg object-cover" />
+        {demoMode ? null : (
+          <>
+            <div className="hidden h-full bg-[var(--lf-live-divider)] xl:block" />
+            <aside className="grid min-h-[42rem] gap-3 xl:min-h-0 xl:grid-rows-[auto_6px_minmax(0,1fr)]">
+              {session.mode !== 'coding' ? (
+                <>
+                  <section className="overflow-hidden rounded-panel bg-[var(--lf-live-panel)]">
+                    <h2 className="bg-[var(--lf-live-panel-header)] px-5 py-[13px] text-[18.67px] font-medium leading-[37px]">
+                      {session.mode === 'meeting' ? 'Your Meeting' : 'Your Interview'}
+                    </h2>
+                    <img src={session.screenPreviewSrc} alt="" className="h-[22.666rem] w-full rounded-b-lg object-cover" />
+                  </section>
+                  <div className="hidden h-1.5 bg-[var(--lf-live-divider)] xl:block" />
+                </>
+              ) : null}
+              <section className="grid min-h-0 grid-rows-[auto_1fr] rounded-panel border border-[var(--lf-live-border)] bg-[var(--lf-live-panel)]">
+                <div className="flex min-h-[57px] items-center justify-between border-b border-[var(--lf-live-border)] px-4 py-3">
+                  <h2 className="text-sm font-medium leading-5">AI Assistant</h2>
+                  <button type="button" aria-label="Close AI assistant" className="grid size-8 place-items-center rounded-soft text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                    <X aria-hidden="true" className="size-4" />
+                  </button>
+                </div>
+                <CopilotAiAssistantPanel
+                  prompts={session.prompts}
+                  messages={assistantMessages}
+                  setMessages={setAssistantMessages}
+                  draft={draft}
+                  setDraft={setDraft}
+                  onSend={handleSend}
+                  scrollRef={assistantScrollRef}
+                  className="min-h-0"
+                />
               </section>
-              <div className="hidden h-1.5 bg-[var(--lf-live-divider)] xl:block" />
-            </>
-          ) : null}
-          <section className="grid min-h-0 grid-rows-[auto_1fr] rounded-panel border border-[var(--lf-live-border)] bg-[var(--lf-live-panel)]">
-            <div className="flex min-h-[57px] items-center justify-between border-b border-[var(--lf-live-border)] px-4 py-3">
-              <h2 className="text-sm font-medium leading-5">AI Assistant</h2>
-              <button type="button" aria-label="Close AI assistant" className="grid size-8 place-items-center rounded-soft text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-                <X aria-hidden="true" className="size-4" />
-              </button>
-            </div>
-            <CopilotAiAssistantPanel
-              prompts={session.prompts}
-              messages={assistantMessages}
-              setMessages={setAssistantMessages}
-              draft={draft}
-              setDraft={setDraft}
-              onSend={handleSend}
-              scrollRef={assistantScrollRef}
-              className="min-h-0"
-            />
-          </section>
-        </aside>
+            </aside>
+          </>
+        )}
       </section>
 
       <CopilotLiveSettingsModal
