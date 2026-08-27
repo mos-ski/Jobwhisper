@@ -501,8 +501,8 @@ function InstallPrompt({ installPrompt }: { readonly installPrompt: DashboardIns
     <section className="rounded-panel bg-accent-subtle p-3 lg:absolute lg:bottom-14 lg:end-8" aria-label="Install apps">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <img src={installPrompt.qrSrc} alt="QR code to install Jobwhisper apps" className="size-28 rounded-soft object-cover" />
-        <div className="grid gap-3">
-          <p className="text-base font-medium text-accent">{installPrompt.title}</p>
+        <div className="grid gap-3 pe-14 lg:pe-0">
+          <p className="line-clamp-2 text-base font-medium text-accent">{installPrompt.title}</p>
           <div className="flex flex-wrap gap-2">
             <a href={installPrompt.desktopHref} className="inline-flex min-h-8 items-center justify-center gap-1 rounded-pill bg-accent px-3 text-xs font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
               <Monitor aria-hidden="true" className="size-4" />
