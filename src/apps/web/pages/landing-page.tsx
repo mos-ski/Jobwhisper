@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Play, ChevronDown, Check } from 'lucide-react'
+import { Play, ChevronDown, Check, Bot, FileText, Code2, Headphones, Wallet, LayoutGrid } from 'lucide-react'
 import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger, JobwhisperIcon } from '@/ui'
 import { useInView } from '@/hooks/useInView'
 import { DemoModal } from './demo-modal'
@@ -43,23 +43,23 @@ function RevealOnScroll({
 
 const FEATURES = [
   {
-    icon: '/landing-feature-autoapply.svg',
+    Icon: Bot,
     title: 'Auto Apply AI Agents',
     subtitle: 'Apply to hundreds of jobs while you sleep',
     description:
-      'Our agents browse job boards, match your profile to open roles, and submit tailored applications on your behalf — 24/7, no manual effort required.',
+      'Our agents browse job boards, match your profile to open roles, and submit tailored applications on your behalf, 24/7, no manual effort required.',
     href: '/v3/auto-apply',
   },
   {
-    icon: '/landing-feature-resume.svg',
+    Icon: FileText,
     title: 'AI Resume Builders',
     subtitle: 'Tailored for every role, in seconds',
     description:
-      'Paste a job description and get a resume instantly rewritten to match — right keywords, right achievements, right format, every time.',
+      'Paste a job description and get a resume instantly rewritten to match, right keywords, right achievements, right format, every time.',
     href: '/v3/resume',
   },
   {
-    icon: '/landing-feature-coding.svg',
+    Icon: Code2,
     title: 'Coding Copilot',
     subtitle: 'Real-time help during technical screens',
     description:
@@ -67,15 +67,15 @@ const FEATURES = [
     href: '#',
   },
   {
-    icon: '/landing-feature-meeting.svg',
+    Icon: Headphones,
     title: 'Meeting Copilots',
     subtitle: 'Live AI support in any video call',
     description:
-      'Get real-time talking points, answers, and context surfaced during interviews or meetings — without the other side ever knowing.',
+      'Get real-time talking points, answers, and context surfaced during interviews or meetings, without the other side ever knowing.',
     href: '#',
   },
   {
-    icon: '/landing-feature-topup.svg',
+    Icon: Wallet,
     title: 'Top Up credits anytime',
     subtitle: 'Pay only for what you use',
     description:
@@ -83,19 +83,19 @@ const FEATURES = [
     href: '/v3/billing',
   },
   {
-    icon: '/landing-feature-other.svg',
+    Icon: LayoutGrid,
     title: 'Other Applications',
     subtitle: 'Desktop, mobile, and browser',
     description:
-      'Take Jobwhisper everywhere — available as a Chrome extension, a macOS or Windows desktop app, and a mobile app on iOS and Android.',
+      'Take Jobwhisper everywhere, available as a Chrome extension, a macOS or Windows desktop app, and a mobile app on iOS and Android.',
     href: '#',
   },
 ]
 
 const FEATURE_CARD_STYLES = [
-  { bg: 'bg-white', text: 'text-black', iconBg: 'bg-black/5' },
-  { bg: 'bg-[#E4ECFF]', text: 'text-black', iconBg: 'bg-black/5' },
-  { bg: 'bg-landing-nav', text: 'text-white', iconBg: 'bg-white/10' },
+  { bg: 'bg-white', text: 'text-black' },
+  { bg: 'bg-[#E4ECFF]', text: 'text-black' },
+  { bg: 'bg-landing-nav', text: 'text-white' },
 ]
 
 const FAQS = [
@@ -107,12 +107,12 @@ const FAQS = [
   {
     question: 'How does the live copilot work during an interview?',
     answer:
-      'Jobwhisper listens in alongside you — over screen share or your microphone — and surfaces suggested talking points and answers on your screen as the conversation happens, without the other side ever knowing.',
+      'Jobwhisper listens in alongside you, over screen share or your microphone, and surfaces suggested talking points and answers on your screen as the conversation happens, without the other side ever knowing.',
   },
   {
     question: 'What do I need to use Jobwhisper?',
     answer:
-      'Just a Jobwhisper account and either the desktop app or the Chrome extension. No special hardware — it works with whatever video call or in-person setup you already use.',
+      'Just a Jobwhisper account and either the desktop app or the Chrome extension. No special hardware, it works with whatever video call or in-person setup you already use.',
   },
   {
     question: 'Is my interview data kept private?',
@@ -127,12 +127,12 @@ const FAQS = [
   {
     question: 'Does it work for coding interviews and meetings too?',
     answer:
-      'Yes — Coding Copilot gives real-time hints during technical screens, and Meeting Copilot brings the same live support to client calls and stakeholder meetings, not just interviews.',
+      'Yes, Coding Copilot gives real-time hints during technical screens, and Meeting Copilot brings the same live support to client calls and stakeholder meetings, not just interviews.',
   },
   {
     question: 'What happens if I run out of credits mid-session?',
     answer:
-      "You'll get a low-balance warning first, and can top up without losing your place — your session resumes right where you left off once you add more credits.",
+      "You'll get a low-balance warning first, and can top up without losing your place, your session resumes right where you left off once you add more credits.",
   },
 ]
 
@@ -169,7 +169,7 @@ const TIMELINE_STAGES = [
     title: 'Walk into round two stronger',
     items: [
       'Every session saved with a summary and talk-time breakdown',
-      "See exactly what went well and what didn't — no guessing",
+      "See exactly what went well and what didn't, no guessing",
       'Only spend credits on the sessions you actually run',
     ],
   },
@@ -302,14 +302,11 @@ function LandingTimeline() {
   return (
     <section className="px-4 sm:px-8 lg:px-[113px] pt-24 sm:pt-32 lg:pt-40 pb-16 sm:pb-24">
       <div className="flex flex-col items-center text-center gap-4">
-        <p className="text-white/60 text-sm font-semibold uppercase tracking-[0.08em]">
-          You don't need weeks to feel ready
-        </p>
         <h2
           className="text-white font-normal font-gowun max-w-[700px]"
           style={{ fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: '1.2', letterSpacing: '-0.02em' }}
         >
-          Here's what changes between now and your next interview.
+          Every stage of the interview, covered.
         </h2>
       </div>
 
@@ -394,7 +391,7 @@ function LandingFeatures() {
         </p>
       </div>
 
-      <div className="w-full max-w-[420px] mx-auto">
+      <div className="w-full max-w-[340px] mx-auto">
         {FEATURES.map((feature, index) => {
           const style = FEATURE_CARD_STYLES[index % FEATURE_CARD_STYLES.length]
           const rotate = index % 2 === 0 ? '-rotate-3' : 'rotate-3'
@@ -402,14 +399,14 @@ function LandingFeatures() {
             <div key={feature.title} className="sticky top-24 sm:top-28 pb-2" style={{ zIndex: index + 1 }}>
               <a
                 href={feature.href}
-                className={`block rounded-2xl p-8 min-h-[320px] sm:min-h-[360px] shadow-2xl no-underline transition-transform duration-300 ease-out hover:scale-[1.02] ${style.bg} ${rotate} hover:rotate-0`}
+                className={`flex flex-col rounded-lg p-8 sm:p-10 min-h-[420px] sm:min-h-[460px] shadow-2xl no-underline transition-transform duration-300 ease-out hover:scale-[1.02] ${style.bg} ${rotate} hover:rotate-0`}
               >
-                <div className={`flex items-center justify-center size-14 rounded-[10px] mb-6 ${style.iconBg}`}>
-                  <img src={feature.icon} alt="" className="size-6" />
+                <feature.Icon aria-hidden="true" strokeWidth={1.25} className={`size-11 opacity-80 ${style.text}`} />
+                <div className="mt-auto">
+                  <p className={`font-gowun font-normal text-4xl mb-3 ${style.text}`}>{feature.title}</p>
+                  <p className={`text-base opacity-70 mb-2 ${style.text}`}>{feature.subtitle}</p>
+                  <p className={`text-sm opacity-50 ${style.text}`}>{feature.description}</p>
                 </div>
-                <p className={`font-gowun text-2xl mb-2 ${style.text}`}>{feature.title}</p>
-                <p className={`text-base opacity-70 mb-3 ${style.text}`}>{feature.subtitle}</p>
-                <p className={`text-sm opacity-50 ${style.text}`}>{feature.description}</p>
               </a>
             </div>
           )
@@ -465,7 +462,7 @@ function LandingFooter() {
           <JobwhisperIcon className="size-5 text-white" />
         </span>
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-white/60 text-sm">
-          <span>© 2026 Weav.com, LLC</span>
+          <span>© 2026 Jobwhisper.ai</span>
           <span aria-hidden="true">·</span>
           <button className="hover:text-white transition-colors">Download</button>
           <span aria-hidden="true">·</span>
