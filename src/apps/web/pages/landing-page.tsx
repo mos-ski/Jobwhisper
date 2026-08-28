@@ -92,6 +92,12 @@ const FEATURES = [
   },
 ]
 
+const FEATURE_CARD_STYLES = [
+  { bg: 'bg-white', text: 'text-black', iconBg: 'bg-black/5' },
+  { bg: 'bg-[#E4ECFF]', text: 'text-black', iconBg: 'bg-black/5' },
+  { bg: 'bg-landing-nav', text: 'text-white', iconBg: 'bg-white/10' },
+]
+
 const FAQS = [
   {
     question: 'What is Jobwhisper?',
@@ -388,32 +394,26 @@ function LandingFeatures() {
         </p>
       </div>
 
-      <div className="w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {FEATURES.map((feature, index) => (
-            <RevealOnScroll key={feature.title} delayMs={index * 60}>
+      <div className="w-full max-w-[420px] mx-auto">
+        {FEATURES.map((feature, index) => {
+          const style = FEATURE_CARD_STYLES[index % FEATURE_CARD_STYLES.length]
+          const rotate = index % 2 === 0 ? '-rotate-3' : 'rotate-3'
+          return (
+            <div key={feature.title} className="sticky top-24 sm:top-28 pb-2" style={{ zIndex: index + 1 }}>
               <a
                 href={feature.href}
-                className="flex gap-4 p-4 rounded-[12px] bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-300 ease-out hover:-translate-y-1 no-underline group"
+                className={`block rounded-2xl p-8 min-h-[65vh] sm:min-h-[560px] shadow-2xl no-underline transition-transform duration-300 ease-out hover:scale-[1.02] ${style.bg} ${rotate} hover:rotate-0`}
               >
-                <div className="flex items-center justify-center size-14 rounded-[10px] bg-white/10 shrink-0 mt-0.5 transition-transform duration-300 ease-out group-hover:scale-110">
-                  <img src={feature.icon} alt="" className="size-5" />
+                <div className={`flex items-center justify-center size-14 rounded-[10px] mb-6 ${style.iconBg}`}>
+                  <img src={feature.icon} alt="" className="size-6" />
                 </div>
-                <div className="flex flex-col flex-1 min-w-0 gap-1">
-                  <p className="text-white font-semibold text-[15px] leading-[21px]">
-                    {feature.title}
-                  </p>
-                  <p className="text-white/75 text-[13px] font-medium leading-[18px]">
-                    {feature.subtitle}
-                  </p>
-                  <p className="text-white/50 text-[13px] font-normal leading-[1.55] mt-1">
-                    {feature.description}
-                  </p>
-                </div>
+                <p className={`font-gowun text-2xl mb-2 ${style.text}`}>{feature.title}</p>
+                <p className={`text-base opacity-70 mb-3 ${style.text}`}>{feature.subtitle}</p>
+                <p className={`text-sm opacity-50 ${style.text}`}>{feature.description}</p>
               </a>
-            </RevealOnScroll>
-          ))}
-        </div>
+            </div>
+          )
+        })}
       </div>
 
       <button
@@ -482,7 +482,7 @@ export function LandingPage() {
   const [demoOpen, setDemoOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-landing-bg font-rethink overflow-x-hidden">
+    <div className="min-h-screen bg-landing-bg font-rethink">
       {demoOpen ? null : <LandingNav />}
       <LandingHero />
       <LandingDemo onOpenDemo={() => setDemoOpen(true)} />
