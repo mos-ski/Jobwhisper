@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 
 import { createPortal } from 'react-dom'
 import { createRoot, type Root } from 'react-dom/client'
 import { MemoryRouter, Routes, Route, useNavigate } from 'react-router-dom'
-import { Play, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import {
   CopilotUploadView,
   CopilotConfigureView,
@@ -10,6 +10,7 @@ import {
   CopilotLiveView,
   CopilotReportView,
 } from '@/features/copilot/interview-copilot-view'
+import { DemoPricingPanel } from '@/features/demo/demo-pricing-panel'
 import {
   copilotInterviewTranscript,
   copilotLiveSession,
@@ -168,44 +169,8 @@ function DemoRootMount({ runKey, onClose }: { readonly runKey: number; readonly 
   return <div ref={containerRef} className="h-full" />
 }
 
-function DemoSignupPanel({ email, onEmailChange, onRestart }: { readonly email: string; readonly onEmailChange: (value: string) => void; readonly onRestart: () => void }) {
-  return (
-    <div className="flex w-full shrink-0 flex-col justify-center gap-6 border-t border-border bg-canvas p-6 sm:p-8 lg:w-[30%] lg:border-l lg:border-t-0">
-      <div>
-        <h2 className="text-xl font-semibold text-ink">See Jobwhisper in action</h2>
-        <p className="mt-2 text-sm text-ink-muted">Walk through it yourself — tailor a resume, share your screen, and see the AI respond live.</p>
-      </div>
-      <div className="grid gap-1.5">
-        <label htmlFor="demo-email" className="text-sm font-medium text-ink">
-          Email
-        </label>
-        <input
-          id="demo-email"
-          type="email"
-          value={email}
-          onChange={(event) => onEmailChange(event.target.value)}
-          placeholder="you@company.com"
-          className="min-h-11 rounded-lg border border-input bg-surface px-3 py-2.5 text-sm text-ink shadow-control outline-none focus:border-focus focus:ring-2 focus:ring-focus"
-        />
-      </div>
-      <button
-        type="button"
-        onClick={onRestart}
-        className="flex min-h-11 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover"
-      >
-        <Play aria-hidden="true" className="size-4" fill="currentColor" />
-        Start Demo
-      </button>
-      <p className="text-xs text-ink-muted">
-        By continuing, you agree to our <a href="#" className="underline underline-offset-2 hover:text-ink">Privacy Policy</a>.
-      </p>
-    </div>
-  )
-}
-
 function DemoModalContent({ onClose }: { readonly onClose: () => void }) {
-  const [email, setEmail] = useState('')
-  const [runKey, setRunKey] = useState(0)
+  const [runKey] = useState(0)
 
   useEffect(() => {
     const prev = document.body.style.overflow
@@ -239,7 +204,7 @@ function DemoModalContent({ onClose }: { readonly onClose: () => void }) {
         <div className="relative flex-1 overflow-y-auto bg-white lg:w-[70%] lg:flex-none">
           <DemoRootMount runKey={runKey} onClose={onClose} />
         </div>
-        <DemoSignupPanel email={email} onEmailChange={setEmail} onRestart={() => setRunKey((prev) => prev + 1)} />
+        <DemoPricingPanel onClaimOffer={onClose} />
       </div>
     </div>
   )
