@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Play, ChevronDown } from 'lucide-react'
+import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger, JobwhisperIcon } from '@/ui'
 import { DemoModal } from './demo-modal'
 
 const MOBILE_QUERY = '(max-width: 639px)'
@@ -69,6 +70,44 @@ const FEATURES = [
   },
 ]
 
+const FAQS = [
+  {
+    question: 'What is Jobwhisper?',
+    answer:
+      'Jobwhisper is an AI interview copilot. Rehearse against a role-aware AI before the interview, then bring a live copilot into the actual conversation for real-time talking points and answers.',
+  },
+  {
+    question: 'How does the live copilot work during an interview?',
+    answer:
+      'Jobwhisper listens in alongside you — over screen share or your microphone — and surfaces suggested talking points and answers on your screen as the conversation happens, without the other side ever knowing.',
+  },
+  {
+    question: 'What do I need to use Jobwhisper?',
+    answer:
+      'Just a Jobwhisper account and either the desktop app or the Chrome extension. No special hardware — it works with whatever video call or in-person setup you already use.',
+  },
+  {
+    question: 'Is my interview data kept private?',
+    answer:
+      "Yes. Your resumes, transcripts, and session recordings are only visible to you, and you can delete them at any time from your account. We don't share your data with employers or third parties.",
+  },
+  {
+    question: 'Can I review past interview sessions?',
+    answer:
+      'Every session is saved to your history with a summary, talk-time breakdown, and what went well or needs work, so you can review and improve before your next interview.',
+  },
+  {
+    question: 'Does it work for coding interviews and meetings too?',
+    answer:
+      'Yes — Coding Copilot gives real-time hints during technical screens, and Meeting Copilot brings the same live support to client calls and stakeholder meetings, not just interviews.',
+  },
+  {
+    question: 'What happens if I run out of credits mid-session?',
+    answer:
+      "You'll get a low-balance warning first, and can top up without losing your place — your session resumes right where you left off once you add more credits.",
+  },
+]
+
 function LandingNav() {
   const navigate = useNavigate()
   return (
@@ -84,9 +123,12 @@ function LandingNav() {
           <button className="text-white/60 text-base font-medium tracking-[-0.3px] leading-6 hover:text-white transition-colors">
             Pricing
           </button>
-          <button className="text-white/60 text-base font-medium tracking-[-0.3px] leading-6 hover:text-white transition-colors">
+          <a
+            href="#faq"
+            className="text-white/60 text-base font-medium tracking-[-0.3px] leading-6 hover:text-white transition-colors"
+          >
             FAQ
-          </button>
+          </a>
         </div>
 
         <div className="flex items-center gap-3.5 ml-4 md:ml-14">
@@ -240,31 +282,51 @@ function LandingFeatures() {
   )
 }
 
+function LandingFAQ() {
+  return (
+    <section id="faq" className="bg-landing-footer-frame pt-16 sm:pt-24 pb-12 sm:pb-16">
+      <div className="max-w-[1160px] mx-auto px-4 sm:px-8 grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
+        <h2
+          className="text-white font-normal font-gowun"
+          style={{ fontSize: 'clamp(32px, 4vw, 44px)', lineHeight: '1.15', letterSpacing: '-0.02em' }}
+        >
+          Frequently
+          <br />
+          asked questions.
+        </h2>
+
+        <Accordion className="w-full">
+          {FAQS.map((faq, index) => (
+            <AccordionItem key={faq.question} value={String(index)} className="border-b border-white/10">
+              <AccordionHeader>
+                <AccordionTrigger className="text-white text-base sm:text-lg font-medium tracking-[-0.16px] hover:text-white/80 [&>svg]:text-white/50">
+                  {faq.question}
+                </AccordionTrigger>
+              </AccordionHeader>
+              <AccordionPanel className="text-white/60 text-sm sm:text-base leading-6">{faq.answer}</AccordionPanel>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
+    </section>
+  )
+}
+
 function LandingFooter() {
   return (
-    <footer className="bg-landing-footer-frame rounded-t-[20px]">
-      <div className="bg-white rounded-t-[20px] py-12 sm:py-20">
-        <div className="max-w-[1280px] mx-auto px-8">
-          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
-            <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-6">
-              <img src="/landing-logo-dark.svg" alt="Jobwhisper" className="h-6 w-auto" />
-              <a
-                href="#"
-                className="text-landing-ink text-base font-normal leading-[22px] tracking-[-0.16px] hover:opacity-70 transition-opacity"
-              >
-                Privacy Policy
-              </a>
-              <a
-                href="#"
-                className="text-landing-ink text-base font-normal leading-[22px] tracking-[-0.16px] hover:opacity-70 transition-opacity"
-              >
-                Terms of Service
-              </a>
-            </div>
-            <p className="text-landing-ink/60 text-base font-normal leading-[22px] tracking-[-0.16px]">
-              © 2026 Weav.com, LLC
-            </p>
-          </div>
+    <footer className="bg-landing-footer-frame pb-12 sm:pb-16">
+      <div className="max-w-[1160px] mx-auto px-4 sm:px-8 flex flex-col items-center gap-6 text-center">
+        <span className="grid size-12 place-items-center rounded-2xl border border-white/10">
+          <JobwhisperIcon className="size-5 text-white" />
+        </span>
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-white/60 text-sm">
+          <span>© 2026 Weav.com, LLC</span>
+          <span aria-hidden="true">·</span>
+          <button className="hover:text-white transition-colors">Download</button>
+          <span aria-hidden="true">·</span>
+          <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+          <span aria-hidden="true">·</span>
+          <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
         </div>
       </div>
     </footer>
@@ -280,6 +342,7 @@ export function LandingPage() {
       <LandingHero />
       <LandingDemo onOpenDemo={() => setDemoOpen(true)} />
       <LandingFeatures />
+      <LandingFAQ />
       <LandingFooter />
       <DemoModal open={demoOpen} onClose={() => setDemoOpen(false)} />
     </div>
