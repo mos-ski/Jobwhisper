@@ -136,7 +136,7 @@ function AddOnUpsellDialog({
         <DialogClose />
         <DialogTitle>Want to go further than {plan.name}?</DialogTitle>
         <p className="mt-1 text-sm text-ink-muted">
-          {plan.name} covers interview prep and copilot. Resume Builder and Auto Apply are separate, optional add-ons — add them now or skip and add them later from Billing.
+          {plan.name} covers interview prep and copilot. Resume Builder and Auto Apply are separate, optional add-ons, add them now or skip and add them later from Billing.
         </p>
 
         <div className="mt-5 grid gap-3">
@@ -167,7 +167,7 @@ function AddOnUpsellDialog({
 
         <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button variant="ghost" onClick={() => onContinue([])}>
-            Skip — just {plan.name}
+            Skip, just {plan.name}
           </Button>
           <Button variant="primary" onClick={() => onContinue([...selected])}>
             Continue{addOnsTotal > 0 ? ` with add-ons` : ''}
@@ -296,7 +296,7 @@ export function PlanSelectionView({
               ))}
             </div>
             <p className="rounded-b-panel border border-warning bg-warning-surface px-4 py-3 text-sm text-warning">
-              You're billed for what you actually use — a quick resume edit costs less than a 30-minute live Copilot session. Use your balance across any feature.
+              You're billed for what you actually use, a quick resume edit costs less than a 30-minute live Copilot session. Use your balance across any feature.
             </p>
           </div>
 

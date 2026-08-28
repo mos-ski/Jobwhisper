@@ -26,7 +26,7 @@ export const checkoutAddOnFixtures: readonly CheckoutAddOnOffer[] = [
     id: 'auto-apply',
     name: 'Auto Apply',
     priceMonthly: 40,
-    description: 'Let Jobwhisper apply to jobs for you — you pick the roles, the agents handle the applications.',
+    description: 'Let Jobwhisper apply to jobs for you, you pick the roles, the agents handle the applications.',
   },
   {
     id: 'resume-builder',

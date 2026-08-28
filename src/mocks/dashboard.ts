@@ -21,7 +21,7 @@ export const dashboardActions: readonly DashboardAction[] = [
     featured: true,
     locked: true,
     lockMessage: 'Resume Builder is a separate add-on, not included in any plan. Unlock it for $15/mo to get AI-tailored resumes and unlimited downloads.',
-    lockCta: 'Unlock Resume Builder — $15/mo',
+    lockCta: 'Unlock Resume Builder, $15/mo',
     lockHref: '/v3/billing#add-ons',
   },
   {
@@ -33,7 +33,7 @@ export const dashboardActions: readonly DashboardAction[] = [
   {
     id: 'interview-copilot',
     title: 'Interview Copilot',
-    description: 'Live AI assistance during interviews — real-time suggestions as the conversation happens.',
+    description: 'Live AI assistance during interviews, real-time suggestions as the conversation happens.',
     href: '/v3/interview-copilot?mode=interview',
   },
   {
@@ -43,20 +43,20 @@ export const dashboardActions: readonly DashboardAction[] = [
     href: '/v3/auto-apply',
     badge: 'BETA',
     locked: true,
-    lockMessage: 'Auto Apply is a separate add-on, not included in any plan. Unlock it for $40/mo — you choose the jobs, the agents handle the applications.',
-    lockCta: 'Unlock Auto Apply — $40/mo',
+    lockMessage: 'Auto Apply is a separate add-on, not included in any plan. Unlock it for $40/mo, you choose the jobs, the agents handle the applications.',
+    lockCta: 'Unlock Auto Apply, $40/mo',
     lockHref: '/v3/billing#add-ons',
   },
   {
     id: 'coding-copilot',
     title: 'Coding Copilot',
-    description: 'Live AI assistance for coding interviews — real-time hints as you work through the problem.',
+    description: 'Live AI assistance for coding interviews, real-time hints as you work through the problem.',
     href: '/v3/interview-copilot?mode=coding',
   },
   {
     id: 'meeting-copilot',
     title: 'Meeting Copilot',
-    description: 'Live AI assistance during meetings — real-time notes and talking points as the conversation happens.',
+    description: 'Live AI assistance during meetings, real-time notes and talking points as the conversation happens.',
     href: '/v3/interview-copilot?mode=meeting',
     locked: true,
     lockMessage: 'Meeting Copilot is available on the Premium plan. Upgrade to unlock live AI assistance during meetings.',

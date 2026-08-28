@@ -280,14 +280,14 @@ function LibraryPageInner() {
           {/* Typography */}
           <Section title="Typography">
             <div className="grid gap-3">
-              <p className="text-4xl font-bold">text-4xl — Display</p>
-              <p className="text-3xl font-bold">text-3xl — Page title</p>
-              <p className="text-2xl font-bold">text-2xl — Section title</p>
-              <p className="text-xl font-semibold">text-xl — Card title</p>
-              <p className="text-lg font-semibold">text-lg — Subsection</p>
-              <p className="text-base">text-base — Body</p>
-              <p className="text-sm">text-sm — Small body</p>
-              <p className="text-xs">text-xs — Caption</p>
+              <p className="text-4xl font-bold">text-4xl, Display</p>
+              <p className="text-3xl font-bold">text-3xl, Page title</p>
+              <p className="text-2xl font-bold">text-2xl, Section title</p>
+              <p className="text-xl font-semibold">text-xl, Card title</p>
+              <p className="text-lg font-semibold">text-lg, Subsection</p>
+              <p className="text-base">text-base, Body</p>
+              <p className="text-sm">text-sm, Small body</p>
+              <p className="text-xs">text-xs, Caption</p>
             </div>
           </Section>
 
@@ -621,7 +621,7 @@ function LibraryPageInner() {
               </CollapsibleTrigger>
               <CollapsiblePanel>
                 <div className="mt-2 rounded-lg bg-surface-subtle p-4 text-sm text-ink-muted">
-                  This is the collapsible content. It can contain anything — text, forms, other components.
+                  This is the collapsible content. It can contain anything, text, forms, other components.
                 </div>
               </CollapsiblePanel>
             </Collapsible>
@@ -717,7 +717,7 @@ function LibraryPageInner() {
               </div>
               <div className="flex justify-start">
                 <div className="max-w-sm rounded-2xl rounded-ss-sm bg-surface-subtle px-4 py-2.5 text-sm text-ink">
-                  I've tailored your resume to match the job description — review the highlighted changes below and accept or reject them.
+                  I've tailored your resume to match the job description, review the highlighted changes below and accept or reject them.
                 </div>
               </div>
               <div className="flex justify-start">
@@ -838,7 +838,7 @@ function LibraryPageInner() {
           <Section title="Accept / Reject">
             <p className="mb-3 text-sm text-ink-muted">Floating inline controls for accepting or rejecting AI-suggested resume changes.</p>
             <div className="relative rounded-xl border border-border bg-surface p-6">
-              <p className="text-sm text-ink">Professional Summary — original text appears here with changes highlighted.</p>
+              <p className="text-sm text-ink">Professional Summary, original text appears here with changes highlighted.</p>
               <div className="absolute end-3 top-3 flex gap-2">
                 <button className="grid size-8 place-items-center rounded-full bg-positive text-white shadow-lg transition-colors hover:bg-positive/90"><Check className="size-4" /></button>
                 <button className="grid size-8 place-items-center rounded-full border border-border bg-surface text-ink shadow-lg transition-colors hover:bg-danger-surface hover:text-danger"><X className="size-4" /></button>

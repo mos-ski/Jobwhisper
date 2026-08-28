@@ -227,7 +227,7 @@ function PlanCard({
             <span className="text-base font-semibold text-ink-muted line-through">{price}</span>
             <span className="text-2xl font-black text-accent">${PRO_OFFER_PRICE}</span>
           </p>
-          <p className="mt-1 text-sm font-medium text-positive">First-time offer applied — then {price} {cadence}</p>
+          <p className="mt-1 text-sm font-medium text-positive">First-time offer applied, then {price} {cadence}</p>
         </>
       ) : (
         <p className="mt-6 text-2xl font-black">
@@ -395,16 +395,16 @@ function AnnualToggle({ annual, onToggle }: { readonly annual: boolean; readonly
 }
 
 const billingFaqs: readonly { readonly question: string; readonly answer: string }[] = [
-  { question: 'How does usage-based pricing work?', answer: 'Each feature is metered by what it actually costs to run — per message for Resume Builder, per successful application for Auto-Apply, per minute for live Interview Prep and Copilot sessions. See the rate table above for exact pricing. Jobwhisper only charges for successful actions, so a failed Auto-Apply submission never costs anything.' },
-  { question: 'Does unused balance roll over to next month?', answer: 'Your plan’s monthly included usage resets on your renewal date and does not carry forward. Any balance you’ve added yourself through a top-up is different — that stays on your account until you spend it.' },
+  { question: 'How does usage-based pricing work?', answer: 'Each feature is metered by what it actually costs to run, per message for Resume Builder, per successful application for Auto-Apply, per minute for live Interview Prep and Copilot sessions. See the rate table above for exact pricing. Jobwhisper only charges for successful actions, so a failed Auto-Apply submission never costs anything.' },
+  { question: 'Does unused balance roll over to next month?', answer: 'Your plan’s monthly included usage resets on your renewal date and does not carry forward. Any balance you’ve added yourself through a top-up is different, that stays on your account until you spend it.' },
   { question: 'What’s the difference between monthly and annual billing?', answer: 'Annual billing charges you once a year at a 20% discount off the monthly rate. Monthly billing charges the full rate every month. You can switch between them at any time using the toggle above the plan cards.' },
   { question: 'Can I change plans at any time?', answer: 'Yes. Upgrades take effect immediately and unlock the new plan’s features right away. Downgrades take effect at the start of your next billing cycle, so you keep your current plan’s benefits until then.' },
   { question: 'How do I cancel my subscription?', answer: 'Use the Cancel Subscription button above. You’ll keep full access until your current billing period ends, after which your account moves to the Free plan. You can renew at any time before then.' },
   { question: 'What happens to my data if I cancel?', answer: 'Your saved resumes, cover letters, application history, and interview reports stay in your account. You just lose access to paid features like Auto-Apply and Copilot sessions until you resubscribe.' },
   { question: 'Is the first-time offer available more than once?', answer: 'No. The $10 first-time Pro offer is available once per account, only before the countdown on this page expires. After it’s redeemed or the timer runs out, your plan renews at the regular price.' },
   { question: 'What payment methods do you accept?', answer: 'We accept all major debit and credit cards. Payments are processed securely and your card details are never stored on Jobwhisper’s servers.' },
-  { question: 'Do you offer refunds?', answer: 'We don’t offer refunds for partial billing periods, but you can cancel at any time to stop future charges — you’ll keep access through the end of the period you already paid for.' },
-  { question: 'Can I add more balance without upgrading my plan?', answer: 'Yes. Use the Add Funds link above to earn bonus balance through referrals, or add a one-time top-up from the usage details page — it stays on your account until you spend it.' },
+  { question: 'Do you offer refunds?', answer: 'We don’t offer refunds for partial billing periods, but you can cancel at any time to stop future charges, you’ll keep access through the end of the period you already paid for.' },
+  { question: 'Can I add more balance without upgrading my plan?', answer: 'Yes. Use the Add Funds link above to earn bonus balance through referrals, or add a one-time top-up from the usage details page, it stays on your account until you spend it.' },
 ]
 
 function BillingFaqSection() {
@@ -488,7 +488,7 @@ function AddOnCard({ addOn }: { readonly addOn: BillingAddOn }) {
         ))}
       </ul>
       <Button variant={unlocked ? 'secondary' : 'primary'} disabled={unlocked} onClick={() => setUnlocked(true)} className="w-full sm:w-fit">
-        {unlocked ? 'Unlocked' : `Unlock ${addOn.name} — ${addOn.price}${addOn.cadence ? ` ${addOn.cadence}` : ''}`}
+        {unlocked ? 'Unlocked' : `Unlock ${addOn.name}, ${addOn.price}${addOn.cadence ? ` ${addOn.cadence}` : ''}`}
       </Button>
       <div className={cn('rounded-soft border border-dashed p-3', unlocked ? 'border-accent-muted bg-accent-subtle' : 'border-border bg-surface-subtle')}>
         <p className="text-xs font-bold uppercase tracking-wide text-ink-muted">Further unlock</p>
@@ -595,7 +595,7 @@ export function BillingView({ homeHref, plans, addOns, usageRows, wallet }: Bill
             {!proOfferExpired ? (
               <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-panel border border-accent-muted bg-accent-subtle px-4 py-3 sm:px-5">
                 <p className="text-sm font-medium text-accent-text">
-                  <span className="font-bold uppercase tracking-wide">First-time offer</span> — get Pro for just ${PRO_OFFER_PRICE} today.
+                  <span className="font-bold uppercase tracking-wide">First-time offer</span>, get Pro for just ${PRO_OFFER_PRICE} today.
                 </p>
                 <span className="rounded-pill bg-surface px-3 py-1 text-xs font-bold text-accent-text shadow-control">
                   Ends in {formatOfferTime(proOfferSecondsLeft)}
@@ -636,7 +636,7 @@ export function BillingView({ homeHref, plans, addOns, usageRows, wallet }: Bill
           <div id="add-ons">
             <TitledPanel title="Add-ons">
               <p className="mb-5 text-sm text-ink-muted">
-                Resume Builder and Auto Apply aren&apos;t included in any plan — unlock them separately, on top of your subscription.
+                Resume Builder and Auto Apply aren&apos;t included in any plan, unlock them separately, on top of your subscription.
               </p>
               <div className="grid gap-5 md:grid-cols-2">
                 {addOns.map((addOn) => (

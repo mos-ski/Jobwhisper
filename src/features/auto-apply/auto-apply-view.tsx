@@ -669,7 +669,7 @@ function AdditionalForm({ setup }: { readonly setup: AutoApplySetup }) {
   return (
     <div className="grid gap-2">
       <p className="text-sm leading-6 text-ink-muted">
-        A few employers ask equal-opportunity and background questions on their applications. These are optional — answer what
+        A few employers ask equal-opportunity and background questions on their applications. These are optional, answer what
         you&apos;re comfortable sharing, or skip and Jobwhisper will leave them blank when it applies on your behalf. Your answers
         are never shared outside the application itself.
       </p>
@@ -679,7 +679,7 @@ function AdditionalForm({ setup }: { readonly setup: AutoApplySetup }) {
         onToggle={() => toggle('demographics')}
         isFilled={filled.demographics}
       >
-        <p className="mb-3 text-xs text-ink-muted">Optional — used only if an employer's application asks for it.</p>
+        <p className="mb-3 text-xs text-ink-muted">Optional, used only if an employer's application asks for it.</p>
         <div className="grid gap-3 sm:grid-cols-2">
           <FormSelectField
             id="auto-race"
@@ -779,7 +779,7 @@ function AdditionalForm({ setup }: { readonly setup: AutoApplySetup }) {
         onToggle={() => toggle('background')}
         isFilled={filled.background}
       >
-        <p className="mb-3 text-xs text-ink-muted">Optional — used only if an employer's application asks for it.</p>
+        <p className="mb-3 text-xs text-ink-muted">Optional, used only if an employer's application asks for it.</p>
         <div className="grid gap-5">
           <fieldset>
             <legend className="mb-2 text-sm font-medium text-ink">Is there anything that would prevent you from obtaining a Public Trust Clearance?</legend>
@@ -955,8 +955,8 @@ function AgentStatsSummary({ stats }: { readonly stats: AgentSession['stats'] })
 
 const agentTips: Record<string, { readonly title: string; readonly body: string }> = {
   scout: { title: 'Scout', body: 'Searches job boards like LinkedIn, Greenhouse, and Lever for new postings that match your criteria.' },
-  filter: { title: 'Filter', body: 'Scores every job Scout finds against your resume — title, certifications, location, and salary — to surface the best matches.' },
-  tailor: { title: 'Tailor', body: "Waits until you've reviewed Filter's matches and selectively chosen which jobs to move forward with, then generates a tailored version of your resume for each one — optimizing keywords and content for that specific posting." },
+  filter: { title: 'Filter', body: 'Scores every job Scout finds against your resume, title, certifications, location, and salary, to surface the best matches.' },
+  tailor: { title: 'Tailor', body: "Waits until you've reviewed Filter's matches and selectively chosen which jobs to move forward with, then generates a tailored version of your resume for each one, optimizing keywords and content for that specific posting." },
   driver: { title: 'Driver', body: "Picks up once Tailor has finished the resumes for your selected jobs, then submits each application, carrying it through the employer's application flow." },
 }
 

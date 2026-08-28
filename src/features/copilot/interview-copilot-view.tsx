@@ -442,7 +442,7 @@ const RESPONSE_MODE_EXAMPLES: Record<CopilotResponseMode, { readonly helperText:
     helperText: 'Best for candidates who want guidance on how to answer, not the answer itself',
     example: (
       <>
-        Lead with the outcome — mention the <strong>30% engagement lift</strong> first, then walk back through what you
+        Lead with the outcome, mention the <strong>30% engagement lift</strong> first, then walk back through what you
         changed. Keep the redesign details brief; the interviewer is listening for impact, not implementation.
       </>
     ),
@@ -902,7 +902,7 @@ function CopilotLiveSettingsModal({
                 </div>
                 <div className="border-t border-white/10 pt-4">
                   <button type="button" className="w-full rounded-lg border border-white/20 px-4 py-3 text-sm font-medium text-slate-300 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30">
-                    Reset — show setup next time
+                    Reset, show setup next time
                   </button>
                 </div>
               </div>
@@ -1092,8 +1092,8 @@ function CopilotTalkTimeCard({ talkTime }: { readonly talkTime: CopilotTalkTime 
         <div className="bg-border" style={{ inlineSize: `${talkTime.otherPercent}%` }} />
       </div>
       <div className="mt-2 flex items-center justify-between text-xs font-medium text-ink-muted">
-        <span>You — {talkTime.userPercent}%</span>
-        <span>{talkTime.otherLabel} — {talkTime.otherPercent}%</span>
+        <span>You, {talkTime.userPercent}%</span>
+        <span>{talkTime.otherLabel}, {talkTime.otherPercent}%</span>
       </div>
       <p className="mt-3 text-sm leading-6 text-ink-muted">{talkTime.tip}</p>
     </div>
@@ -1208,7 +1208,7 @@ const COPILOT_PROMPT_RESPONSES: Record<string, string> = {
   'Summarize the discussion so far':
     "So far the interviewer has asked about your background and your approach to a recent design decision. You've covered the vehicle maintenance app redesign, citing the 30% engagement lift.",
   'How well am I doing so far?':
-    "You're doing well — your answers are specific and metric-driven. Consider slowing down slightly on the first sentence of each answer so the interviewer can follow the setup before the result.",
+    "You're doing well, your answers are specific and metric-driven. Consider slowing down slightly on the first sentence of each answer so the interviewer can follow the setup before the result.",
   'Suggest follow-up questions':
     'Try asking: "What does success look like for this role in the first 90 days?" or "How does the design team collaborate with engineering here?"',
   'What was discussed in the last two minutes?':
@@ -1468,7 +1468,7 @@ function CopilotTranscriptPanel({
         </div>
       ) : (
         <p className="text-sm italic text-ink-muted">
-          {responseMode === 'auto' ? 'Auto Respond is on — listening automatically…' : manualHint}
+          {responseMode === 'auto' ? 'Auto Respond is on, listening automatically…' : manualHint}
         </p>
       )}
     </div>
@@ -1615,7 +1615,7 @@ function CopilotCodingPanel({
 
       {status === 'idle' && history.length === 0 ? (
         <p className="text-sm italic text-ink-muted">
-          {responseMode === 'auto' ? 'Auto Respond is on — Copilot will capture automatically. Press Space to capture sooner.' : manualHint}
+          {responseMode === 'auto' ? 'Auto Respond is on, Copilot will capture automatically. Press Space to capture sooner.' : manualHint}
         </p>
       ) : null}
     </div>
@@ -1842,7 +1842,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
           quickAmounts={QUICK_TOPUP_CREDITS}
           formatAmount={formatCreditAmountWithUsd}
           onAddFunds={handleAddFunds}
-          description="You're out of balance for this session. Add funds to keep going — your session will resume right where you left off."
+          description="You're out of balance for this session. Add funds to keep going, your session will resume right where you left off."
         />
       </main>
     )
@@ -1883,7 +1883,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
       ) : null}
       {sessionPaused ? (
         <div role="status" className="flex shrink-0 items-center justify-between gap-3 border-b border-danger bg-danger px-5 py-2 text-sm font-semibold text-on-danger">
-          <span>Session paused — you&apos;re out of balance.</span>
+          <span>Session paused, you&apos;re out of balance.</span>
           <button type="button" onClick={() => setTopUpOpen(true)} className="shrink-0 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
             Add funds to continue
           </button>
@@ -1971,7 +1971,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
         quickAmounts={QUICK_TOPUP_CREDITS}
         formatAmount={formatCreditAmountWithUsd}
         onAddFunds={handleAddFunds}
-        description="You're out of balance for this session. Add funds to keep going — your session will resume right where you left off."
+        description="You're out of balance for this session. Add funds to keep going, your session will resume right where you left off."
       />
     </main>
   )
