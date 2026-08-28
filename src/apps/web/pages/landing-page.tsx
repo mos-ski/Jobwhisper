@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Play, ChevronDown } from 'lucide-react'
+import { Play, ChevronDown, Check } from 'lucide-react'
 import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger, JobwhisperIcon } from '@/ui'
+import { useInView } from '@/hooks/useInView'
 import { DemoModal } from './demo-modal'
 
 const MOBILE_QUERY = '(max-width: 639px)'
@@ -17,6 +18,27 @@ function useIsMobileViewport() {
   }, [])
 
   return isMobile
+}
+
+function RevealOnScroll({
+  children,
+  delayMs = 0,
+  className = '',
+}: {
+  readonly children: ReactNode
+  readonly delayMs?: number
+  readonly className?: string
+}) {
+  const { ref, inView } = useInView<HTMLDivElement>()
+  return (
+    <div
+      ref={ref}
+      className={`${inView ? 'animate-ease-in-bottom' : 'opacity-0'} ${className}`}
+      style={inView ? { animationDelay: `${delayMs}ms`, animationFillMode: 'backwards' } : undefined}
+    >
+      {children}
+    </div>
+  )
 }
 
 const FEATURES = [
@@ -105,6 +127,45 @@ const FAQS = [
     question: 'What happens if I run out of credits mid-session?',
     answer:
       "You'll get a low-balance warning first, and can top up without losing your place — your session resumes right where you left off once you add more credits.",
+  },
+]
+
+const TIMELINE_STAGES = [
+  {
+    label: 'Today',
+    title: 'Get interview-ready',
+    items: [
+      'Upload your resume and get instant feedback on gaps',
+      'Run your first AI mock interview, role-aware from question one',
+      'See exactly what to work on before you walk in',
+    ],
+  },
+  {
+    label: 'Before the call',
+    title: "Rehearse until it's natural",
+    items: [
+      'Practice the questions your specific role gets asked',
+      'Get real answers scored against what strong candidates say',
+      'Walk in knowing your story, not reciting it',
+    ],
+  },
+  {
+    label: 'The real interview',
+    title: 'Never freeze up again',
+    items: [
+      'The live copilot listens in and feeds you talking points',
+      "Real-time answers to questions you didn't prep for",
+      'Invisible to everyone else on the call',
+    ],
+  },
+  {
+    label: 'After the call',
+    title: 'Walk into round two stronger',
+    items: [
+      'Every session saved with a summary and talk-time breakdown',
+      "See exactly what went well and what didn't — no guessing",
+      'Only spend credits on the sessions you actually run',
+    ],
   },
 ]
 
@@ -231,11 +292,94 @@ function LandingDemo({ onOpenDemo }: { readonly onOpenDemo: () => void }) {
   )
 }
 
+function LandingTimeline() {
+  return (
+    <section className="px-4 sm:px-8 lg:px-[113px] pt-16 sm:pt-24 pb-4 sm:pb-8">
+      <div className="flex flex-col items-center text-center gap-4">
+        <p className="text-white/60 text-sm font-semibold uppercase tracking-[0.08em]">
+          You don't need weeks to feel ready
+        </p>
+        <h2
+          className="text-white font-normal font-gowun max-w-[700px]"
+          style={{ fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: '1.2', letterSpacing: '-0.02em' }}
+        >
+          Here's what changes between now and your next interview.
+        </h2>
+      </div>
+
+      <div className="mt-12 sm:mt-16 hidden md:grid md:grid-cols-4 md:gap-2">
+        {TIMELINE_STAGES.map((stage, index) => {
+          const isLast = index === TIMELINE_STAGES.length - 1
+          return (
+            <div key={stage.label} className="flex flex-col items-center gap-3">
+              <span
+                className={`shrink-0 rounded-lg border px-4 h-9 inline-flex items-center text-sm font-medium whitespace-nowrap ${
+                  isLast ? 'border-white bg-white text-landing-btn-text' : 'border-white/15 text-white/70'
+                }`}
+              >
+                {stage.label}
+              </span>
+              <span className="relative flex h-2.5 w-full items-center justify-center">
+                {index !== 0 ? (
+                  <span className="absolute right-1/2 h-px w-full bg-white/15" aria-hidden="true" />
+                ) : null}
+                {!isLast ? (
+                  <span className="absolute left-1/2 h-px w-full bg-white/15" aria-hidden="true" />
+                ) : null}
+                <span
+                  className={`relative z-10 size-2.5 rounded-full ${
+                    isLast ? 'bg-white' : 'border border-white/30 bg-landing-bg'
+                  }`}
+                />
+              </span>
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {TIMELINE_STAGES.map((stage, index) => {
+          const isLast = index === TIMELINE_STAGES.length - 1
+          return (
+            <RevealOnScroll key={stage.title} delayMs={index * 90} className="h-full">
+              <div
+                className={`h-full rounded-xl p-6 transition-all duration-300 ease-out hover:-translate-y-1 ${
+                  isLast ? 'bg-white hover:shadow-xl' : 'bg-white/[0.06] hover:bg-white/[0.1]'
+                }`}
+              >
+                <p className={`text-xs font-semibold uppercase tracking-[0.06em] mb-2 md:hidden ${isLast ? 'text-landing-btn-text' : 'text-white/50'}`}>
+                  {stage.label}
+                </p>
+                <p className={`font-semibold text-base mb-4 ${isLast ? 'text-landing-btn-text' : 'text-white'}`}>
+                  {stage.title}
+                </p>
+                <ul className="flex flex-col gap-3">
+                  {stage.items.map((item) => (
+                    <li key={item} className="flex items-start gap-2.5">
+                      <Check
+                        size={16}
+                        className={`shrink-0 mt-0.5 ${isLast ? 'text-landing-btn-text' : 'text-white/50'}`}
+                      />
+                      <span className={`text-sm leading-[1.5] ${isLast ? 'text-landing-ink' : 'text-white/70'}`}>
+                        {item}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </RevealOnScroll>
+          )
+        })}
+      </div>
+    </section>
+  )
+}
+
 function LandingFeatures() {
   const navigate = useNavigate()
   return (
-    <section className="flex flex-col items-center gap-4 sm:gap-8 pt-8 sm:pt-16 pb-12 sm:pb-20">
-      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-[44px]">
+    <section className="flex flex-col items-center gap-4 sm:gap-8 px-4 sm:px-8 lg:px-[113px] pt-8 sm:pt-16 pb-12 sm:pb-20">
+      <div className="w-full">
         <p
           className="text-white font-normal font-gowun text-center"
           style={{ fontSize: '28px', lineHeight: '36px', letterSpacing: '-0.84px' }}
@@ -244,29 +388,30 @@ function LandingFeatures() {
         </p>
       </div>
 
-      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-[44px]">
+      <div className="w-full">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {FEATURES.map((feature) => (
-            <a
-              key={feature.title}
-              href={feature.href}
-              className="flex gap-4 p-4 rounded-[12px] bg-white/[0.01] border border-white/[0.05] hover:bg-white/[0.05] transition-colors no-underline group"
-            >
-              <div className="flex items-center justify-center size-14 rounded-[10px] bg-white/10 shrink-0 mt-0.5">
-                <img src={feature.icon} alt="" className="size-5" />
-              </div>
-              <div className="flex flex-col flex-1 min-w-0 gap-1">
-                <p className="text-white font-semibold text-[15px] leading-[21px]">
-                  {feature.title}
-                </p>
-                <p className="text-white/75 text-[13px] font-medium leading-[18px]">
-                  {feature.subtitle}
-                </p>
-                <p className="text-white/50 text-[13px] font-normal leading-[1.55] mt-1">
-                  {feature.description}
-                </p>
-              </div>
-            </a>
+          {FEATURES.map((feature, index) => (
+            <RevealOnScroll key={feature.title} delayMs={index * 60}>
+              <a
+                href={feature.href}
+                className="flex gap-4 p-4 rounded-[12px] bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-300 ease-out hover:-translate-y-1 no-underline group"
+              >
+                <div className="flex items-center justify-center size-14 rounded-[10px] bg-white/10 shrink-0 mt-0.5 transition-transform duration-300 ease-out group-hover:scale-110">
+                  <img src={feature.icon} alt="" className="size-5" />
+                </div>
+                <div className="flex flex-col flex-1 min-w-0 gap-1">
+                  <p className="text-white font-semibold text-[15px] leading-[21px]">
+                    {feature.title}
+                  </p>
+                  <p className="text-white/75 text-[13px] font-medium leading-[18px]">
+                    {feature.subtitle}
+                  </p>
+                  <p className="text-white/50 text-[13px] font-normal leading-[1.55] mt-1">
+                    {feature.description}
+                  </p>
+                </div>
+              </a>
+            </RevealOnScroll>
           ))}
         </div>
       </div>
@@ -284,8 +429,8 @@ function LandingFeatures() {
 
 function LandingFAQ() {
   return (
-    <section id="faq" className="bg-landing-footer-frame pt-16 sm:pt-24 pb-12 sm:pb-16">
-      <div className="max-w-[1160px] mx-auto px-4 sm:px-8 grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
+    <section id="faq" className="bg-landing-footer-frame px-4 sm:px-8 lg:px-[113px] pt-16 sm:pt-24 pb-12 sm:pb-16">
+      <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
         <h2
           className="text-white font-normal font-gowun"
           style={{ fontSize: 'clamp(32px, 4vw, 44px)', lineHeight: '1.15', letterSpacing: '-0.02em' }}
@@ -314,8 +459,8 @@ function LandingFAQ() {
 
 function LandingFooter() {
   return (
-    <footer className="bg-landing-footer-frame pb-12 sm:pb-16">
-      <div className="max-w-[1160px] mx-auto px-4 sm:px-8 flex flex-col items-center gap-6 text-center">
+    <footer className="bg-landing-footer-frame px-4 sm:px-8 lg:px-[113px] pb-12 sm:pb-16">
+      <div className="flex flex-col items-center gap-6 text-center">
         <span className="grid size-12 place-items-center rounded-2xl border border-white/10">
           <JobwhisperIcon className="size-5 text-white" />
         </span>
@@ -341,6 +486,7 @@ export function LandingPage() {
       {demoOpen ? null : <LandingNav />}
       <LandingHero />
       <LandingDemo onOpenDemo={() => setDemoOpen(true)} />
+      <LandingTimeline />
       <LandingFeatures />
       <LandingFAQ />
       <LandingFooter />
