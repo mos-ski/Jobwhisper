@@ -97,7 +97,7 @@ export const resumeDocument: ResumeDocument = {
     },
   ],
   improvedFirstRoleBullets: [
-    'Led end-to-end strategy and execution for 5 core products, including the AI Resume Builder and Interview Copilot — shipped the MVP in 5 months with 95% feature completion and grew active usage to 12,000+ monthly users.',
+    'Led end-to-end strategy and execution for 5 core products, including the AI Resume Builder and Interview Copilot, shipped the MVP in 5 months with 95% feature completion and grew active usage to 12,000+ monthly users.',
     'Built and scaled an ATS-compliant resume builder powered by generative AI, improving content-parsing accuracy by 40% and lifting application-to-interview conversion by 25% across a base of 8,000+ resumes processed.',
   ],
   education: [

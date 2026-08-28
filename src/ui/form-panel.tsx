@@ -181,7 +181,7 @@ export function UploadedFileDialog({ open, onOpenChange, fileName, fileUrl, cont
               </div>
               <div className="grid gap-1">
                 <p className="text-sm font-medium text-ink">{fileName}</p>
-                <p className="text-xs text-ink-muted">PDF document — preview available after processing</p>
+                <p className="text-xs text-ink-muted">PDF document, preview available after processing</p>
               </div>
             </div>
           )}

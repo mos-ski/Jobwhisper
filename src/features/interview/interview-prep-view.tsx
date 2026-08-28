@@ -761,7 +761,7 @@ function InterviewLiveSettingsModal({
                 </div>
                 <div className="border-t border-white/10 pt-4">
                   <button type="button" className="w-full rounded-lg border border-white/20 px-4 py-3 text-sm font-medium text-slate-300 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30">
-                    Reset — show setup next time
+                    Reset, show setup next time
                   </button>
                 </div>
               </div>
@@ -929,7 +929,7 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
             <div className="grid auto-rows-min gap-3">
               {transcript.length === 0 ? (
                 <p className="text-sm italic leading-6 text-white/60">
-                  Your interviewer's questions and a log of your answers will appear here as the session runs — tap anywhere (or press Space) to begin.
+                  Your interviewer's questions and a log of your answers will appear here as the session runs, tap anywhere (or press Space) to begin.
                 </p>
               ) : (
                 transcript.map((turn) => (
@@ -1058,7 +1058,7 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
           quickAmounts={QUICK_TOPUP_CREDITS}
           formatAmount={formatCreditAmountWithUsd}
           onAddFunds={handleAddFunds}
-          description="You're out of balance for this session. Add funds to keep going — your session will resume right where you left off."
+          description="You're out of balance for this session. Add funds to keep going, your session will resume right where you left off."
         />
       </main>
     )
@@ -1101,7 +1101,7 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
       ) : null}
       {sessionPaused ? (
         <div role="status" className="flex shrink-0 items-center justify-between gap-3 border-b border-danger bg-danger px-5 py-2 text-sm font-semibold text-on-danger">
-          <span>Session paused — you&apos;re out of balance.</span>
+          <span>Session paused, you&apos;re out of balance.</span>
           <button type="button" onClick={() => setTopUpOpen(true)} className="shrink-0 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
             Add funds to continue
           </button>
@@ -1133,7 +1133,7 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
             <div className="grid auto-rows-min gap-3">
               {transcript.length === 0 ? (
                 <p className="text-sm leading-6 text-ink-muted">
-                  Your interviewer's questions and a log of your answers will appear here as the session runs — press Space (or tap the interviewer) to begin.
+                  Your interviewer's questions and a log of your answers will appear here as the session runs, press Space (or tap the interviewer) to begin.
                 </p>
               ) : (
                 transcript.map((turn) => (
@@ -1180,7 +1180,7 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
         quickAmounts={QUICK_TOPUP_CREDITS}
         formatAmount={formatCreditAmountWithUsd}
         onAddFunds={handleAddFunds}
-        description="You're out of balance for this session. Add funds to keep going — your session will resume right where you left off."
+        description="You're out of balance for this session. Add funds to keep going, your session will resume right where you left off."
       />
     </main>
   )

@@ -76,11 +76,11 @@ export const copilotHistoryRows: readonly CopilotHistoryRow[] = [
   { id: 'copilot-history-3', mode: 'meeting', title: 'Weekly Product Sync', where: 'Desktop', company: 'Notion', duration: '47m', dateTime: 'August 5th 2026, 7:58 am' },
   { id: 'copilot-history-4', mode: 'interview', title: 'Backend Engineer, Payments', where: 'Desktop', company: 'Stripe', duration: '16m', dateTime: 'August 1st 2026, 10:44 am' },
   { id: 'copilot-history-5', mode: 'interview', title: 'UX Researcher', where: 'Mobile', company: 'Spotify', duration: '38m', dateTime: 'July 27th 2026, 4:16 pm' },
-  { id: 'copilot-history-6', mode: 'coding', title: 'Coding Interview — Two Sum & Sliding Window', where: 'Desktop', company: 'Goldman Sachs', duration: '13m', dateTime: 'July 22nd 2026, 9:20 am' },
+  { id: 'copilot-history-6', mode: 'coding', title: 'Coding Interview, Two Sum & Sliding Window', where: 'Desktop', company: 'Goldman Sachs', duration: '13m', dateTime: 'July 22nd 2026, 9:20 am' },
   { id: 'copilot-history-7', mode: 'interview', title: 'Data Analyst', where: 'Desktop', company: 'Airbnb', duration: '29m', dateTime: 'July 17th 2026, 1:02 pm' },
   { id: 'copilot-history-8', mode: 'interview', title: 'Marketing Manager, Lifecycle', where: 'Mobile', company: 'HubSpot', duration: '24m', dateTime: 'July 12th 2026, 3:47 pm' },
   { id: 'copilot-history-9', mode: 'meeting', title: 'Q3 Roadmap Review', where: 'Desktop', company: 'Jobwhisper', duration: '55m', dateTime: 'July 7th 2026, 11:12 am' },
-  { id: 'copilot-history-10', mode: 'coding', title: 'Coding Interview — System Design: Rate Limiter', where: 'Desktop', company: 'DeeXoptions', duration: '18m', dateTime: 'July 1st 2026, 5:39 pm' },
+  { id: 'copilot-history-10', mode: 'coding', title: 'Coding Interview, System Design: Rate Limiter', where: 'Desktop', company: 'DeeXoptions', duration: '18m', dateTime: 'July 1st 2026, 5:39 pm' },
 ]
 
 export const copilotInterviewTranscript: readonly CopilotTranscriptTurn[] = [
@@ -94,26 +94,26 @@ export const copilotInterviewTranscript: readonly CopilotTranscriptTurn[] = [
     speaker: 'Interviewer',
     question: 'What would you say is your greatest strength as a PM?',
     answer:
-      'My greatest strength is owning the full product lifecycle — from discovery through launch and iteration. That end-to-end ownership reduces handoff friction. On my last team, it helped us cut time-to-market by roughly 30% over two quarters.',
+      'My greatest strength is owning the full product lifecycle, from discovery through launch and iteration. That end-to-end ownership reduces handoff friction. On my last team, it helped us cut time-to-market by roughly 30% over two quarters.',
   },
   {
     speaker: 'Interviewer',
     question: 'Tell me about a time you disagreed with a stakeholder on product direction.',
     answer:
-      'A senior stakeholder wanted to ship a feature I believed would hurt retention based on our research. Instead of pushing back directly, I brought a data brief showing the risk alongside two alternatives that met their goal differently. We shipped a smaller version with a 30-day review gate — it performed well and strengthened the relationship.',
+      'A senior stakeholder wanted to ship a feature I believed would hurt retention based on our research. Instead of pushing back directly, I brought a data brief showing the risk alongside two alternatives that met their goal differently. We shipped a smaller version with a 30-day review gate, it performed well and strengthened the relationship.',
     interjection: { speaker: 'Interviewer', text: 'And how did they react once they saw the data?' },
   },
   {
     speaker: 'Interviewer',
     question: 'How do you prioritize when you have limited engineering time?',
     answer:
-      'I use RICE scoring to quantify reach, impact, confidence, and effort, paired with qualitative input from customer success and sales — they often catch signals the data misses. The output is a ranked backlog everyone can see and challenge transparently.',
+      'I use RICE scoring to quantify reach, impact, confidence, and effort, paired with qualitative input from customer success and sales, they often catch signals the data misses. The output is a ranked backlog everyone can see and challenge transparently.',
   },
   {
     speaker: 'Interviewer',
     question: 'Where do you see yourself in the next three to five years?',
     answer:
-      "I'd like to be leading product strategy at a company building something with real impact — either as a Director of Product or in a founding role. I'm especially interested in how AI can make product experiences more personalized without sacrificing trust.",
+      "I'd like to be leading product strategy at a company building something with real impact, either as a Director of Product or in a founding role. I'm especially interested in how AI can make product experiences more personalized without sacrificing trust.",
   },
 ]
 
@@ -126,29 +126,29 @@ export const copilotMeetingTranscript: readonly CopilotTranscriptTurn[] = [
   },
   {
     speaker: 'Marcus (Marketing)',
-    question: 'Marketing already has assets scheduled for the original date — any slip needs to be decided today, not next week.',
+    question: 'Marketing already has assets scheduled for the original date, any slip needs to be decided today, not next week.',
     answer:
       'Bridge the conflict: loop marketing into the QA checkpoint today so they can adjust the campaign calendar in parallel rather than finding out at the last minute.',
     interjection: { speaker: 'Priya (Eng Lead)', text: "Does marketing need the final date today, or just a heads-up that it might move?" },
   },
   {
     speaker: 'Marcus (Marketing)',
-    question: "What's the actual blocker on QA — is it headcount or test coverage?",
+    question: "What's the actual blocker on QA, is it headcount or test coverage?",
     answer: 'Push for clarity: ask the QA lead directly whether it\'s resourcing or scope, since the fix looks different either way.',
-    interjection: { speaker: 'Devon (QA Lead)', text: "It's coverage, not headcount — we're missing edge cases on the payments flow." },
+    interjection: { speaker: 'Devon (QA Lead)', text: "It's coverage, not headcount, we're missing edge cases on the payments flow." },
   },
   {
     speaker: 'Devon (QA Lead)',
     question: "If we get two more days on payments-flow coverage, I'm comfortable signing off.",
     answer:
-      'Capture the commitment: two extra days on payments-flow coverage, then a sign-off — worth confirming this in writing so the go/no-go review has a clear condition to check against.',
-    interjection: { speaker: 'Priya (Eng Lead)', text: 'Two days works on our side — I can free up a second engineer.' },
+      'Capture the commitment: two extra days on payments-flow coverage, then a sign-off, worth confirming this in writing so the go/no-go review has a clear condition to check against.',
+    interjection: { speaker: 'Priya (Eng Lead)', text: 'Two days works on our side, I can free up a second engineer.' },
   },
   {
     speaker: 'Marcus (Marketing)',
-    question: 'So we\'re looking at a one-week slip, not two — can everyone confirm that before I update the campaign calendar?',
+    question: 'So we\'re looking at a one-week slip, not two, can everyone confirm that before I update the campaign calendar?',
     answer:
-      'Summarize for the room: Eng needs two extra days on payments-flow coverage, QA signs off after that, and Marketing shifts assets by roughly a week rather than the original two — worth a quick thumbs-up from Priya and Devon before Marcus locks the calendar.',
+      'Summarize for the room: Eng needs two extra days on payments-flow coverage, QA signs off after that, and Marketing shifts assets by roughly a week rather than the original two, worth a quick thumbs-up from Priya and Devon before Marcus locks the calendar.',
     interjection: { speaker: 'Devon (QA Lead)', text: 'Confirmed on my end, assuming the extra engineer lands today.' },
   },
 ]
@@ -169,20 +169,20 @@ export const copilotCodingBank: readonly CopilotCodingTurn[] = [
 ]
 
 export const copilotReport: CopilotReport = {
-  title: 'Product Manager — Amazon Inc.',
+  title: 'Product Manager, Amazon Inc.',
   subtitle: 'Interview · 34 min · Desktop',
   score: 78,
   summary:
     'Strong product thinking and clear communication. You demonstrated solid prioritization frameworks and stakeholder management. The main gaps were in metrics depth and technical trade-off discussions. Focus on leading with measurable outcomes.',
   whatWentWell: [
     'Clear prioritization framework using RICE scoring',
-    'Strong stakeholder management language — showed genuine partnership',
+    'Strong stakeholder management language, showed genuine partnership',
     'Good recovery when challenged on a product decision',
   ],
   whatNeedsWork: [
     'Lead with measurable outcomes earlier in your answers',
-    'Deepen technical trade-off discussions — mention latency, cost, complexity',
-    'Tighten the opening — too much context before the core point',
+    'Deepen technical trade-off discussions, mention latency, cost, complexity',
+    'Tighten the opening, too much context before the core point',
   ],
   knowledgeGaps: [
     'Metrics definition lacked specificity beyond top-level KPIs',
@@ -220,11 +220,11 @@ export const copilotReport: CopilotReport = {
 }
 
 export const copilotCodingReport: CopilotReport = {
-  title: 'Coding Session — Stripe',
+  title: 'Coding Session, Stripe',
   subtitle: 'Coding · 41 min · Screen share',
   score: 84,
   summary:
-    'Solid problem-solving with a working solution on all three prompts. You talked through your approach before coding, which is exactly what interviewers want to see. The main gap is time-complexity awareness — you found working solutions but didn\'t always name the Big-O trade-offs out loud.',
+    'Solid problem-solving with a working solution on all three prompts. You talked through your approach before coding, which is exactly what interviewers want to see. The main gap is time-complexity awareness, you found working solutions but didn\'t always name the Big-O trade-offs out loud.',
   whatWentWell: [
     'Talked through your approach before writing code on every prompt',
     'Caught and fixed your own off-by-one error on the linked-list reversal without prompting',
@@ -232,7 +232,7 @@ export const copilotCodingReport: CopilotReport = {
   ],
   whatNeedsWork: [
     'State time and space complexity out loud once you finish a solution',
-    'Ask clarifying questions before coding — e.g. can the input array be empty or unsorted',
+    'Ask clarifying questions before coding, e.g. can the input array be empty or unsorted',
     'Narrate edge cases you\'re handling as you write them, not just at the end',
   ],
   knowledgeGaps: [
@@ -256,7 +256,7 @@ export const copilotCodingReport: CopilotReport = {
     userPercent: 61,
     otherPercent: 39,
     otherLabel: 'Copilot prompts',
-    tip: 'You went quiet while typing — try narrating as you code, not just before and after.',
+    tip: 'You went quiet while typing, try narrating as you code, not just before and after.',
   },
   transcript: [
     { id: 'cc-1', speaker: 'Prompt', isUser: false, timestamp: '00:10', text: 'Write a function that returns the nth Fibonacci number using memoization.' },
@@ -269,7 +269,7 @@ export const copilotCodingReport: CopilotReport = {
 }
 
 export const copilotMeetingReport: CopilotReport = {
-  title: 'Launch Timeline Review — Internal',
+  title: 'Launch Timeline Review, Internal',
   subtitle: 'Meeting · 22 min · 3 speakers',
   score: 88,
   summary:
@@ -296,7 +296,7 @@ export const copilotMeetingReport: CopilotReport = {
   rubric: [
     { element: 'Key Decisions Captured', status: 'strong', notes: 'Clear conditional decision: one-week slip, contingent on 2 extra QA days.' },
     { element: 'Action Item Clarity', status: 'partial', notes: 'Decision was clear; owner and deadline for the calendar update were not.' },
-    { element: 'Speaking Time Balance', status: 'strong', notes: 'All three participants spoke roughly evenly — no one dominated.' },
+    { element: 'Speaking Time Balance', status: 'strong', notes: 'All three participants spoke roughly evenly, no one dominated.' },
     { element: 'Follow-up Ownership', status: 'needs-work', notes: 'No one was explicitly assigned to confirm the engineer landed or update marketing.' },
     { element: 'Conflict Resolution', status: 'strong', notes: 'Eng/Marketing tension over timing was resolved with a concrete compromise.' },
   ],
@@ -304,14 +304,14 @@ export const copilotMeetingReport: CopilotReport = {
     userPercent: 34,
     otherPercent: 66,
     otherLabel: 'Priya, Marcus & Devon',
-    tip: 'Balanced three-way conversation — no single speaker dominated the discussion.',
+    tip: 'Balanced three-way conversation, no single speaker dominated the discussion.',
   },
   transcript: [
     { id: 'cm-1', speaker: 'Priya (Eng Lead)', isUser: false, timestamp: '00:15', text: 'I think we should push the launch date by two weeks to finish QA properly.' },
-    { id: 'cm-2', speaker: 'Marcus (Marketing)', isUser: false, timestamp: '01:40', text: 'Marketing already has assets scheduled for the original date — any slip needs to be decided today, not next week.' },
-    { id: 'cm-3', speaker: 'Devon (QA Lead)', isUser: false, timestamp: '03:05', text: "It's coverage, not headcount — we're missing edge cases on the payments flow." },
+    { id: 'cm-2', speaker: 'Marcus (Marketing)', isUser: false, timestamp: '01:40', text: 'Marketing already has assets scheduled for the original date, any slip needs to be decided today, not next week.' },
+    { id: 'cm-3', speaker: 'Devon (QA Lead)', isUser: false, timestamp: '03:05', text: "It's coverage, not headcount, we're missing edge cases on the payments flow." },
     { id: 'cm-4', speaker: 'Devon (QA Lead)', isUser: false, timestamp: '05:50', text: "If we get two more days on payments-flow coverage, I'm comfortable signing off." },
-    { id: 'cm-5', speaker: 'Priya (Eng Lead)', isUser: false, timestamp: '06:10', text: 'Two days works on our side — I can free up a second engineer.' },
-    { id: 'cm-6', speaker: 'Marcus (Marketing)', isUser: false, timestamp: '08:30', text: "So we're looking at a one-week slip, not two — can everyone confirm that before I update the campaign calendar?" },
+    { id: 'cm-5', speaker: 'Priya (Eng Lead)', isUser: false, timestamp: '06:10', text: 'Two days works on our side, I can free up a second engineer.' },
+    { id: 'cm-6', speaker: 'Marcus (Marketing)', isUser: false, timestamp: '08:30', text: "So we're looking at a one-week slip, not two, can everyone confirm that before I update the campaign calendar?" },
   ],
 }

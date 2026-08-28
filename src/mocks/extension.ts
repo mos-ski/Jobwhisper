@@ -26,7 +26,7 @@ export const extensionAppliedJobQueue: readonly ExtensionAppliedJob[] = [
     company: 'Stripe',
     listingUrl: 'https://www.linkedin.com/jobs/search/stripe-backend-eng',
     outcome: 'failed',
-    failureReason: 'This application failed because of VPN — please turn off your VPN and try again.',
+    failureReason: 'This application failed because of VPN, please turn off your VPN and try again.',
   },
   {
     id: 'glassdoor-1',

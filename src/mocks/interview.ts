@@ -125,11 +125,11 @@ export const interviewReport: InterviewReport = {
   whatWentWell: [
     'Used specific metrics (42% to 57% activation lift) to quantify impact',
     'Showed genuine cross-functional partnership language with engineering',
-    'Calm recovery when pressed for specificity — adapted quickly',
+    'Calm recovery when pressed for specificity, adapted quickly',
   ],
   whatNeedsWork: [
     'Lead with the concrete example earlier in your answer',
-    'Tighten the opening — too much framing before the core point',
+    'Tighten the opening, too much framing before the core point',
     'Explain how design decisions were made, not just what was built',
   ],
   knowledgeGaps: [
@@ -149,7 +149,7 @@ export const interviewReport: InterviewReport = {
     { element: 'Pace and Clarity', status: 'partial', notes: 'For recruiter screens, aim for concise answers with room for follow-up.' },
     { element: 'Design Process Articulation', status: 'strong', notes: 'Clearly described research → wireframe → prototype → test cycle with concrete artifacts.' },
     { element: 'Tool & Craft Depth', status: 'needs-work', notes: 'Mentioned Figma and prototyping but did not explain how design decisions were made or validated.' },
-    { element: 'Cross-Functional Collaboration', status: 'strong', notes: 'Designed with eng and PM from kickoff — language showed genuine partnership, not handoff.' },
+    { element: 'Cross-Functional Collaboration', status: 'strong', notes: 'Designed with eng and PM from kickoff, language showed genuine partnership, not handoff.' },
   ],
   talkTime: {
     youPercent: 47,

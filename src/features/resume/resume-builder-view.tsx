@@ -520,7 +520,7 @@ function ChatComposer({
           <TipModalTrigger
             label="Show chat tips"
             title="Chat with Jobwhisper AI"
-            body="Ask for rewrites, tone changes, or keyword targeting — Jobwhisper updates your resume in real time. Accept the changes, or keep editing."
+            body="Ask for rewrites, tone changes, or keyword targeting, Jobwhisper updates your resume in real time. Accept the changes, or keep editing."
             className="mb-1.5 shrink-0 sm:hidden"
           />
           <button
@@ -1378,7 +1378,7 @@ export function ResumeEditorView({ homeHref, document, session, templates, tab, 
     if (hasJd) {
       return [
         { id: 'jd-candidate', author: 'candidate', text: jd!.trim() },
-        { id: 'jd-assistant', author: 'assistant', text: "I've tailored your resume to match the job description — review the highlighted changes below and accept or reject them." },
+        { id: 'jd-assistant', author: 'assistant', text: "I've tailored your resume to match the job description, review the highlighted changes below and accept or reject them." },
       ]
     }
     if (chatState === 'suggestions') {
@@ -1425,7 +1425,7 @@ export function ResumeEditorView({ homeHref, document, session, templates, tab, 
     }, 1000)
     window.setTimeout(() => {
       window.clearInterval(labelTimer)
-      setMessages((prev) => [...prev, { id: `msg-${Date.now()}-ai`, author: 'assistant', text: "I've updated your resume based on that — review the highlighted changes below and accept or reject them." }])
+      setMessages((prev) => [...prev, { id: `msg-${Date.now()}-ai`, author: 'assistant', text: "I've updated your resume based on that, review the highlighted changes below and accept or reject them." }])
       setIsTyping(false)
       revealSuggestion()
     }, 4000)
@@ -1452,7 +1452,7 @@ export function ResumeEditorView({ homeHref, document, session, templates, tab, 
         { id: 'professional-summary', section: 'Professional Summary', before: document.summary, after: document.improvedSummary },
         {
           id: 'experience-highlights',
-          section: `Experience — ${document.roles[0]?.company ?? 'Current Role'}`,
+          section: `Experience, ${document.roles[0]?.company ?? 'Current Role'}`,
           before: document.roles[0]?.bullets.slice(0, 2).join(' ') ?? '',
           after: document.improvedFirstRoleBullets.join(' '),
         },
@@ -1516,7 +1516,7 @@ export function ResumeEditorView({ homeHref, document, session, templates, tab, 
               targetId="walkthrough-chat-input"
               side="right"
               title="Keep refining"
-              body="Ask for more rewrites, accept the changes, or keep editing — your resume updates in real time."
+              body="Ask for more rewrites, accept the changes, or keep editing, your resume updates in real time."
               actionLabel="Got it"
               onAction={() => setShowPostAcceptTip(false)}
               onDismiss={() => setShowPostAcceptTip(false)}
@@ -1553,7 +1553,7 @@ export function ResumeEditorView({ homeHref, document, session, templates, tab, 
           open={showPostAcceptTip}
           onOpenChange={setShowPostAcceptTip}
           title="Keep refining"
-          body="Ask for more rewrites, accept the changes, or keep editing — your resume updates in real time."
+          body="Ask for more rewrites, accept the changes, or keep editing, your resume updates in real time."
         />
       ) : null}
     </Workspace>

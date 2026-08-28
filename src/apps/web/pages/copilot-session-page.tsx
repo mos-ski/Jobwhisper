@@ -6,7 +6,7 @@ import { copilotCodingBank, copilotInterviewTranscript, copilotLiveSession, copi
 
 const SESSION_TITLE: Record<CopilotMode, string> = {
   interview: 'Interview for UI/UX Designer',
-  coding: 'Coding Exercise — Stripe',
+  coding: 'Coding Exercise, Stripe',
   meeting: 'Launch Timeline Review',
 }
 
