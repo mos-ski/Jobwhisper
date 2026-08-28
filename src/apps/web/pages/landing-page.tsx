@@ -272,7 +272,7 @@ function LandingDemo({ onOpenDemo }: { readonly onOpenDemo: () => void }) {
       role={isMobile ? undefined : 'button'}
       tabIndex={isMobile ? undefined : 0}
       aria-label={isMobile ? undefined : 'Open the interactive Jobwhisper demo'}
-      className={`group relative mt-8 sm:mt-16 lg:mt-[120px] mx-4 sm:mx-8 lg:mx-[113px] aspect-[1728/1080] rounded-xl overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${isMobile ? '' : 'cursor-pointer'}`}
+      className={`group relative mt-16 sm:mt-24 lg:mt-[160px] mx-4 sm:mx-8 lg:mx-[113px] aspect-[1728/1080] rounded-xl overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${isMobile ? '' : 'cursor-pointer'}`}
     >
       <video
         src="/MacBook-Pro-14-25.mp4"
@@ -300,7 +300,7 @@ function LandingDemo({ onOpenDemo }: { readonly onOpenDemo: () => void }) {
 
 function LandingTimeline() {
   return (
-    <section className="px-4 sm:px-8 lg:px-[113px] pt-16 sm:pt-24 pb-4 sm:pb-8">
+    <section className="px-4 sm:px-8 lg:px-[113px] pt-24 sm:pt-32 lg:pt-40 pb-16 sm:pb-24">
       <div className="flex flex-col items-center text-center gap-4">
         <p className="text-white/60 text-sm font-semibold uppercase tracking-[0.08em]">
           You don't need weeks to feel ready
@@ -384,7 +384,7 @@ function LandingTimeline() {
 function LandingFeatures() {
   const navigate = useNavigate()
   return (
-    <section className="flex flex-col items-center gap-4 sm:gap-8 px-4 sm:px-8 lg:px-[113px] pt-8 sm:pt-16 pb-12 sm:pb-20">
+    <section className="flex flex-col items-center gap-4 sm:gap-8 px-4 sm:px-8 lg:px-[113px] pt-16 sm:pt-24 pb-20 sm:pb-32">
       <div className="w-full">
         <p
           className="text-white font-normal font-gowun text-center"
@@ -402,7 +402,7 @@ function LandingFeatures() {
             <div key={feature.title} className="sticky top-24 sm:top-28 pb-2" style={{ zIndex: index + 1 }}>
               <a
                 href={feature.href}
-                className={`block rounded-2xl p-8 min-h-[65vh] sm:min-h-[560px] shadow-2xl no-underline transition-transform duration-300 ease-out hover:scale-[1.02] ${style.bg} ${rotate} hover:rotate-0`}
+                className={`block rounded-2xl p-8 min-h-[320px] sm:min-h-[360px] shadow-2xl no-underline transition-transform duration-300 ease-out hover:scale-[1.02] ${style.bg} ${rotate} hover:rotate-0`}
               >
                 <div className={`flex items-center justify-center size-14 rounded-[10px] mb-6 ${style.iconBg}`}>
                   <img src={feature.icon} alt="" className="size-6" />
@@ -429,7 +429,7 @@ function LandingFeatures() {
 
 function LandingFAQ() {
   return (
-    <section id="faq" className="bg-landing-footer-frame px-4 sm:px-8 lg:px-[113px] pt-16 sm:pt-24 pb-12 sm:pb-16">
+    <section id="faq" className="bg-landing-footer-frame px-4 sm:px-8 lg:px-[113px] pt-24 sm:pt-32 lg:pt-40 pb-16 sm:pb-20">
       <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
         <h2
           className="text-white font-normal font-gowun"
