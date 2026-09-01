@@ -651,9 +651,9 @@ function DraggableAvatar({ name, videoEnabled }: { readonly name: string; readon
   )
 }
 
-type AiAssistantMessage = { readonly id: string; readonly role: 'user' | 'assistant'; readonly text: string }
+export type AiAssistantMessage = { readonly id: string; readonly role: 'user' | 'assistant'; readonly text: string }
 
-function CopilotAiAssistantPanel({
+export function CopilotAiAssistantPanel({
   prompts,
   messages,
   setMessages,
@@ -918,7 +918,7 @@ function CopilotLiveLoadingBar({ className }: { readonly className?: string }) {
   return <span aria-hidden="true" className={cn('block animate-pulse rounded-lg bg-[var(--lf-live-message)] motion-reduce:animate-none', className)} />
 }
 
-function LiveSignal({ label }: { readonly label: string }) {
+export function LiveSignal({ label }: { readonly label: string }) {
   return (
     <span className="inline-flex items-end gap-1 text-positive" aria-label={label}>
       <span aria-hidden="true" className="h-1.5 w-1 rounded-soft bg-positive" />
@@ -1215,7 +1215,7 @@ const COPILOT_PROMPT_RESPONSES: Record<string, string> = {
     'The conversation covered your experience leading cross-functional design reviews and how you handle conflicting stakeholder feedback.',
 }
 
-function copilotResponseFor(prompt: string): string {
+export function copilotResponseFor(prompt: string): string {
   return (
     COPILOT_PROMPT_RESPONSES[prompt] ??
     `Jobwhisper is analyzing "${prompt}" against the live transcript and will surface a response shortly.`
@@ -1271,7 +1271,7 @@ const conversationalStatusLabel: Record<ConversationalStatus, string> = {
   answering: 'Answering...',
 }
 
-function CopilotTranscriptPanel({
+export function CopilotTranscriptPanel({
   bank,
   responseMode,
   fontSize,
