@@ -349,7 +349,7 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
       description: 'Jobwhisper finds matching jobs and applies to them for you, fully hands-off.',
       availability: 'Available on web',
       iconSrc: '/v3-assets/figma/auto-apply-method-full-auto.svg',
-      iconClassName: 'h-12 w-[3.4rem]',
+      iconClassName: 'h-[48px] w-[54.938px]',
       href: fullAutoHref,
     },
     {
@@ -358,7 +358,7 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
       description: 'Jobwhisper finds and ranks matching jobs. You review the list and choose which ones to apply to.',
       availability: 'Available on Web & Mobile App',
       iconSrc: '/v3-assets/figma/auto-apply-method-pick-jobs.svg',
-      iconClassName: 'h-12 w-[3.5rem]',
+      iconClassName: 'h-[48.867px] w-[56.121px]',
       href: jobsHref,
     },
     {
@@ -367,7 +367,7 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
       description: 'Apply directly from LinkedIn, Glassdoor, Indeed, and Workable with the Jobwhisper extension installed.',
       availability: 'Download Extension',
       iconSrc: '/v3-assets/figma/auto-apply-method-extension.png',
-      iconClassName: 'h-12 w-12 rounded-sm object-cover',
+      iconClassName: 'h-[48.867px] w-[56.133px] rounded-sm object-cover',
       href: extensionHref,
     },
   ]
@@ -394,15 +394,17 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
                   onClick={() => setSelected(method.id)}
                   aria-pressed={isSelected}
                   className={cn(
-                    'flex flex-col items-start gap-4 rounded-[1px] border p-4 text-start transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+                    'flex flex-col items-start gap-[24px] rounded-[1px] border p-[18px] text-start transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
                     isSelected ? 'border-accent bg-accent-subtle/40' : 'border-border bg-surface hover:border-ink-muted',
                   )}
                 >
                   <img src={method.iconSrc} alt="" className={method.iconClassName} />
-                  <h3 className={cn('text-sm font-bold', isSelected ? 'text-accent-text' : 'text-ink')}>{method.title}</h3>
-                  <p className="text-xs leading-5 text-ink-muted">{method.description}</p>
-                  <p className="mt-auto flex items-center gap-1 text-[11px] font-medium text-ink-muted/70">
-                    {method.id === 'extension' ? <ArrowUpLeft aria-hidden="true" className="size-3" /> : null}
+                  <h3 className={cn('text-[12.6px] font-bold leading-[18.9px]', isSelected ? 'text-accent-text' : 'text-ink')}>{method.title}</h3>
+                  <div className="h-[85px] w-[163px]">
+                    <p className="text-[12px] leading-[18px] text-ink-muted">{method.description}</p>
+                  </div>
+                  <p className="mt-auto flex items-center gap-[2px] text-[8.8px] font-medium leading-[16.2px] text-ink-muted/50">
+                    {method.id === 'extension' ? <ArrowUpLeft aria-hidden="true" className="size-2.5" /> : null}
                     {method.availability}
                   </p>
                 </button>
