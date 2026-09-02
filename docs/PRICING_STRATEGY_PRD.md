@@ -1,5 +1,7 @@
 # JobWhisper Pricing & Monetization Strategy — PRD
 
+> **Numbers superseded 2026-09-02 — see `PRICING.md` at the repo root for current tier prices, DFY plans, and usage rates.** The strategic rationale and tier *structure* below (feature access matrix, add-on model) still stand; only the dollar amounts have changed.
+
 - **Version:** 1.0
 - **Status:** Draft / In-Review
 - **Author:** Product

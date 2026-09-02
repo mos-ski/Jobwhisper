@@ -1,5 +1,7 @@
 # JobWhisper Credit, Pricing & Payment System — PRD
 
+> **Numbers superseded 2026-09-02 — see `PRICING.md` at the repo root for current tier prices, DFY plans, and usage rates.** The payment-architecture sections (§4 onward: Stripe design, webhooks, ledger, data model) are unaffected and still current.
+
 - **Version:** 1.0
 - **Status:** Draft / In-Review
 - **Author:** Product
