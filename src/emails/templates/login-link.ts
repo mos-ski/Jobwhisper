@@ -1,8 +1,9 @@
-import { button, calloutBox, heading, paragraph, renderEmailShell } from '../shell'
+import { button, calloutBox, eyebrow, heading, paragraph, renderEmailShell } from '../shell'
 import type { EmailTemplateBuilder } from '../types'
 
 export const buildLoginLinkEmail: EmailTemplateBuilder = () => {
   const body = `
+${eyebrow('Account access')}
 ${heading('Sign in to Jobwhisper')}
 ${paragraph('Click the button below to sign in. This link expires in 15 minutes and can only be used once.')}
 ${button('#', 'Sign in to Jobwhisper')}

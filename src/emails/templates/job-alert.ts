@@ -1,7 +1,5 @@
-import { brand, button, divider, escapeHtml, heading, paragraph, pill, renderEmailShell } from '../shell'
+import { FONT, brand, button, divider, escapeHtml, eyebrow, heading, paragraph, pill, renderEmailShell } from '../shell'
 import type { EmailTemplateBuilder } from '../types'
-
-const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
 
 const JOBS = [
   { title: 'Senior Product Manager', company: 'Coinbase', match: '96% match', location: 'Remote (US)' },
@@ -25,11 +23,19 @@ function jobRow(job: (typeof JOBS)[number], isLast: boolean): string {
 </tr>`
 }
 
+function jobList(): string {
+  const rows = JOBS.map((j, i) => jobRow(j, i === JOBS.length - 1)).join('')
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 20px;background-color:#ffffff;border:1px solid ${brand.paperLine};border-radius:8px;">
+<tr><td style="padding:4px 18px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${rows}</table></td></tr>
+</table>`
+}
+
 export const buildJobAlertEmail: EmailTemplateBuilder = () => {
   const body = `
+${eyebrow('Job matches')}
 ${heading('3 new matches for Product Manager roles')}
 ${paragraph('Based on your Auto Apply preferences, here are today\'s strongest matches.')}
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${JOBS.map((j, i) => jobRow(j, i === JOBS.length - 1)).join('')}</table>
+${jobList()}
 ${button('#', 'View all matches')}
 ${divider()}
 ${paragraph("You're getting this because job alerts are turned on for your account.", { muted: true, marginBottom: 0 })}

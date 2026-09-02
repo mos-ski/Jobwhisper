@@ -1,5 +1,5 @@
 import { formatUsd } from '@/ui/currency'
-import { button, calloutBox, heading, infoTable, paragraph, renderEmailShell } from '../shell'
+import { button, calloutBox, eyebrow, heading, infoTable, paragraph, renderEmailShell } from '../shell'
 import { formatDateInZone } from '../format'
 import type { EmailTemplateBuilder } from '../types'
 
@@ -7,6 +7,7 @@ export const buildPaymentFailedEmail: EmailTemplateBuilder = (timeZone) => {
   const attemptedOn = formatDateInZone(new Date('2026-09-02T16:00:00Z'), timeZone)
 
   const body = `
+${eyebrow('Payment issue', 'live')}
 ${heading('We couldn\'t process your payment')}
 ${paragraph(`Hi Ada, we tried to charge your card on ${attemptedOn} for your Jobwhisper Pro renewal, but the payment didn't go through.`)}
 ${infoTable([

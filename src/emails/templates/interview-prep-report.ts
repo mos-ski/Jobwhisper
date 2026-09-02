@@ -1,4 +1,4 @@
-import { button, divider, heading, infoTable, paragraph, pill, renderEmailShell } from '../shell'
+import { button, divider, eyebrow, heading, infoTable, paragraph, pill, renderEmailShell } from '../shell'
 import { formatDateTimeInZone } from '../format'
 import type { EmailTemplateBuilder } from '../types'
 
@@ -6,6 +6,7 @@ export const buildInterviewPrepReportEmail: EmailTemplateBuilder = (timeZone) =>
   const sessionTime = formatDateTimeInZone(new Date('2026-08-30T15:00:00Z'), timeZone)
 
   const body = `
+${eyebrow('Interview prep')}
 ${heading('Your mock interview report is ready')}
 ${paragraph(`Your practice session for the Senior Product Manager role (${sessionTime}) has been scored.`)}
 ${infoTable([

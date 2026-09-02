@@ -5,19 +5,21 @@
 export const brand = {
   ink: '#1c1d20',
   inkSoft: '#232427',
+  inkLine: '#35363b',
   paper: '#f6f7fb',
   paperSoft: '#eceef4',
   paperLine: '#dcdfe6',
   textLight: '#14161c',
   mutedLight: '#5b6270',
+  mutedDark: '#b9c2de',
   live: '#ef4444',
   positive: '#15803d',
   positiveSurface: '#ecfdf3',
   liveSurface: '#fdeceb',
 } as const
 
-const FONT = "'Rethink Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
-const DISPLAY_FONT = "'Gowun Batang',Georgia,'Times New Roman',serif"
+export const FONT = "'Rethink Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
+export const DISPLAY_FONT = "'Gowun Batang',Georgia,'Times New Roman',serif"
 
 // The logo <img> below points at a relative path so it resolves in this app's own
 // preview. Before wiring real sending, swap it for an absolute HTTPS URL, and add a
@@ -52,10 +54,13 @@ ${escapeHtml(previewText)}
 </div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:${brand.paper};">
 <tr>
-<td align="center" style="padding:32px 16px;">
-<table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width:560px;max-width:560px;background-color:#ffffff;border-radius:8px;overflow:hidden;">
+<td align="center" style="padding:40px 16px;">
+<table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width:560px;max-width:560px;background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 2px rgba(20,22,28,0.04),0 12px 32px rgba(20,22,28,0.08);">
 <tr>
-<td style="padding:28px 32px;border-bottom:1px solid ${brand.paperLine};">
+<td style="height:4px;line-height:4px;font-size:0;background-color:${brand.ink};">&nbsp;</td>
+</tr>
+<tr>
+<td style="padding:26px 32px;border-bottom:1px solid ${brand.paperLine};">
 <img src="/Jobwhisper/Logo%20wordmark%20B.svg" width="121" height="24" alt="Jobwhisper" style="display:block;height:24px;width:121px;border:0;">
 </td>
 </tr>
@@ -65,13 +70,14 @@ ${bodyHtml}
 </td>
 </tr>
 <tr>
-<td style="padding:24px 32px;background-color:${brand.paperSoft};font-family:${FONT};">
-<p style="margin:0 0 6px;font-size:12px;line-height:18px;color:${brand.mutedLight};">
-Jobwhisper &middot; AI Interview Copilot
+<td style="padding:28px 32px;background-color:${brand.ink};font-family:${FONT};">
+<img src="/Jobwhisper/Logo%20wordmark%20W.svg" width="91" height="18" alt="Jobwhisper" style="display:block;height:18px;width:91px;border:0;margin:0 0 14px;">
+<p style="margin:0 0 6px;font-size:12px;line-height:18px;color:${brand.mutedDark};">
+AI Interview Copilot
 </p>
-<p style="margin:0;font-size:12px;line-height:18px;color:${brand.mutedLight};">
+<p style="margin:0;font-size:12px;line-height:18px;color:${brand.mutedDark};">
 You're receiving this email because it relates to your Jobwhisper account.
-<a href="#" style="color:${brand.mutedLight};text-decoration:underline;">Manage email preferences</a>
+<a href="#" style="color:${brand.mutedDark};text-decoration:underline;">Manage email preferences</a>
 </p>
 </td>
 </tr>
@@ -90,6 +96,18 @@ export function escapeHtml(value: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
+}
+
+export function eyebrow(text: string, tone: 'live' | 'neutral' = 'neutral'): string {
+  const color = tone === 'live' ? brand.live : brand.mutedLight
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 14px;">
+<tr>
+<td style="padding:0 7px 0 0;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="width:6px;height:6px;line-height:6px;font-size:0;border-radius:50%;background-color:${color};">&nbsp;</td></tr></table>
+</td>
+<td style="font-family:${FONT};font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:${color};">${escapeHtml(text)}</td>
+</tr>
+</table>`
 }
 
 export function heading(text: string): string {
@@ -125,7 +143,11 @@ export function infoTable(rows: Array<[string, string]>): string {
 </tr>`,
     )
     .join('')
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 20px;">${rowsHtml}</table>`
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 20px;background-color:${brand.paperSoft};border-radius:8px;">
+<tr><td style="padding:6px 18px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${rowsHtml}</table>
+</td></tr>
+</table>`
 }
 
 export function calloutBox(html: string, tone: 'live' | 'positive' | 'neutral' = 'neutral'): string {

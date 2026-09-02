@@ -1,5 +1,5 @@
 import { formatUsd } from '@/ui/currency'
-import { button, calloutBox, heading, infoTable, paragraph, renderEmailShell } from '../shell'
+import { button, calloutBox, eyebrow, heading, infoTable, paragraph, renderEmailShell } from '../shell'
 import { formatDateInZone } from '../format'
 import type { EmailTemplateBuilder } from '../types'
 
@@ -7,6 +7,7 @@ export const buildPaymentReminderEmail: EmailTemplateBuilder = (timeZone) => {
   const renewDate = formatDateInZone(new Date('2026-09-07T16:00:00Z'), timeZone)
 
   const body = `
+${eyebrow('Upcoming renewal')}
 ${heading('Your Jobwhisper Pro renews in 5 days')}
 ${paragraph(`Hi Ada, just a heads up, your subscription renews on ${renewDate}.`)}
 ${infoTable([
