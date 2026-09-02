@@ -128,6 +128,13 @@ function PaperShell({ children }: { readonly children: ReactNode }) {
   return <article className="mx-auto min-h-[56rem] w-full max-w-[44rem] bg-surface p-8 shadow-panel">{children}</article>
 }
 
+function matchLabel(percent: number): string {
+  if (percent >= 90) return 'Excellent Match'
+  if (percent >= 75) return 'Great Match'
+  if (percent >= 60) return 'Good Match'
+  return 'Fair Match'
+}
+
 function Tag({ children }: { readonly children: ReactNode }) {
   return <span className="rounded-full bg-accent-subtle px-2 py-1 text-xs font-medium text-accent-text">{children}</span>
 }
@@ -1430,8 +1437,8 @@ function JobPreview({
         </div>
         <div className="flex items-center justify-between px-6 pb-4">
           <div>
-            <h2 className="text-lg font-bold text-ink">{job.title}</h2>
-            <p className="mt-0.5 text-sm text-ink-muted">{job.company}{job.location ? ` · ${job.location}` : ''}</p>
+            <h2 className="text-xl font-bold leading-tight text-ink">{job.title}</h2>
+            <p className="mt-1 text-sm text-ink-muted">{job.company}{job.location ? ` · ${job.location}` : ''}</p>
           </div>
           <button type="button" onClick={onClose} aria-label="Close job preview" className="grid size-10 shrink-0 place-items-center rounded-lg text-ink-muted transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
             <X aria-hidden="true" className="size-5" />
@@ -1465,30 +1472,35 @@ function JobPreview({
               </section>
             ) : null}
 
-            <section className="grid gap-2">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Resume Used</h3>
-              <button
-                type="button"
-                onClick={() => setResumePreviewOpen(true)}
-                className="flex min-w-0 items-center gap-2 rounded-lg text-sm text-ink underline underline-offset-4 transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-              >
-                <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
-                <span className="truncate">{job.resumeFileName}</span>
-              </button>
-            </section>
+            {applied ? (
+              <section className="grid gap-2">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Resume Used</h3>
+                <button
+                  type="button"
+                  onClick={() => setResumePreviewOpen(true)}
+                  className="flex min-w-0 items-center gap-2 rounded-lg text-sm text-ink underline underline-offset-4 transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                >
+                  <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
+                  <span className="truncate">{job.resumeFileName}</span>
+                </button>
+              </section>
+            ) : null}
 
             {!applied ? (
               <section className="grid gap-2">
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Tailored Resume</h3>
-                <button
-                  type="button"
-                  onClick={() => setGetResumeOpen(true)}
-                  className="flex min-w-0 items-center gap-2 rounded-lg text-sm text-ink underline underline-offset-4 transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                >
-                  <JobwhisperAiIcon aria-hidden="true" className="size-4 shrink-0" />
-                  <span>Get a resume built for this role</span>
-                </button>
-                <p className="text-xs text-ink-muted">1 credit</p>
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Get Tailored Resume</h3>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setGetResumeOpen(true)}
+                    className="flex min-w-0 items-center gap-2 rounded-lg text-sm font-semibold text-ink underline underline-offset-4 transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  >
+                    <JobwhisperAiIcon aria-hidden="true" className="size-4 shrink-0" />
+                    <span>Get a resume for this role</span>
+                  </button>
+                  <span className="text-ink-muted" aria-hidden="true">·</span>
+                  <span className="text-sm text-ink-muted">1 credit</span>
+                </div>
               </section>
             ) : null}
 
@@ -1496,7 +1508,7 @@ function JobPreview({
               <>
                 <section className="rounded-lg bg-positive-surface p-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xs font-bold uppercase tracking-wide text-positive">Match Score</h3>
+                    <h3 className="text-xs font-bold uppercase tracking-wide text-positive">{matchLabel(job.matchPercent)}</h3>
                     <p className="text-2xl font-bold text-positive">{job.matchPercent}%</p>
                   </div>
                 </section>
@@ -1823,7 +1835,9 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
                     <span className="inline-flex items-center gap-1 text-ink">Next<ChevronRight aria-hidden="true" className="size-4" /></span>
                   </div>
                 </div>
-                {selectedJob ? <JobPreview job={selectedJob} onClose={() => setSelectedJob(undefined)} resumePreview={resumePreview} /> : null}
+                {selectedJob ? (
+                  <JobPreview job={selectedJob} onClose={() => setSelectedJob(undefined)} applied={selectedJob.status === 'applied'} resumePreview={resumePreview} />
+                ) : null}
               </div>
             </div>
           </div>
