@@ -53,7 +53,7 @@ export function DocumentsView({ homeHref, addHref, rows, limit, planName }: Docu
       <ShellBar homeHref={homeHref} current="Knowledge Base" closeHref={homeHref} closeLabel="Close documents" />
       <section className="px-4 py-8 lg:px-12 xl:px-24">
         <p className="mx-auto mb-3 max-w-7xl text-end text-sm text-ink-muted">
-          <span className={cn('font-semibold', atLimit ? 'text-warning' : 'text-ink')}>{rows.length}</span> of {limit} documents used &mdash; {planName} plan
+          <span className={cn('font-semibold', atLimit ? 'text-warning' : 'text-ink')}>{rows.length}</span> of {limit} documents used on the {planName} plan
         </p>
         <DataTable
           title="Knowledge Base"

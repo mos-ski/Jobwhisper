@@ -337,7 +337,7 @@ export function ResumeConfigureView({ homeHref, editorHref, uploadHref, session,
             </p>
           ) : null}
           <div className="grid gap-3 sm:grid-cols-2">
-            <FormField id="resume-name" label="Resume Name" placeholder="e.g. Senior PM Resume" defaultValue={fromJob ? `${fromJob.title} — ${fromJob.company}` : undefined} />
+            <FormField id="resume-name" label="Resume Name" placeholder="e.g. Senior PM Resume" defaultValue={fromJob ? `${fromJob.title} at ${fromJob.company}` : undefined} />
             <FormField id="company-name" label="Company Name" placeholder="e.g. Google, Stripe" defaultValue={fromJob?.company} />
           </div>
           <div className="relative">

@@ -468,7 +468,7 @@ export function AutoApplyFullAutoConsentView({ homeHref, backHref, agentHref }: 
               <AlertTriangle aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-warning" />
               <div className="grid gap-2 text-sm leading-5 text-warning">
                 <p>Jobwhisper's AI will submit applications on your behalf without asking before each one. We can't guarantee interviews or offers, and we're not responsible for what gets submitted while Full Auto is running.</p>
-                <p>Check in on your agent every few days &mdash; don't leave it running unattended for weeks at a time.</p>
+                <p>Check in on your agent every few days. Don't leave it running unattended for weeks at a time.</p>
               </div>
             </div>
           </div>
@@ -1478,19 +1478,17 @@ function JobPreview({
             </section>
 
             {!applied ? (
-              <section className="flex items-center justify-between gap-3 rounded-lg border border-dashed border-border p-4">
-                <div>
-                  <p className="text-sm font-semibold text-ink">Want a resume built for this role?</p>
-                  <p className="mt-0.5 text-xs text-ink-muted">Tailors a fresh resume from this job's description &mdash; 1 credit.</p>
-                </div>
+              <section className="grid gap-2">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Tailored Resume</h3>
                 <button
                   type="button"
                   onClick={() => setGetResumeOpen(true)}
-                  className="inline-flex min-h-9 shrink-0 items-center gap-2 rounded-lg border border-input bg-surface px-3 text-sm font-medium text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  className="flex min-w-0 items-center gap-2 rounded-lg text-sm text-ink underline underline-offset-4 transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                 >
-                  <FileText aria-hidden="true" className="size-4" />
-                  Get Resume
+                  <JobwhisperAiIcon aria-hidden="true" className="size-4 shrink-0" />
+                  <span>Get a resume built for this role</span>
                 </button>
+                <p className="text-xs text-ink-muted">1 credit</p>
               </section>
             ) : null}
 
@@ -1569,7 +1567,7 @@ function GetResumeDialog({
           href={`/v3/resume/configure?fromJob=${encodeURIComponent(job.id)}`}
           className="mt-6 inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
         >
-          Get Resume &mdash; 1 credit
+          Get Resume · 1 credit
         </a>
       </DialogPopup>
     </Dialog>
