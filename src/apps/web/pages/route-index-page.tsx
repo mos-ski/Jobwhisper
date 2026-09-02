@@ -1,3 +1,16 @@
+const marketingRoutes = [
+  {
+    href: '/',
+    label: 'Landing page',
+    description: 'Marketing-only Interview Copilot landing page: hero, pain, cost, demo, FAQ, final CTA.',
+  },
+  {
+    href: '/vsl',
+    label: 'VSL sales page',
+    description: 'Full sales/VSL page with before-after demo and a 4-step mock checkout: details, upsells, payment, success.',
+  },
+] as const
+
 const authRoutes = [
   {
     href: '/v3/auth/sign-in',
@@ -5,9 +18,32 @@ const authRoutes = [
     description: 'Email, password, Google sign-in, and create-account entry.',
   },
   {
+    href: '/v3/auth/create-account',
+    label: 'Create account',
+    description: 'Sign-up form for a new Jobwhisper account.',
+  },
+  {
+    href: '/v3/auth/forgot-password',
+    label: 'Forgot password',
+    description: 'Request-reset form with a "check your email" confirmation state.',
+  },
+  {
     href: '/v3/auth/choose-plan',
     label: 'Choose a plan',
     description: 'Monthly or annual plan selection with Starter, Pro, and Premium options.',
+  },
+] as const
+
+const onboardingRoutes = [
+  {
+    href: '/v3/onboarding/profile',
+    label: 'Onboarding profile',
+    description: 'Post-signup profile setup step.',
+  },
+  {
+    href: '/v3/onboarding/interests',
+    label: 'Onboarding interests',
+    description: 'Post-signup interests/goals selection step.',
   },
 ] as const
 
@@ -66,6 +102,21 @@ const appRoutes = [
     href: '/v3/billing',
     label: 'Billing',
     description: 'Current plan, credit balance, plan upgrade cards, and credit usage table.',
+  },
+  {
+    href: '/v3/billing/usage',
+    label: 'Credit usage history',
+    description: 'Full credit usage / spend history table.',
+  },
+  {
+    href: '/v3/tutorials',
+    label: 'Tutorials',
+    description: 'Product walkthrough and tutorial video library.',
+  },
+  {
+    href: '/v3/extension',
+    label: 'Browser extension',
+    description: 'Extension panel: board list and a live run feed pinned to the bottom.',
   },
   {
     href: '/v3/settings',
@@ -259,6 +310,34 @@ const appRoutes = [
   },
 ] as const
 
+const desktopRoutes = [
+  {
+    href: '/desktop',
+    label: 'Desktop sign in',
+    description: 'Movable/resizable macOS-style window shell with sign-in.',
+  },
+  {
+    href: '/desktop/permissions',
+    label: 'Desktop permissions',
+    description: 'Screen and microphone permission steps.',
+  },
+  {
+    href: '/desktop/configure',
+    label: 'Desktop configure',
+    description: 'Interview configure step inside the desktop shell.',
+  },
+  {
+    href: '/desktop/session',
+    label: 'Desktop live session',
+    description: 'Live session with the real spacebar-driven interview simulation.',
+  },
+  {
+    href: '/desktop/complete',
+    label: 'Desktop complete',
+    description: 'Desktop session completion screen.',
+  },
+] as const
+
 export function RouteIndexPage() {
   return (
     <main className="min-h-screen bg-canvas px-6 py-10 text-ink">
@@ -278,6 +357,23 @@ export function RouteIndexPage() {
         </a>
 
         <section className="mt-10">
+          <h2 className="text-2xl font-semibold">Marketing</h2>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {marketingRoutes.map((route) => (
+              <a
+                key={route.href}
+                href={route.href}
+                aria-label={route.label}
+                className="rounded-panel border border-border bg-surface p-5 shadow-panel transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                <span className="text-lg font-semibold text-ink">{route.label}</span>
+                <span className="mt-2 block text-sm leading-6 text-ink-muted">{route.description}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-10">
           <h2 className="text-2xl font-semibold">Web app: Auth</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {authRoutes.map((route) => (
@@ -295,9 +391,43 @@ export function RouteIndexPage() {
         </section>
 
         <section className="mt-10">
+          <h2 className="text-2xl font-semibold">Web app: Onboarding</h2>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {onboardingRoutes.map((route) => (
+              <a
+                key={route.href}
+                href={route.href}
+                aria-label={route.label}
+                className="rounded-panel border border-border bg-surface p-5 shadow-panel transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                <span className="text-lg font-semibold text-ink">{route.label}</span>
+                <span className="mt-2 block text-sm leading-6 text-ink-muted">{route.description}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-10">
           <h2 className="text-2xl font-semibold">Web app: Dashboard</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {appRoutes.map((route) => (
+              <a
+                key={route.href}
+                href={route.href}
+                aria-label={route.label}
+                className="rounded-panel border border-border bg-surface p-5 shadow-panel transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                <span className="text-lg font-semibold text-ink">{route.label}</span>
+                <span className="mt-2 block text-sm leading-6 text-ink-muted">{route.description}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-10">
+          <h2 className="text-2xl font-semibold">Desktop app prototype</h2>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {desktopRoutes.map((route) => (
               <a
                 key={route.href}
                 href={route.href}
