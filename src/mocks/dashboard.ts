@@ -66,7 +66,7 @@ export const dashboardActions: readonly DashboardAction[] = [
 ]
 
 export const dashboardInstallPrompt: DashboardInstallPrompt = {
-  title: 'Install the Jobwhisper desktop or mobile app to get live Copilot assistance wherever you interview.',
+  title: 'Take Copilot with you. Install the app.',
   qrSrc: '/v3-assets/Barcode.png',
   desktopHref: '/v3/downloads/desktop',
   mobileHref: '/v3/downloads/mobile',
