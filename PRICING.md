@@ -2,7 +2,7 @@
 
 This is the live, editable source of truth for pricing: what's actually charged today, where every number lives in the codebase, and what's still unresolved. Update this file the moment a price changes anywhere, or a new pricing idea gets floated, so it stays the one place to check "what do we currently charge, and does it agree with itself."
 
-**Last corrected: 2026-09-02** — planning session with the founder settled the whole product shape, not just numbers: this is now genuinely **three plans + a marketplace**, not a subscription with a pile of feature upsells bolted on.
+**Last corrected: 2026-09-02** — three planning conversations with the founder settled the whole product shape, not just numbers: this is now genuinely **three plans + a marketplace**, not a subscription with a pile of feature upsells bolted on. Doc is stable enough to review as a whole before implementation starts (§7 is the one section still purely backlog).
 
 ## The three plans, at a glance
 
@@ -11,7 +11,7 @@ Users are sold one of three distinct intents — these aren't three tiers of one
 | Plan | Answers | What it is | Pricing shape |
 |---|---|---|---|
 | **1. Ace Your Interview** (§1) | "Are you looking to ace your next interview?" | Interview Prep + Interview Copilot | Recurring subscription — Starter/Pro/Premium |
-| **2. Find Jobs Yourself** (§2.1) | "Are you looking for jobs right now?" (DIY) | Auto Apply (AI-run) + Resume Builder | Prepaid credits, bought upfront via a slider, spent down as used — no expiry, no recurring charge |
+| **2. Find Jobs Yourself** (§2.1) | "Are you looking for jobs right now?" (DIY) | Auto Apply (AI-run) + Resume Builder | Prepaid credits, bought upfront (preset amounts + custom "Other" input), valid 12 months, spent down as used — not a recurring charge |
 | **3. Find Jobs, Done For You** (§2.2) | Same question, but hands-off | Auto Apply + Resume Builder + a human success manager + Jobwhisper product access | Flat committed package ($497 / $997) |
 | **The Marketplace** (§5) | — | One-time content: swipe files, scripts, templates | Flat one-time purchases, $9–$29 |
 
@@ -39,7 +39,7 @@ Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold st
 
 **First-time Pro offer:** $40 first month, renews at $99/month. This resolves an inconsistency that existed across older docs (the transition plan alone said $99, $100, and $100 in three different places for the renewal price) and also resolves the coincidence flagged in the previous version of this file — VSL's checkout should now explicitly charge $40 first month / $99 renewal to match, not just happen to be close.
 
-**Credits/mo re-derived 2026-09-02** as price ÷ $0.10 (the Interview/Coding/Meeting Copilot rate, §3) — see `docs/JobWhisper-Credit-Pricing-Payment-PRD.md` §3.1 for the full derivation and two things worth confirming before treating it as final: it implies **zero gross margin on the credit allowance itself** (the subscription price converts 1:1 into usable Copilot minutes), and Interview Prep's $0.20/credit/min rate means the same credit pool buys half as many Prep minutes as Copilot minutes — so "credits/mo" isn't a single minutes-equivalent number once more than one feature is in play.
+**Credits/mo re-derived 2026-09-02** as price ÷ $0.10 (the Interview Copilot/Coding/Meeting/Prep rate, §3 — all four now equal) — see `docs/JobWhisper-Credit-Pricing-Payment-PRD.md` §3.1 for the full derivation. One thing worth confirming before treating it as final: this implies **zero gross margin on the credit allowance itself** (the subscription price converts 1:1 into usable Copilot/Prep minutes). Since Interview Prep's rate was brought down to match Copilot's exactly (§3), "credits/mo" is now a clean single minutes-equivalent across every live-session feature — the earlier caveat about Prep buying half as many minutes no longer applies.
 
 **Premium includes Full-Auto Mode** (decided 2026-09-02, see §2) — Premium subscribers get Full-Auto job selection as part of the $197/mo plan. This is the one place the core subscription and the Auto Apply upsell touch each other; everything else in §2 is sold independently of Starter/Pro/Premium.
 
@@ -53,14 +53,16 @@ Resume tailoring that happens automatically *as part of* an Auto Apply applicati
 
 ### 2.1 Plan 2 — Find Jobs Yourself (DIY)
 
-**How it's bought:** prepaid credits, purchased upfront via a slider — one slider per feature, since Resume Builder and Auto Apply are independent purchases with independent minimums:
+**How it's bought:** prepaid credits, purchased upfront — one purchase flow per feature, since Resume Builder and Auto Apply are independent purchases with independent minimums:
 
 | Feature | Minimum purchase | Rate | Example |
 |---|---|---|---|
 | Resume Builder | $5 | $0.10/credit/prompt | $5 → 50 prompts |
 | Auto Apply (AI-run) | $10 | $1/credit/successful application | $10 → 10 successful applications |
 
-Confirmed 2026-09-02: this is a **one-time purchase, not a recurring monthly charge.** Credits don't expire — they're spent down at whatever pace the user actually uses the product, whether that's a week or three months. When the balance runs low, they buy more via the same slider.
+Confirmed 2026-09-02: this is a **one-time purchase, not a recurring monthly charge.** Credits are **valid for 12 months from purchase** (revised 2026-09-02, matching the Codex reference below — not literally forever as first stated), spent down at whatever pace the user actually uses the product. When the balance runs low, or 12 months passes, they buy more.
+
+**UI pattern, not a slider** (revised 2026-09-02) — reference screenshots shared of an "Add credits" modal (OpenAI Codex's credit purchase flow): a row of 3 preset amount buttons, plus an "Other" option that reveals a custom-amount text input. **The minimum purchase ($5 / $10) is the placeholder text in that custom input**, not a literal draggable slider. Worth carrying over from the reference too: it live-converts the entered amount to a credit count next to the field, and validates that the amount converts to a whole number of credits before allowing checkout (rejects e.g. an amount that works out to 166.667 credits) — a good, cheap correctness check to copy. One modal per feature (Resume Builder, Auto Apply), each with its own presets and its own minimum — exact preset amounts (Codex's example used 3 tiers) not chosen yet, just the pattern.
 
 **Auto Apply (AI-run):** user tells us how many jobs they want help with ("500 jobs"). The product does job scouting, filtering, resume tailoring, and applying — end to end, AI-driven. **$1 per successful application**, success-gated (§3) — a failed or rejected submission doesn't bill.
 
@@ -88,7 +90,7 @@ So the AI is always the one *doing* the work in both cases; Premium's actual per
 
 ### 2.4 Resume Builder standalone gating — resolved
 
-Resolved by the credit-slider model above (§2.1): Resume Builder is purchased the same standalone way as Auto Apply, no subscription required, $5 minimum. Parity with Auto Apply confirmed.
+Resolved by the prepaid-credit model above (§2.1): Resume Builder is purchased the same standalone way as Auto Apply, no subscription required, $5 minimum. Parity with Auto Apply confirmed.
 
 ## 3. Usage-based rates (corrected 2026-09-02)
 
@@ -97,14 +99,14 @@ Resolved by the credit-slider model above (§2.1): Resume Builder is purchased t
 | Interview Copilot | $0.10 / credit / min | $0.80/min (2 credits) |
 | Coding Copilot | $0.10 / credit / min | $0.80/min (2 credits) |
 | Meeting Copilot | $0.10 / credit / min | $0.80/min (2 credits) |
-| Interview Prep | $0.20 / credit / min | $0.80/min (2 credits) |
+| Interview Prep | $0.10 / credit / min | $0.80/min (2 credits) |
 | Auto Apply — self-serve | $1 / successful applied job | $1.20/application (3 credits), not success-gated |
 | Auto Apply — done-for-you | $10 / successful job | new |
 | Resume Builder | $0.10 / prompt | $0.40/message (1 credit) |
 
-**Decided 2026-09-02:** Auto Apply and Resume Builder charge at these rates, not the old flat $40/mo and $15/mo add-on fees — those are dropped entirely, not stacked alongside these. In practice this is a **prepaid credit balance** the user buys upfront via a slider (§2.1, $5/$10 minimums), then spends down at the rates above — not billed action-by-action with zero commitment. Subscription tiers (§1: Starter/Pro/Premium) are a separate thing entirely — they still gate Interview/Coding/Meeting Copilot as before, and their own credit allowance works the same way (§1) but is granted by the subscription, not bought via a slider.
+**Decided 2026-09-02:** Auto Apply and Resume Builder charge at these rates, not the old flat $40/mo and $15/mo add-on fees — those are dropped entirely, not stacked alongside these. In practice this is a **prepaid credit balance** the user buys upfront (§2.1, $5/$10 minimums, valid 12 months), then spends down at the rates above — not billed action-by-action with zero commitment. Subscription tiers (§1: Starter/Pro/Premium) are a separate thing entirely — they still gate Interview/Coding/Meeting Copilot as before, and their own credit allowance works the same way (§1) but is granted monthly by the subscription, not bought as a standalone purchase.
 
-*(Interview Prep corrected from an earlier same-day $0.12 to $0.20 — a typo in the first pass, not two different numbers in flux. Resume Builder's unit corrected from "message" to "prompt" — same $0.10 rate, just the more accurate word for what triggers the charge.)*
+*(Interview Prep's rate moved twice the same day: $0.12 → $0.20 (a typo fix) → **$0.10, matching Interview Copilot exactly** (a deliberate decision, resolving the "Prep costs more than the flagship Copilot" concern below). Resume Builder's unit corrected from "message" to "prompt" — same $0.10 rate, just the more accurate word for what triggers the charge.)*
 
 **Ambiguity resolved 2026-09-02:** the fixed $0.40/credit constant (`docs/CREDIT_PRICING_PAYMENT_PRD.md` §2.1) is dropped. The new model is **1 credit per metered unit, always** (1 credit/min, 1 credit/prompt — never 2 or 3 like the old rates), with the *dollar value* of that 1 credit varying by feature. So "$0.10/credit/min" reads as "1 credit per minute, and in this context a credit is worth $0.10." Still open: whether "credit" survives as a user-facing display concept at all under this model, versus just billing flat per-unit dollar amounts with no credit language in between.
 
@@ -118,7 +120,7 @@ Resolved by the credit-slider model above (§2.1): Resume Builder is purchased t
 
 Currently hardcoded to the **old** $20/$100/$200, plus the old $15/mo Resume Builder and $40/mo Auto Apply add-on entries — none of which match Plans 2/3's actual shape anymore. Needs a real rebuild, not a price edit: `src/contracts/billing.ts`'s `AddOnId`/`FeatureAccess` shape assumes an add-on requires an active `BillingSnapshot` subscription, which is now wrong for both Auto Apply and Resume Builder (§2) — they need their own standalone entitlement/purchase path (a prepaid credit balance per feature, per §2.1) that works for accounts with no subscription at all. This is a bigger contract change than the tier-price update in §1.
 
-**Decided 2026-09-02: Auto Apply and Resume Builder are both removed from the subscribe-time checkout order bump entirely** — neither is offered as an "add this for $X/mo" checkbox at signup anymore. They're sold through their own standalone slider-purchase flow (§2.1), unconnected to the Plan 1 subscribe flow.
+**Decided 2026-09-02: Auto Apply and Resume Builder are both removed from the subscribe-time checkout order bump entirely** — neither is offered as an "add this for $X/mo" checkbox at signup anymore. They're sold through their own standalone "Add credits" purchase flow (§2.1), unconnected to the Plan 1 subscribe flow.
 
 ### 4.2 VSL checkout — `src/apps/web/pages/vsl-checkout-modal.tsx`
 
@@ -165,11 +167,17 @@ The $567 "Total due today" shown in the screenshot ($19 swipe file + $499 concie
 8. ~~Resume Builder: standalone or subscription-gated~~ — standalone, same as Auto Apply. See §2.4.
 9. ~~What does "Full-Auto is a Premium perk" mean mechanically~~ — Premium sets preferences and gets notified when done (fully autonomous); everyone else gets AI-prepared applications but clicks "apply" per job themselves. See §2.3.
 10. ~~VSL's $999 Resume & LinkedIn Overhaul vs. the $997 DFY package~~ — same product. VSL needs rebuilding to present the actual $497/$997 packages. See §2.2, §4.2.
-11. ~~Is the credit purchase a recurring monthly charge or a one-time top-up~~ — one-time, no expiry, spent down at whatever pace usage happens. See §2.1.
+11. ~~Is the credit purchase a recurring monthly charge or a one-time top-up~~ — one-time, valid 12 months, spent down at whatever pace usage happens. See §2.1.
+12. ~~Interview Prep priced above Interview Copilot~~ — fixed by matching Prep's rate down to $0.10, same as Copilot. Not a pricing-logic argument, just a decision to make them equal. See §3.
 
 **Still open:**
 
-12. **Interview Prep priced above Interview Copilot** ($0.20/min vs. $0.10/min, §3) — raised in conversation as possibly backwards (practice mode costing more than the live, flagship Copilot session) — not yet confirmed either way, still using the numbers as given.
-13. **Is the $5/$10 slider minimum a hard floor** (can't buy less) **or just where the slider starts** (could theoretically go lower)? Not specified.
-14. **Nothing about Plans 2/3 exists in the app yet** — `src/mocks/billing.ts`/`account.ts` still show the old flat add-on model, and there's no slider-purchase UI, no DFY package selector, and no Auto Apply product surface at all beyond the auto-apply-view.tsx mock screens (which predate this whole redesign and don't reflect it). This is a bigger build than updating numbers in existing mocks — treat the whole Plan 2/3 purchase flow as net-new.
+13. **Is the $5/$10 minimum a hard floor** on the "Other" custom input (can't type in less) **or just the placeholder/suggested amount** (could theoretically still enter less)? Not specified — the Codex reference implies a floor (it validates the amount some other way), but that's inference, not confirmation.
+14. **Nothing about Plans 2/3 exists in the app yet** — `src/mocks/billing.ts`/`account.ts` still show the old flat add-on model, and there's no "Add credits" purchase UI, no DFY package selector, and no Auto Apply product surface at all beyond the auto-apply-view.tsx mock screens (which predate this whole redesign and don't reflect it). This is a bigger build than updating numbers in existing mocks — treat the whole Plan 2/3 purchase flow as net-new.
 15. Everything already flagged as open in `docs/PRICING_STRATEGY_PRD.md` §8 and `docs/CREDIT_PRICING_PAYMENT_PRD.md` §8 that isn't addressed above is still open (annual pricing, referral bonus amount, Stripe sign-off, refund/dispute policy, tax, multi-currency).
+
+## 7. Marketing & upsell flows (backlog)
+
+Not pricing decisions — ideas for how pricing gets *presented* to a user after the fact, captured here so they don't get lost before there's time to spec them properly.
+
+- **Cross-sell Plan 3 (Done For You) to first-time $40 buyers.** If a first-time visitor takes the $40 first-month Pro offer (§1), show an in-app marketing pop-up trying to sell them into the Done-For-You package (§2.2, $497/$997) — presumably on the logic that someone who just committed to a paid trial is a warm lead for the higher-ticket hands-off offer. Not specified yet: when the pop-up fires (immediately post-purchase, after some usage signal, N days in), what it says, whether it's one-shot or can reappear, or whether it targets both DFY tiers or leads with one.
