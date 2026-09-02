@@ -49,6 +49,8 @@ Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold fu
 
 **Mid-cycle top-ups, added 2026-09-02.** A subscriber who runs out of monthly credits before the cycle resets — e.g. mid-interview — can buy more on the spot rather than waiting for the reset. Same UI pattern as Plan 2's "Add credits" modal (§2.1: preset amount buttons + an "Other" custom input, live $→credit conversion, whole-number validation), reused here rather than a separate design. **$10 minimum purchase** — matching Auto Apply's floor in §2.1, not Resume Builder's $5. Top-up credits are Plan 1 wallet credits (§1's $0.10/credit/min rate), spent alongside the monthly allowance, not a separate balance with its own expiry. Not yet built in code — no purchase UI exists for this any more than it does for §2.1 (§6 item 1).
 
+**Knowledge Base document limits, added 2026-09-02.** The Knowledge Base (resume, job description, and other context documents Copilot/Prep/Resume Builder draw from) caps how many documents a tier can have uploaded at once: **Starter 3, Pro 5, Premium 10.** Not credit-metered — a flat per-tier ceiling, same idea as the monthly minutes row but for storage, not usage. Not yet enforced anywhere in code (`src/features/documents/documents-view.tsx`, the Knowledge Base picker in Copilot/Prep/desktop).
+
 ### 1.1 Feature access matrix — what each tier actually unlocks
 
 | Capability | Starter | Pro | Premium |
@@ -59,6 +61,7 @@ Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold fu
 | Coding Copilot | — | ✓ | ✓ |
 | Meeting Copilot | — | ✓ | ✓ |
 | Monthly minutes (§ above) | ≈500 | ≈1,000 | ≈4,000 |
+| Knowledge Base documents | 3 | 5 | 10 |
 
 The un-subscribed/free state (50 min/mo, §1 above) isn't a column here on purpose — it's not a plan, so it doesn't belong in a table meant to compare plans. In practice it behaves like a capped version of the Starter row (Interview Prep + web Copilot only), but that's carried over from the older PRDs, not something separately reconfirmed.
 
@@ -193,6 +196,7 @@ Every structural and pricing question raised through 2026-09-02 has been resolve
 - Interview Prep matches Interview Copilot's rate exactly ($0.10/credit/min). §3.
 - Free/un-subscribed state: 50 min, rolling 30-day reset, not shown as a UI-visible plan. §1.
 - Plan 1 subscribers can top up credits mid-cycle using the same "Add credits" modal pattern as Plan 2, $10 minimum. §1.
+- Knowledge Base document limits per tier: Starter 3, Pro 5, Premium 10. §1, §1.1.
 - Premium vs. Pro: same features (Coding + Meeting Copilot on both), Premium's real differentiator is volume — ≈4,000 vs ≈1,000 min/mo, branded "2x size." §1, §1.1.
 - VSL's old $999 Resume/LinkedIn item and the old Lightforth $499 concierge are both superseded by the current DFY/Auto Apply structure, not separate products. §2.2, §5.
 
