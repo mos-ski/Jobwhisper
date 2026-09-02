@@ -99,15 +99,15 @@ Resolved by the prepaid-credit model above (§2.1): Resume Builder is purchased 
 
 ## 3. Usage-based rates (corrected 2026-09-02)
 
-| Feature | Rate | Was |
-|---|---|---|
-| Interview Copilot | $0.10 / credit / min | $0.80/min (2 credits) |
-| Coding Copilot | $0.10 / credit / min | $0.80/min (2 credits) |
-| Meeting Copilot | $0.10 / credit / min | $0.80/min (2 credits) |
-| Interview Prep | $0.10 / credit / min | $0.80/min (2 credits) |
-| Auto Apply — self-serve | $1 / successful applied job | $1.20/application (3 credits), not success-gated |
-| Auto Apply — done-for-you | $10 / successful job | new |
-| Resume Builder | $0.10 / prompt | $0.40/message (1 credit) |
+| Feature | Rate |
+|---|---|
+| Interview Copilot | $0.10 / credit / min |
+| Coding Copilot | $0.10 / credit / min |
+| Meeting Copilot | $0.10 / credit / min |
+| Interview Prep | $0.10 / credit / min |
+| Auto Apply — self-serve | $1 / successful applied job |
+| Auto Apply — done-for-you | $10 / successful job |
+| Resume Builder | $0.10 / prompt |
 
 **Decided 2026-09-02:** Auto Apply and Resume Builder charge at these rates, not the old flat $40/mo and $15/mo add-on fees — those are dropped entirely, not stacked alongside these. In practice this is a **prepaid credit balance** the user buys upfront (§2.1, $5/$10 minimums, valid 12 months), then spends down at the rates above — not billed action-by-action with zero commitment. Subscription tiers (§1: Starter/Pro/Premium) are a separate thing entirely — they still gate Interview/Coding/Meeting Copilot as before, and their own credit allowance works the same way (§1) but is granted monthly by the subscription, not bought as a standalone purchase.
 
