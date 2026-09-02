@@ -46,9 +46,23 @@ Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold st
 
 **Free tier revised 2026-09-02:** 50 min/mo, not the 5 credits the older PRDs state — added to the table above as its own row rather than a separate concept. Refreshes monthly on a rolling basis (reset anchor — calendar month vs. rolling 30 days from signup — still unspecified, carried over unresolved from the older PRDs).
 
+### 1.1 Feature access matrix — what each tier actually unlocks
+
+| Capability | Free | Starter | Pro | Premium |
+|---|---|---|---|---|
+| Interview Prep | ✓ | ✓ | ✓ | ✓ |
+| Interview Copilot (web) | ✓ | ✓ | ✓ | ✓ |
+| Interview Copilot (desktop app) | — | — | ✓ | ✓ |
+| Coding Copilot | — | — | ✓ | ✓ |
+| Meeting Copilot | — | — | — | ✓ |
+| Auto Apply Full-Auto Mode (§2.3, a Plan 2 perk unlocked by this tier) | — | — | — | ✓ |
+| Monthly minutes (§ above) | 50 | ≈500 | ≈1,000 | ≈2,000 |
+
+**Caveat, don't treat this as freshly confirmed:** the row structure (which tier gets which Copilot mode) is carried over unchanged from `docs/PRICING_STRATEGY_PRD.md` §2 — only the headline prices and credit amounts have actually been revisited in the 2026-09-02 planning conversations. Whether Interview Prep and web Copilot really belong on the *Free* row specifically (as opposed to, say, Free only getting Prep, or a lower cap than the paid tiers) hasn't been explicitly reconfirmed since Free itself was only just added (§1). Worth a real yes/no before this goes into a UI.
+
 **Premium includes Full-Auto Mode** (decided 2026-09-02, see §2) — Premium subscribers get Full-Auto job selection as part of the $197/mo plan. This is the one place the core subscription and the Auto Apply upsell touch each other; everything else in §2 is sold independently of Starter/Pro/Premium.
 
-**Still not corrected anywhere in code or docs:** feature access matrix (Interview/Coding/Meeting mode gating) and annual pricing. `docs/PRICING_STRATEGY_PRD.md` §2–§5 still describes the *structure* (which tier gets which Copilot modes) using the old prices.
+**Still not corrected anywhere in code:** the feature access matrix now lives in §1.1 above, but nothing in `src/mocks/billing.ts`/`account.ts` reflects it. Annual pricing is also still unaddressed.
 
 ## 2. Plans 2 & 3 — Finding Jobs (Auto Apply + Resume Builder)
 
