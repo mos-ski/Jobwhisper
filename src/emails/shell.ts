@@ -19,6 +19,9 @@ export const brand = {
 const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
 const DISPLAY_FONT = "Georgia,'Times New Roman',serif"
 
+// The logo <img> below points at a relative path so it resolves in this app's own
+// preview. Before wiring real sending, swap it for an absolute HTTPS URL, and add a
+// PNG fallback since Outlook desktop doesn't render SVG images in email.
 export function renderEmailShell(opts: { title: string; previewText: string; bodyHtml: string }): string {
   const { title, previewText, bodyHtml } = opts
   return `<!DOCTYPE html>
@@ -50,7 +53,7 @@ ${escapeHtml(previewText)}
 <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width:560px;max-width:560px;background-color:#ffffff;border-radius:8px;overflow:hidden;">
 <tr>
 <td style="padding:28px 32px;border-bottom:1px solid ${brand.paperLine};">
-<span style="font-family:${DISPLAY_FONT};font-size:19px;font-weight:700;color:${brand.ink};">Jobwhisper</span>
+<img src="/Jobwhisper/Logo%20wordmark%20B.svg" width="121" height="24" alt="Jobwhisper" style="display:block;height:24px;width:121px;border:0;">
 </td>
 </tr>
 <tr>
