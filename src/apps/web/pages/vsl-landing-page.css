@@ -1,0 +1,894 @@
+/* VSL landing page — ported near-verbatim from the standalone prototype HTML.
+   Scoped under .vsl-page so it never leaks into / collides with the rest of the app. */
+
+.vsl-page {
+  --vsl-ink: #1c1d20;
+  --vsl-ink-soft: #232427;
+  --vsl-ink-line: #35363b;
+  --vsl-paper: #f6f7fb;
+  --vsl-paper-soft: #eceef4;
+  --vsl-paper-line: #dcdfe6;
+  --vsl-accent: #1c1d20;
+  --vsl-live: #ef4444;
+  --vsl-text-dark: #ffffff;
+  --vsl-muted-dark: #b9c2de;
+  --vsl-text-light: #14161c;
+  --vsl-muted-light: #5b6270;
+  --vsl-display: 'Gowun Batang', Georgia, serif;
+  --vsl-body: 'Rethink Sans', system-ui, sans-serif;
+  --vsl-mono: 'Rethink Sans', system-ui, sans-serif;
+  --vsl-max: 720px;
+
+  margin: 0;
+  background: var(--vsl-paper);
+  color: var(--vsl-text-light);
+  font-family: var(--vsl-body);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.vsl-page * {
+  box-sizing: border-box;
+}
+.vsl-page {
+  scroll-behavior: smooth;
+}
+.vsl-page img {
+  max-width: 100%;
+  display: block;
+}
+.vsl-page a {
+  color: inherit;
+}
+
+.vsl-page section {
+  padding: clamp(64px, 10vw, 128px) 24px;
+}
+.vsl-on-paper-soft {
+  background: var(--vsl-paper-soft);
+}
+
+.vsl-wrap {
+  max-width: var(--vsl-max);
+  margin: 0 auto;
+}
+.vsl-wrap-wide {
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.vsl-page h1,
+.vsl-page h2,
+.vsl-page h3 {
+  font-family: var(--vsl-display);
+  font-weight: 600;
+  margin: 0 0 0.5em;
+  letter-spacing: -0.01em;
+}
+.vsl-page h1 {
+  font-size: clamp(2.4rem, 5.6vw, 4.1rem);
+  line-height: 1.06;
+}
+.vsl-page h2 {
+  font-size: clamp(1.9rem, 3.6vw, 2.7rem);
+  line-height: 1.14;
+}
+.vsl-page h3 {
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  line-height: 1.3;
+}
+.vsl-page p {
+  margin: 0 0 1.1em;
+}
+.vsl-muted-dark p,
+.vsl-muted-dark {
+  color: var(--vsl-muted-dark);
+}
+.vsl-muted-light p,
+.vsl-muted-light {
+  color: var(--vsl-muted-light);
+}
+
+.vsl-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--vsl-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+  color: var(--vsl-muted-light);
+  margin-bottom: 22px;
+}
+.vsl-eyebrow::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: currentColor;
+  border-radius: 50%;
+}
+
+.vsl-lead {
+  font-size: 1.15rem;
+  line-height: 1.55;
+}
+.vsl-center {
+  text-align: center;
+}
+.vsl-center .vsl-wrap {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ---------- buttons ---------- */
+.vsl-btn {
+  display: inline-block;
+  font-family: var(--vsl-display);
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 17px 34px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    transform 0.12s ease,
+    background 0.15s ease;
+}
+.vsl-btn:active {
+  transform: translateY(1px);
+}
+.vsl-btn-primary {
+  background: var(--vsl-ink);
+  color: #ffffff;
+}
+.vsl-btn-primary:hover {
+  background: #000000;
+}
+.vsl-btn-ghost-dark {
+  background: transparent;
+  color: var(--vsl-text-light);
+  border-color: var(--vsl-paper-line);
+}
+.vsl-btn-ghost-dark:hover {
+  border-color: var(--vsl-muted-light);
+}
+.vsl-cta-note {
+  font-family: var(--vsl-mono);
+  font-size: 13px;
+  color: var(--vsl-muted-light);
+  margin-top: 14px;
+}
+
+/* ---------- hero ---------- */
+.vsl-hero {
+  padding-top: clamp(72px, 12vw, 120px);
+  text-align: center;
+  position: relative;
+}
+.vsl-hero .vsl-wrap {
+  max-width: 800px;
+}
+.vsl-hero h1 {
+  margin-bottom: 0.28em;
+}
+.vsl-hero .vsl-sub-h1 {
+  display: block;
+  font-family: var(--vsl-display);
+  font-weight: 500;
+  font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+  color: var(--vsl-muted-light);
+  margin-bottom: 1.1em;
+  line-height: 1.35;
+}
+.vsl-hero-copy {
+  max-width: 560px;
+  margin: 0 auto 40px;
+  color: var(--vsl-muted-light);
+  font-size: 1.05rem;
+}
+.vsl-hero-copy strong {
+  color: var(--vsl-text-light);
+  font-weight: 600;
+}
+
+.vsl-hero-load {
+  opacity: 0;
+  transform: translateY(14px);
+  animation: vsl-heroin 0.7s ease forwards;
+}
+.vsl-hero-load.vsl-d2 {
+  animation-delay: 0.1s;
+}
+.vsl-hero-load.vsl-d3 {
+  animation-delay: 0.2s;
+}
+.vsl-hero-load.vsl-d4 {
+  animation-delay: 0.32s;
+}
+@keyframes vsl-heroin {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vsl-hero-load {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+  .vsl-page {
+    scroll-behavior: auto;
+  }
+}
+
+/* ---------- video mock ---------- */
+.vsl-video-frame {
+  max-width: 900px;
+  margin: 0 auto 22px;
+  border: 1px solid var(--vsl-ink-line);
+  border-radius: 6px;
+  overflow: hidden;
+  background: #0b0c10;
+}
+.vsl-video-stage {
+  aspect-ratio: 16 / 9;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 50% 30%, #22242e 0%, #0b0c10 70%);
+}
+.vsl-video-quote {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  text-align: left;
+  font-family: var(--vsl-display);
+  font-size: clamp(0.95rem, 1.6vw, 1.25rem);
+  color: var(--vsl-text-dark);
+  background: rgba(19, 21, 27, 0.72);
+  border-left: 2px solid var(--vsl-live);
+  padding: 14px 18px;
+  line-height: 1.35;
+}
+.vsl-video-label {
+  position: absolute;
+  top: 16px;
+  left: 18px;
+  font-family: var(--vsl-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  color: var(--vsl-muted-dark);
+  text-transform: uppercase;
+}
+.vsl-play-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+  box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.1);
+}
+.vsl-play-btn:hover {
+  transform: scale(1.06);
+}
+.vsl-play-btn svg {
+  margin-left: 4px;
+}
+.vsl-video-frame.vsl-is-playing .vsl-video-stage::after {
+  content: 'Video would begin playing here.';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--vsl-mono);
+  font-size: 13px;
+  color: var(--vsl-muted-dark);
+  background: rgba(11, 12, 16, 0.92);
+}
+.vsl-video-frame.vsl-is-playing .vsl-play-btn,
+.vsl-video-frame.vsl-is-playing .vsl-video-quote {
+  opacity: 0;
+}
+
+/* ---------- caption / live-quote device ---------- */
+.vsl-caption {
+  background: var(--vsl-ink-soft);
+  border: 1px solid var(--vsl-ink-line);
+  border-radius: 5px;
+  padding: 22px 24px;
+  max-width: 560px;
+  margin: 28px auto;
+  text-align: left;
+}
+.vsl-caption-tag {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--vsl-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--vsl-live);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.vsl-caption-tag .vsl-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--vsl-live);
+  animation: vsl-pulse 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .vsl-caption-tag .vsl-dot {
+    animation: none;
+  }
+}
+@keyframes vsl-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.vsl-caption p {
+  font-family: var(--vsl-display);
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--vsl-text-dark);
+  margin: 0;
+  line-height: 1.4;
+}
+.vsl-caption cite {
+  font-style: normal;
+}
+
+/* ---------- generic stacked copy blocks ---------- */
+.vsl-stack p {
+  margin-bottom: 0.75em;
+}
+.vsl-stack {
+  max-width: 560px;
+}
+.vsl-stack.vsl-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.vsl-punch {
+  font-family: var(--vsl-display);
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin: 1.4em 0 0;
+}
+
+/* ---------- stat rows ---------- */
+.vsl-stat-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  border-top: 1px solid var(--vsl-paper-line);
+  padding: 16px 0;
+  font-family: var(--vsl-display);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 600;
+}
+.vsl-stat-row:last-of-type {
+  border-bottom: 1px solid var(--vsl-paper-line);
+}
+.vsl-stat-row .vsl-tag {
+  font-family: var(--vsl-mono);
+  font-size: 12px;
+  color: var(--vsl-muted-light);
+  font-weight: 400;
+  min-width: 56px;
+}
+.vsl-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.4em;
+}
+.vsl-checklist li {
+  position: relative;
+  padding-left: 22px;
+  margin-bottom: 0.6em;
+}
+.vsl-checklist li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: currentColor;
+  opacity: 0.55;
+}
+
+/* ---------- feature grid ---------- */
+.vsl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1px;
+  background: var(--vsl-paper-line);
+  border: 1px solid var(--vsl-paper-line);
+  margin-top: 12px;
+}
+.vsl-grid > div {
+  background: var(--vsl-paper);
+  padding: 28px 24px;
+}
+.vsl-grid .vsl-glyph {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--vsl-ink);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--vsl-mono);
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+.vsl-grid h3 {
+  margin-bottom: 0.35em;
+}
+.vsl-grid p {
+  margin: 0;
+  color: var(--vsl-muted-light);
+  font-size: 0.98rem;
+}
+
+/* ---------- demo toggle ---------- */
+.vsl-demo-toggle {
+  display: inline-flex;
+  border: 1px solid var(--vsl-paper-line);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 26px;
+}
+.vsl-demo-toggle button {
+  font-family: var(--vsl-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.03em;
+  background: transparent;
+  color: var(--vsl-muted-light);
+  border: none;
+  padding: 10px 18px;
+  cursor: pointer;
+}
+.vsl-demo-toggle button.vsl-active {
+  background: var(--vsl-ink);
+  color: #ffffff;
+}
+.vsl-demo-box {
+  background: var(--vsl-ink-soft);
+  border: 1px solid var(--vsl-ink-line);
+  border-radius: 5px;
+  padding: 24px;
+  font-family: var(--vsl-mono);
+  font-size: 0.92rem;
+  color: var(--vsl-muted-dark);
+  line-height: 1.7;
+}
+.vsl-demo-box.vsl-without {
+  color: #6d7280;
+}
+.vsl-demo-box .vsl-marker {
+  color: var(--vsl-live);
+}
+
+/* ---------- who-for / testimonial cards ---------- */
+.vsl-who-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 28px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+@media (max-width: 560px) {
+  .vsl-who-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.vsl-proof-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-top: 16px;
+}
+.vsl-proof-card {
+  border: 1px dashed var(--vsl-paper-line);
+  border-radius: 5px;
+  padding: 26px 22px;
+  background: var(--vsl-paper);
+}
+.vsl-proof-card .vsl-kicker {
+  font-family: var(--vsl-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--vsl-muted-light);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: block;
+}
+.vsl-proof-card p {
+  color: var(--vsl-muted-light);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* ---------- accordion ---------- */
+.vsl-faq {
+  max-width: 640px;
+  margin: 0 auto;
+}
+.vsl-faq details {
+  border-top: 1px solid var(--vsl-paper-line);
+  padding: 20px 0;
+}
+.vsl-faq details:last-child {
+  border-bottom: 1px solid var(--vsl-paper-line);
+}
+.vsl-faq summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--vsl-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.vsl-faq summary::-webkit-details-marker {
+  display: none;
+}
+.vsl-faq summary::after {
+  content: '+';
+  font-family: var(--vsl-mono);
+  font-size: 1.3rem;
+  color: var(--vsl-accent);
+  flex-shrink: 0;
+}
+.vsl-faq details[open] summary::after {
+  content: '\2013';
+}
+.vsl-faq .vsl-a {
+  margin-top: 12px;
+  color: var(--vsl-muted-light);
+  font-size: 0.98rem;
+}
+
+/* ---------- modal ---------- */
+.vsl-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 12, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 100;
+  overflow-y: auto;
+}
+.vsl-modal {
+  background: var(--vsl-paper);
+  color: var(--vsl-text-light);
+  max-width: 460px;
+  width: 100%;
+  border-radius: 6px;
+  padding: 36px 30px;
+  position: relative;
+  max-height: 88vh;
+  overflow-y: auto;
+  font-family: var(--vsl-body);
+}
+.vsl-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-family: var(--vsl-mono);
+  font-size: 20px;
+  color: var(--vsl-muted-light);
+  cursor: pointer;
+}
+.vsl-modal h3 {
+  margin-bottom: 0.2em;
+}
+.vsl-modal .vsl-sub {
+  color: var(--vsl-muted-light);
+  font-size: 0.95rem;
+  margin-bottom: 22px;
+}
+.vsl-field {
+  margin-bottom: 14px;
+}
+.vsl-field label {
+  display: block;
+  font-family: var(--vsl-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  color: var(--vsl-muted-light);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.vsl-field input,
+.vsl-field select {
+  width: 100%;
+  padding: 12px 13px;
+  border: 1px solid var(--vsl-paper-line);
+  border-radius: 3px;
+  background: #fff;
+  font-family: var(--vsl-body);
+  font-size: 0.98rem;
+  color: var(--vsl-text-light);
+}
+.vsl-field input:focus,
+.vsl-field select:focus {
+  outline: 2px solid var(--vsl-accent);
+  outline-offset: 1px;
+}
+.vsl-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.vsl-modal .vsl-btn-primary {
+  width: 100%;
+  text-align: center;
+  margin-top: 6px;
+}
+.vsl-modal-micro {
+  font-size: 12.5px;
+  color: var(--vsl-muted-light);
+  margin-top: 14px;
+  line-height: 1.5;
+}
+.vsl-step-label {
+  font-family: var(--vsl-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--vsl-muted-light);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.vsl-modal-back {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: var(--vsl-mono);
+  font-size: 12px;
+  color: var(--vsl-muted-light);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 18px;
+}
+.vsl-modal-back:hover {
+  color: var(--vsl-text-light);
+}
+
+/* offer card — step 1 */
+.vsl-offer-card {
+  border: 1px solid var(--vsl-paper-line);
+  border-radius: 8px;
+  padding: 20px 22px;
+  margin: 16px 0 22px;
+  background: #ffffff;
+}
+.vsl-offer-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.vsl-offer-price {
+  text-align: right;
+  flex-shrink: 0;
+}
+.vsl-badge-discount {
+  display: inline-block;
+  background: var(--vsl-live);
+  color: #fff;
+  font-family: var(--vsl-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.03em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+.vsl-offer-price .vsl-was {
+  font-size: 0.85rem;
+  color: var(--vsl-muted-light);
+  text-decoration: line-through;
+  margin-right: 6px;
+}
+.vsl-offer-price .vsl-now {
+  font-family: var(--vsl-display);
+  font-size: 1.6rem;
+  font-weight: 600;
+  display: block;
+}
+.vsl-offer-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.vsl-offer-features li {
+  display: flex;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 0.92rem;
+}
+.vsl-offer-features li::before {
+  content: '\2713';
+  color: var(--vsl-ink);
+  font-weight: 700;
+}
+.vsl-offer-fineprint {
+  font-size: 12px;
+  color: var(--vsl-muted-light);
+  line-height: 1.55;
+  margin-top: 12px;
+}
+
+/* addons — step 2 */
+.vsl-addon-card {
+  display: block;
+  border: 1px solid var(--vsl-paper-line);
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease;
+}
+.vsl-addon-card:hover {
+  border-color: var(--vsl-muted-light);
+}
+.vsl-addon-card.vsl-checked {
+  border-color: var(--vsl-ink);
+  background: var(--vsl-paper-soft);
+}
+.vsl-addon-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.vsl-addon-row input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  accent-color: var(--vsl-ink);
+  flex-shrink: 0;
+}
+.vsl-addon-copy {
+  flex: 1;
+}
+.vsl-addon-title-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: baseline;
+}
+.vsl-addon-title {
+  font-weight: 600;
+  font-size: 0.94rem;
+}
+.vsl-addon-price {
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+.vsl-addon-desc {
+  font-size: 0.85rem;
+  color: var(--vsl-muted-light);
+  margin-top: 3px;
+  line-height: 1.4;
+}
+.vsl-addon-tag {
+  display: inline-block;
+  margin-top: 7px;
+  font-family: var(--vsl-mono);
+  font-size: 10px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  background: #fdeceb;
+  color: var(--vsl-live);
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+.vsl-cart-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 2px;
+  border-top: 1px solid var(--vsl-paper-line);
+  margin-top: 6px;
+}
+.vsl-cart-total .vsl-lbl {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+.vsl-cart-total .vsl-amt {
+  font-family: var(--vsl-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+/* payment — step 3 */
+.vsl-order-summary {
+  border: 1px solid var(--vsl-paper-line);
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+}
+.vsl-order-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.88rem;
+  padding: 5px 0;
+  color: var(--vsl-muted-light);
+}
+.vsl-order-row.vsl-total {
+  border-top: 1px solid var(--vsl-paper-line);
+  margin-top: 5px;
+  padding-top: 10px;
+  font-weight: 600;
+  color: var(--vsl-text-light);
+  font-size: 1rem;
+}
+
+/* success — step 4 */
+.vsl-success-check {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--vsl-paper-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+}
+
+.vsl-page a:focus-visible,
+.vsl-page button:focus-visible,
+.vsl-page input:focus-visible {
+  outline: 2px solid var(--vsl-accent);
+  outline-offset: 2px;
+}
+
+.vsl-divider-quote {
+  font-family: var(--vsl-display);
+  font-weight: 600;
+  font-size: clamp(1.3rem, 2.6vw, 1.7rem);
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto;
+  line-height: 1.35;
+}
+
+.vsl-footer {
+  padding: 40px 24px;
+  text-align: center;
+  font-family: var(--vsl-mono);
+  font-size: 12px;
+  color: var(--vsl-muted-dark);
+  background: var(--vsl-ink);
+}

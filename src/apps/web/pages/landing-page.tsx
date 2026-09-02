@@ -1,493 +1,586 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useState, type FormEvent, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Play, ChevronDown, Check, Bot, FileText, Code2, Headphones, Wallet, LayoutGrid } from 'lucide-react'
-import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger, JobwhisperIcon } from '@/ui'
-import { useInView } from '@/hooks/useInView'
-import { DemoModal } from './demo-modal'
+import {
+  ArrowRight,
+  BadgeCheck,
+  Brain,
+  Check,
+  CircleHelp,
+  FileText,
+  Headphones,
+  MessageSquareText,
+  Mic,
+  Play,
+  ShieldCheck,
+  Sparkles,
+} from 'lucide-react'
 
-const MOBILE_QUERY = '(max-width: 639px)'
+import { Button, JobwhisperIcon, TextField, cn } from '@/ui'
 
-function useIsMobileViewport() {
-  const [isMobile, setIsMobile] = useState(() => window.matchMedia(MOBILE_QUERY).matches)
+const PAIN_POINTS = [
+  'You ramble because you cannot structure an answer quickly.',
+  'You know the experience but struggle to explain it clearly.',
+  'You forget important examples from your own career.',
+  'You get interviews consistently but struggle to turn them into offers.',
+]
 
-  useEffect(() => {
-    const mql = window.matchMedia(MOBILE_QUERY)
-    const handleChange = (event: MediaQueryListEvent) => setIsMobile(event.matches)
-    mql.addEventListener('change', handleChange)
-    return () => mql.removeEventListener('change', handleChange)
-  }, [])
+const OLD_PREP_ITEMS = [
+  'Research the company',
+  'Practice STAR answers',
+  'Watch interview videos',
+  'Ask AI for mock questions',
+  'Write down common questions',
+  'Run mock interviews',
+]
 
-  return isMobile
-}
+const COPILOT_CONTEXT = ['Your resume', 'The role', 'The job description', 'Your professional experience']
 
-function RevealOnScroll({
-  children,
-  delayMs = 0,
-  className = '',
-}: {
-  readonly children: ReactNode
-  readonly delayMs?: number
-  readonly className?: string
-}) {
-  const { ref, inView } = useInView<HTMLDivElement>()
-  return (
-    <div
-      ref={ref}
-      className={`${inView ? 'animate-ease-in-bottom' : 'opacity-0'} ${className}`}
-      style={inView ? { animationDelay: `${delayMs}ms`, animationFillMode: 'backwards' } : undefined}
-    >
-      {children}
-    </div>
-  )
-}
-
-const FEATURES = [
+const INTERVIEW_MOMENTS = [
   {
-    Icon: Bot,
-    title: 'Auto Apply AI Agents',
-    subtitle: 'Apply to hundreds of jobs while you sleep',
-    description:
-      'Our agents browse job boards, match your profile to open roles, and submit tailored applications on your behalf, 24/7, no manual effort required.',
-    href: '/v3/auto-apply',
+    Icon: MessageSquareText,
+    title: 'Behavioural questions',
+    body: 'Structure your experience into clearer responses while the interviewer is still with you.',
+  },
+  {
+    Icon: Brain,
+    title: 'Unexpected questions',
+    body: 'Get direction when a question catches you off guard and pressure starts stealing your words.',
   },
   {
     Icon: FileText,
-    title: 'AI Resume Builders',
-    subtitle: 'Tailored for every role, in seconds',
-    description:
-      'Paste a job description and get a resume instantly rewritten to match, right keywords, right achievements, right format, every time.',
-    href: '/v3/resume',
-  },
-  {
-    Icon: Code2,
-    title: 'Coding Copilot',
-    subtitle: 'Real-time help during technical screens',
-    description:
-      'Whispers hints, patterns, and solutions as the interviewer talks. Stay sharp and confident through any coding challenge, completely live.',
-    href: '#',
+    title: 'Career experience',
+    body: 'Surface relevant projects, metrics, and examples from the background you already provided.',
   },
   {
     Icon: Headphones,
-    title: 'Meeting Copilots',
-    subtitle: 'Live AI support in any video call',
-    description:
-      'Get real-time talking points, answers, and context surfaced during interviews or meetings, without the other side ever knowing.',
-    href: '#',
-  },
-  {
-    Icon: Wallet,
-    title: 'Top Up credits anytime',
-    subtitle: 'Pay only for what you use',
-    description:
-      'No subscriptions or surprise charges. Buy credits to power any Jobwhisper feature and use them at your own pace, whenever you need them.',
-    href: '/v3/billing',
-  },
-  {
-    Icon: LayoutGrid,
-    title: 'Other Applications',
-    subtitle: 'Desktop, mobile, and browser',
-    description:
-      'Take Jobwhisper everywhere, available as a Chrome extension, a macOS or Windows desktop app, and a mobile app on iOS and Android.',
-    href: '#',
+    title: 'Follow-up questions',
+    body: 'Stay composed when the interviewer pushes deeper and the conversation changes shape.',
   },
 ]
 
-const FEATURE_CARD_STYLES = [
-  { bg: 'bg-white', text: 'text-black' },
-  { bg: 'bg-[#E4ECFF]', text: 'text-black' },
-  { bg: 'bg-landing-nav', text: 'text-white' },
+const FITS = [
+  'You are actively interviewing for jobs.',
+  'You get interviews but not enough offers.',
+  'You struggle with nerves or lose your train of thought.',
+  'You are interviewing for a competitive or more senior role.',
+  'English is not your strongest communication language.',
+  'You are tired of leaving interviews thinking, "I could have answered that better."',
 ]
 
 const FAQS = [
   {
-    question: 'What is Jobwhisper?',
+    question: 'Will Jobwhisper answer everything for me?',
     answer:
-      'Jobwhisper is an AI interview copilot. Rehearse against a role-aware AI before the interview, then bring a live copilot into the actual conversation for real-time talking points and answers.',
+      'No. Jobwhisper assists your thinking and communication using your professional context. Your experience still matters.',
   },
   {
-    question: 'How does the live copilot work during an interview?',
+    question: 'Do I still need to prepare?',
     answer:
-      'Jobwhisper listens in alongside you, over screen share or your microphone, and surfaces suggested talking points and answers on your screen as the conversation happens, without the other side ever knowing.',
+      'Yes. Jobwhisper works best when you provide strong context and understand the role you are interviewing for.',
   },
   {
-    question: 'What do I need to use Jobwhisper?',
+    question: 'Can I use it for technical interviews?',
     answer:
-      'Just a Jobwhisper account and either the desktop app or the Chrome extension. No special hardware, it works with whatever video call or in-person setup you already use.',
+      'It can assist across different interview questions, including technical and role-specific discussions, depending on the context you provide.',
   },
   {
-    question: 'Is my interview data kept private?',
+    question: 'Do I need to type every question?',
     answer:
-      "Yes. Your resumes, transcripts, and session recordings are only visible to you, and you can delete them at any time from your account. We don't share your data with employers or third parties.",
+      'No. Interview Copilot is designed around listening to the interview conversation and providing assistance from that context.',
   },
   {
-    question: 'Can I review past interview sessions?',
+    question: 'Is this just ChatGPT?',
     answer:
-      'Every session is saved to your history with a summary, talk-time breakdown, and what went well or needs work, so you can review and improve before your next interview.',
-  },
-  {
-    question: 'Does it work for coding interviews and meetings too?',
-    answer:
-      'Yes, Coding Copilot gives real-time hints during technical screens, and Meeting Copilot brings the same live support to client calls and stakeholder meetings, not just interviews.',
-  },
-  {
-    question: 'What happens if I run out of credits mid-session?',
-    answer:
-      "You'll get a low-balance warning first, and can top up without losing your place, your session resumes right where you left off once you add more credits.",
+      'No. General AI tools can help you prepare. Jobwhisper is built around your resume, job description, role, and live interview workflow.',
   },
 ]
 
-const TIMELINE_STAGES = [
-  {
-    label: 'Today',
-    title: 'Get interview-ready',
-    items: [
-      'Upload your resume and get instant feedback on gaps',
-      'Run your first AI mock interview, role-aware from question one',
-      'See exactly what to work on before you walk in',
-    ],
-  },
-  {
-    label: 'Before the call',
-    title: "Rehearse until it's natural",
-    items: [
-      'Practice the questions your specific role gets asked',
-      'Get real answers scored against what strong candidates say',
-      'Walk in knowing your story, not reciting it',
-    ],
-  },
-  {
-    label: 'The real interview',
-    title: 'Never freeze up again',
-    items: [
-      'The live copilot listens in and feeds you talking points',
-      "Real-time answers to questions you didn't prep for",
-      'Invisible to everyone else on the call',
-    ],
-  },
-  {
-    label: 'After the call',
-    title: 'Walk into round two stronger',
-    items: [
-      'Every session saved with a summary and talk-time breakdown',
-      "See exactly what went well and what didn't, no guessing",
-      'Only spend credits on the sessions you actually run',
-    ],
-  },
-]
+function MarketingShell({
+  children,
+  className,
+}: {
+  readonly children: ReactNode
+  readonly className?: string
+}) {
+  return <div className={cn('mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8', className)}>{children}</div>
+}
 
 function LandingNav() {
   const navigate = useNavigate()
-  return (
-    <nav className="fixed top-4 sm:top-9 left-0 right-0 z-50 flex justify-center px-4">
-      <div className="flex items-center h-[54px] bg-landing-nav rounded-[22px] pl-4 pr-2 shadow-[0px_2px_40px_rgba(0,0,0,0.25)] w-full max-w-fit">
-        <img src="/landing-logo.svg" alt="Jobwhisper" className="h-6 w-auto" />
 
-        <div className="hidden md:flex items-center gap-5 ml-10">
-          <button className="flex items-center gap-1.5 text-white/60 text-base font-medium tracking-[-0.3px] leading-6 hover:text-white transition-colors">
-            Features
-            <ChevronDown size={10} className="mt-px" />
-          </button>
-          <button className="text-white/60 text-base font-medium tracking-[-0.3px] leading-6 hover:text-white transition-colors">
-            Pricing
-          </button>
-          <a
-            href="#faq"
-            className="text-white/60 text-base font-medium tracking-[-0.3px] leading-6 hover:text-white transition-colors"
-          >
+  return (
+    <header className="sticky top-0 z-shell border-b border-border bg-surface/95 backdrop-blur">
+      <MarketingShell className="flex min-h-16 items-center justify-between gap-4">
+        <a href="/" className="inline-flex items-center gap-2 text-ink transition-colors hover:text-accent-text">
+          <JobwhisperIcon className="size-6" />
+          <span className="font-rethink text-lg font-semibold">Jobwhisper</span>
+        </a>
+        <nav aria-label="Landing page" className="hidden items-center gap-6 text-sm font-medium text-ink-muted md:flex">
+          <a className="transition-colors hover:text-ink" href="#demo">
+            Watch
+          </a>
+          <a className="transition-colors hover:text-ink" href="#how-it-works">
+            How it works
+          </a>
+          <a className="transition-colors hover:text-ink" href="#faq">
             FAQ
           </a>
-        </div>
+        </nav>
+        <Button size="sm" onClick={() => navigate('/v3/interview-copilot')}>
+          Get copilot
+        </Button>
+      </MarketingShell>
+    </header>
+  )
+}
 
-        <div className="flex items-center gap-3.5 ml-4 md:ml-14">
-          <button
-            onClick={() => navigate('/v3/auth/sign-in')}
-            className="hidden sm:block text-white/60 text-base font-medium tracking-[-0.3px] leading-6 hover:text-white transition-colors"
-          >
-            Log in
-          </button>
-          <button className="flex items-center gap-1.5 bg-landing-bg rounded-[16px] px-4 h-[42px] overflow-hidden">
-            <img src="/landing-logo-icon.svg" alt="" className="h-[18px] w-4 object-contain" />
-            <span className="text-white text-base font-medium tracking-[-0.3px] leading-6">Download</span>
-          </button>
+function VslCard({ compact = false }: { readonly compact?: boolean }) {
+  return (
+    <div
+      id="demo"
+      className={cn(
+        'overflow-hidden rounded-lg border border-border bg-surface shadow-xl',
+        compact ? 'shadow-panel' : 'lg:translate-y-10',
+      )}
+    >
+      <div className="flex items-center justify-between border-b border-border bg-surface-subtle px-4 py-3">
+        <div className="flex items-center gap-2">
+          <span className="grid size-8 place-items-center rounded-full bg-accent text-brand-bar-text">
+            <Play aria-hidden="true" className="size-4 fill-current" />
+          </span>
+          <div>
+            <p className="text-sm font-semibold text-ink">Watch this before your next interview</p>
+            <p className="text-xs text-ink-muted">VSL video</p>
+          </div>
+        </div>
+        <span className="rounded-full bg-positive-surface px-3 py-1 text-xs font-semibold text-positive">Ready</span>
+      </div>
+      <div className="relative bg-live-canvas">
+        <video
+          src="/MacBook-Pro-14-25.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="aspect-video w-full object-cover object-top opacity-90"
+        />
+        <div className="absolute inset-x-4 bottom-4 rounded-lg border border-live-border bg-live-panel/95 p-4 shadow-lg">
+          <p className="text-sm font-semibold text-brand-bar-text">
+            The interviewer can only judge the answer you gave.
+          </p>
+          <p className="mt-1 text-xs leading-5 text-ink-muted">
+            Not the better answer you thought of later.
+          </p>
         </div>
       </div>
-    </nav>
+    </div>
   )
 }
 
 function LandingHero() {
   const navigate = useNavigate()
-  return (
-    <section className="px-4 sm:px-8 lg:px-[113px] pt-[140px] sm:pt-[180px] lg:pt-[220px] pb-0">
-      <div className="flex flex-col gap-6 lg:gap-8 max-w-[813px]">
-        <h1
-          className="text-white font-normal font-gowun"
-          style={{ fontSize: 'clamp(40px, 6vw, 70.732px)', lineHeight: '1.112', letterSpacing: '-0.05em' }}
-        >
-          Never leave an interview wishing you'd said something different.
-        </h1>
-        <p
-          className="text-white font-normal max-w-[504px]"
-          style={{ fontSize: 'clamp(16px, 2vw, 24px)', letterSpacing: '-0.02em' }}
-        >
-          Rehearse against a role-aware AI, then bring a live copilot into the actual conversation.
-        </p>
-        <div className="flex flex-wrap items-center gap-3">
-          <button className="flex items-center gap-2 bg-landing-btn rounded-[10px] h-12 px-8 text-white text-lg font-semibold whitespace-nowrap">
-            Download Now
-            <span className="flex items-center gap-1.5">
-              <img src="/landing-apple.svg" alt="Apple" className="h-4 w-4" />
-              <img src="/landing-windows.svg" alt="Windows" className="h-4 w-4" />
-            </span>
-          </button>
-          <button
-            onClick={() => navigate('/v3/auth/choose-plan')}
-            className="flex items-center gap-2 bg-white rounded-[10px] h-12 px-8 text-landing-btn-text text-lg font-semibold whitespace-nowrap hover:bg-white/90 transition-colors"
-          >
-            See Pricing
-            <img src="/landing-arrow.svg" alt="" className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function LandingDemo({ onOpenDemo }: { readonly onOpenDemo: () => void }) {
-  const isMobile = useIsMobileViewport()
 
   return (
-    <section
-      onClick={isMobile ? undefined : onOpenDemo}
-      onKeyDown={
-        isMobile
-          ? undefined
-          : (event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault()
-                onOpenDemo()
-              }
-            }
-      }
-      role={isMobile ? undefined : 'button'}
-      tabIndex={isMobile ? undefined : 0}
-      aria-label={isMobile ? undefined : 'Open the interactive Jobwhisper demo'}
-      className={`group relative mt-16 sm:mt-24 lg:mt-[160px] mx-4 sm:mx-8 lg:mx-[113px] aspect-[1728/1080] rounded-xl overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${isMobile ? '' : 'cursor-pointer'}`}
-    >
-      <video
-        src="/MacBook-Pro-14-25.mp4"
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-      />
-      {isMobile ? null : (
-        <>
-          <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20" />
-          <div className="absolute bottom-0 left-0 right-0 h-[540px] bg-gradient-to-b from-transparent to-landing-bg" />
-          <div className="absolute bottom-[70px] left-0 right-0 flex flex-col items-center">
-            <span className="flex items-center gap-2 rounded-full bg-white h-10 px-4 border border-transparent transition-colors group-hover:bg-white/90">
-              <Play size={14} fill="black" className="text-black" />
-              <span className="text-black text-sm font-normal leading-5 tracking-[-0.13px]">Start demo</span>
-            </span>
+    <section className="bg-landing-bg text-brand-bar-text">
+      <MarketingShell className="grid gap-10 pb-14 pt-12 lg:grid-cols-[0.92fr_1.08fr] lg:items-center lg:pb-24 lg:pt-20">
+        <div className="max-w-2xl">
+          <p className="mb-5 inline-flex rounded-full border border-live-control-border px-3 py-1 text-xs font-semibold uppercase tracking-wide">
+            AI interview copilot
+          </p>
+          <h1 className="font-gowun text-4xl font-bold leading-tight tracking-normal sm:text-5xl lg:text-6xl">
+            You already got the interview. Do not lose the job because the right answer came 5 minutes too late.
+          </h1>
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-brand-bar-text">
+            Jobwhisper Interview Copilot helps you understand questions, organize your experience, and structure
+            stronger answers in real time.
+          </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Button
+              className="bg-surface text-accent-text hover:bg-surface-subtle"
+              size="lg"
+              onClick={() => navigate('/v3/interview-copilot')}
+            >
+              Get Jobwhisper Copilot
+              <ArrowRight aria-hidden="true" className="size-4" />
+            </Button>
+            <a
+              href="#demo"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-live-control-border px-5 py-2.5 text-base font-semibold text-brand-bar-text transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              Watch the VSL
+              <Play aria-hidden="true" className="size-4" />
+            </a>
           </div>
-        </>
-      )}
-    </section>
-  )
-}
-
-function LandingTimeline() {
-  return (
-    <section className="px-4 sm:px-8 lg:px-[113px] pt-24 sm:pt-32 lg:pt-40 pb-16 sm:pb-24">
-      <div className="flex flex-col items-center text-center gap-4">
-        <h2
-          className="text-white font-normal font-gowun max-w-[700px]"
-          style={{ fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: '1.2', letterSpacing: '-0.02em' }}
-        >
-          Every stage of the interview, covered.
-        </h2>
-      </div>
-
-      <div className="mt-12 sm:mt-16 hidden md:grid md:grid-cols-4 md:gap-2">
-        {TIMELINE_STAGES.map((stage, index) => {
-          const isLast = index === TIMELINE_STAGES.length - 1
-          return (
-            <div key={stage.label} className="flex flex-col items-center gap-3">
-              <span
-                className={`shrink-0 rounded-lg border px-4 h-9 inline-flex items-center text-sm font-medium whitespace-nowrap ${
-                  isLast ? 'border-white bg-white text-landing-btn-text' : 'border-white/15 text-white/70'
-                }`}
-              >
-                {stage.label}
-              </span>
-              <span className="relative flex h-2.5 w-full items-center justify-center">
-                {index !== 0 ? (
-                  <span className="absolute right-1/2 h-px w-full bg-white/15" aria-hidden="true" />
-                ) : null}
-                {!isLast ? (
-                  <span className="absolute left-1/2 h-px w-full bg-white/15" aria-hidden="true" />
-                ) : null}
-                <span
-                  className={`relative z-10 size-2.5 rounded-full ${
-                    isLast ? 'bg-white' : 'border border-white/30 bg-landing-bg'
-                  }`}
-                />
-              </span>
-            </div>
-          )
-        })}
-      </div>
-
-      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {TIMELINE_STAGES.map((stage, index) => {
-          const isLast = index === TIMELINE_STAGES.length - 1
-          return (
-            <RevealOnScroll key={stage.title} delayMs={index * 90} className="h-full">
-              <div
-                className={`h-full rounded-xl p-6 transition-all duration-300 ease-out hover:-translate-y-1 ${
-                  isLast ? 'bg-white hover:shadow-xl' : 'bg-white/[0.06] hover:bg-white/[0.1]'
-                }`}
-              >
-                <p className={`text-xs font-semibold uppercase tracking-[0.06em] mb-2 md:hidden ${isLast ? 'text-landing-btn-text' : 'text-white/50'}`}>
-                  {stage.label}
-                </p>
-                <p className={`font-semibold text-base mb-4 ${isLast ? 'text-landing-btn-text' : 'text-white'}`}>
-                  {stage.title}
-                </p>
-                <ul className="flex flex-col gap-3">
-                  {stage.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2.5">
-                      <Check
-                        size={16}
-                        className={`shrink-0 mt-0.5 ${isLast ? 'text-landing-btn-text' : 'text-white/50'}`}
-                      />
-                      <span className={`text-sm leading-[1.5] ${isLast ? 'text-landing-ink' : 'text-white/70'}`}>
-                        {item}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </RevealOnScroll>
-          )
-        })}
-      </div>
-    </section>
-  )
-}
-
-function LandingFeatures() {
-  const navigate = useNavigate()
-  return (
-    <section className="flex flex-col items-center gap-4 sm:gap-8 px-4 sm:px-8 lg:px-[113px] pt-16 sm:pt-24 pb-20 sm:pb-32">
-      <div className="w-full">
-        <p
-          className="text-white font-normal font-gowun text-center"
-          style={{ fontSize: '28px', lineHeight: '36px', letterSpacing: '-0.84px' }}
-        >
-          More ways Jobwhisper helps
-        </p>
-      </div>
-
-      <div className="w-full max-w-[340px] mx-auto">
-        {FEATURES.map((feature, index) => {
-          const style = FEATURE_CARD_STYLES[index % FEATURE_CARD_STYLES.length]
-          const rotate = index % 2 === 0 ? '-rotate-3' : 'rotate-3'
-          return (
-            <div key={feature.title} className="sticky top-24 sm:top-28 pb-2" style={{ zIndex: index + 1 }}>
-              <a
-                href={feature.href}
-                className={`flex flex-col rounded-lg p-8 sm:p-10 min-h-[420px] sm:min-h-[460px] shadow-2xl no-underline transition-transform duration-300 ease-out hover:scale-[1.02] ${style.bg} ${rotate} hover:rotate-0`}
-              >
-                <feature.Icon aria-hidden="true" strokeWidth={1.25} className={`size-11 opacity-80 ${style.text}`} />
-                <div className="mt-auto">
-                  <p className={`font-gowun font-normal text-4xl mb-3 ${style.text}`}>{feature.title}</p>
-                  <p className={`text-base opacity-70 mb-2 ${style.text}`}>{feature.subtitle}</p>
-                  <p className={`text-sm opacity-50 ${style.text}`}>{feature.description}</p>
-                </div>
-              </a>
-            </div>
-          )
-        })}
-      </div>
-
-      <button
-        onClick={() => navigate('/v3/auth/choose-plan')}
-        className="flex items-center gap-2 bg-white rounded-[10px] h-12 px-8 text-landing-btn-text text-lg font-semibold whitespace-nowrap hover:bg-white/90 transition-colors"
-      >
-        See Pricing
-        <img src="/landing-arrow.svg" alt="" className="h-4 w-4" />
-      </button>
-    </section>
-  )
-}
-
-function LandingFAQ() {
-  return (
-    <section id="faq" className="bg-landing-footer-frame px-4 sm:px-8 lg:px-[113px] pt-24 sm:pt-32 lg:pt-40 pb-16 sm:pb-20">
-      <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
-        <h2
-          className="text-white font-normal font-gowun"
-          style={{ fontSize: 'clamp(32px, 4vw, 44px)', lineHeight: '1.15', letterSpacing: '-0.02em' }}
-        >
-          Frequently
-          <br />
-          asked questions.
-        </h2>
-
-        <Accordion className="w-full">
-          {FAQS.map((faq, index) => (
-            <AccordionItem key={faq.question} value={String(index)} className="border-b border-white/10">
-              <AccordionHeader>
-                <AccordionTrigger className="text-white text-base sm:text-lg font-medium tracking-[-0.16px] hover:text-white/80 [&>svg]:text-white/50">
-                  {faq.question}
-                </AccordionTrigger>
-              </AccordionHeader>
-              <AccordionPanel className="text-white/60 text-sm sm:text-base leading-6">{faq.answer}</AccordionPanel>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </div>
-    </section>
-  )
-}
-
-function LandingFooter() {
-  return (
-    <footer className="bg-landing-footer-frame px-4 sm:px-8 lg:px-[113px] pb-12 sm:pb-16">
-      <div className="flex flex-col items-center gap-6 text-center">
-        <span className="grid size-12 place-items-center rounded-2xl border border-white/10">
-          <JobwhisperIcon className="size-5 text-white" />
-        </span>
-        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-white/60 text-sm">
-          <span>© 2026 Jobwhisper.ai</span>
-          <span aria-hidden="true">·</span>
-          <button className="hover:text-white transition-colors">Download</button>
-          <span aria-hidden="true">·</span>
-          <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-          <span aria-hidden="true">·</span>
-          <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+          <p className="mt-4 text-sm leading-6 text-brand-bar-text">
+            Set it up with your resume, job description, and role before your next interview.
+          </p>
         </div>
-      </div>
-    </footer>
+        <VslCard />
+      </MarketingShell>
+    </section>
+  )
+}
+
+function ProblemSection() {
+  return (
+    <section className="bg-canvas py-16 sm:py-20">
+      <MarketingShell className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-start">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wide text-accent-text">The problem</p>
+          <h2 className="mt-3 font-gowun text-3xl font-bold leading-tight text-ink sm:text-4xl">
+            Being qualified is not the same as interviewing well.
+          </h2>
+          <p className="mt-5 text-base leading-relaxed text-ink-muted">
+            You know your experience. But then someone asks, “Tell me about a time you handled conflict,” and suddenly
+            you have 30 seconds to turn years of work into a clear answer.
+          </p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {PAIN_POINTS.map((point) => (
+            <div key={point} className="rounded-lg border border-border bg-surface p-5 shadow-panel">
+              <Check aria-hidden="true" className="mb-4 size-5 text-accent-text" />
+              <p className="text-base font-medium leading-7 text-ink">{point}</p>
+            </div>
+          ))}
+        </div>
+      </MarketingShell>
+    </section>
+  )
+}
+
+function CostSection() {
+  return (
+    <section className="bg-surface py-16 sm:py-20">
+      <MarketingShell className="grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-center">
+        <div className="rounded-lg border border-border bg-surface-subtle p-6 shadow-panel sm:p-8">
+          <p className="text-sm font-semibold uppercase tracking-wide text-accent-text">The real cost</p>
+          <h2 className="mt-3 font-gowun text-3xl font-bold leading-tight text-ink sm:text-4xl">
+            One bad interview can cost more than 45 minutes.
+          </h2>
+          <p className="mt-5 text-base leading-relaxed text-ink-muted">
+            Maybe it is your first remote job, your move into management, or the role that finally lets you leave a
+            company you have outgrown.
+          </p>
+        </div>
+        <div className="space-y-3">
+          {['Found the vacancy', 'Applied', 'Got through screening', 'Beat other applicants', 'Got invited'].map(
+            (step, index) => (
+              <div key={step} className="flex items-center gap-4 rounded-lg border border-border bg-canvas p-4">
+                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-accent-subtle text-sm font-bold text-accent-text">
+                  {index + 1}
+                </span>
+                <p className="font-medium text-ink">{step}</p>
+              </div>
+            ),
+          )}
+          <div className="rounded-lg border border-danger bg-danger-surface p-5">
+            <p className="font-semibold text-danger">
+              Then one poorly answered question can change the outcome.
+            </p>
+          </div>
+        </div>
+      </MarketingShell>
+    </section>
+  )
+}
+
+function OldSolutionSection() {
+  return (
+    <section className="bg-canvas py-16 sm:py-20">
+      <MarketingShell>
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-sm font-semibold uppercase tracking-wide text-accent-text">The old solution</p>
+          <h2 className="mt-3 font-gowun text-3xl font-bold leading-tight text-ink sm:text-4xl">
+            You cannot prepare for every question they might ask.
+          </h2>
+          <p className="mt-5 text-base leading-relaxed text-ink-muted">
+            Preparation happens before the interview. The unexpected question happens during it.
+          </p>
+        </div>
+        <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {OLD_PREP_ITEMS.map((item) => (
+            <div key={item} className="rounded-lg border border-border bg-surface p-4 text-sm font-semibold text-ink">
+              {item}
+            </div>
+          ))}
+        </div>
+        <div className="mx-auto mt-8 max-w-3xl rounded-lg border border-warning bg-warning-surface p-5 text-center">
+          <p className="font-semibold text-warning">
+            All of that helps. But pressure can still make the right answer hard to access when you actually need it.
+          </p>
+        </div>
+      </MarketingShell>
+    </section>
+  )
+}
+
+function IntroducingSection() {
+  const navigate = useNavigate()
+
+  return (
+    <section id="how-it-works" className="bg-live-canvas py-16 sm:py-20">
+      <MarketingShell className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <div className="text-brand-bar-text">
+          <p className="text-sm font-semibold uppercase tracking-wide text-accent-muted">Meet Jobwhisper</p>
+          <h2 className="mt-3 font-gowun text-3xl font-bold leading-tight sm:text-4xl">
+            Your AI Interview Copilot already knows the context.
+          </h2>
+          <p className="mt-5 text-base leading-relaxed text-ink-muted">
+            Before the interview, give Jobwhisper the context it needs. When the question comes, it helps you structure a
+            response based on your own career and the opportunity in front of you.
+          </p>
+          <div className="mt-8 grid gap-3 sm:grid-cols-2">
+            {COPILOT_CONTEXT.map((item) => (
+              <div key={item} className="flex items-center gap-3 rounded-lg border border-live-border bg-live-panel p-4">
+                <BadgeCheck aria-hidden="true" className="size-5 text-accent-muted" />
+                <span className="text-sm font-semibold text-brand-bar-text">{item}</span>
+              </div>
+            ))}
+          </div>
+          <Button className="mt-8 bg-surface text-accent-text hover:bg-surface-subtle" onClick={() => navigate('/v3/interview-copilot')}>
+            Get Jobwhisper Copilot
+          </Button>
+        </div>
+        <div className="rounded-lg border border-live-border bg-live-panel p-4 shadow-xl">
+          <div className="rounded-lg bg-live-workspace p-4">
+            <div className="flex items-center justify-between border-b border-live-border pb-4">
+              <div className="flex items-center gap-3">
+                <span className="grid size-10 place-items-center rounded-full bg-live-message">
+                  <Mic aria-hidden="true" className="size-5 text-accent-muted" />
+                </span>
+                <div>
+                  <p className="text-sm font-semibold text-brand-bar-text">Interviewer</p>
+                  <p className="text-xs text-ink-muted">Live question detected</p>
+                </div>
+              </div>
+              <span className="rounded-full bg-positive-surface px-3 py-1 text-xs font-semibold text-positive">
+                Listening
+              </span>
+            </div>
+            <p className="py-5 text-lg font-semibold leading-8 text-brand-bar-text">
+              “Tell me about a product launch that did not go according to plan and how you handled it.”
+            </p>
+            <div className="rounded-lg border border-live-border bg-live-message p-4">
+              <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-accent-muted">
+                <Sparkles aria-hidden="true" className="size-4" />
+                Response direction
+              </div>
+              <ul className="space-y-3 text-sm leading-6 text-brand-bar-text">
+                <li>Start with the delayed B2B onboarding launch from your resume.</li>
+                <li>Frame the problem as scope drift plus unclear handoff ownership.</li>
+                <li>Use the metric: reduced launch delay from three weeks to six days.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </MarketingShell>
+    </section>
+  )
+}
+
+function MomentsSection() {
+  return (
+    <section className="bg-surface py-16 sm:py-20">
+      <MarketingShell>
+        <div className="max-w-3xl">
+          <p className="text-sm font-semibold uppercase tracking-wide text-accent-text">Interview moments</p>
+          <h2 className="mt-3 font-gowun text-3xl font-bold leading-tight text-ink sm:text-4xl">
+            One copilot. Different moments when answers can slip.
+          </h2>
+        </div>
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {INTERVIEW_MOMENTS.map(({ Icon, title, body }) => (
+            <article key={title} className="rounded-lg border border-border bg-canvas p-5">
+              <Icon aria-hidden="true" className="mb-5 size-6 text-accent-text" />
+              <h3 className="text-lg font-bold text-ink">{title}</h3>
+              <p className="mt-3 text-sm leading-6 text-ink-muted">{body}</p>
+            </article>
+          ))}
+        </div>
+      </MarketingShell>
+    </section>
+  )
+}
+
+function ChatGptContrastSection() {
+  return (
+    <section className="bg-canvas py-16 sm:py-20">
+      <MarketingShell className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wide text-accent-text">Category contrast</p>
+          <h2 className="mt-3 font-gowun text-3xl font-bold leading-tight text-ink sm:text-4xl">
+            “Why not just open ChatGPT during my interview?”
+          </h2>
+          <p className="mt-5 text-base leading-relaxed text-ink-muted">
+            You can use general AI to prepare. But during a live conversation, copying context into a chat window over
+            and over again is not the workflow.
+          </p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="rounded-lg border border-border bg-surface p-6">
+            <CircleHelp aria-hidden="true" className="mb-5 size-6 text-warning" />
+            <h3 className="text-lg font-bold text-ink">General AI</h3>
+            <p className="mt-3 text-sm leading-6 text-ink-muted">
+              Useful before the call, but you still need to paste your resume, job description, question, and role while
+              someone is waiting.
+            </p>
+          </div>
+          <div className="rounded-lg border border-accent bg-accent-subtle p-6">
+            <ShieldCheck aria-hidden="true" className="mb-5 size-6 text-accent-text" />
+            <h3 className="text-lg font-bold text-ink">Jobwhisper</h3>
+            <p className="mt-3 text-sm leading-6 text-ink-muted">
+              Your context is already there, and Interview Copilot is built around the live interview conversation.
+            </p>
+          </div>
+        </div>
+      </MarketingShell>
+    </section>
+  )
+}
+
+function WhoItsForSection() {
+  return (
+    <section className="bg-surface py-16 sm:py-20">
+      <MarketingShell className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr]">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wide text-accent-text">Who it is for</p>
+          <h2 className="mt-3 font-gowun text-3xl font-bold leading-tight text-ink sm:text-4xl">
+            Built for the candidate who already earned the room.
+          </h2>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {FITS.map((item) => (
+            <div key={item} className="flex gap-3 rounded-lg border border-border bg-canvas p-4">
+              <Check aria-hidden="true" className="mt-1 size-5 shrink-0 text-accent-text" />
+              <p className="text-sm font-medium leading-6 text-ink">{item}</p>
+            </div>
+          ))}
+        </div>
+      </MarketingShell>
+    </section>
+  )
+}
+
+function LeadCaptureSection() {
+  const navigate = useNavigate()
+  const [submitted, setSubmitted] = useState(false)
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setSubmitted(true)
+  }
+
+  return (
+    <section className="bg-landing-bg py-16 text-brand-bar-text sm:py-20">
+      <MarketingShell className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wide">Get ready</p>
+          <h2 className="mt-3 font-gowun text-3xl font-bold leading-tight sm:text-4xl">
+            Get Jobwhisper ready for your next interview.
+          </h2>
+          <p className="mt-5 text-base leading-relaxed">
+            Add your details and continue to the Copilot setup flow. We will also send setup instructions to your email
+            so you can prepare before the interview.
+          </p>
+        </div>
+        <form onSubmit={handleSubmit} className="rounded-lg border border-border bg-surface p-5 text-ink shadow-xl sm:p-6">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <TextField id="first-name" label="First name" name="firstName" autoComplete="given-name" required />
+            <TextField id="lead-email" label="Email" name="email" type="email" autoComplete="email" required />
+          </div>
+          <div className="mt-4">
+            <TextField id="lead-phone" label="Phone number" name="phone" type="tel" autoComplete="tel" required />
+          </div>
+          <Button className="mt-5 w-full" type="submit">
+            Continue to Jobwhisper
+            <ArrowRight aria-hidden="true" className="size-4" />
+          </Button>
+          <p className="mt-3 text-sm leading-6 text-ink-muted">
+            We will also send your setup instructions to your email so you can get ready before your interview.
+          </p>
+          {submitted ? (
+            <div className="mt-4 rounded-lg border border-positive bg-positive-surface p-4" role="status" aria-live="polite">
+              <p className="text-sm font-semibold text-positive">Details captured for this prototype.</p>
+              <button
+                className="mt-2 text-sm font-semibold text-accent-text underline-offset-4 hover:underline"
+                type="button"
+                onClick={() => navigate('/v3/interview-copilot')}
+              >
+                Continue to Copilot setup
+              </button>
+            </div>
+          ) : null}
+        </form>
+      </MarketingShell>
+    </section>
+  )
+}
+
+function FaqSection() {
+  return (
+    <section id="faq" className="bg-canvas py-16 sm:py-20">
+      <MarketingShell className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wide text-accent-text">Objections</p>
+          <h2 className="mt-3 font-gowun text-3xl font-bold leading-tight text-ink sm:text-4xl">
+            Questions candidates ask before they bring Copilot into the call.
+          </h2>
+        </div>
+        <div className="space-y-3">
+          {FAQS.map((faq) => (
+            <details key={faq.question} className="group rounded-lg border border-border bg-surface p-5">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-bold text-ink">
+                {faq.question}
+                <ArrowRight aria-hidden="true" className="size-4 shrink-0 transition-transform group-open:rotate-90" />
+              </summary>
+              <p className="mt-3 text-sm leading-6 text-ink-muted">{faq.answer}</p>
+            </details>
+          ))}
+        </div>
+      </MarketingShell>
+    </section>
+  )
+}
+
+function FinalCloseSection() {
+  const navigate = useNavigate()
+
+  return (
+    <section className="bg-live-canvas py-16 text-brand-bar-text sm:py-20">
+      <MarketingShell className="mx-auto max-w-4xl text-center">
+        <p className="text-sm font-semibold uppercase tracking-wide text-accent-muted">Final close</p>
+        <h2 className="mt-3 font-gowun text-3xl font-bold leading-tight sm:text-5xl">
+          Do not lose an opportunity because the right answer came 5 minutes too late.
+        </h2>
+        <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-ink-muted">
+          Your resume got you into the room. Jobwhisper helps you show them why you belong there.
+        </p>
+        <Button className="mt-8 bg-surface text-accent-text hover:bg-surface-subtle" size="lg" onClick={() => navigate('/v3/interview-copilot')}>
+          Get Jobwhisper Copilot
+          <ArrowRight aria-hidden="true" className="size-4" />
+        </Button>
+      </MarketingShell>
+    </section>
   )
 }
 
 export function LandingPage() {
-  const [demoOpen, setDemoOpen] = useState(false)
-
   return (
-    <div className="min-h-screen bg-landing-bg font-rethink">
-      {demoOpen ? null : <LandingNav />}
-      <LandingHero />
-      <LandingDemo onOpenDemo={() => setDemoOpen(true)} />
-      <LandingTimeline />
-      <LandingFeatures />
-      <LandingFAQ />
-      <LandingFooter />
-      <DemoModal open={demoOpen} onClose={() => setDemoOpen(false)} />
+    <div className="min-h-screen bg-canvas font-rethink">
+      <LandingNav />
+      <main>
+        <LandingHero />
+        <ProblemSection />
+        <CostSection />
+        <OldSolutionSection />
+        <IntroducingSection />
+        <MomentsSection />
+        <ChatGptContrastSection />
+        <WhoItsForSection />
+        <LeadCaptureSection />
+        <FaqSection />
+        <FinalCloseSection />
+      </main>
     </div>
   )
 }

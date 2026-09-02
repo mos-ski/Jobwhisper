@@ -4,6 +4,7 @@ import { Toaster } from 'sonner'
 import { Suspense } from 'react'
 import { WebRoutes } from '@/apps/web/routes'
 import { LandingPage } from '@/apps/web/pages/landing-page'
+import { VslLandingPage } from '@/apps/web/pages/vsl-landing-page'
 import DesktopApp from '@/apps/desktop/App'
 
 const queryClient = new QueryClient({
@@ -23,6 +24,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/vsl" element={<VslLandingPage />} />
           <Route path="/v3/*" element={<Suspense fallback={null}><WebRoutes /></Suspense>} />
           <Route path="/desktop/*" element={<DesktopApp />} />
           <Route path="*" element={<Navigate to="/v3" replace />} />

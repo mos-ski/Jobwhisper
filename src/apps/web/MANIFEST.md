@@ -1,5 +1,7 @@
 | Route | View file | Props type | States covered | Notes |
 | ----- | --------- | ---------- | -------------- | ----- |
+| `/` | `src/apps/web/pages/landing-page.tsx` | Local marketing content arrays | VSL hero, pain, cost, old-prep limitation, Copilot demo, interview moments, ChatGPT contrast, audience fit, lead capture, FAQ, final CTA, responsive desktop/mobile | Marketing-only Interview Copilot landing page using copy from the VSL source document; no testimonials or outcomes are fabricated. |
+| `/vsl` | `src/apps/web/pages/vsl-landing-page.tsx` (+ `vsl-checkout-modal.tsx`, `vsl-landing-page.css`) | None (local state) | Full VSL sales page (hero through final CTA), play/before-after demo toggle, 4-step mock checkout modal (details, 9 upsell add-ons w/ live cart total, payment, success) | Faithful React port of a standalone prototype HTML file, scoped styles under `.vsl-page` so it doesn't inherit the app's theme tokens. Mock checkout only — no real payment processing or backend calls. |
 | `/v3` | `src/apps/web/pages/route-index-page.tsx` | Static route data | Review index | Links to each v3 web screen implemented so far. |
 | `/v3/auth/sign-in` | `src/features/identity/sign-in-view.tsx` | `SignInViewProps` | Default, unauthenticated entry | Pure view. App page wires mock values and navigation callbacks. |
 | `/v3/auth/create-account` | `src/features/identity/sign-up-view.tsx` | `SignUpViewProps` | Default sign-up form | Pure view. App page wires mock values and navigation callbacks. |
