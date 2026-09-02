@@ -149,8 +149,8 @@ export function DesktopConfigureView() {
               onClick={() => setAdditionalContext(AI_SUGGESTION)}
               className="ms-auto inline-flex items-center gap-1.5 text-sm font-semibold"
             >
-              <Zap aria-hidden="true" className="size-3.5 shrink-0 text-[#ff5e93]" />
-              <span className="bg-gradient-to-r from-[#134abe] to-[#ff5e93] bg-clip-text text-transparent">AI Suggestion</span>
+              <Zap aria-hidden="true" className="size-3.5 shrink-0 text-[#0052ff]" />
+              <span className="text-[#0052ff]">AI Suggestion</span>
             </button>
           </div>
         </div>

@@ -178,7 +178,7 @@ function AiSuggestionLabel({ onClick }: { readonly onClick?: () => void }) {
       className="inline-flex min-h-8 items-center gap-1.5 self-start text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
     >
       <JobwhisperAiIcon className="size-3.5 shrink-0" />
-      <span className="bg-gradient-to-r from-accent to-accent-tertiary bg-clip-text text-transparent">AI Suggestion</span>
+      <span className="text-accent-text">AI Suggestion</span>
     </button>
   )
 }

@@ -808,10 +808,10 @@ function LibraryPageInner() {
 
           {/* AI Suggestion */}
           <Section title="AI Suggestion">
-            <p className="mb-3 text-sm text-ink-muted">Gradient text button with AI icon, and accept/reject pill buttons for pending changes.</p>
+            <p className="mb-3 text-sm text-ink-muted">Accent-colored text button with AI icon, and accept/reject pill buttons for pending changes.</p>
             <div className="grid gap-4">
               <Row label="AI suggestion trigger">
-                <button className="inline-flex items-center gap-1.5 bg-gradient-to-r from-accent to-[#7c3aed] bg-clip-text text-sm font-bold text-transparent transition-opacity hover:opacity-80">
+                <button className="inline-flex items-center gap-1.5 text-sm font-bold text-accent-text transition-colors hover:text-accent-hover">
                   <JobwhisperAiIcon className="size-4" />
                   AI Suggest
                 </button>

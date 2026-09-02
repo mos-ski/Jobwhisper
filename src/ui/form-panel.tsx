@@ -374,7 +374,7 @@ export const AiSuggestionAction = forwardRef<HTMLButtonElement, AiSuggestionActi
         {...props}
       >
         <JobwhisperAiIcon className="size-3.5 shrink-0" />
-        <span className="bg-gradient-to-r from-accent to-accent-tertiary bg-clip-text text-transparent">{children}</span>
+        <span className="text-accent-text">{children}</span>
       </button>
     )
   },

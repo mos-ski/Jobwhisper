@@ -1011,7 +1011,7 @@ function ReferralSettings({ referrals, activeTab }: { readonly referrals: readon
               <div key={value} className="min-w-0 rounded-soft border border-accent bg-surface px-3 py-2">
                 <p className="text-xs text-ink-muted">{index === 0 ? 'Referral Link' : 'Referral Code'}</p>
                 <div className="mt-1 flex items-center gap-3">
-                  <p className="truncate bg-gradient-to-r from-accent to-accent-secondary bg-clip-text text-sm font-semibold text-transparent">{value}</p>
+                  <p className="truncate text-sm font-semibold text-accent-text">{value}</p>
                   <button type="button" aria-label="Copy" className="shrink-0 text-accent-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-soft">
                     <Copy aria-hidden="true" className="size-4" />
                   </button>
