@@ -9,6 +9,11 @@ const marketingRoutes = [
     label: 'VSL sales page',
     description: 'Full sales/VSL page with before-after demo and a 4-step mock checkout: details, upsells, payment, success.',
   },
+  {
+    href: '/emails',
+    label: 'Email templates',
+    description: 'Browsable catalog of transactional email templates: receipts, sign-in, job alerts, reports, and more.',
+  },
 ] as const
 
 const authRoutes = [

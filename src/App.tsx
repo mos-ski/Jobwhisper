@@ -5,6 +5,8 @@ import { Suspense } from 'react'
 import { WebRoutes } from '@/apps/web/routes'
 import { LandingPage } from '@/apps/web/pages/landing-page'
 import { VslLandingPage } from '@/apps/web/pages/vsl-landing-page'
+import { EmailsIndexPage } from '@/apps/web/pages/emails-index-page'
+import { EmailPreviewPage } from '@/apps/web/pages/email-preview-page'
 import DesktopApp from '@/apps/desktop/App'
 
 const queryClient = new QueryClient({
@@ -25,6 +27,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/vsl" element={<VslLandingPage />} />
+          <Route path="/emails" element={<EmailsIndexPage />} />
+          <Route path="/emails/:slug" element={<EmailPreviewPage />} />
           <Route path="/v3/*" element={<Suspense fallback={null}><WebRoutes /></Suspense>} />
           <Route path="/desktop/*" element={<DesktopApp />} />
           <Route path="*" element={<Navigate to="/v3" replace />} />
