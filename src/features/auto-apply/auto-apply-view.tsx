@@ -1493,13 +1493,15 @@ function JobPreview({
                   <button
                     type="button"
                     onClick={() => setGetResumeOpen(true)}
-                    className="flex min-w-0 items-center gap-2 rounded-lg text-sm font-semibold text-ink underline underline-offset-4 transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                    className="flex min-w-0 items-center gap-2 rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                   >
-                    <JobwhisperAiIcon aria-hidden="true" className="size-4 shrink-0" />
-                    <span>Get a resume for this role</span>
+                    <img aria-hidden="true" src="/v3-assets/figma/get-tailored-resume.svg" alt="" className="size-4 shrink-0" />
+                    <span className="bg-gradient-to-r from-[#134abe] to-[#ff5e93] bg-clip-text text-sm font-bold text-transparent underline decoration-solid underline-offset-4">
+                      Get a resume for this role
+                    </span>
                   </button>
                   <span className="text-ink-muted" aria-hidden="true">·</span>
-                  <span className="text-sm text-ink-muted">1 credit</span>
+                  <span className="text-sm text-ink-muted">1 Credit</span>
                 </div>
               </section>
             ) : null}
