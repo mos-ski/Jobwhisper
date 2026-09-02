@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 
-import { getEmailCatalogEntry } from '@/emails/catalog'
+import { EMAIL_CATALOG, getEmailCatalogEntry } from '@/emails/catalog'
 import { COMMON_TIMEZONES } from '@/emails/format'
 import { SelectField } from '@/ui'
 
@@ -14,8 +14,14 @@ function detectLocalTimeZone(): string {
   }
 }
 
+const TEMPLATE_OPTIONS = EMAIL_CATALOG.map((entry) => ({
+  label: `${entry.category} — ${entry.label}`,
+  value: entry.slug,
+}))
+
 export function EmailPreviewPage() {
   const { slug } = useParams<{ slug: string }>()
+  const navigate = useNavigate()
   const entry = slug ? getEmailCatalogEntry(slug) : undefined
   const [timeZone, setTimeZone] = useState(detectLocalTimeZone)
 
@@ -52,6 +58,23 @@ export function EmailPreviewPage() {
         <h1 className="mt-4 text-3xl font-semibold tracking-normal">{entry.label}</h1>
         <p className="mt-2 max-w-xl text-sm leading-6 text-ink-muted">{entry.description}</p>
 
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          <SelectField
+            id="email-preview-template"
+            label="Template"
+            options={TEMPLATE_OPTIONS}
+            value={entry.slug}
+            onValueChange={(value) => navigate(`/emails/${value}`)}
+          />
+          <SelectField
+            id="email-preview-timezone"
+            label="Preview times in"
+            options={timeZoneOptions}
+            value={timeZone}
+            onValueChange={setTimeZone}
+          />
+        </div>
+
         <div className="mt-6 grid gap-4 rounded-panel border border-border bg-surface p-5 shadow-panel sm:grid-cols-2">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Subject</p>
@@ -61,16 +84,6 @@ export function EmailPreviewPage() {
             <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Preview text</p>
             <p className="mt-1 text-sm font-medium text-ink">{result.previewText}</p>
           </div>
-        </div>
-
-        <div className="mt-6 max-w-xs">
-          <SelectField
-            id="email-preview-timezone"
-            label="Preview times in"
-            options={timeZoneOptions}
-            value={timeZone}
-            onValueChange={setTimeZone}
-          />
         </div>
 
         <div className="mt-6 overflow-hidden rounded-panel border border-border shadow-panel">

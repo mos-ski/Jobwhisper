@@ -16,8 +16,8 @@ export const brand = {
   liveSurface: '#fdeceb',
 } as const
 
-const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
-const DISPLAY_FONT = "Georgia,'Times New Roman',serif"
+const FONT = "'Rethink Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
+const DISPLAY_FONT = "'Gowun Batang',Georgia,'Times New Roman',serif"
 
 // The logo <img> below points at a relative path so it resolves in this app's own
 // preview. Before wiring real sending, swap it for an absolute HTTPS URL, and add a
@@ -32,6 +32,9 @@ export function renderEmailShell(opts: { title: string; previewText: string; bod
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="color-scheme" content="light">
 <title>${escapeHtml(title)}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Rethink+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <!--[if mso]>
 <noscript>
 <xml>
