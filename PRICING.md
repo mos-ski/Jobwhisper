@@ -35,7 +35,9 @@ Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold fu
 |---|---|---|---|
 | **Starter** | **$47/month** | ≈500 credits | ≈500 min |
 | **Pro** | **$99/month** | ≈1,000 credits | ≈1,000 min |
-| **Premium** | **$197/month** | ≈2,000 credits | ≈2,000 min |
+| **Premium** | **$197/month** | ≈4,000 credits | ≈4,000 min |
+
+**Premium revised 2026-09-02: ≈2,000 → ≈4,000 credits/mo, branded "2x size."** With Coding and Meeting Copilot now shared by Pro and Premium alike (§1.1), usage volume is Premium's actual differentiator, not features — this makes that gap real instead of token (previously ≈2,000 vs Pro's ≈1,000 was already 2x; doubling again makes it 4x Pro, a much clearer upgrade case). Worth a naming gut-check: "2x size" reads as 2x *something*, but the actual ratio to Pro is 4x — fine if "2x" means "we doubled what Premium used to be," confusing if a user reads it as "2x Pro." Pick the framing deliberately when this becomes UI copy.
 
 **First-time Pro offer:** $40 first month, renews at $99/month. This resolves an inconsistency that existed across older docs (the transition plan alone said $99, $100, and $100 in three different places for the renewal price) and also resolves the coincidence flagged in the previous version of this file — VSL's checkout should now explicitly charge $40 first month / $99 renewal to match, not just happen to be close.
 
@@ -43,7 +45,7 @@ Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold fu
 
 *(Correcting my own error, not the founder's: I'd previously written ≈50/100/200 here, an order of magnitude off — the actual typo was in the credits figure, not the minutes. ≈500/1,000/2,000 is the number that's actually close to the exact 470/990/1,970 derivation.)*
 
-**Not a plan — the un-subscribed state.** Revised 2026-09-02: someone with no active subscription still gets 50 min/mo, up from the 5 credits the older PRDs state. **This is intentionally not shown as a "Free" plan card anywhere in the UI** — no tier row, no pricing table entry — it's just what happens by default before someone subscribes, not a fourth option being sold alongside Starter/Pro/Premium. (I'd added it as a table row in an earlier pass; pulled back out of both tables in this one, per that instruction.) Refreshes monthly on a rolling basis — reset anchor (calendar month vs. rolling 30 days from signup) still unspecified, carried over unresolved from the older PRDs.
+**Not a plan — the un-subscribed state.** Revised 2026-09-02: someone with no active subscription still gets 50 min/mo, up from the 5 credits the older PRDs state. **This is intentionally not shown as a "Free" plan card anywhere in the UI** — no tier row, no pricing table entry — it's just what happens by default before someone subscribes, not a fourth option being sold alongside Starter/Pro/Premium. (I'd added it as a table row in an earlier pass; pulled back out of both tables in this one, per that instruction.) **Reset anchor confirmed 2026-09-02: rolling 30 days from last reset, not calendar month** — reasoning given: 50 minutes is roughly one interview session, so it makes more sense to refill 30 days after it's used than to wait for an arbitrary calendar-month boundary.
 
 ### 1.1 Feature access matrix — what each tier actually unlocks
 
@@ -54,13 +56,13 @@ Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold fu
 | Interview Copilot (desktop app) | — | ✓ | ✓ |
 | Coding Copilot | — | ✓ | ✓ |
 | Meeting Copilot | — | ✓ | ✓ |
-| Monthly minutes (§ above) | ≈500 | ≈1,000 | ≈2,000 |
+| Monthly minutes (§ above) | ≈500 | ≈1,000 | ≈4,000 |
 
 The un-subscribed/free state (50 min/mo, §1 above) isn't a column here on purpose — it's not a plan, so it doesn't belong in a table meant to compare plans. In practice it behaves like a capped version of the Starter row (Interview Prep + web Copilot only), but that's carried over from the older PRDs, not something separately reconfirmed.
 
-**Revised 2026-09-02: Meeting Copilot moved from Premium-only to included in Pro.** Auto Apply Full-Auto Mode is **removed from this table entirely** — Plan 1 is interview-only now, no cross-reference into Plan 2/3 (see §2.3, rewritten).
+**Revised 2026-09-02: Meeting Copilot and Coding Copilot are both shared by Pro and Premium — confirmed, not a mistake.** Auto Apply Full-Auto Mode is **removed from this table entirely** — Plan 1 is interview-only now, no cross-reference into Plan 2/3 (see §2.3, rewritten).
 
-**This raises a real question I'm not resolving myself: with Meeting Copilot now in both Pro and Premium, what does Premium actually add over Pro?** Before this change, Premium's differentiators were Meeting Copilot access *and* the Full-Auto Mode tie-in — both are gone now (Full-Auto per §2.3, Meeting Copilot per the line above). As written, the only thing separating Premium from Pro is minutes/mo (≈2,000 vs ≈1,000) and price ($197 vs $99) — same feature set, more of it, twice the cost. That may be intentional (a pure usage tier, not a feature tier), but it's worth saying out loud rather than leaving Premium's rationale to erode silently across a few small decisions.
+**Premium vs. Pro — resolved 2026-09-02.** Same feature set on purpose; Premium's differentiator is volume, made explicit by the 4,000-credit "2x size" jump above rather than left as an accidental byproduct of unrelated decisions.
 
 **Caveat, don't treat the row structure above as freshly confirmed either:** it's still carried over from `docs/PRICING_STRATEGY_PRD.md` §2 except where explicitly revised in this session.
 
@@ -83,7 +85,7 @@ Resume tailoring that happens automatically *as part of* an Auto Apply applicati
 
 Confirmed 2026-09-02: this is a **one-time purchase, not a recurring monthly charge.** Credits are **valid for 12 months from purchase** (revised 2026-09-02, matching the Codex reference below — not literally forever as first stated), spent down at whatever pace the user actually uses the product. When the balance runs low, or 12 months passes, they buy more.
 
-**UI pattern, not a slider** (revised 2026-09-02) — reference screenshots shared of an "Add credits" modal (OpenAI Codex's credit purchase flow): a row of 3 preset amount buttons, plus an "Other" option that reveals a custom-amount text input. **The minimum purchase ($5 / $10) is the placeholder text in that custom input**, not a literal draggable slider. Worth carrying over from the reference too: it live-converts the entered amount to a credit count next to the field, and validates that the amount converts to a whole number of credits before allowing checkout (rejects e.g. an amount that works out to 166.667 credits) — a good, cheap correctness check to copy. One modal per feature (Resume Builder, Auto Apply), each with its own presets and its own minimum — exact preset amounts (Codex's example used 3 tiers) not chosen yet, just the pattern.
+**UI pattern, not a slider** (revised 2026-09-02) — reference screenshots shared of an "Add credits" modal (OpenAI Codex's credit purchase flow): a row of 3 preset amount buttons, plus an "Other" option that reveals a custom-amount text input. **The minimum purchase ($5 / $10) is the placeholder text in that custom input**, not a literal draggable slider. **Confirmed 2026-09-02: $5/$10 is a hard floor** on pay-as-you-go purchases, not just a suggested starting point — the "Other" input shouldn't accept less. Worth carrying over from the reference too: it live-converts the entered amount to a credit count next to the field, and validates that the amount converts to a whole number of credits before allowing checkout (rejects e.g. an amount that works out to 166.667 credits) — a good, cheap correctness check to copy. One modal per feature (Resume Builder, Auto Apply), each with its own presets and its own minimum — exact preset amounts (Codex's example used 3 tiers) not chosen yet, just the pattern.
 
 **Auto Apply (AI-run):** user tells us how many jobs they want help with ("500 jobs"). The product does job scouting, filtering, resume tailoring, and applying — end to end, AI-driven. **$1 per successful application**, success-gated (§3) — a failed or rejected submission doesn't bill.
 
@@ -93,25 +95,25 @@ A real person manually applies on the user's behalf, with a success manager assi
 
 | Package | Jobs | Duration | Price | Includes |
 |---|---|---|---|---|
-| DFY — small | 50 | 1 month | **$497** | Resume tailoring, job scouting/filtering, applying, success manager |
+| DFY — small | 50 | 1 month | **$497** | Resume tailoring, job scouting/filtering, applying, success manager, **+ 1 month of Jobwhisper product access** |
 | DFY — large | 100 | 1 month | **$997** | Same, **+ 3 months of Jobwhisper product access** (Plan 1) |
 
-(Corrected 2026-09-02: the large package is $997, not the $999 floated earlier the same day.)
+(Corrected 2026-09-02: the large package is $997, not the $999 floated earlier the same day. Revised same day: the small package now also bundles 1 month of Jobwhisper access — previously it had none, only the large package did. Both DFY tiers now scale Jobwhisper access with commitment size: 1 month at 50 jobs, 3 months at 100 jobs.)
 
 **Confirmed: the VSL checkout's existing "$999 Done-For-You Resume & LinkedIn Overhaul" offer *is* this — not a separate product.** It needs to be updated to actually present the $497/$997 packages, not left as a single $999 line item.
 
-**Confirmed 2026-09-02: the $497 (small, 50-job) package is added to the VSL checkout's cart** as one of the selectable add-on line items, alongside the existing swipe files/templates/scripts (§4.2, §5) — not replacing that stack, joining it. Not addressed: whether the $997 (large) package also goes in the cart, or is reserved for the post-purchase cross-sell pop-up already noted in §7 (which would make sense — $497 as a low-friction in-cart add, $997 as the bigger-commitment follow-up pitch once someone's already bought something). That connection is a plausible reading, not a confirmed decision — don't build it that way without checking.
+**Confirmed 2026-09-02: the $497 (small, 50-job) package is added to the VSL checkout's cart** as one of the selectable add-on line items, alongside the existing swipe files/templates/scripts (§4.2, §5) — not replacing that stack, joining it.
 
-### 2.3 Job selection — a free preference, not a paid tier
+**The $997 (large) package is explicitly kept out of the cart** — confirmed 2026-09-02. It's upsold separately, later, as a nurturing campaign (extends §7's cross-sell idea rather than being a second item alongside $497). **Hard constraint for whenever/wherever $997 does get surfaced: a user must never be able to select both $497 and $997 at once** — they're tiers of the same package, not additive purchases. If $997 is ever added to a selectable UI (cart, upsell screen, anywhere), it needs to be mutually exclusive with $497 (radio-button style, not two independent checkboxes) — this was raised explicitly as the thing to avoid, not a minor detail.
 
-**Revised 2026-09-02, superseding the "Full-Auto is a Premium perk" decision from earlier the same day.** "Full-Auto Mode" as a Premium-subscription-gated concept is retired entirely — it's not a $10/mo toggle, and it's not folded into Premium either. Instead, it's a **free preference inside Auto Apply itself** (Plan 2/3), open to everyone regardless of subscription:
+### 2.3 Job selection — a free preference, not a paid tier, confirmed
 
-- **Select jobs yourself** — you pick which roles from the matched list get applied to.
-- **Let the AI select** — the AI picks jobs matching your criteria on your behalf.
+**Revised 2026-09-02, superseding the "Full-Auto is a Premium perk" decision from earlier the same day.** "Full-Auto Mode" as a Premium-subscription-gated concept is retired entirely — it's not a $10/mo toggle, and it's not folded into Premium either. Instead, it's a **free preference inside Auto Apply itself** (Plan 2/3), open to everyone regardless of subscription, and **confirmed to cost the same either way**:
 
-Either way, the AI still does the actual applying — this preference is only about who curates the target list, not who submits.
+- **"Auto apply for me"** — 100% hands-off. The AI selects jobs and applies, no manual step anywhere.
+- **"I'll select my jobs myself"** — the user picks which roles to target; the AI still does the actual applying.
 
-**What this leaves unresolved:** the earlier mechanic ("Premium subscribers get notified when done and never click 'apply'; everyone else clicks 'apply' per job to submit") doesn't obviously survive this change. If job selection is free for everyone, is submission also always automatic now (matching "Auto Apply" as a product name), or does a manual per-job submit-confirmation step still exist for someone, gated some other way? Not addressed in this message — don't assume either answer.
+**Confirmed 2026-09-02: same credits, same cost, regardless of which preference is picked.** This also resolves the lingering question about whether a manual per-job submit-confirmation step survives anywhere — it doesn't. Submission is always AI-driven in both modes; the only thing the preference changes is who curates the target list.
 
 ### 2.4 Resume Builder standalone gating — resolved
 
@@ -151,7 +153,7 @@ Currently hardcoded to the **old** $20/$100/$200, plus the old $15/mo Resume Bui
 
 Currently hardcoded to $40 first month / **$100/mo** renewal, plus the 9-item one-time upsell stack. Needs updating:
 - Renewal price $100 → $99, to match the corrected Pro price (§1).
-- **The $999 "Done-For-You Resume & LinkedIn Overhaul" line item becomes the $497 DFY package (§2.2)** — confirmed 2026-09-02 this is the same underlying product, and confirmed the $497 tier specifically is what goes in the cart. Whether the $997 tier also gets a cart slot, or is reserved for a separate post-purchase moment (§7), is still open.
+- **The $999 "Done-For-You Resume & LinkedIn Overhaul" line item becomes the $497 DFY package (§2.2), and only the $497 package** — confirmed 2026-09-02. The $997 tier deliberately does not get a cart slot here; it's upsold later via a nurturing campaign (§2.2, §7).
 
 ### 4.3 Emails — `src/emails/templates/*.ts`
 
@@ -179,31 +181,26 @@ A screenshot of an older, **Lightforth-branded** checkout step ("Wait — Boost 
 
 ## 6. Open reconciliation items
 
-**Resolved 2026-09-02, across two planning conversations with the founder:**
+Every structural and pricing question raised through 2026-09-02 has been resolved, across several planning conversations — condensed to a changelog rather than a growing numbered list of strikethroughs, since re-litigating already-settled items wasn't adding anything:
 
-1. ~~Auto Apply: subscription add-on vs. pay-per-job vs. both~~ — pay-per-job (prepaid credits), no flat monthly add-on fee. See §2.1.
-2. ~~DFY packages ($497/$997) vs. DFY per-job rate ($10/job)~~ — the packages **are** the $10/job rate, sold as a committed batch with a success manager attached. See §2.2.
-3. ~~"$0.10/credit/min" ambiguity~~ — 1 credit per unit, always; dollar value per credit varies by feature. See §3.
-4. ~~Auto-Apply Concierge ($499)~~ — superseded by the $497/50-job DFY package. See §5.
-5. ~~Auto Apply in the subscribe-time checkout order bump~~ — removed (Resume Builder too). See §4.1.
-6. ~~Does Auto Apply require a subscription~~ — no, standalone-purchasable. See §2.
-7. ~~Full-Auto Mode's fate~~ — **superseded again, 2026-09-02.** Not a Premium perk after all (that lasted less than a day) — retired entirely as a paid/gated concept. Job selection (self-pick vs. AI-pick) is now a free preference inside Auto Apply, open to everyone. See §2.3.
-8. ~~Resume Builder: standalone or subscription-gated~~ — standalone, same as Auto Apply. See §2.4.
-9. ~~What does "Full-Auto is a Premium perk" mean mechanically~~ — moot, the premise changed. See item 7 and §2.3.
-10. ~~VSL's $999 Resume & LinkedIn Overhaul vs. the $997 DFY package~~ — same product. VSL needs rebuilding to present the actual $497/$997 packages. See §2.2, §4.2.
-11. ~~Is the credit purchase a recurring monthly charge or a one-time top-up~~ — one-time, valid 12 months, spent down at whatever pace usage happens. See §2.1.
-12. ~~Interview Prep priced above Interview Copilot~~ — fixed by matching Prep's rate down to $0.10, same as Copilot. Not a pricing-logic argument, just a decision to make them equal. See §3.
+- Auto Apply and Resume Builder: pay-per-use (prepaid credits), no flat add-on fee, no subscription required, not in the signup order bump. §2, §2.1, §4.1.
+- DFY packages ($497/$997) are the $10/job rate sold as committed batches with a success manager — not a competing model. Both now bundle Jobwhisper access (1mo / 3mo). §2.2.
+- $497 goes in the VSL cart; $997 deliberately doesn't (upsold later, §7) — and the two must never be selectable together. §2.2, §4.2.
+- Job selection (self-pick vs. AI-pick) is a free preference inside Auto Apply, same cost either way, no manual submit step for anyone. Supersedes the earlier "Full-Auto is a Premium perk" idea, which lasted less than a day. §2.3.
+- Credits: 1 per unit always, dollar value varies by feature, $5/$10 minimums are hard floors, 12-month validity. §2.1, §3.
+- Interview Prep matches Interview Copilot's rate exactly ($0.10/credit/min). §3.
+- Free/un-subscribed state: 50 min, rolling 30-day reset, not shown as a UI-visible plan. §1.
+- Premium vs. Pro: same features (Coding + Meeting Copilot on both), Premium's real differentiator is volume — ≈4,000 vs ≈1,000 min/mo, branded "2x size." §1, §1.1.
+- VSL's old $999 Resume/LinkedIn item and the old Lightforth $499 concierge are both superseded by the current DFY/Auto Apply structure, not separate products. §2.2, §5.
 
-**Still open:**
+**Still genuinely open:**
 
-13. **Is the $5/$10 minimum a hard floor** on the "Other" custom input (can't type in less) **or just the placeholder/suggested amount** (could theoretically still enter less)? Not specified — the Codex reference implies a floor (it validates the amount some other way), but that's inference, not confirmation.
-14. **Nothing about Plans 2/3 exists in the app yet** — `src/mocks/billing.ts`/`account.ts` still show the old flat add-on model, and there's no "Add credits" purchase UI, no DFY package selector, and no Auto Apply product surface at all beyond the auto-apply-view.tsx mock screens (which predate this whole redesign and don't reflect it). This is a bigger build than updating numbers in existing mocks — treat the whole Plan 2/3 purchase flow as net-new.
-15. **What actually differentiates Premium from Pro now?** (§1.1) Meeting Copilot moved to Pro and Full-Auto Mode stopped being a Premium perk in the same conversation — the only things left are more minutes and 2x the price, same feature set. Might be intentional (a pure usage tier), but flagging it explicitly rather than letting it go unnoticed.
-16. **Does Auto Apply's submission step still have a manual-vs-automatic split anywhere?** (§2.3) The old mechanic — Premium auto-submits, everyone else clicks "apply" per job — was tied to the now-retired Full-Auto/Premium link. Whether *any* version of manual submit-confirmation survives, for anyone, isn't addressed.
-17. Everything already flagged as open in `docs/PRICING_STRATEGY_PRD.md` §8 and `docs/CREDIT_PRICING_PAYMENT_PRD.md` §8 that isn't addressed above is still open (annual pricing, referral bonus amount, Stripe sign-off, refund/dispute policy, tax, multi-currency).
+1. **Nothing about Plans 2/3 exists in the app yet.** `src/mocks/billing.ts`/`account.ts` still show the old flat add-on model; there's no "Add credits" purchase UI, no DFY package selector, and no real Auto Apply product surface. Treat the whole Plan 2/3 purchase flow as net-new, not a mock-data edit.
+2. Whether "credit" survives as a user-facing word at all, or these become flat per-unit dollar rates with no credit language (§3) — a display-layer choice, not urgent.
+3. Everything still open in `docs/PRICING_STRATEGY_PRD.md` §8 and `docs/CREDIT_PRICING_PAYMENT_PRD.md` §8 that isn't covered above: annual pricing, referral bonus amount, Stripe sign-off, refund/dispute policy, tax, multi-currency.
 
 ## 7. Marketing & upsell flows (backlog)
 
 Not pricing decisions — ideas for how pricing gets *presented* to a user after the fact, captured here so they don't get lost before there's time to spec them properly.
 
-- **Cross-sell Plan 3 (Done For You) to first-time $40 buyers.** If a first-time visitor takes the $40 first-month Pro offer (§1), show an in-app marketing pop-up trying to sell them into the Done-For-You package (§2.2, $497/$997) — presumably on the logic that someone who just committed to a paid trial is a warm lead for the higher-ticket hands-off offer. Not specified yet: when the pop-up fires (immediately post-purchase, after some usage signal, N days in), what it says, whether it's one-shot or can reappear, or whether it targets both DFY tiers or leads with one.
+- **Nurturing campaign for the $997 DFY package.** Confirmed 2026-09-02: $997 is intentionally kept out of the VSL cart (§2.2) and sold instead through an ongoing nurture flow rather than a single pop-up — likely including, but not limited to, first-time $40 Pro buyers. Not specified yet: the actual campaign steps/timing/channels, or how it enforces that a user who already has $497 gets upgraded to $997 rather than being sold both.
