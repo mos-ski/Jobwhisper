@@ -82,7 +82,9 @@ A real person manually applies on the user's behalf, with a success manager assi
 
 (Corrected 2026-09-02: the large package is $997, not the $999 floated earlier the same day.)
 
-**Confirmed: the VSL checkout's existing "$999 Done-For-You Resume & LinkedIn Overhaul" offer *is* this — not a separate product.** It needs to be updated to actually present the $497/$997 packages (§4.2), not left as a single $999 line item.
+**Confirmed: the VSL checkout's existing "$999 Done-For-You Resume & LinkedIn Overhaul" offer *is* this — not a separate product.** It needs to be updated to actually present the $497/$997 packages, not left as a single $999 line item.
+
+**Confirmed 2026-09-02: the $497 (small, 50-job) package is added to the VSL checkout's cart** as one of the selectable add-on line items, alongside the existing swipe files/templates/scripts (§4.2, §5) — not replacing that stack, joining it. Not addressed: whether the $997 (large) package also goes in the cart, or is reserved for the post-purchase cross-sell pop-up already noted in §7 (which would make sense — $497 as a low-friction in-cart add, $997 as the bigger-commitment follow-up pitch once someone's already bought something). That connection is a plausible reading, not a confirmed decision — don't build it that way without checking.
 
 ### 2.3 Full-Auto Mode — a Premium perk, mechanics confirmed
 
@@ -131,7 +133,7 @@ Currently hardcoded to the **old** $20/$100/$200, plus the old $15/mo Resume Bui
 
 Currently hardcoded to $40 first month / **$100/mo** renewal, plus the 9-item one-time upsell stack. Needs updating:
 - Renewal price $100 → $99, to match the corrected Pro price (§1).
-- **The $999 "Done-For-You Resume & LinkedIn Overhaul" line item needs to become the actual $497/$997 DFY packages (§2.2), not a single $999 item.** Confirmed 2026-09-02 — this is the same product, not a separate one; the earlier guess that they were different things was wrong.
+- **The $999 "Done-For-You Resume & LinkedIn Overhaul" line item becomes the $497 DFY package (§2.2)** — confirmed 2026-09-02 this is the same underlying product, and confirmed the $497 tier specifically is what goes in the cart. Whether the $997 tier also gets a cart slot, or is reserved for a separate post-purchase moment (§7), is still open.
 
 ### 4.3 Emails — `src/emails/templates/*.ts`
 
@@ -152,11 +154,10 @@ A screenshot of an older, **Lightforth-branded** checkout step ("Wait — Boost 
 | Salary Negotiation Word-for-Word Scripts | $15 | Already in the current VSL checkout |
 | LinkedIn Profile Optimization Checklist | $12 | Already in the current VSL checkout |
 | 30-Day Job Search Action Plan | $17 | Already in the current VSL checkout |
-| ~~Auto-Apply Concierge — We Apply For You, Daily~~ | ~~$499~~ | **Resolved 2026-09-02 — superseded, not added as-is.** This old idea (a vague "daily" recurring concierge) is what the human-run DFY packages in §2.2 became: $497 for 50 jobs/1 month, with an actual success manager and a defined job count instead of an open-ended "every day you stay subscribed." Close in price by coincidence of independent thinking landing in the same place, not by design. |
+
+(The old Lightforth screenshot also had an "Auto-Apply Concierge — We Apply For You, Daily" row at $499 — removed from this reference table entirely now that it's fully superseded, not just struck through. The idea lives on as the human-run DFY packages in §2.2.)
 
 **Not shown in this particular screenshot** (may just be scrolled out of view, not necessarily dropped): Cover Letter Swipe File ($15), STAR Story Bank ($19), Follow-Up Email Templates ($9), and the $999 Done-For-You Resume & LinkedIn Overhaul — all of which *are* in the current VSL checkout. Unconfirmed whether the old Lightforth flow had a shorter list, or this is just a partial view.
-
-The $567 "Total due today" shown in the screenshot ($19 swipe file + $499 concierge, sales-tax-free) was just that specific example's math, not a separate price point — noted for completeness now that the row above is resolved.
 
 ## 6. Open reconciliation items
 
