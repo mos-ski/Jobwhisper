@@ -2,7 +2,20 @@
 
 This is the live, editable source of truth for pricing: what's actually charged today, where every number lives in the codebase, and what's still unresolved. Update this file the moment a price changes anywhere, or a new pricing idea gets floated, so it stays the one place to check "what do we currently charge, and does it agree with itself."
 
-**Last corrected: 2026-09-02** — planning session with the founder settled the product shape of Auto Apply (§2 rewritten), not just the numbers. See §2 and §6 for what's now decided vs. still open.
+**Last corrected: 2026-09-02** — planning session with the founder settled the whole product shape, not just numbers: this is now genuinely **three plans + a marketplace**, not a subscription with a pile of feature upsells bolted on.
+
+## The three plans, at a glance
+
+Users are sold one of three distinct intents — these aren't three tiers of one product, they're three different products with three different pricing shapes:
+
+| Plan | Answers | What it is | Pricing shape |
+|---|---|---|---|
+| **1. Ace Your Interview** (§1) | "Are you looking to ace your next interview?" | Interview Prep + Interview Copilot | Recurring subscription — Starter/Pro/Premium |
+| **2. Find Jobs Yourself** (§2.1) | "Are you looking for jobs right now?" (DIY) | Auto Apply (AI-run) + Resume Builder | Prepaid credits, bought upfront via a slider, spent down as used — no expiry, no recurring charge |
+| **3. Find Jobs, Done For You** (§2.2) | Same question, but hands-off | Auto Apply + Resume Builder + a human success manager + Jobwhisper product access | Flat committed package ($497 / $997) |
+| **The Marketplace** (§5) | — | One-time content: swipe files, scripts, templates | Flat one-time purchases, $9–$29 |
+
+Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold standalone — no Starter/Pro/Premium required — except that being a Premium subscriber changes *how* Plan 2's Auto Apply behaves (§2.3).
 
 ## Pricing documents in this repo
 
@@ -16,7 +29,7 @@ This is the live, editable source of truth for pricing: what's actually charged 
 
 ---
 
-## 1. Subscription tiers (corrected 2026-09-02)
+## 1. Plan 1 — Ace Your Interview (subscription tiers, corrected 2026-09-02)
 
 | Tier | Price | Credits/mo (= min/mo of Copilot) | Notes |
 |---|---|---|---|
@@ -32,36 +45,50 @@ This is the live, editable source of truth for pricing: what's actually charged 
 
 **Still not corrected anywhere in code or docs:** feature access matrix (Interview/Coding/Meeting mode gating) and annual pricing. `docs/PRICING_STRATEGY_PRD.md` §2–§5 still describes the *structure* (which tier gets which Copilot modes) using the old prices.
 
-## 2. Auto Apply (product shape settled 2026-09-02)
+## 2. Plans 2 & 3 — Finding Jobs (Auto Apply + Resume Builder)
 
-The core product Jobwhisper sells is interview prep + live in-interview help (§1). Auto Apply and Resume Builder are **separate upsells** on top of that — not bundled into any subscription tier, and **not gated behind having a subscription at all**: someone can buy Auto Apply on its own, with no Starter/Pro/Premium plan.
+The core product (Plan 1) is interview prep + live in-interview help. Everything below answers a different question — "are you looking for jobs right now?" — and is sold **standalone, no Starter/Pro/Premium subscription required.**
 
-Auto Apply forks into two products depending on who does the work:
+Resume tailoring that happens automatically *as part of* an Auto Apply application is **not** a Resume Builder charge — it's just Auto Apply doing its job, bundled into the $1/$10 price. "Resume Builder" as its own billed product only means a user deliberately opening the tool to build, fix, or tailor a resume themselves.
 
-### 2.1 AI-run (self-serve)
+### 2.1 Plan 2 — Find Jobs Yourself (DIY)
 
-User tells us how many jobs they want ("I want help with 500 jobs"). The product does resume tailoring, job scouting, job filtering, and applying — end to end, AI-driven.
+**How it's bought:** prepaid credits, purchased upfront via a slider — one slider per feature, since Resume Builder and Auto Apply are independent purchases with independent minimums:
 
-**$1 per successful application.** Charged only on success (§3) — an application that fails or is rejected at submission doesn't bill.
+| Feature | Minimum purchase | Rate | Example |
+|---|---|---|---|
+| Resume Builder | $5 | $0.10/credit/prompt | $5 → 50 prompts |
+| Auto Apply (AI-run) | $10 | $1/credit/successful application | $10 → 10 successful applications |
 
-### 2.2 Human-run (done-for-you)
+Confirmed 2026-09-02: this is a **one-time purchase, not a recurring monthly charge.** Credits don't expire — they're spent down at whatever pace the user actually uses the product, whether that's a week or three months. When the balance runs low, they buy more via the same slider.
 
-A real person manually applies on the user's behalf — lower volume, higher touch, a success manager assigned to guarantee the count. Sold as committed packages, not open-ended per-job billing (though the underlying rate is the same $10/successful job — see §6.2):
+**Auto Apply (AI-run):** user tells us how many jobs they want help with ("500 jobs"). The product does job scouting, filtering, resume tailoring, and applying — end to end, AI-driven. **$1 per successful application**, success-gated (§3) — a failed or rejected submission doesn't bill.
+
+### 2.2 Plan 3 — Find Jobs, Done For You
+
+A real person manually applies on the user's behalf, with a success manager assigned to guarantee the count. Sold as flat, committed packages, not open per-job billing — though the underlying economics are the same $10/successful job as the human-run rate (§3), just packaged with a bundle discount and a person attached:
 
 | Package | Jobs | Duration | Price | Includes |
 |---|---|---|---|---|
-| DFY — small | 50 | 1 month | **$497** | Application service only |
-| DFY — large | 100 | 1 month | **$997** | Application service **+ 3 months of Jobwhisper product access** |
+| DFY — small | 50 | 1 month | **$497** | Resume tailoring, job scouting/filtering, applying, success manager |
+| DFY — large | 100 | 1 month | **$997** | Same, **+ 3 months of Jobwhisper product access** (Plan 1) |
 
-(Corrected 2026-09-02: the large package is **$997, not $999** — the $999 figure from earlier the same day was wrong.)
+(Corrected 2026-09-02: the large package is $997, not the $999 floated earlier the same day.)
 
-### 2.3 Full-Auto Mode → folded into Premium
+**Confirmed: the VSL checkout's existing "$999 Done-For-You Resume & LinkedIn Overhaul" offer *is* this — not a separate product.** It needs to be updated to actually present the $497/$997 packages (§4.2), not left as a single $999 line item.
 
-The old "$10/mo Full-Auto Mode" nested upsell (auto-select jobs, no manual step) is retired as its own paid toggle. **Decided:** Full-Auto Mode becomes a **Premium subscription perk instead** — included in the $197/mo Premium tier, no separate charge. Exact mechanics (what a Premium subscriber gets vs. what a standalone AI-run buyer gets — e.g. included applies, a discounted per-job rate, or just the "no manual step" behavior with billing unchanged) not yet specified — see §6.9.
+### 2.3 Full-Auto Mode — a Premium perk, mechanics confirmed
 
-### 2.4 Resume Builder
+The old "$10/mo Full-Auto Mode" paid toggle is retired. **Confirmed 2026-09-02, folded into Premium (Plan 1) instead, and now mechanically concrete:**
 
-Unchanged: $0.10/prompt (§3). Framed the same way as Auto Apply — "a feature upsell, unlock to use" — but whether it's also purchasable without a subscription (matching Auto Apply, §2 above) hasn't been explicitly confirmed the way Auto Apply's was. Don't assume parity without checking — see §6.8.
+- **Premium subscribers:** set job preferences once, Auto Apply runs autonomously, user is notified when the target job count is reached. No per-application confirmation step.
+- **Everyone else (Plan 2, no Premium):** the AI still drives everything — finds, filters, tailors, prepares each application — but the user has to click "apply" themselves to actually submit each one.
+
+So the AI is always the one *doing* the work in both cases; Premium's actual perk is removing the manual submit-click, not doing more AI work than the base product already does.
+
+### 2.4 Resume Builder standalone gating — resolved
+
+Resolved by the credit-slider model above (§2.1): Resume Builder is purchased the same standalone way as Auto Apply, no subscription required, $5 minimum. Parity with Auto Apply confirmed.
 
 ## 3. Usage-based rates (corrected 2026-09-02)
 
@@ -75,7 +102,7 @@ Unchanged: $0.10/prompt (§3). Framed the same way as Auto Apply — "a feature 
 | Auto Apply — done-for-you | $10 / successful job | new |
 | Resume Builder | $0.10 / prompt | $0.40/message (1 credit) |
 
-**Decided 2026-09-02:** Auto Apply and Resume Builder are **pure usage-based, no flat monthly add-on fee.** This drops the old $40/mo Auto Apply add-on and $15/mo Resume Builder add-on entirely — not "in addition to" the rates above, *instead of*. A user pays only for what they actually use (per successful application, per prompt), with no unlock/subscription cost layered on top. This resolves what was open item #1 below. Subscription tiers (§1: Starter/Pro/Premium) are unaffected — they still gate Interview/Coding/Meeting Copilot as before.
+**Decided 2026-09-02:** Auto Apply and Resume Builder charge at these rates, not the old flat $40/mo and $15/mo add-on fees — those are dropped entirely, not stacked alongside these. In practice this is a **prepaid credit balance** the user buys upfront via a slider (§2.1, $5/$10 minimums), then spends down at the rates above — not billed action-by-action with zero commitment. Subscription tiers (§1: Starter/Pro/Premium) are a separate thing entirely — they still gate Interview/Coding/Meeting Copilot as before, and their own credit allowance works the same way (§1) but is granted by the subscription, not bought via a slider.
 
 *(Interview Prep corrected from an earlier same-day $0.12 to $0.20 — a typo in the first pass, not two different numbers in flux. Resume Builder's unit corrected from "message" to "prompt" — same $0.10 rate, just the more accurate word for what triggers the charge.)*
 
@@ -89,13 +116,15 @@ Unchanged: $0.10/prompt (§3). Framed the same way as Auto Apply — "a feature 
 
 ### 4.1 Subscription + add-ons — `src/mocks/billing.ts`, `src/mocks/account.ts`
 
-Currently hardcoded to the **old** $20/$100/$200, plus the old $15/mo Resume Builder and $40/mo Auto Apply add-on entries. Needs updating: tier prices to $47/$99/$197 (§1), and the Resume Builder/Auto Apply add-on entries **removed** (not re-priced — per §2/§3, these become pure usage-based, no flat add-on fee at all). Also touches `src/contracts/billing.ts`'s `AddOnId`/`FeatureAccess` shape more fundamentally than previously stated: entitlement to Auto Apply is **not** gated by having a subscription at all (confirmed 2026-09-02, §2) — it needs to work for accounts with no plan whatsoever, which the current contract shape (`FeatureAccess` keyed to an active `BillingSnapshot`) doesn't obviously support. Resume Builder's gating is unconfirmed either way — don't assume it follows Auto Apply's standalone model without checking (§6.8).
+Currently hardcoded to the **old** $20/$100/$200, plus the old $15/mo Resume Builder and $40/mo Auto Apply add-on entries — none of which match Plans 2/3's actual shape anymore. Needs a real rebuild, not a price edit: `src/contracts/billing.ts`'s `AddOnId`/`FeatureAccess` shape assumes an add-on requires an active `BillingSnapshot` subscription, which is now wrong for both Auto Apply and Resume Builder (§2) — they need their own standalone entitlement/purchase path (a prepaid credit balance per feature, per §2.1) that works for accounts with no subscription at all. This is a bigger contract change than the tier-price update in §1.
 
-**Decided 2026-09-02: Auto Apply is removed from the subscribe-time checkout order bump entirely** (see §6.5). It's no longer offered as an "add this for $X/mo" checkbox at signup — consistent with there being no flat fee to sell there anymore. Resume Builder's presence in the order bump hasn't been addressed and is the same open question — don't assume it stays or goes without separate confirmation.
+**Decided 2026-09-02: Auto Apply and Resume Builder are both removed from the subscribe-time checkout order bump entirely** — neither is offered as an "add this for $X/mo" checkbox at signup anymore. They're sold through their own standalone slider-purchase flow (§2.1), unconnected to the Plan 1 subscribe flow.
 
 ### 4.2 VSL checkout — `src/apps/web/pages/vsl-checkout-modal.tsx`
 
-Currently hardcoded to $40 first month / **$100/mo** renewal, plus the 9-item one-time upsell stack (unaffected by these corrections, still $9–$999). Needs updating: renewal price $100 → $99 to match the corrected Pro price (§1). **The $999 "Done-For-You Resume & LinkedIn Overhaul" line item is likely a different product from §2's new $997 (100-job) DFY package**, not the same thing needing a price fix — one is a resume/LinkedIn writing service, the other is job-application execution + platform access. They coincidentally sit near the same price point. Don't merge them without confirming — see §6.10.
+Currently hardcoded to $40 first month / **$100/mo** renewal, plus the 9-item one-time upsell stack. Needs updating:
+- Renewal price $100 → $99, to match the corrected Pro price (§1).
+- **The $999 "Done-For-You Resume & LinkedIn Overhaul" line item needs to become the actual $497/$997 DFY packages (§2.2), not a single $999 item.** Confirmed 2026-09-02 — this is the same product, not a separate one; the earlier guess that they were different things was wrong.
 
 ### 4.3 Emails — `src/emails/templates/*.ts`
 
@@ -103,9 +132,11 @@ Receipt/reminder/failed-payment templates use illustrative example amounts ($40,
 
 ---
 
-## 5. Upsell / add-on reference material (from the old Lightforth checkout)
+## 5. The Marketplace (one-time content upsells)
 
-A screenshot of an older, **Lightforth-branded** checkout step ("Wait — Boost Your Results", step 2 of 3) was shared 2026-09-02 as reference for upsell copy/pricing to consider. Recorded here as source material, not as confirmed additions to the current VSL checkout:
+The fourth bucket alongside the three plans — flat, one-time purchases, unconnected to any subscription or credit balance. Currently only lives in the VSL checkout's 9-item stack.
+
+A screenshot of an older, **Lightforth-branded** checkout step ("Wait — Boost Your Results", step 2 of 3) was shared 2026-09-02 as reference for comparison. Recorded here as source material, not as confirmed additions to the current VSL checkout:
 
 | Add-on | Price | Notes |
 |---|---|---|
@@ -122,21 +153,23 @@ The $567 "Total due today" shown in the screenshot ($19 swipe file + $499 concie
 
 ## 6. Open reconciliation items
 
-**Resolved 2026-09-02, in a planning conversation with the founder:**
+**Resolved 2026-09-02, across two planning conversations with the founder:**
 
-1. ~~Auto Apply: subscription add-on vs. pay-per-job vs. both~~ — pay-per-job only, no flat add-on fee. See §3.
-2. ~~DFY packages ($497/$997) vs. DFY per-job rate ($10/job)~~ — not two competing models. The packages **are** the $10/job rate, sold as a committed batch with a success manager attached instead of open-ended billing. See §2.2.
+1. ~~Auto Apply: subscription add-on vs. pay-per-job vs. both~~ — pay-per-job (prepaid credits), no flat monthly add-on fee. See §2.1.
+2. ~~DFY packages ($497/$997) vs. DFY per-job rate ($10/job)~~ — the packages **are** the $10/job rate, sold as a committed batch with a success manager attached. See §2.2.
 3. ~~"$0.10/credit/min" ambiguity~~ — 1 credit per unit, always; dollar value per credit varies by feature. See §3.
-4. ~~Auto-Apply Concierge ($499)~~ — superseded by the $497/50-job DFY package, not added to VSL separately. See §5.
-5. ~~Auto Apply in the subscribe-time checkout order bump~~ — removed. See §4.1.
-6. ~~Does Auto Apply require a subscription~~ — no. Confirmed standalone-purchasable, no Starter/Pro/Premium plan needed. See §2.
-7. ~~Full-Auto Mode's fate~~ — folded into Premium as an included perk, not sold separately at any price. See §2.3.
+4. ~~Auto-Apply Concierge ($499)~~ — superseded by the $497/50-job DFY package. See §5.
+5. ~~Auto Apply in the subscribe-time checkout order bump~~ — removed (Resume Builder too). See §4.1.
+6. ~~Does Auto Apply require a subscription~~ — no, standalone-purchasable. See §2.
+7. ~~Full-Auto Mode's fate~~ — folded into Premium as an included perk. See §2.3.
+8. ~~Resume Builder: standalone or subscription-gated~~ — standalone, same as Auto Apply. See §2.4.
+9. ~~What does "Full-Auto is a Premium perk" mean mechanically~~ — Premium sets preferences and gets notified when done (fully autonomous); everyone else gets AI-prepared applications but clicks "apply" per job themselves. See §2.3.
+10. ~~VSL's $999 Resume & LinkedIn Overhaul vs. the $997 DFY package~~ — same product. VSL needs rebuilding to present the actual $497/$997 packages. See §2.2, §4.2.
+11. ~~Is the credit purchase a recurring monthly charge or a one-time top-up~~ — one-time, no expiry, spent down at whatever pace usage happens. See §2.1.
 
 **Still open:**
 
-8. **Resume Builder: standalone-purchasable like Auto Apply, or subscription-gated?** (§2.4) Only Auto Apply was explicitly confirmed as not requiring a subscription — don't assume Resume Builder follows the same rule without checking. Its presence in the (mostly-removed) checkout order bump is the same open question in a different spot (§4.1).
-9. **What exactly does "Full-Auto Mode is a Premium perk" mean mechanically?** (§2.3) Included applies at no per-job charge, a discount on the $1/$10 rates, or just unlocking the "no manual step" behavior with billing unchanged? Not specified yet.
-10. **VSL's $999 "Done-For-You Resume & LinkedIn Overhaul" vs. the new $997 100-job DFY package** (§4.2) — probably different products (writing service vs. application execution) that happen to sit near the same price. Confirm they're meant to stay separate rather than silently merging or confusing users who see both.
-11. **Interview Prep priced above Interview Copilot** ($0.20/min vs. $0.10/min, §3) — raised in conversation 2026-09-02 as possibly backwards (practice mode costing more than the live, flagship Copilot session) — not yet confirmed either way, still using the numbers as given.
-12. **Mocks not yet updated** — `src/mocks/billing.ts` and `src/mocks/account.ts` still show the old $20/$100/$200 tier prices and the now-removed $15/$40 add-on entries; `src/apps/web/pages/vsl-checkout-modal.tsx` still shows $100/mo renewal and doesn't have the Auto Apply product at all (it's never existed in the app, only in docs). This file being correct doesn't mean the app is — treat as a to-do, not done.
-13. Everything already flagged as open in `docs/PRICING_STRATEGY_PRD.md` §8 and `docs/CREDIT_PRICING_PAYMENT_PRD.md` §8 that isn't addressed above is still open (annual pricing, referral bonus amount, credit rollover vs. reset, Stripe sign-off, refund/dispute policy, tax, multi-currency).
+12. **Interview Prep priced above Interview Copilot** ($0.20/min vs. $0.10/min, §3) — raised in conversation as possibly backwards (practice mode costing more than the live, flagship Copilot session) — not yet confirmed either way, still using the numbers as given.
+13. **Is the $5/$10 slider minimum a hard floor** (can't buy less) **or just where the slider starts** (could theoretically go lower)? Not specified.
+14. **Nothing about Plans 2/3 exists in the app yet** — `src/mocks/billing.ts`/`account.ts` still show the old flat add-on model, and there's no slider-purchase UI, no DFY package selector, and no Auto Apply product surface at all beyond the auto-apply-view.tsx mock screens (which predate this whole redesign and don't reflect it). This is a bigger build than updating numbers in existing mocks — treat the whole Plan 2/3 purchase flow as net-new.
+15. Everything already flagged as open in `docs/PRICING_STRATEGY_PRD.md` §8 and `docs/CREDIT_PRICING_PAYMENT_PRD.md` §8 that isn't addressed above is still open (annual pricing, referral bonus amount, Stripe sign-off, refund/dispute policy, tax, multi-currency).
