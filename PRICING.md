@@ -47,6 +47,8 @@ Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold fu
 
 **Not a plan — the un-subscribed state.** Revised 2026-09-02: someone with no active subscription still gets 50 min/mo, up from the 5 credits the older PRDs state. **This is intentionally not shown as a "Free" plan card anywhere in the UI** — no tier row, no pricing table entry — it's just what happens by default before someone subscribes, not a fourth option being sold alongside Starter/Pro/Premium. (I'd added it as a table row in an earlier pass; pulled back out of both tables in this one, per that instruction.) **Reset anchor confirmed 2026-09-02: rolling 30 days from last reset, not calendar month** — reasoning given: 50 minutes is roughly one interview session, so it makes more sense to refill 30 days after it's used than to wait for an arbitrary calendar-month boundary.
 
+**Mid-cycle top-ups, added 2026-09-02.** A subscriber who runs out of monthly credits before the cycle resets — e.g. mid-interview — can buy more on the spot rather than waiting for the reset. Same UI pattern as Plan 2's "Add credits" modal (§2.1: preset amount buttons + an "Other" custom input, live $→credit conversion, whole-number validation), reused here rather than a separate design. **$10 minimum purchase** — matching Auto Apply's floor in §2.1, not Resume Builder's $5. Top-up credits are Plan 1 wallet credits (§1's $0.10/credit/min rate), spent alongside the monthly allowance, not a separate balance with its own expiry. Not yet built in code — no purchase UI exists for this any more than it does for §2.1 (§6 item 1).
+
 ### 1.1 Feature access matrix — what each tier actually unlocks
 
 | Capability | Starter | Pro | Premium |
@@ -190,6 +192,7 @@ Every structural and pricing question raised through 2026-09-02 has been resolve
 - Credits: 1 per unit always, dollar value varies by feature, $5/$10 minimums are hard floors, 12-month validity. §2.1, §3.
 - Interview Prep matches Interview Copilot's rate exactly ($0.10/credit/min). §3.
 - Free/un-subscribed state: 50 min, rolling 30-day reset, not shown as a UI-visible plan. §1.
+- Plan 1 subscribers can top up credits mid-cycle using the same "Add credits" modal pattern as Plan 2, $10 minimum. §1.
 - Premium vs. Pro: same features (Coding + Meeting Copilot on both), Premium's real differentiator is volume — ≈4,000 vs ≈1,000 min/mo, branded "2x size." §1, §1.1.
 - VSL's old $999 Resume/LinkedIn item and the old Lightforth $499 concierge are both superseded by the current DFY/Auto Apply structure, not separate products. §2.2, §5.
 
