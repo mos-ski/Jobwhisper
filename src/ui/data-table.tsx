@@ -20,7 +20,9 @@ export type DataTableColumn<TRow> = {
 
 export type DataTableAction = {
   readonly label: string
-  readonly href: string
+  /** Provide either `href` (navigates) or `onClick` (e.g. to gate the action behind a check first) — `onClick` takes precedence if both are given. */
+  readonly href?: string
+  readonly onClick?: () => void
   readonly icon?: ReactNode
 }
 
@@ -421,13 +423,24 @@ export const DataTable = forwardRef<HTMLElement, DataTableProps<{ readonly id: s
           <header className="flex min-h-[5rem] items-center justify-between gap-4 border-b border-border px-8">
             {title ? <h1 className="text-xl font-medium leading-5 text-ink">{title}</h1> : <span />}
             {action ? (
-              <a
-                href={action.href}
-                className="inline-flex min-h-10 items-center justify-center gap-3 rounded-lg bg-accent px-4 py-2 text-base font-semibold leading-6 text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-              >
-                <span className="shrink-0 [&>svg]:size-5">{action.icon ?? <Plus aria-hidden="true" />}</span>
-                {action.label}
-              </a>
+              action.onClick ? (
+                <button
+                  type="button"
+                  onClick={action.onClick}
+                  className="inline-flex min-h-10 items-center justify-center gap-3 rounded-lg bg-accent px-4 py-2 text-base font-semibold leading-6 text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                >
+                  <span className="shrink-0 [&>svg]:size-5">{action.icon ?? <Plus aria-hidden="true" />}</span>
+                  {action.label}
+                </button>
+              ) : (
+                <a
+                  href={action.href}
+                  className="inline-flex min-h-10 items-center justify-center gap-3 rounded-lg bg-accent px-4 py-2 text-base font-semibold leading-6 text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                >
+                  <span className="shrink-0 [&>svg]:size-5">{action.icon ?? <Plus aria-hidden="true" />}</span>
+                  {action.label}
+                </a>
+              )
             ) : null}
           </header>
         ) : null}

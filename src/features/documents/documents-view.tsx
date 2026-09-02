@@ -1,12 +1,16 @@
 import { Download, Pencil, Trash2 } from 'lucide-react'
+import { useState } from 'react'
 
 import type { ContextDocumentRow } from '@/contracts/documents.draft'
-import { DataTable, FormPanel, FormPanelFooter, FormTextArea, Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger, OptionStack, ShellBar } from '@/ui'
+import { cn, DataTable, FormPanel, FormPanelFooter, FormTextArea, Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger, OptionStack, ShellBar, UpgradeDialog } from '@/ui'
 
 export type DocumentsViewProps = {
   readonly homeHref: string
   readonly addHref: string
   readonly rows: readonly ContextDocumentRow[]
+  /** Knowledge Base document cap for the current plan — Starter 3 / Pro 5 / Premium 10. See PRICING.md §1.1. */
+  readonly limit: number
+  readonly planName: string
 }
 
 export type DocumentsAddViewProps = {
@@ -40,15 +44,21 @@ function RowActionsMenu({ label }: { readonly label: string }) {
   )
 }
 
-export function DocumentsView({ homeHref, addHref, rows }: DocumentsViewProps) {
+export function DocumentsView({ homeHref, addHref, rows, limit, planName }: DocumentsViewProps) {
+  const atLimit = rows.length >= limit
+  const [limitDialogOpen, setLimitDialogOpen] = useState(false)
+
   return (
     <div className="min-h-screen bg-canvas text-ink">
       <ShellBar homeHref={homeHref} current="Knowledge Base" closeHref={homeHref} closeLabel="Close documents" />
       <section className="px-4 py-8 lg:px-12 xl:px-24">
+        <p className="mx-auto mb-3 max-w-7xl text-end text-sm text-ink-muted">
+          <span className={cn('font-semibold', atLimit ? 'text-warning' : 'text-ink')}>{rows.length}</span> of {limit} documents used &mdash; {planName} plan
+        </p>
         <DataTable
           title="Knowledge Base"
           searchLabel="Search documents"
-          action={{ label: 'Add Document', href: addHref }}
+          action={atLimit ? { label: 'Add Document', onClick: () => setLimitDialogOpen(true) } : { label: 'Add Document', href: addHref }}
           rows={rows}
           itemLabel={(row) => row.name}
           className="mx-auto max-w-7xl"
@@ -89,6 +99,14 @@ export function DocumentsView({ homeHref, addHref, rows }: DocumentsViewProps) {
           )}
         />
       </section>
+      <UpgradeDialog
+        open={limitDialogOpen}
+        onOpenChange={setLimitDialogOpen}
+        title="Knowledge Base is full"
+        message={`Your ${planName} plan includes up to ${limit} Knowledge Base documents. Remove one, or upgrade for more room.`}
+        ctaLabel="View plans"
+        ctaHref="/v3/billing"
+      />
     </div>
   )
 }

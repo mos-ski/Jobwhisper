@@ -20,8 +20,8 @@ export const dashboardActions: readonly DashboardAction[] = [
     href: '/v3/resume',
     featured: true,
     locked: true,
-    lockMessage: 'Resume Builder is a separate add-on, not included in any plan. Unlock it for $15/mo to get AI-tailored resumes and unlimited downloads.',
-    lockCta: 'Unlock Resume Builder, $15/mo',
+    lockMessage: 'Resume Builder is sold separately, no subscription required. Buy credits from $5, pay $0.10 per prompt for AI-tailored resumes and unlimited downloads.',
+    lockCta: 'Buy Resume Builder credits',
     lockHref: '/v3/billing#add-ons',
   },
   {
@@ -43,8 +43,8 @@ export const dashboardActions: readonly DashboardAction[] = [
     href: '/v3/auto-apply',
     badge: 'BETA',
     locked: true,
-    lockMessage: 'Auto Apply is a separate add-on, not included in any plan. Unlock it for $40/mo, you choose the jobs, the agents handle the applications.',
-    lockCta: 'Unlock Auto Apply, $40/mo',
+    lockMessage: 'Auto Apply is sold separately, no subscription required. Buy credits from $10, pay $1 per successful application, you choose the jobs, the agents handle the applications.',
+    lockCta: 'Buy Auto Apply credits',
     lockHref: '/v3/billing#add-ons',
   },
   {
