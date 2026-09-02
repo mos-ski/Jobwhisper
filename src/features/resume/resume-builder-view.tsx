@@ -20,6 +20,8 @@ export type ResumeConfigureViewProps = {
   readonly editorHref: string
   readonly uploadHref: string
   readonly session: ResumeBuilderSession
+  /** Pre-fills the job description from an Auto Apply listing instead of the generic sample. See "Get resume for this role" in JobPreview. */
+  readonly fromJob?: { readonly title: string; readonly company: string; readonly description: string }
 }
 
 export type ResumeEditorViewProps = {
@@ -241,19 +243,21 @@ const RESUME_JOB_DESCRIPTION_SUGGESTION =
 const GENERIC_JOB_DESCRIPTION =
   'We are looking for a motivated and detail-oriented professional to join our growing team. In this role, you will collaborate with cross-functional teams to drive projects from conception to delivery. You will analyse data, identify opportunities for improvement, and implement strategies that support business growth. The ideal candidate brings strong communication skills, a proactive mindset, and the ability to manage multiple priorities in a fast-paced environment. Experience with modern tools and frameworks, a passion for continuous learning, and a track record of delivering measurable results will set you apart.'
 
-export function ResumeConfigureView({ homeHref, editorHref, uploadHref, session }: ResumeConfigureViewProps) {
-  const [jobDescription, setJobDescription] = useState('')
+export function ResumeConfigureView({ homeHref, editorHref, uploadHref, session, fromJob }: ResumeConfigureViewProps) {
+  const sampleJd = fromJob?.description ?? GENERIC_JOB_DESCRIPTION
+  const [jobDescription, setJobDescription] = useState(fromJob ? sampleJd : '')
   const [isAutoFilled, setIsAutoFilled] = useState(true)
   const { type, isTyping } = useTypewriter()
-  const [showTip, setShowTip] = useState(true)
+  const [showTip, setShowTip] = useState(!fromJob)
   const [tipModalOpen, setTipModalOpen] = useState(false)
   const tipRef = useRef<HTMLDivElement>(null)
 
   function startTypewriter() {
-    type(GENERIC_JOB_DESCRIPTION, (partial) => setJobDescription(partial), { durationMs: 1800 })
+    type(sampleJd, (partial) => setJobDescription(partial), { durationMs: 1800 })
   }
 
   useEffect(() => {
+    if (fromJob) return
     const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 639px)').matches
     if (isMobile) {
       setTipModalOpen(true)
@@ -291,7 +295,7 @@ export function ResumeConfigureView({ homeHref, editorHref, uploadHref, session 
     type(RESUME_JOB_DESCRIPTION_SUGGESTION, (partial) => setJobDescription(base + partial))
   }
 
-  const effectiveJd = jobDescription.trim() || GENERIC_JOB_DESCRIPTION
+  const effectiveJd = jobDescription.trim() || sampleJd
   const editorUrl = `${editorHref}&jd=${encodeURIComponent(effectiveJd)}`
 
   function handleContinue() {
@@ -327,9 +331,14 @@ export function ResumeConfigureView({ homeHref, editorHref, uploadHref, session 
             </footer>
           }
         >
+          {fromJob ? (
+            <p className="rounded-lg bg-accent-subtle px-3.5 py-2.5 text-sm text-accent-text">
+              Tailoring for <span className="font-semibold">{fromJob.title}</span> at <span className="font-semibold">{fromJob.company}</span>
+            </p>
+          ) : null}
           <div className="grid gap-3 sm:grid-cols-2">
-            <FormField id="resume-name" label="Resume Name" placeholder="e.g. Senior PM Resume" />
-            <FormField id="company-name" label="Company Name" placeholder="e.g. Google, Stripe" />
+            <FormField id="resume-name" label="Resume Name" placeholder="e.g. Senior PM Resume" defaultValue={fromJob ? `${fromJob.title} — ${fromJob.company}` : undefined} />
+            <FormField id="company-name" label="Company Name" placeholder="e.g. Google, Stripe" defaultValue={fromJob?.company} />
           </div>
           <div className="relative">
             <div className="flex items-center gap-1.5">
@@ -342,7 +351,7 @@ export function ResumeConfigureView({ homeHref, editorHref, uploadHref, session 
                   setShowTip(true)
                   setJobDescription('')
                   setIsAutoFilled(true)
-                  type(GENERIC_JOB_DESCRIPTION, (partial) => setJobDescription(partial), { durationMs: 1800 })
+                  type(sampleJd, (partial) => setJobDescription(partial), { durationMs: 1800 })
                 }}
                 aria-label="Show help tooltip"
                 className="hidden items-center justify-center rounded-full p-0.5 text-muted transition-colors hover:bg-accent-subtle hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:inline-flex"
