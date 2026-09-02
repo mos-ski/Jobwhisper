@@ -8,7 +8,9 @@ import { AutoApplyAdditionalPage } from './pages/auto-apply-additional-page'
 import { AutoApplyAgentPage } from './pages/auto-apply-agent-page'
 import { AutoApplyAppliedPage } from './pages/auto-apply-applied-page'
 import { AutoApplyContactPage } from './pages/auto-apply-contact-page'
+import { AutoApplyFullAutoConsentPage } from './pages/auto-apply-full-auto-consent-page'
 import { AutoApplyJobsPage } from './pages/auto-apply-jobs-page'
+import { AutoApplyMethodPage } from './pages/auto-apply-method-page'
 import { AutoApplyPreferencesPage } from './pages/auto-apply-preferences-page'
 import { AutoApplyReviewPage } from './pages/auto-apply-review-page'
 import { AutoApplyUploadPage } from './pages/auto-apply-upload-page'
@@ -214,6 +216,14 @@ export function WebRoutes() {
 
   if (routePath === '/auto-apply/review') {
     return <AutoApplyReviewPage />
+  }
+
+  if (routePath === '/auto-apply/method') {
+    return <AutoApplyMethodPage />
+  }
+
+  if (routePath === '/auto-apply/full-auto') {
+    return <AutoApplyFullAutoConsentPage />
   }
 
   if (routePath === '/auto-apply/agent') {

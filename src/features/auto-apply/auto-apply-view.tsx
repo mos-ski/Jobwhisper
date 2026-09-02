@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
-import { AlertTriangle, ArrowLeft, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ExternalLink, FileText, Filter, LinkIcon, Lock, PenLine, Play, RefreshCw, Search, Send, Settings, X, Zap, Trash2, Download, Mail } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ExternalLink, FileText, Filter, LinkIcon, Lock, MousePointerClick, PenLine, Play, Puzzle, RefreshCw, Search, Send, Settings, X, Zap, Trash2, Download, Mail } from 'lucide-react'
 
 import type { AutoApplyApplication, AutoApplyJob, AutoApplyOutcome, AutoApplySetup } from '@/contracts/auto-apply.draft'
 import {
@@ -20,6 +20,8 @@ import type { ResumeDocument, ResumeHistoryRow } from '@/contracts/resume.draft'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 import { COUNTRIES } from '@/data/countries'
 import {
+  Badge,
+  Checkbox,
   cn,
   Dialog,
   DialogClose,
@@ -62,7 +64,7 @@ export type AutoApplyReviewViewProps = {
   readonly homeHref: string
   readonly contactHref: string
   readonly additionalHref: string
-  readonly agentHref: string
+  readonly methodHref: string
   readonly setup: AutoApplySetup
 }
 
@@ -221,7 +223,7 @@ export function AutoApplySetupStepView({ homeHref, backHref, nextHref, setup, st
   )
 }
 
-export function AutoApplyReviewView({ homeHref, contactHref, additionalHref, agentHref, setup }: AutoApplyReviewViewProps) {
+export function AutoApplyReviewView({ homeHref, contactHref, additionalHref, methodHref, setup }: AutoApplyReviewViewProps) {
   return (
     <Workspace>
       <Header homeHref={homeHref} />
@@ -229,7 +231,7 @@ export function AutoApplyReviewView({ homeHref, contactHref, additionalHref, age
         <FormPanel
           title="Review Job Preference"
           step="4/4"
-          footer={<FormPanelFooter backHref={additionalHref} nextHref={agentHref} nextLabel="Save & Continue" />}
+          footer={<FormPanelFooter backHref={additionalHref} nextHref={methodHref} nextLabel="Save & Continue" />}
         >
           <ReviewSummaryList
             rows={[
@@ -305,6 +307,176 @@ export function AutoApplyReviewView({ homeHref, contactHref, additionalHref, age
           <p className="mt-4 text-xs leading-5 text-ink-muted">
             Jobwhisper only charges for successful applications.
           </p>
+        </FormPanel>
+      </section>
+    </Workspace>
+  )
+}
+
+export type AutoApplyMethodViewProps = {
+  readonly homeHref: string
+  readonly backHref: string
+  readonly fullAutoHref: string
+  readonly jobsHref: string
+  readonly extensionHref: string
+}
+
+type AutoApplyMethodCard = {
+  readonly id: string
+  readonly title: string
+  readonly badge?: string
+  readonly description: string
+  readonly availability: string
+  readonly icon: ReactNode
+  readonly href: string
+  readonly cta: string
+}
+
+export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref, extensionHref }: AutoApplyMethodViewProps) {
+  const methods: readonly AutoApplyMethodCard[] = [
+    {
+      id: 'full-auto',
+      title: 'Full Auto Apply',
+      badge: 'Recommended',
+      description: 'Jobwhisper finds matching jobs and applies to them for you, fully hands-off.',
+      availability: 'Available on web',
+      icon: <Zap aria-hidden="true" className="size-5" />,
+      href: fullAutoHref,
+      cta: 'Choose Full Auto',
+    },
+    {
+      id: 'assisted',
+      title: 'Pick Your Own Jobs',
+      description: 'Jobwhisper finds and ranks matching jobs. You review the list and choose which ones to apply to.',
+      availability: 'Available on web and our mobile app',
+      icon: <MousePointerClick aria-hidden="true" className="size-5" />,
+      href: jobsHref,
+      cta: 'Choose This Way',
+    },
+    {
+      id: 'extension',
+      title: 'Browser Extension',
+      description: 'Apply directly from LinkedIn, Glassdoor, Indeed, and Workable with the Jobwhisper extension installed.',
+      availability: 'Available on web',
+      icon: <Puzzle aria-hidden="true" className="size-5" />,
+      href: extensionHref,
+      cta: 'Choose This Way',
+    },
+  ]
+
+  return (
+    <Workspace>
+      <Header homeHref={homeHref} />
+      <section className="px-4 py-9">
+        <div className="mx-auto w-full max-w-3xl border border-border bg-surface p-6 shadow-panel sm:p-8">
+          <a
+            href={backHref}
+            className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          >
+            <ArrowLeft aria-hidden="true" className="size-4" />
+            Back
+          </a>
+          <h1 className="mt-4 text-xl font-medium leading-7 text-ink">Choose How You Auto Apply</h1>
+          <p className="mt-1 text-sm leading-5 text-ink-muted">
+            All three work the same underneath: 1 credit only when an application succeeds. Switch between them anytime from Auto Apply settings.
+          </p>
+
+          <div className="mt-6 grid gap-4 sm:grid-cols-3">
+            {methods.map((method) => (
+              <div key={method.id} className="flex flex-col gap-3 rounded-panel border border-border bg-surface p-5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="grid size-9 shrink-0 place-items-center rounded-md bg-accent-subtle text-accent-text">{method.icon}</span>
+                  {method.badge ? <Badge variant="accent" size="sm">{method.badge}</Badge> : null}
+                </div>
+                <h2 className="text-base font-bold text-ink">{method.title}</h2>
+                <p className="text-sm leading-5 text-ink-muted">{method.description}</p>
+                <p className="mt-auto text-xs font-medium text-ink-muted">{method.availability}</p>
+                <a
+                  href={method.href}
+                  className={cn(
+                    'inline-flex min-h-10 items-center justify-center rounded-lg px-4 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+                    method.badge ? 'bg-accent text-on-accent hover:bg-accent-hover' : 'border border-input text-ink hover:bg-surface-subtle',
+                  )}
+                >
+                  {method.cta}
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </Workspace>
+  )
+}
+
+export type AutoApplyFullAutoConsentViewProps = {
+  readonly homeHref: string
+  readonly backHref: string
+  readonly agentHref: string
+}
+
+export function AutoApplyFullAutoConsentView({ homeHref, backHref, agentHref }: AutoApplyFullAutoConsentViewProps) {
+  const [startTiming, setStartTiming] = useState<'now' | 'tomorrow'>('now')
+  const [jobsPerDay, setJobsPerDay] = useState(10)
+  const [agreed, setAgreed] = useState(false)
+
+  return (
+    <Workspace>
+      <Header homeHref={homeHref} />
+      <section className="px-4 py-9">
+        <FormPanel
+          title="Full Auto Apply"
+          footer={<FormPanelFooter backHref={backHref} nextHref={agentHref} nextLabel="Start Full Auto" nextDisabled={!agreed} />}
+        >
+          <div className="grid gap-2">
+            <p className="text-sm font-semibold text-ink">When should Jobwhisper start?</p>
+            <div className="grid grid-cols-2 gap-2">
+              {(['now', 'tomorrow'] as const).map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => setStartTiming(option)}
+                  className={cn(
+                    'min-h-10 rounded-lg border px-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+                    startTiming === option ? 'border-accent bg-accent-subtle text-accent-text' : 'border-input text-ink-muted hover:border-border hover:text-ink',
+                  )}
+                >
+                  {option === 'now' ? 'Right away' : 'Tomorrow morning'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-5 grid gap-2">
+            <label htmlFor="jobs-per-day" className="text-sm font-semibold text-ink">
+              Applications per day
+            </label>
+            <input
+              id="jobs-per-day"
+              type="number"
+              min={1}
+              max={50}
+              value={jobsPerDay}
+              onChange={(event) => setJobsPerDay(Math.max(1, Math.min(50, Number(event.target.value) || 1)))}
+              className="min-h-11 w-24 rounded-lg border border-input bg-surface px-3 py-2 text-sm text-ink shadow-control outline-none focus:border-focus focus:ring-2 focus:ring-focus"
+            />
+            <p className="text-xs text-ink-muted">You can change this anytime from the agent dashboard.</p>
+          </div>
+
+          <div className="mt-6 rounded-panel border border-warning bg-warning-surface p-4">
+            <div className="flex items-start gap-2">
+              <AlertTriangle aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-warning" />
+              <div className="grid gap-2 text-sm leading-5 text-warning">
+                <p>Jobwhisper's AI will submit applications on your behalf without asking before each one. We can't guarantee interviews or offers, and we're not responsible for what gets submitted while Full Auto is running.</p>
+                <p>Check in on your agent every few days &mdash; don't leave it running unattended for weeks at a time.</p>
+              </div>
+            </div>
+          </div>
+
+          <label className="mt-4 flex items-start gap-3 text-sm leading-5 text-ink">
+            <Checkbox checked={agreed} onCheckedChange={(value) => setAgreed(value === true)} className="mt-0.5" />
+            <span>I understand and agree to let Jobwhisper apply to jobs on my behalf.</span>
+          </label>
         </FormPanel>
       </section>
     </Workspace>
@@ -1342,7 +1514,7 @@ function JobPreview({
                 </button>
                 <a href={job.listingUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-medium text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                   <ExternalLink aria-hidden="true" className="size-4" />
-                  View Listing
+                  Apply Manually
                 </a>
                 <button type="button" onClick={onClose} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-medium text-ink-muted transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                   Close

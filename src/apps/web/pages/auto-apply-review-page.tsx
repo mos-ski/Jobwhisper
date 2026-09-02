@@ -7,7 +7,7 @@ export function AutoApplyReviewPage() {
       homeHref="/v3/app"
       contactHref="/v3/auto-apply/contact"
       additionalHref="/v3/auto-apply/additional"
-      agentHref="/v3/auto-apply/agent"
+      methodHref="/v3/auto-apply/method"
       setup={autoApplySetup}
     />
   )
