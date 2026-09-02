@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
-import { AlertTriangle, ArrowLeft, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ExternalLink, FileText, Filter, LinkIcon, Lock, MousePointerClick, PenLine, Play, Puzzle, RefreshCw, Search, Send, Settings, X, Zap, Trash2, Download, Mail } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, ArrowUpLeft, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ExternalLink, FileText, Filter, LinkIcon, Lock, PenLine, Play, RefreshCw, Search, Send, Settings, X, Zap, Trash2, Download, Mail } from 'lucide-react'
 
 import type { AutoApplyApplication, AutoApplyJob, AutoApplyOutcome, AutoApplySetup } from '@/contracts/auto-apply.draft'
 import {
@@ -20,7 +20,6 @@ import type { ResumeDocument, ResumeHistoryRow } from '@/contracts/resume.draft'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 import { COUNTRIES } from '@/data/countries'
 import {
-  Badge,
   Checkbox,
   cn,
   Dialog,
@@ -328,89 +327,95 @@ export type AutoApplyMethodViewProps = {
   readonly extensionHref: string
 }
 
+type AutoApplyMethodId = 'full-auto' | 'assisted' | 'extension'
+
 type AutoApplyMethodCard = {
-  readonly id: string
+  readonly id: AutoApplyMethodId
   readonly title: string
-  readonly badge?: string
   readonly description: string
   readonly availability: string
-  readonly icon: ReactNode
+  readonly iconSrc: string
+  readonly iconClassName: string
   readonly href: string
-  readonly cta: string
 }
 
 export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref, extensionHref }: AutoApplyMethodViewProps) {
+  const [selected, setSelected] = useState<AutoApplyMethodId>('full-auto')
+
   const methods: readonly AutoApplyMethodCard[] = [
     {
       id: 'full-auto',
       title: 'Full Auto Apply',
-      badge: 'Recommended',
       description: 'Jobwhisper finds matching jobs and applies to them for you, fully hands-off.',
       availability: 'Available on web',
-      icon: <Zap aria-hidden="true" className="size-5" />,
+      iconSrc: '/v3-assets/figma/auto-apply-method-full-auto.svg',
+      iconClassName: 'h-12 w-[3.4rem]',
       href: fullAutoHref,
-      cta: 'Choose Full Auto',
     },
     {
       id: 'assisted',
       title: 'Pick Your Own Jobs',
       description: 'Jobwhisper finds and ranks matching jobs. You review the list and choose which ones to apply to.',
-      availability: 'Available on web and our mobile app',
-      icon: <MousePointerClick aria-hidden="true" className="size-5" />,
+      availability: 'Available on Web & Mobile App',
+      iconSrc: '/v3-assets/figma/auto-apply-method-pick-jobs.svg',
+      iconClassName: 'h-12 w-[3.5rem]',
       href: jobsHref,
-      cta: 'Choose This Way',
     },
     {
       id: 'extension',
       title: 'Browser Extension',
       description: 'Apply directly from LinkedIn, Glassdoor, Indeed, and Workable with the Jobwhisper extension installed.',
-      availability: 'Available on web',
-      icon: <Puzzle aria-hidden="true" className="size-5" />,
+      availability: 'Download Extension',
+      iconSrc: '/v3-assets/figma/auto-apply-method-extension.png',
+      iconClassName: 'h-12 w-12 rounded-sm object-cover',
       href: extensionHref,
-      cta: 'Choose This Way',
     },
   ]
+
+  const activeHref = methods.find((method) => method.id === selected)?.href ?? fullAutoHref
 
   return (
     <Workspace>
       <Header homeHref={homeHref} />
       <section className="px-4 py-9">
-        <div className="mx-auto w-full max-w-3xl border border-border bg-surface p-6 shadow-panel sm:p-8">
-          <a
-            href={backHref}
-            className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-          >
-            <ArrowLeft aria-hidden="true" className="size-4" />
-            Back
-          </a>
-          <h1 className="mt-4 text-xl font-medium leading-7 text-ink">Choose How You Auto Apply</h1>
-          <p className="mt-1 text-sm leading-5 text-ink-muted">
-            All three work the same underneath: 1 credit only when an application succeeds. Switch between them anytime from Auto Apply settings.
-          </p>
-
-          <div className="mt-6 grid gap-4 sm:grid-cols-3">
-            {methods.map((method) => (
-              <div key={method.id} className="flex flex-col gap-3 rounded-panel border border-border bg-surface p-5">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-md bg-accent-subtle text-accent-text">{method.icon}</span>
-                  {method.badge ? <Badge variant="accent" size="sm">{method.badge}</Badge> : null}
-                </div>
-                <h2 className="text-base font-bold text-ink">{method.title}</h2>
-                <p className="text-sm leading-5 text-ink-muted">{method.description}</p>
-                <p className="mt-auto text-xs font-medium text-ink-muted">{method.availability}</p>
-                <a
-                  href={method.href}
+        <FormPanel
+          title="Choose How You Auto Apply"
+          step="4/4"
+          className="max-w-3xl"
+          footer={<FormPanelFooter backHref={backHref} nextHref={activeHref} nextLabel="Choose this Way" />}
+        >
+          <div className="grid gap-3 sm:grid-cols-3">
+            {methods.map((method) => {
+              const isSelected = method.id === selected
+              return (
+                <button
+                  key={method.id}
+                  type="button"
+                  onClick={() => setSelected(method.id)}
+                  aria-pressed={isSelected}
                   className={cn(
-                    'inline-flex min-h-10 items-center justify-center rounded-lg px-4 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
-                    method.badge ? 'bg-accent text-on-accent hover:bg-accent-hover' : 'border border-input text-ink hover:bg-surface-subtle',
+                    'flex flex-col items-start gap-4 rounded-[1px] border p-4 text-start transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+                    isSelected ? 'border-accent bg-accent-subtle/40' : 'border-border bg-surface hover:border-ink-muted',
                   )}
                 >
-                  {method.cta}
-                </a>
-              </div>
-            ))}
+                  <img src={method.iconSrc} alt="" className={method.iconClassName} />
+                  <h3 className={cn('text-sm font-bold', isSelected ? 'text-accent-text' : 'text-ink')}>{method.title}</h3>
+                  <p className="text-xs leading-5 text-ink-muted">{method.description}</p>
+                  <p className="mt-auto flex items-center gap-1 text-[11px] font-medium text-ink-muted/70">
+                    {method.id === 'extension' ? <ArrowUpLeft aria-hidden="true" className="size-3" /> : null}
+                    {method.availability}
+                  </p>
+                </button>
+              )
+            })}
           </div>
-        </div>
+          <div className="mt-4 flex items-start gap-2">
+            <CircleHelp aria-hidden="true" className="mt-0.5 size-3 shrink-0 text-ink-muted" />
+            <p className="text-xs italic leading-4 text-ink-muted">
+              All three work the same underneath: 1 credit only when an application succeeds. Switch between them anytime from Auto Apply settings.
+            </p>
+          </div>
+        </FormPanel>
       </section>
     </Workspace>
   )
