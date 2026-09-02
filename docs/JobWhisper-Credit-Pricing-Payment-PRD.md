@@ -56,15 +56,19 @@ A user with no active subscription still gets **5 free credits every month**, on
 
 ### 3.1 Plan tiers
 
-| Tier | Price | Surface | Interview | Coding | Meeting | Credits/mo | ~min/mo |
-|---|---|---|---|---|---|---|---|
-| Starter | $47/mo | Web only | Yes | No | No | 20 *(not yet re-derived for the new price — see below)* | ~200 |
-| Pro | $99/mo | Web + Desktop | Yes | Yes | No | 100 *(not yet re-derived)* | ~10,000 |
-| Premium | $197/mo | Web + Desktop | Yes | Yes | Yes | 200 *(not yet re-derived)* | ~20,000 |
+| Tier | Price | Surface | Interview | Coding | Meeting | Credits/mo (= min/mo of Copilot) |
+|---|---|---|---|---|---|---|
+| Starter | $47/mo | Web only | Yes | No | No | 470 |
+| Pro | $99/mo | Web + Desktop | Yes | Yes | No | 990 |
+| Premium | $197/mo | Web + Desktop | Yes | Yes | Yes | 1,970 |
 
-Prices corrected 2026-09-02 (was $20/$100/$200 — see `PRICING.md` §1). Annual pricing ($192/$960/$1,920/yr under the old prices) not yet re-derived for the new monthly prices. Per-tier credit allowances also not yet re-derived — these are almost certainly wrong now given the underlying per-feature rates changed too (§2.2), but no new numbers have been given for them specifically.
+Prices corrected 2026-09-02 (was $20/$100/$200 — see `PRICING.md` §1). Annual pricing ($192/$960/$1,920/yr under the old prices) not yet re-derived for the new monthly prices.
 
-**~min/mo** sourced from `Lightforth_to_Jobwhisper_Transition_Plan.md`'s pricing table (Starter ~200mins, Pro ~10,000mins, Premium ~20,000mins). Pro's figure corrects a likely typo in that document ("~10,00mins"), inferred from the 100x-per-tier scaling pattern the other two figures follow (200 → 20,000 is 100x; 10,000 sits at 50x from Starter and 2x under Premium, which is the odd one out either way — worth confirming the real number rather than trusting this inference). These figures don't reconcile cleanly with the Credits/mo column at the new per-minute rates either (e.g. Starter's 20 credits at $0.10/credit/min for Copilot implies far more than 200 minutes if "credit" and "$" are equated 1:1) — another symptom of the unresolved credit-vs-dollar ambiguity in §2.1.
+**Credit allowance re-derived 2026-09-02**, replacing both the stale old-model numbers (20/100/200 credits) and the separately-sourced ~min/mo figures from the transition plan (~200/~10,000/~20,000, which never reconciled with anything). Derivation: at $0.10/credit for Interview/Coding/Meeting Copilot (§2.2), the monthly price converts directly to a credit allowance — **price ÷ $0.10**. Since 1 credit = 1 minute of Copilot at this rate, "credits/mo" and "minutes/mo of Copilot" are the same number, which is why the two separate columns from the previous version of this table are now one.
+
+**Worth flagging plainly:** this derivation gives the subscriber back, in usable Copilot minutes, exactly what they paid — $47 of Starter buys $47 worth of Copilot time (470 min × $0.10). That's zero gross margin on the credit allowance itself; whatever margin the tier earns has to come from elsewhere (unused/expired credits, the tier-gating on Coding/Meeting access, upsells) rather than from the credits being worth less than the subscription price. Confirm that's the intended model before treating this as final — a typical metered-SaaS credit grant usually prices the included allowance below cash value, not 1:1.
+
+**A real wrinkle, not yet resolved:** Interview Prep costs $0.20/credit/min, twice Copilot's rate. The 470/990/1,970 figures above are minutes *of Copilot* specifically — the same credit pool spent on Prep instead buys half as many minutes (235/495/985). If "credits/mo" is meant to be a single pooled number spendable across any feature, its minute-equivalent isn't one number, it's different per feature at these differing rates. Whether that's fine (users just see "credits," and minutes-per-feature is a UI-only conversion) or needs its own decision is open.
 
 **First-time Pro offer:** $40 first month, renews at $99/month (matches the VSL checkout's intro pricing — see `PRICING.md` §1).
 

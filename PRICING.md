@@ -18,15 +18,17 @@ This is the live, editable source of truth for pricing: what's actually charged 
 
 ## 1. Subscription tiers (corrected 2026-09-02)
 
-| Tier | Price | Notes |
-|---|---|---|
-| **Starter** | **$47/month** | was $20/mo |
-| **Pro** | **$99/month** | was $100/mo |
-| **Premium** | **$197/month** | was $200/mo |
+| Tier | Price | Credits/mo (= min/mo of Copilot) | Notes |
+|---|---|---|---|
+| **Starter** | **$47/month** | 470 | was $20/mo, 20 credits |
+| **Pro** | **$99/month** | 990 | was $100/mo, 100 credits |
+| **Premium** | **$197/month** | 1,970 | was $200/mo, 200 credits |
 
 **First-time Pro offer:** $40 first month, renews at $99/month. This resolves an inconsistency that existed across older docs (the transition plan alone said $99, $100, and $100 in three different places for the renewal price) and also resolves the coincidence flagged in the previous version of this file — VSL's checkout should now explicitly charge $40 first month / $99 renewal to match, not just happen to be close.
 
-**Not yet corrected anywhere in code or docs:** credit allotments per tier (previously 20/100/200 for Starter/Pro/Premium), feature access matrix (Interview/Coding/Meeting mode gating), and annual pricing. `docs/PRICING_STRATEGY_PRD.md` §2–§5 still describes the *structure* (which tier gets which Copilot modes) — only the three headline dollar amounts above are confirmed corrected so far.
+**Credits/mo re-derived 2026-09-02** as price ÷ $0.10 (the Interview/Coding/Meeting Copilot rate, §3) — see `docs/JobWhisper-Credit-Pricing-Payment-PRD.md` §3.1 for the full derivation and two things worth confirming before treating it as final: it implies **zero gross margin on the credit allowance itself** (the subscription price converts 1:1 into usable Copilot minutes), and Interview Prep's $0.20/credit/min rate means the same credit pool buys half as many Prep minutes as Copilot minutes — so "credits/mo" isn't a single minutes-equivalent number once more than one feature is in play.
+
+**Still not corrected anywhere in code or docs:** feature access matrix (Interview/Coding/Meeting mode gating) and annual pricing. `docs/PRICING_STRATEGY_PRD.md` §2–§5 still describes the *structure* (which tier gets which Copilot modes) using the old prices.
 
 ## 2. Done-for-you plans (new, 2026-09-02)
 
