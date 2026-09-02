@@ -2,7 +2,7 @@
 
 This is the live, editable source of truth for pricing: what's actually charged today, where every number lives in the codebase, and what's still unresolved. Update this file the moment a price changes anywhere, or a new pricing idea gets floated, so it stays the one place to check "what do we currently charge, and does it agree with itself."
 
-**Last corrected: 2026-09-02** (two follow-up corrections same day: Interview Prep rate and Resume Builder unit wording, §3; upsell reference material added, §5).
+**Last corrected: 2026-09-02** (two follow-up corrections same day: Interview Prep rate and Resume Builder unit wording, §3; upsell reference material added, §5; Auto Apply/Resume Builder flat add-on fees dropped in favor of pure usage-based pricing, §3/§6.1 — decided).
 
 ## Pricing documents in this repo
 
@@ -47,6 +47,8 @@ This is the live, editable source of truth for pricing: what's actually charged 
 | Auto Apply — done-for-you | $10 / successful job | new |
 | Resume Builder | $0.10 / prompt | $0.40/message (1 credit) |
 
+**Decided 2026-09-02:** Auto Apply and Resume Builder are **pure usage-based, no flat monthly add-on fee.** This drops the old $40/mo Auto Apply add-on and $15/mo Resume Builder add-on entirely — not "in addition to" the rates above, *instead of*. A user pays only for what they actually use (per successful application, per prompt), with no unlock/subscription cost layered on top. This resolves what was open item #1 below. Subscription tiers (§1: Starter/Pro/Premium) are unaffected — they still gate Interview/Coding/Meeting Copilot as before.
+
 *(Interview Prep corrected from an earlier same-day $0.12 to $0.20 — a typo in the first pass, not two different numbers in flux. Resume Builder's unit corrected from "message" to "prompt" — same $0.10 rate, just the more accurate word for what triggers the charge.)*
 
 **Ambiguity to resolve:** the phrasing "$0.10/credit/min" is ambiguous as given — it could mean (a) a flat $0.10 charged per minute of usage (with "credit" just meaning "the metered unit," i.e. same as saying "$0.10/min"), or (b) that a credit is being redefined from $0.40 to some new value specifically in this context. `docs/CREDIT_PRICING_PAYMENT_PRD.md` §2.1 fixes 1 credit = $0.40 everywhere — these new numbers don't divide cleanly into that (e.g. $0.10 isn't a multiple of $0.40), so either the $0.40/credit constant is also changing, or these are meant to bypass the credit abstraction entirely and bill in direct dollars. Treated here as flat per-unit dollar rates (reading (a)) until confirmed otherwise, since that's the only reading consistent with the other three rows, which don't mention "credit" at all.
@@ -59,7 +61,7 @@ This table doesn't yet cover Coding Copilot or Meeting Copilot (no new rate give
 
 ### 4.1 Subscription + add-ons — `src/mocks/billing.ts`, `src/mocks/account.ts`
 
-Currently hardcoded to the **old** $20/$100/$200. Needs updating to $47/$99/$197 (§1). Resume Builder ($15/mo) and Auto Apply ($40/mo) add-on prices from the old model aren't mentioned in the corrections above — unclear whether they still stand as flat monthly unlocks alongside the new per-successful-job Auto Apply rate (§3), or whether the flat $40/mo Auto Apply add-on is being replaced by pure usage-based billing. **This is the same open question as before, now sharper**: is Auto Apply a monthly subscription add-on, a pay-per-successful-job product, or both?
+Currently hardcoded to the **old** $20/$100/$200, plus the old $15/mo Resume Builder and $40/mo Auto Apply add-on entries. Needs updating: tier prices to $47/$99/$197 (§1), and the Resume Builder/Auto Apply add-on entries **removed** (not re-priced — per §3's decision, these become pure usage-based, no flat add-on fee at all). Also touches `src/contracts/billing.ts`'s `AddOnId`/`FeatureAccess` shape, since "entitled: true/false" for a flat unlock doesn't map cleanly onto pure usage billing — entitlement to use Auto Apply/Resume Builder at all should probably just mean "has an active subscription," with usage metered separately, rather than a separate purchasable entitlement.
 
 ### 4.2 VSL checkout — `src/apps/web/pages/vsl-checkout-modal.tsx`
 
@@ -93,9 +95,10 @@ A screenshot of an older, **Lightforth-branded** checkout step ("Wait — Boost 
 
 ## 6. Open reconciliation items
 
-1. **Auto Apply: subscription add-on vs. pay-per-job vs. both** (§4.1) — the single biggest open question. The old model was a flat $40/mo unlock; the new numbers are per-successful-job ($1 self-serve, $10 DFY). Needs a decision on whether these coexist, and if so how (e.g. $40/mo unlocks the *feature*, then usage is billed per successful job on top).
-2. **DFY packages ($497/$999) vs. DFY per-job rate ($10/job)** (§2) — same successful-outcome DFY product priced two different ways, or two different things.
+1. ~~Auto Apply: subscription add-on vs. pay-per-job vs. both~~ — **Resolved 2026-09-02: pay-per-job only, no flat add-on fee.** See §3.
+2. **DFY packages ($497/$999) vs. DFY per-job rate ($10/job)** (§2) — still open. Same shape-question as #1 was: does $10/job coexist with the flat packages (e.g. packages are a volume discount once job count is known upfront), or does one replace the other? Given how #1 was resolved, the likely-consistent answer is the packages are a flat-rate *option* for users who'd rather not think in per-job terms, not a separate product — but this needs the same explicit confirmation #1 just got, not an assumption.
 3. **"$0.10/credit/min" ambiguity** (§3) — confirm whether the $0.40/credit constant is being redefined or these are flat dollar rates outside the credit system.
-4. **Mocks not yet updated** — `src/mocks/billing.ts` and `src/mocks/account.ts` still show the old $20/$100/$200 and old credit rates; `src/apps/web/pages/vsl-checkout-modal.tsx` still shows $100/mo renewal. This file being correct doesn't mean the app is — treat as a to-do, not done.
-5. **Auto-Apply Concierge ($499)** (§5) — add to the VSL checkout or not, and if so, is it one-time (like the rest of the VSL stack) or recurring (as its own copy implies)?
-6. Everything already flagged as open in `docs/PRICING_STRATEGY_PRD.md` §8 and `docs/CREDIT_PRICING_PAYMENT_PRD.md` §8 that isn't addressed above is still open (annual pricing for add-ons, referral bonus amount, credit rollover vs. reset, Stripe sign-off, refund/dispute policy, tax, multi-currency).
+4. **Mocks not yet updated** — `src/mocks/billing.ts` and `src/mocks/account.ts` still show the old $20/$100/$200 tier prices and the now-removed $15/$40 add-on entries; `src/apps/web/pages/vsl-checkout-modal.tsx` still shows $100/mo renewal. This file being correct doesn't mean the app is — treat as a to-do, not done.
+5. **Auto-Apply Concierge ($499)** (§5) — add to the VSL checkout or not, and if so, is it one-time (like the rest of the VSL stack) or recurring (as its own copy implies)? Also now worth asking directly: is this the same thing as the pay-per-job Auto Apply in a flat-rate wrapper, i.e. the same question as #2 but for Auto Apply instead of DFY?
+6. **Interview Prep priced above Interview Copilot** ($0.20/min vs. $0.10/min, §3) — raised in conversation 2026-09-02 as possibly backwards (practice mode costing more than the live, flagship Copilot session) — not yet confirmed either way, still using the numbers as given.
+7. Everything already flagged as open in `docs/PRICING_STRATEGY_PRD.md` §8 and `docs/CREDIT_PRICING_PAYMENT_PRD.md` §8 that isn't addressed above is still open (annual pricing, referral bonus amount, credit rollover vs. reset, Stripe sign-off, refund/dispute policy, tax, multi-currency).

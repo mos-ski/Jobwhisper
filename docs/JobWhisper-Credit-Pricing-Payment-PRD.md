@@ -68,22 +68,28 @@ Prices corrected 2026-09-02 (was $20/$100/$200 — see `PRICING.md` §1). Annual
 
 **First-time Pro offer:** $40 first month, renews at $99/month (matches the VSL checkout's intro pricing — see `PRICING.md` §1).
 
-Resume Builder and Auto Apply are deliberately excluded from every tier, including Premium — they're sold separately as add-ons (§3.2). This is a strategic choice: rather than capping revenue per user at the top subscription tier, Resume Builder and Auto Apply each become their own upsell surface with room to keep growing account value well past the Premium price point.
+Resume Builder and Auto Apply are deliberately excluded from every tier, including Premium — this is a strategic choice: rather than capping revenue per user at the top subscription tier, Resume Builder and Auto Apply each become their own revenue surface with room to keep growing account value well past the Premium price point. **They are no longer flat recurring add-ons (§3.2 below is superseded) — see the decision recorded there.**
 
-### 3.2 Add-ons
+### 3.2 Add-ons — superseded, kept for history
 
-Add-ons require an active subscription of any tier — they aren't sold to accounts without one. Each is billed as its own recurring charge and can be cancelled independently of the base plan.
+~~Add-ons require an active subscription of any tier — they aren't sold to accounts without one. Each is billed as its own recurring charge and can be cancelled independently of the base plan.~~
 
-| Add-on | Price | Further unlock available inside it |
-|---|---|---|
-| Resume Builder | $15/mo | AI Suggestions & Premium Templates — price not yet set, unlocked only once Resume Builder itself is active |
-| Auto Apply | $40/mo | Full-Auto Mode — +$10/mo, removes the manual step of picking which jobs to apply to, unlocked only once Auto Apply itself is active |
+~~| Add-on | Price | Further unlock available inside it |~~
+~~|---|---|---|~~
+~~| Resume Builder | $15/mo | AI Suggestions & Premium Templates — price not yet set, unlocked only once Resume Builder itself is active |~~
+~~| Auto Apply | $40/mo | Full-Auto Mode — +$10/mo, removes the manual step of picking which jobs to apply to, unlocked only once Auto Apply itself is active |~~
 
-**Open conflict, unresolved (`PRICING.md` §6.1):** §2.2 above now also prices Resume Builder at $0.10/prompt and Auto Apply at $1–$10/successful job. It's not decided whether these flat monthly add-on prices still stand *alongside* the new usage-based rates (e.g. $40/mo unlocks the feature, then usage is metered on top), or whether the flat add-on model is being replaced by pure pay-per-use. Do not assume either answer when implementing — this needs a product decision first.
+**Decided 2026-09-02 (`PRICING.md` §3, §6.1): the flat monthly add-on model above is dropped entirely, not kept alongside usage billing.** Resume Builder and Auto Apply are now pure pay-per-use — $0.10/prompt and $1 (self-serve) / $10 (done-for-you) per successful job, per §2.2. There is no $15/mo or $40/mo fee anymore. A user needs an active subscription to use either feature at all (that gate stays), but nothing about *using* Resume Builder or Auto Apply itself costs a recurring fee beyond actual usage.
 
-**Done-for-you plans (new, not in the original PRD):** $497 and $999 flat packages exist alongside the $10/successful-job done-for-you rate above — same open-conflict shape as Auto Apply. See `PRICING.md` §2.
+**What happens to "Full-Auto Mode" (+$10/mo)?** Not explicitly addressed by the 2026-09-02 decision. The likely mapping — self-serve Auto Apply ($1/job) roughly corresponds to the old semi-manual base tier, and done-for-you Auto Apply ($10/job) roughly corresponds to what Full-Auto Mode was reaching for (no manual job-selection step) — but this is inference, not a confirmed statement from product. Do not assume Full-Auto Mode survives as a separate concept without checking.
+
+**Checkout flow needs rethinking, not just re-pricing.** The order-bump description below (add Resume Builder/Auto Apply to a cart at subscribe time, for a flat recurring price) was written for the flat-fee model and doesn't translate cleanly to pure usage billing — you can't "add $1-per-job Auto Apply to your cart" the same way. This probably becomes a feature toggle at signup (Resume Builder / Auto Apply: on/off, usage billed as it happens) rather than a priced line item in the checkout cart. Flagging as a design gap, not solving it here.
+
+**Done-for-you plans (new, not in the original PRD):** $497 and $999 flat packages also exist alongside the $10/successful-job done-for-you rate — same open shape-question as Auto Apply had before its 2026-09-02 resolution, but **not yet resolved for DFY specifically**. See `PRICING.md` §6.2.
 
 At checkout, when a user subscribes to any tier, offer Auto Apply and/or Resume Builder as an order bump before the purchase completes — unchecked by default, cart total updates live if the user adds one, and it's dismissible without blocking the base subscription. The further unlocks inside each add-on (Full-Auto Mode, AI Suggestions) are not offered at this moment — they should be surfaced later, inside the add-on's own product experience, once the user is actually using it.
+
+*(The paragraph above is the original, pre-decision checkout-flow spec — kept verbatim since nothing has replaced it yet. See "Checkout flow needs rethinking" above.)*
 
 ### 3.3 What each tier and add-on unlocks
 
