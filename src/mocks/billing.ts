@@ -1,9 +1,13 @@
-import type { AddOnId, BillingSnapshot, Plan } from '@/contracts/billing'
+import type { BillingSnapshot, Plan } from '@/contracts/billing'
 
 export type BillingPlanFixture = {
   readonly id: Plan
   readonly name: string
   readonly priceMonthly: number
+  // Back-computed as credits * 40 so the shared formatCredits() helper (still hardcoded to the
+  // old $0.40/credit constant, see src/lib/credits.ts) displays the right whole-credit number.
+  // Not a real cents amount anymore — PRICING.md §3 dropped the fixed $/credit rate, but
+  // rewriting that shared helper for a per-feature rate is out of scope here.
   readonly includedUsageCents: number
   readonly description: string
   readonly features: readonly string[]
@@ -11,32 +15,9 @@ export type BillingPlanFixture = {
   readonly popular?: boolean
 }
 
-// Offered as an order-bump the moment a plan card is subscribed to (see PlanSelectionView).
-// Nested unlocks (Full-Auto mode, AI Suggestions/Premium Templates) aren't offered here — they
-// surface later, inside the Auto Apply / Resume Builder product surfaces themselves.
-export type CheckoutAddOnOffer = {
-  readonly id: AddOnId
-  readonly name: string
-  readonly priceMonthly: number
-  readonly description: string
-}
-
-export const checkoutAddOnFixtures: readonly CheckoutAddOnOffer[] = [
-  {
-    id: 'auto-apply',
-    name: 'Auto Apply',
-    priceMonthly: 40,
-    description: 'Let Jobwhisper apply to jobs for you, you pick the roles, the agents handle the applications.',
-  },
-  {
-    id: 'resume-builder',
-    name: 'Resume Builder',
-    priceMonthly: 15,
-    description: 'AI-tailored resumes for every role, with unlimited downloads.',
-  },
-]
-
-// A Pro subscriber who hasn't purchased either add-on — the default demo account.
+// A Pro subscriber — the default demo account. Auto Apply and Resume Builder are no longer
+// subscription add-ons (see PRICING.md §2) — they're standalone, pay-as-you-go purchases with
+// their own prepaid credit balance per feature, not modeled in BillingSnapshot yet.
 export const billingSnapshot: BillingSnapshot = {
   status: 'ready',
   plan: 'pro',
@@ -51,39 +32,33 @@ export const billingSnapshot: BillingSnapshot = {
     'auto-apply': { feature: 'auto-apply', entitled: false, creditCost: 1 },
     copilot: { feature: 'copilot', entitled: true, creditCost: 1 },
   },
-  addOns: {
-    'resume-builder': { addOn: 'resume-builder', entitled: false, priceMonthly: 15 },
-    'resume-ai-suggestions': { addOn: 'resume-ai-suggestions', entitled: false, priceMonthly: 0 },
-    'auto-apply': { addOn: 'auto-apply', entitled: false, priceMonthly: 40 },
-    'auto-apply-full-auto': { addOn: 'auto-apply-full-auto', entitled: false, priceMonthly: 10 },
-  },
 }
 
 export const authPlanFixtures: readonly BillingPlanFixture[] = [
   {
     id: 'starter',
     name: 'Starter',
-    priceMonthly: 20,
-    includedUsageCents: 800,
-    description: 'You get 20 credits per month, metered by what each feature actually costs to run.',
+    priceMonthly: 47,
+    includedUsageCents: 500 * 40,
+    description: 'Interview Prep and Interview Copilot, on the web.',
     features: [
       'Interview Prep & Interview Copilot',
       'Web only',
-      '20 credits per month',
+      '≈500 credits per month',
     ],
     note: 'Ideal for light or occasional interview prep',
   },
   {
     id: 'pro',
     name: 'Pro',
-    priceMonthly: 100,
-    includedUsageCents: 4000,
-    description: 'More usage included, plus the desktop app and Coding Copilot for technical rounds.',
+    priceMonthly: 99,
+    includedUsageCents: 1000 * 40,
+    description: 'More usage included, plus the desktop app, Coding Copilot, and Meeting Copilot.',
     features: [
       'Everything in Starter',
       'Web + Desktop app',
-      'Coding Copilot',
-      '100 credits per month',
+      'Coding Copilot & Meeting Copilot',
+      '≈1,000 credits per month',
     ],
     note: 'Best for candidates interviewing across technical and non-technical roles',
     popular: true,
@@ -91,13 +66,12 @@ export const authPlanFixtures: readonly BillingPlanFixture[] = [
   {
     id: 'premium',
     name: 'Premium',
-    priceMonthly: 200,
-    includedUsageCents: 8000,
-    description: 'Everything Pro has, plus Meeting Copilot for live client and stakeholder calls.',
+    priceMonthly: 197,
+    includedUsageCents: 4000 * 40,
+    description: 'Everything Pro has, at 2x the size — for power users who live in interviews.',
     features: [
       'Everything in Pro',
-      'Meeting Copilot',
-      '200 credits per month',
+      '2x size: ≈4,000 credits per month',
     ],
     note: 'Best for power users who live in interviews and meetings',
   },

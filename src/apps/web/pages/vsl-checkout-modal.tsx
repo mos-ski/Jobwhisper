@@ -59,14 +59,15 @@ const ADDONS: Addon[] = [
   },
   {
     id: 'dfy',
-    name: 'Done-For-You Resume & LinkedIn Overhaul',
-    price: 999,
-    desc: 'Our team rewrites your resume and LinkedIn profile from scratch, written by an ex-recruiter.',
+    name: 'Done-For-You: 50 Job Applications',
+    price: 497,
+    desc: 'A real success manager applies to 50 matched jobs on your behalf over 1 month, resume tailoring and job scouting included, plus 1 month of Jobwhisper access.',
     tag: 'White-glove service',
   },
 ]
 
 const PLAN_PRICE = 40
+const PLAN_RENEWAL_PRICE = 99
 
 type Details = {
   fname: string
@@ -145,8 +146,8 @@ export function VslCheckoutModal({ open, onClose }: { open: boolean; onClose: ()
                 </div>
                 <div className="vsl-offer-price">
                   <span className="vsl-badge-discount">60% OFF TODAY</span>
-                  <span className="vsl-was">$100/mo</span>
-                  <span className="vsl-now">$40 today</span>
+                  <span className="vsl-was">{money(PLAN_RENEWAL_PRICE)}/mo</span>
+                  <span className="vsl-now">{money(PLAN_PRICE)} today</span>
                 </div>
               </div>
               <ul className="vsl-offer-features">
@@ -157,7 +158,7 @@ export function VslCheckoutModal({ open, onClose }: { open: boolean; onClose: ()
                 <li>Priority setup support before your next interview</li>
               </ul>
               <p className="vsl-offer-fineprint">
-                Charged $40 today, then renews automatically at $100/mo starting next month. Cancel anytime from your
+                Charged {money(PLAN_PRICE)} today, then renews automatically at {money(PLAN_RENEWAL_PRICE)}/mo starting next month. Cancel anytime from your
                 dashboard.
               </p>
             </div>

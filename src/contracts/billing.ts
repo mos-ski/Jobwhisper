@@ -6,16 +6,9 @@ export type BillableFeature =
   | 'auto-apply'
   | 'copilot';
 
-// Resume Builder and Auto Apply are excluded from every plan tier — they're sold as separate
-// recurring add-ons, each with its own further nested unlock. See docs/PRICING_STRATEGY_PRD.md.
-export type AddOnId = 'resume-builder' | 'resume-ai-suggestions' | 'auto-apply' | 'auto-apply-full-auto';
-
-export type AddOnAccess = {
-  readonly addOn: AddOnId
-  readonly entitled: boolean
-  readonly priceMonthly: number
-};
-
+// Resume Builder and Auto Apply are excluded from every plan tier — they're sold standalone,
+// pay-as-you-go, no subscription required. Each has its own prepaid credit balance, not modeled
+// here yet (not tied to a Plan subscription the way the Copilot wallet below is). See PRICING.md §2.
 export type CreditWallet = {
   readonly balance: number;
   readonly currency: 'credits';
@@ -36,5 +29,4 @@ export type BillingSnapshot =
       readonly plan: Plan;
       readonly wallet: CreditWallet;
       readonly access: Readonly<Record<BillableFeature, FeatureAccess>>;
-      readonly addOns: Readonly<Record<AddOnId, AddOnAccess>>;
     };
