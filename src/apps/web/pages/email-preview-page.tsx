@@ -15,7 +15,7 @@ function detectLocalTimeZone(): string {
 }
 
 const TEMPLATE_OPTIONS = EMAIL_CATALOG.map((entry) => ({
-  label: `${entry.category} — ${entry.label}`,
+  label: `${entry.category} · ${entry.label}`,
   value: entry.slug,
 }))
 

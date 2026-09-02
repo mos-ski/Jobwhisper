@@ -10,6 +10,8 @@ Read this entire brief before writing code. When a rule below conflicts with a h
 
 Before adjusting Lightforth copy, screens, flows, product education, help-center content, marketing pages, emails, onboarding, tests, or user-facing product behavior, read `docs/LIGHTFORTH_END_TO_END_SMARTER_SCRIPT.md`. Treat it as the living end-to-end product script and update it when the product story or flow changes.
 
+Before touching any visual surface, read `DESIGN-CLICHES.md`. It's a normative list of generic AI-SaaS design patterns (gradient hero text, Inter, glassmorphism, three-icon-box grids, badge-above-headline, scroll-reveal-everything, and more) that are banned in this repo regardless of how fast or obvious they feel to reach for.
+
 ---
 
 ## 1. Stack
