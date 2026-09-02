@@ -2,7 +2,7 @@
 
 This is the live, editable source of truth for pricing: what's actually charged today, where every number lives in the codebase, and what's still unresolved. Update this file the moment a price changes anywhere, or a new pricing idea gets floated, so it stays the one place to check "what do we currently charge, and does it agree with itself."
 
-**Last corrected: 2026-09-02.**
+**Last corrected: 2026-09-02** (two follow-up corrections same day: Interview Prep rate and Resume Builder unit wording, §3; upsell reference material added, §5).
 
 ## Pricing documents in this repo
 
@@ -42,10 +42,12 @@ This is the live, editable source of truth for pricing: what's actually charged 
 | Feature | Rate | Was |
 |---|---|---|
 | Interview Copilot | $0.10 / credit / min | $0.80/min (2 credits) |
-| Interview Prep | $0.12 / credit / min | $0.80/min (2 credits) |
+| Interview Prep | $0.20 / credit / min | $0.80/min (2 credits) |
 | Auto Apply — self-serve | $1 / successful applied job | $1.20/application (3 credits), not success-gated |
 | Auto Apply — done-for-you | $10 / successful job | new |
-| Resume Builder | $0.10 / message | $0.40/message (1 credit) |
+| Resume Builder | $0.10 / prompt | $0.40/message (1 credit) |
+
+*(Interview Prep corrected from an earlier same-day $0.12 to $0.20 — a typo in the first pass, not two different numbers in flux. Resume Builder's unit corrected from "message" to "prompt" — same $0.10 rate, just the more accurate word for what triggers the charge.)*
 
 **Ambiguity to resolve:** the phrasing "$0.10/credit/min" is ambiguous as given — it could mean (a) a flat $0.10 charged per minute of usage (with "credit" just meaning "the metered unit," i.e. same as saying "$0.10/min"), or (b) that a credit is being redefined from $0.40 to some new value specifically in this context. `docs/CREDIT_PRICING_PAYMENT_PRD.md` §2.1 fixes 1 credit = $0.40 everywhere — these new numbers don't divide cleanly into that (e.g. $0.10 isn't a multiple of $0.40), so either the $0.40/credit constant is also changing, or these are meant to bypass the credit abstraction entirely and bill in direct dollars. Treated here as flat per-unit dollar rates (reading (a)) until confirmed otherwise, since that's the only reading consistent with the other three rows, which don't mention "credit" at all.
 
@@ -69,10 +71,31 @@ Receipt/reminder/failed-payment templates use illustrative example amounts ($40,
 
 ---
 
-## 5. Open reconciliation items
+## 5. Upsell / add-on reference material (from the old Lightforth checkout)
+
+A screenshot of an older, **Lightforth-branded** checkout step ("Wait — Boost Your Results", step 2 of 3) was shared 2026-09-02 as reference for upsell copy/pricing to consider. Recorded here as source material, not as confirmed additions to the current VSL checkout:
+
+| Add-on | Price | Notes |
+|---|---|---|
+| 5 Must-Master Interview Questions — Answer Swipe File | $19 | Already in the current VSL checkout (`vsl-checkout-modal.tsx`) |
+| 10 Fully Customizable Resume Templates | $29 | Already in the current VSL checkout |
+| Salary Negotiation Word-for-Word Scripts | $15 | Already in the current VSL checkout |
+| LinkedIn Profile Optimization Checklist | $12 | Already in the current VSL checkout |
+| 30-Day Job Search Action Plan | $17 | Already in the current VSL checkout |
+| **Auto-Apply Concierge — We Apply For You, Daily** | **$499** | **Not in the current VSL checkout.** Copy from the screenshot: "Our highest-converting add-on: our system applies to matching roles on your behalf every day you stay subscribed." Marked "Most popular add-on" in the old UI. |
+
+**Not shown in this particular screenshot** (may just be scrolled out of view, not necessarily dropped): Cover Letter Swipe File ($15), STAR Story Bank ($19), Follow-Up Email Templates ($9), and the $999 Done-For-You Resume & LinkedIn Overhaul — all of which *are* in the current VSL checkout. Unconfirmed whether the old Lightforth flow had a shorter list, or this is just a partial view.
+
+**Open questions:**
+- Should "Auto-Apply Concierge — We Apply For You, Daily" ($499) be added to the current VSL checkout's add-on list? It reads as a *recurring/ongoing* service ("every day you stay subscribed") rather than a one-time purchase like the other VSL add-ons — worth confirming it's meant to bill the same way as the rest of the stack (one-time) or as a subscription, since those are different Stripe objects per `docs/CREDIT_PRICING_PAYMENT_PRD.md` §4.3.
+- Is $499 the same "self-serve Auto Apply" concept as §3's `$1/successful applied job` rate, priced as a flat monthly package instead of per-job? Same open shape-conflict as the DFY plans in §2 — a recurring/flat offer and a pay-per-outcome rate for what may be the same underlying feature.
+- The $567 "Total due today" shown in the screenshot ($19 swipe file + $499 concierge, sales-tax-free) is just that specific example's math, not a separate price point.
+
+## 6. Open reconciliation items
 
 1. **Auto Apply: subscription add-on vs. pay-per-job vs. both** (§4.1) — the single biggest open question. The old model was a flat $40/mo unlock; the new numbers are per-successful-job ($1 self-serve, $10 DFY). Needs a decision on whether these coexist, and if so how (e.g. $40/mo unlocks the *feature*, then usage is billed per successful job on top).
 2. **DFY packages ($497/$999) vs. DFY per-job rate ($10/job)** (§2) — same successful-outcome DFY product priced two different ways, or two different things.
 3. **"$0.10/credit/min" ambiguity** (§3) — confirm whether the $0.40/credit constant is being redefined or these are flat dollar rates outside the credit system.
 4. **Mocks not yet updated** — `src/mocks/billing.ts` and `src/mocks/account.ts` still show the old $20/$100/$200 and old credit rates; `src/apps/web/pages/vsl-checkout-modal.tsx` still shows $100/mo renewal. This file being correct doesn't mean the app is — treat as a to-do, not done.
-5. Everything already flagged as open in `docs/PRICING_STRATEGY_PRD.md` §8 and `docs/CREDIT_PRICING_PAYMENT_PRD.md` §8 that isn't addressed above is still open (annual pricing for add-ons, referral bonus amount, credit rollover vs. reset, Stripe sign-off, refund/dispute policy, tax, multi-currency).
+5. **Auto-Apply Concierge ($499)** (§5) — add to the VSL checkout or not, and if so, is it one-time (like the rest of the VSL stack) or recurring (as its own copy implies)?
+6. Everything already flagged as open in `docs/PRICING_STRATEGY_PRD.md` §8 and `docs/CREDIT_PRICING_PAYMENT_PRD.md` §8 that isn't addressed above is still open (annual pricing for add-ons, referral bonus amount, credit rollover vs. reset, Stripe sign-off, refund/dispute policy, tax, multi-currency).
