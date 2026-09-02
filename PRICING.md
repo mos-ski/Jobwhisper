@@ -33,13 +33,15 @@ Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold st
 
 | Tier | Price | Credits/mo (approx.) | ~min/mo of Copilot |
 |---|---|---|---|
-| **Starter** | **$47/month** | ≈50 credits | ≈50 min |
-| **Pro** | **$99/month** | ≈100 credits | ≈100 min |
-| **Premium** | **$197/month** | ≈200 credits | ≈200 min |
+| **Starter** | **$47/month** | ≈500 credits | ≈500 min |
+| **Pro** | **$99/month** | ≈1,000 credits | ≈1,000 min |
+| **Premium** | **$197/month** | ≈2,000 credits | ≈2,000 min |
 
 **First-time Pro offer:** $40 first month, renews at $99/month. This resolves an inconsistency that existed across older docs (the transition plan alone said $99, $100, and $100 in three different places for the renewal price) and also resolves the coincidence flagged in the previous version of this file — VSL's checkout should now explicitly charge $40 first month / $99 renewal to match, not just happen to be close.
 
-**Credits/mo revised 2026-09-02 to round, approximate numbers** (≈50/100/200) instead of the previous exact price ÷ $0.10 derivation (470/990/1,970) — cleaner for marketing, and it walks back the "zero gross margin" issue that exact derivation implied, since ≈50 credits ($5 of Copilot time at $0.10/credit/min) is well under the $47 price. Minutes confirmed 1:1 with credits (the earlier 500/1,000/2,000 figures were a typo, an extra zero) — consistent with §3's $0.10/credit/min rate.
+**Credits/mo revised 2026-09-02 to round, approximate numbers** (≈500/1,000/2,000) — rounding up from the exact price ÷ $0.10 derivation (470/990/1,970) to clean marketing figures, at 1 credit = 1 minute of Copilot throughout (§3's $0.10/credit/min rate). Rounding *up* slightly narrows the margin further rather than widening it (≈500 credits is $50 of Copilot time against a $47 price) — worth knowing that's the direction this rounding pushes, not assuming it fixed the earlier zero-margin concern.
+
+*(Correcting my own error, not the founder's: I'd previously written ≈50/100/200 here, an order of magnitude off — the actual typo was in the credits figure, not the minutes. ≈500/1,000/2,000 is the number that's actually close to the exact 470/990/1,970 derivation.)*
 
 **Premium includes Full-Auto Mode** (decided 2026-09-02, see §2) — Premium subscribers get Full-Auto job selection as part of the $197/mo plan. This is the one place the core subscription and the Auto Apply upsell touch each other; everything else in §2 is sold independently of Starter/Pro/Premium.
 
