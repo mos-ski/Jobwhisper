@@ -56,13 +56,15 @@ A user with no active subscription still gets **5 free credits every month**, on
 
 ### 3.1 Plan tiers
 
-| Tier | Price | Surface | Interview | Coding | Meeting | Credits/mo |
-|---|---|---|---|---|---|---|
-| Starter | $47/mo | Web only | Yes | No | No | 20 *(not yet re-derived for the new price — see below)* |
-| Pro | $99/mo | Web + Desktop | Yes | Yes | No | 100 *(not yet re-derived)* |
-| Premium | $197/mo | Web + Desktop | Yes | Yes | Yes | 200 *(not yet re-derived)* |
+| Tier | Price | Surface | Interview | Coding | Meeting | Credits/mo | ~min/mo |
+|---|---|---|---|---|---|---|---|
+| Starter | $47/mo | Web only | Yes | No | No | 20 *(not yet re-derived for the new price — see below)* | ~200 |
+| Pro | $99/mo | Web + Desktop | Yes | Yes | No | 100 *(not yet re-derived)* | ~10,000 |
+| Premium | $197/mo | Web + Desktop | Yes | Yes | Yes | 200 *(not yet re-derived)* | ~20,000 |
 
 Prices corrected 2026-09-02 (was $20/$100/$200 — see `PRICING.md` §1). Annual pricing ($192/$960/$1,920/yr under the old prices) not yet re-derived for the new monthly prices. Per-tier credit allowances also not yet re-derived — these are almost certainly wrong now given the underlying per-feature rates changed too (§2.2), but no new numbers have been given for them specifically.
+
+**~min/mo** sourced from `Lightforth_to_Jobwhisper_Transition_Plan.md`'s pricing table (Starter ~200mins, Pro ~10,000mins, Premium ~20,000mins). Pro's figure corrects a likely typo in that document ("~10,00mins"), inferred from the 100x-per-tier scaling pattern the other two figures follow (200 → 20,000 is 100x; 10,000 sits at 50x from Starter and 2x under Premium, which is the odd one out either way — worth confirming the real number rather than trusting this inference). These figures don't reconcile cleanly with the Credits/mo column at the new per-minute rates either (e.g. Starter's 20 credits at $0.10/credit/min for Copilot implies far more than 200 minutes if "credit" and "$" are equated 1:1) — another symptom of the unresolved credit-vs-dollar ambiguity in §2.1.
 
 **First-time Pro offer:** $40 first month, renews at $99/month (matches the VSL checkout's intro pricing — see `PRICING.md` §1).
 
