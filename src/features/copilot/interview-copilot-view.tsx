@@ -19,9 +19,9 @@ import type {
   CopilotTalkTime,
   CopilotTranscriptTurn,
 } from '@/contracts/copilot.draft'
-import { centsToCredits, creditsToCents, formatCreditAmountWithUsd } from '@/lib/credits'
+import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
+import { centsToCredits, creditsToCents } from '@/lib/credits'
 import {
-  AddFundsDialog,
   AiSuggestionAction,
   Avatar,
   Badge,
@@ -1624,7 +1624,11 @@ function CopilotCodingPanel({
 
 const COPILOT_RATE_CENTS_PER_MIN = 80
 const COPILOT_START_BALANCE_CENTS = 60
-const QUICK_TOPUP_CREDITS = [25, 50, 100]
+const TOPUP_MINIMUM_DOLLARS = 10
+const TOPUP_CENTS_PER_CREDIT = 40
+// $0.40/credit (TOPUP_CENTS_PER_CREDIT) only divides evenly into whole credits at multiples
+// of $0.40 — $25 would be 62.5 credits, so presets stick to $10/$20/$50.
+const TOPUP_PRESET_DOLLARS = [10, 20, 50]
 
 export function CopilotLiveView({ completeHref, session, isLoading = false, transcriptBank = [], codingBank = [], demoMode = false }: CopilotLiveViewProps) {
   const [assistantMessages, setAssistantMessages] = useState<readonly AiAssistantMessage[]>([])
@@ -1835,14 +1839,16 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
           sessionTitle={session.title}
           mode={session.mode}
         />
-        <AddFundsDialog
+        <AddCreditsDialog
           open={topUpOpen}
           onOpenChange={setTopUpOpen}
-          currentBalance={Math.ceil(centsToCredits(balanceCents))}
-          quickAmounts={QUICK_TOPUP_CREDITS}
-          formatAmount={formatCreditAmountWithUsd}
-          onAddFunds={handleAddFunds}
-          description="You're out of balance for this session. Add funds to keep going, your session will resume right where you left off."
+          title="Add Interview Copilot credits"
+          description="You're out of balance for this session. Add credits to keep going, your session will resume right where you left off."
+          centsPerCredit={TOPUP_CENTS_PER_CREDIT}
+          minimumDollars={TOPUP_MINIMUM_DOLLARS}
+          presetDollars={TOPUP_PRESET_DOLLARS}
+          currentBalanceCredits={Math.ceil(centsToCredits(balanceCents))}
+          onPurchase={handleAddFunds}
         />
       </main>
     )
@@ -1964,14 +1970,16 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
         sessionTitle={session.title}
         mode={session.mode}
       />
-      <AddFundsDialog
+      <AddCreditsDialog
         open={topUpOpen}
         onOpenChange={setTopUpOpen}
-        currentBalance={Math.ceil(centsToCredits(balanceCents))}
-        quickAmounts={QUICK_TOPUP_CREDITS}
-        formatAmount={formatCreditAmountWithUsd}
-        onAddFunds={handleAddFunds}
-        description="You're out of balance for this session. Add funds to keep going, your session will resume right where you left off."
+        title="Add Interview Copilot credits"
+        description="You're out of balance for this session. Add credits to keep going, your session will resume right where you left off."
+        centsPerCredit={TOPUP_CENTS_PER_CREDIT}
+        minimumDollars={TOPUP_MINIMUM_DOLLARS}
+        presetDollars={TOPUP_PRESET_DOLLARS}
+        currentBalanceCredits={Math.ceil(centsToCredits(balanceCents))}
+        onPurchase={handleAddFunds}
       />
     </main>
   )

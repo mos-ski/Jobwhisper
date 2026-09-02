@@ -1,4 +1,4 @@
-import type { BillingAddOn, BillingPlanCard, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
+import type { BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
 
 export const downloadItems: readonly DownloadItem[] = [
   {
@@ -76,36 +76,27 @@ export const billingPlans: readonly BillingPlanCard[] = [
 
 // Resume Builder and Auto Apply live outside every plan tier — no subscription required, sold
 // as standalone, pay-as-you-go purchases (prepaid credits, $5/$10 minimums). See PRICING.md §2.
-export const billingAddOns: readonly BillingAddOn[] = [
+export const billingStandalonePurchases: readonly BillingStandalonePurchase[] = [
   {
     id: 'resume-builder',
     name: 'Resume Builder',
-    price: '$0.10',
-    cadence: 'per prompt',
-    description: 'AI-tailored resumes for every role. Pay as you go, no subscription required — buy credits from $5, valid 12 months.',
+    rateLabel: '$0.10 per prompt',
+    centsPerCredit: 10,
+    minimumDollars: 5,
+    presetDollars: [10, 25, 50],
+    description: 'AI-tailored resumes for every role. Pay as you go, no subscription required — credits are valid 12 months.',
     features: ['AI-tailored resumes for every job', 'Unlimited downloads', 'ATS scoring included free'],
-    unlocked: false,
-    nestedUpsell: {
-      name: 'AI Suggestions & Premium Templates',
-      price: 'Coming soon',
-      cadence: '',
-      description: 'AI-generated content suggestions and the full premium template library.',
-    },
   },
   {
     id: 'auto-apply',
     name: 'Auto Apply',
-    price: '$1',
-    cadence: 'per successful application',
-    description: 'Let Jobwhisper apply to jobs for you. Pay as you go, no subscription required — buy credits from $10, valid 12 months. Only charged when an application succeeds.',
+    rateLabel: '$1 per successful application',
+    centsPerCredit: 100,
+    minimumDollars: 10,
+    presetDollars: [25, 50, 100],
+    description: 'Let Jobwhisper apply to jobs for you. Pay as you go, no subscription required — credits are valid 12 months. Only charged when an application succeeds.',
     features: ['Scout, Filter, Tailor & Driver agents', 'Free preference: select jobs yourself, or let the AI select for you, same cost either way'],
-    unlocked: false,
-    nestedUpsell: {
-      name: 'Done-For-You (human-run)',
-      price: '$10',
-      cadence: 'per successful application',
-      description: 'A real person applies on your behalf, with a success manager. Sold as packages: $497 for 50 jobs, $997 for 100 jobs + 3 months of Jobwhisper access.',
-    },
+    note: 'Want a person to do it for you instead? Done-For-You packages start at $497 for 50 applications, with a success manager and a month of Jobwhisper access included.',
   },
 ]
 

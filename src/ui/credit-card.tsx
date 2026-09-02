@@ -1,4 +1,4 @@
-import { Gift } from 'lucide-react'
+import { Gift, Plus } from 'lucide-react'
 
 import { cn, Tooltip, TooltipContent, TooltipTrigger } from '@/ui'
 
@@ -10,9 +10,11 @@ export type CreditCardProps = {
   readonly bonusHref: string
   readonly detailsHref: string
   readonly className?: string
+  /** Ran out mid-cycle? Renders an "Add credits" button next to Add Funds. See PRICING.md §1. */
+  readonly onTopUp?: () => void
 }
 
-export function CreditCard({ remainingCents, totalCents, formatAmount, resetDate, bonusHref, detailsHref, className }: CreditCardProps) {
+export function CreditCard({ remainingCents, totalCents, formatAmount, resetDate, bonusHref, detailsHref, className, onTopUp }: CreditCardProps) {
   const percentage = totalCents > 0 ? Math.round((remainingCents / totalCents) * 100) : 0
 
   return (
@@ -40,10 +42,22 @@ export function CreditCard({ remainingCents, totalCents, formatAmount, resetDate
       </div>
       <p className="mt-2 text-sm text-ink-muted">{formatAmount(remainingCents)} of {formatAmount(totalCents)}</p>
 
-      <a href={bonusHref} className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-        <Gift aria-hidden="true" className="size-4 text-accent-secondary" />
-        <span className="text-accent-text">Add Funds</span>
-      </a>
+      <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
+        <a href={bonusHref} className="inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+          <Gift aria-hidden="true" className="size-4 text-accent-secondary" />
+          <span className="text-accent-text">Add Funds</span>
+        </a>
+        {onTopUp ? (
+          <button
+            type="button"
+            onClick={onTopUp}
+            className="inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          >
+            <Plus aria-hidden="true" className="size-4 text-accent-secondary" />
+            <span className="text-accent-text">Add credits</span>
+          </button>
+        ) : null}
+      </div>
     </section>
   )
 }

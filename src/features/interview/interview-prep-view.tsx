@@ -29,8 +29,9 @@ import type {
 } from '@/contracts/interview.draft'
 import type { ContextDocumentRow } from '@/contracts/documents.draft'
 import type { ResumeHistoryRow } from '@/contracts/resume.draft'
-import { centsToCredits, creditsToCents, formatCreditAmountWithUsd } from '@/lib/credits'
-import { AddFundsDialog, AiSuggestionAction, Avatar, Badge, Button, Checkbox, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, UploadedFileDialog } from '@/ui'
+import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
+import { centsToCredits, creditsToCents } from '@/lib/credits'
+import { AiSuggestionAction, Avatar, Badge, Button, Checkbox, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, UploadedFileDialog } from '@/ui'
 import { useCameraStream } from '@/hooks/useCameraStream'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 import { useTypewriter } from '@/hooks/useTypewriter'
@@ -775,7 +776,11 @@ function InterviewLiveSettingsModal({
 
 const SESSION_RATE_CENTS_PER_MIN = 80
 const SESSION_START_BALANCE_CENTS = 60
-const QUICK_TOPUP_CREDITS = [25, 50, 100]
+const TOPUP_MINIMUM_DOLLARS = 10
+const TOPUP_CENTS_PER_CREDIT = 40
+// $0.40/credit (TOPUP_CENTS_PER_CREDIT) only divides evenly into whole credits at multiples
+// of $0.40 — $25 would be 62.5 credits, so presets stick to $10/$20/$50.
+const TOPUP_PRESET_DOLLARS = [10, 20, 50]
 
 export function InterviewSessionView({ voiceHref, completeHref, session, isLoading = false }: InterviewSessionViewProps) {
   const [phase, setPhase] = useState<LiveSessionPhase>('ready')
@@ -1051,14 +1056,16 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
           setFontSize={setFontSize}
           sessionTitle={session.title}
         />
-        <AddFundsDialog
+        <AddCreditsDialog
           open={topUpOpen}
           onOpenChange={setTopUpOpen}
-          currentBalance={Math.ceil(centsToCredits(balanceCents))}
-          quickAmounts={QUICK_TOPUP_CREDITS}
-          formatAmount={formatCreditAmountWithUsd}
-          onAddFunds={handleAddFunds}
-          description="You're out of balance for this session. Add funds to keep going, your session will resume right where you left off."
+          title="Add Interview Prep credits"
+          description="You're out of balance for this session. Add credits to keep going, your session will resume right where you left off."
+          centsPerCredit={TOPUP_CENTS_PER_CREDIT}
+          minimumDollars={TOPUP_MINIMUM_DOLLARS}
+          presetDollars={TOPUP_PRESET_DOLLARS}
+          currentBalanceCredits={Math.ceil(centsToCredits(balanceCents))}
+          onPurchase={handleAddFunds}
         />
       </main>
     )
@@ -1173,14 +1180,16 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
         setFontSize={setFontSize}
         sessionTitle={session.title}
       />
-      <AddFundsDialog
+      <AddCreditsDialog
         open={topUpOpen}
         onOpenChange={setTopUpOpen}
-        currentBalance={Math.ceil(centsToCredits(balanceCents))}
-        quickAmounts={QUICK_TOPUP_CREDITS}
-        formatAmount={formatCreditAmountWithUsd}
-        onAddFunds={handleAddFunds}
-        description="You're out of balance for this session. Add funds to keep going, your session will resume right where you left off."
+        title="Add Interview Prep credits"
+        description="You're out of balance for this session. Add credits to keep going, your session will resume right where you left off."
+        centsPerCredit={TOPUP_CENTS_PER_CREDIT}
+        minimumDollars={TOPUP_MINIMUM_DOLLARS}
+        presetDollars={TOPUP_PRESET_DOLLARS}
+        currentBalanceCredits={Math.ceil(centsToCredits(balanceCents))}
+        onPurchase={handleAddFunds}
       />
     </main>
   )

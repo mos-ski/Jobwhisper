@@ -1,8 +1,9 @@
 import { AlertTriangle, Apple, Check, ChevronDown, Copy, ExternalLink, EyeOff, Monitor, Moon, Play, Sun, Upload } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 
-import type { BillingAddOn, BillingPlanCard, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
-import { formatCredits } from '@/lib/credits'
+import type { BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
+import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
+import { centsToCredits, creditsToCents, formatCredits } from '@/lib/credits'
 import {
   Accordion,
   AccordionItem,
@@ -23,7 +24,15 @@ import {
 } from '@/ui'
 
 const PRO_OFFER_SECONDS = 10 * 60
-const PRO_OFFER_PRICE = 10
+const PRO_OFFER_PRICE = 40
+const TOPUP_MINIMUM_DOLLARS = 10
+// Matches lib/credits.ts's CENTS_PER_CREDIT so a top-up lands on the same credit scale
+// already shown by the wallet card above (formatCredits), not PRICING.md §3's per-feature
+// dollar rate, which that shared display helper doesn't use yet. See PRICING.md §6 item 2.
+const TOPUP_CENTS_PER_CREDIT = 40
+// $0.40/credit (TOPUP_CENTS_PER_CREDIT) only divides evenly into whole credits at multiples
+// of $0.40 — $25 would be 62.5 credits, so presets stick to $10/$20/$50.
+const TOPUP_PRESET_DOLLARS = [10, 20, 50]
 
 function formatOfferTime(seconds: number) {
   const minutes = Math.floor(seconds / 60)
@@ -50,7 +59,7 @@ export type BillingWallet = {
 export type BillingViewProps = {
   readonly homeHref: string
   readonly plans: readonly BillingPlanCard[]
-  readonly addOns: readonly BillingAddOn[]
+  readonly standalonePurchases: readonly BillingStandalonePurchase[]
   readonly usageRows: readonly CreditUsageRow[]
   readonly wallet: BillingWallet
 }
@@ -401,10 +410,11 @@ const billingFaqs: readonly { readonly question: string; readonly answer: string
   { question: 'Can I change plans at any time?', answer: 'Yes. Upgrades take effect immediately and unlock the new plan’s features right away. Downgrades take effect at the start of your next billing cycle, so you keep your current plan’s benefits until then.' },
   { question: 'How do I cancel my subscription?', answer: 'Use the Cancel Subscription button above. You’ll keep full access until your current billing period ends, after which your account moves to the Free plan. You can renew at any time before then.' },
   { question: 'What happens to my data if I cancel?', answer: 'Your saved resumes, cover letters, application history, and interview reports stay in your account. You just lose access to paid features like Auto-Apply and Copilot sessions until you resubscribe.' },
-  { question: 'Is the first-time offer available more than once?', answer: 'No. The $10 first-time Pro offer is available once per account, only before the countdown on this page expires. After it’s redeemed or the timer runs out, your plan renews at the regular price.' },
+  { question: 'Is the first-time offer available more than once?', answer: 'No. The $40 first-time Pro offer is available once per account, only before the countdown on this page expires. After it’s redeemed or the timer runs out, your plan renews at the regular $99/month price.' },
   { question: 'What payment methods do you accept?', answer: 'We accept all major debit and credit cards. Payments are processed securely and your card details are never stored on Jobwhisper’s servers.' },
   { question: 'Do you offer refunds?', answer: 'We don’t offer refunds for partial billing periods, but you can cancel at any time to stop future charges, you’ll keep access through the end of the period you already paid for.' },
-  { question: 'Can I add more balance without upgrading my plan?', answer: 'Yes. Use the Add Funds link above to earn bonus balance through referrals, or add a one-time top-up from the usage details page, it stays on your account until you spend it.' },
+  { question: 'Can I add more balance without upgrading my plan?', answer: 'Yes. Use the Add Funds link above to earn bonus balance through referrals, or use Add credits to buy more Interview Copilot balance mid-cycle ($10 minimum), it stays on your account until you spend it, on top of what your plan already includes.' },
+  { question: 'Do Resume Builder and Auto Apply require a subscription?', answer: 'No. Both are sold separately from Starter, Pro, and Premium, buy credits once in the Pay-as-you-go section below and spend them at your own pace. They work the same whether or not you have an active plan.' },
 ]
 
 function BillingFaqSection() {
@@ -461,52 +471,54 @@ function CreditUsageTable({ rows }: { readonly rows: readonly CreditUsageRow[] }
   )
 }
 
-function AddOnCard({ addOn }: { readonly addOn: BillingAddOn }) {
-  const [unlocked, setUnlocked] = useState(addOn.unlocked)
+function StandalonePurchaseCard({ purchase }: { readonly purchase: BillingStandalonePurchase }) {
+  const [balanceCredits, setBalanceCredits] = useState(0)
+  const [dialogOpen, setDialogOpen] = useState(false)
 
   return (
-    <article className={cn('flex flex-col gap-4 rounded-panel border p-5', unlocked ? 'border-positive bg-positive-surface/40' : 'border-border bg-surface')}>
+    <article className="flex flex-col gap-4 rounded-panel border border-border bg-surface p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2">
-            <h3 className="text-base font-bold text-ink">{addOn.name}</h3>
-            {unlocked ? <span className="rounded-pill border border-positive bg-positive-surface px-2.5 py-0.5 text-xs font-semibold text-positive">Unlocked</span> : null}
-          </div>
-          <p className="mt-1 text-sm leading-5 text-ink-muted">{addOn.description}</p>
+          <h3 className="text-base font-bold text-ink">{purchase.name}</h3>
+          <p className="mt-1 text-sm leading-5 text-ink-muted">{purchase.description}</p>
         </div>
-        <p className="whitespace-nowrap text-end">
-          <span className="text-2xl font-black text-ink">{addOn.price}</span>{' '}
-          <span className="text-sm text-ink-muted">{addOn.cadence}</span>
-        </p>
+        <p className="whitespace-nowrap text-end text-sm font-semibold text-ink-muted">{purchase.rateLabel}</p>
       </div>
       <ul className="grid gap-1.5 text-sm text-ink-muted">
-        {addOn.features.map((feature) => (
+        {purchase.features.map((feature) => (
           <li key={feature} className="flex items-start gap-2">
             <Check aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent" />
             <span>{feature}</span>
           </li>
         ))}
       </ul>
-      <Button variant={unlocked ? 'secondary' : 'primary'} disabled={unlocked} onClick={() => setUnlocked(true)} className="w-full sm:w-fit">
-        {unlocked ? 'Unlocked' : `Unlock ${addOn.name}, ${addOn.price}${addOn.cadence ? ` ${addOn.cadence}` : ''}`}
-      </Button>
-      <div className={cn('rounded-soft border border-dashed p-3', unlocked ? 'border-accent-muted bg-accent-subtle' : 'border-border bg-surface-subtle')}>
-        <p className="text-xs font-bold uppercase tracking-wide text-ink-muted">Further unlock</p>
-        <p className="mt-1 text-sm font-semibold text-ink">{addOn.nestedUpsell.name}</p>
-        <p className="mt-0.5 text-sm text-ink-muted">{addOn.nestedUpsell.description}</p>
-        {unlocked ? (
-          <p className="mt-2 text-sm font-semibold text-accent-text">
-            {addOn.nestedUpsell.price}{addOn.nestedUpsell.cadence ? ` ${addOn.nestedUpsell.cadence}` : ''}
-          </p>
-        ) : (
-          <p className="mt-2 text-xs text-ink-muted">Unlock {addOn.name} first to enable this.</p>
-        )}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+        <p className="text-sm text-ink-muted">
+          Balance: <span className="font-semibold text-ink">{balanceCredits} credits</span>
+        </p>
+        <Button onClick={() => setDialogOpen(true)} className="w-full sm:w-fit">Add credits</Button>
       </div>
+      {purchase.note ? (
+        <div className="rounded-soft border border-dashed border-border bg-surface-subtle p-3">
+          <p className="text-sm text-ink-muted">{purchase.note}</p>
+        </div>
+      ) : null}
+      <AddCreditsDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        title={`Add ${purchase.name} credits`}
+        description={`$${purchase.minimumDollars} minimum, credits are valid 12 months from purchase.`}
+        centsPerCredit={purchase.centsPerCredit}
+        minimumDollars={purchase.minimumDollars}
+        presetDollars={purchase.presetDollars}
+        currentBalanceCredits={balanceCredits}
+        onPurchase={(credits) => setBalanceCredits((prev) => prev + credits)}
+      />
     </article>
   )
 }
 
-export function BillingView({ homeHref, plans, addOns, usageRows, wallet }: BillingViewProps) {
+export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet }: BillingViewProps) {
   const [annual, setAnnual] = useState(true)
   const currentPlan = plans.find((plan) => plan.current) ?? plans[0]
   const currentIndex = currentPlan ? plans.indexOf(currentPlan) : 0
@@ -517,6 +529,10 @@ export function BillingView({ homeHref, plans, addOns, usageRows, wallet }: Bill
   const [proOfferSecondsLeft, setProOfferSecondsLeft] = useState(PRO_OFFER_SECONDS)
   const [proOfferApplied, setProOfferApplied] = useState(false)
   const proOfferExpired = proOfferSecondsLeft === 0
+  const proOfferRelevant = currentPlan?.id !== 'pro'
+  const [topUpOpen, setTopUpOpen] = useState(false)
+  const [remainingCents, setRemainingCents] = useState(wallet.remainingCents)
+  const [totalCents, setTotalCents] = useState(wallet.totalCents)
 
   useEffect(() => {
     const countdown = window.setInterval(() => {
@@ -580,19 +596,20 @@ export function BillingView({ homeHref, plans, addOns, usageRows, wallet }: Bill
                 </div>
               </section>
               <CreditCard
-                remainingCents={wallet.remainingCents}
-                totalCents={wallet.totalCents}
+                remainingCents={remainingCents}
+                totalCents={totalCents}
                 formatAmount={formatCredits}
                 resetDate={wallet.resetDateLabel}
                 bonusHref="/v3/settings?tab=referral"
                 detailsHref="/v3/billing/usage"
                 className="shadow-none"
+                onTopUp={() => setTopUpOpen(true)}
               />
             </div>
           </TitledPanel>
 
           <TitledPanel title="Billing & Subscription" action={<AnnualToggle annual={annual} onToggle={() => setAnnual((prev) => !prev)} />}>
-            {!proOfferExpired ? (
+            {!proOfferExpired && proOfferRelevant ? (
               <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-panel border border-accent-muted bg-accent-subtle px-4 py-3 sm:px-5">
                 <p className="text-sm font-medium text-accent-text">
                   <span className="font-bold uppercase tracking-wide">First-time offer</span>, get Pro for just ${PRO_OFFER_PRICE} today.
@@ -617,7 +634,7 @@ export function BillingView({ homeHref, plans, addOns, usageRows, wallet }: Bill
                     if (el) cardRefs.current[plan.id] = el
                     else delete cardRefs.current[plan.id]
                   }}
-                  offerAvailable={plan.id === 'pro' && !proOfferExpired}
+                  offerAvailable={plan.id === 'pro' && !proOfferExpired && proOfferRelevant}
                   offerApplied={proOfferApplied}
                   onApplyOffer={() => setProOfferApplied(true)}
                 />
@@ -634,13 +651,13 @@ export function BillingView({ homeHref, plans, addOns, usageRows, wallet }: Bill
           </TitledPanel>
 
           <div id="add-ons">
-            <TitledPanel title="Add-ons">
+            <TitledPanel title="Pay-as-you-go">
               <p className="mb-5 text-sm text-ink-muted">
-                Resume Builder and Auto Apply aren&apos;t included in any plan, unlock them separately, on top of your subscription.
+                Resume Builder and Auto Apply aren&apos;t part of any plan, no subscription needed. Buy credits once, spend them at your own pace, valid 12 months.
               </p>
               <div className="grid gap-5 md:grid-cols-2">
-                {addOns.map((addOn) => (
-                  <AddOnCard key={addOn.id} addOn={addOn} />
+                {standalonePurchases.map((purchase) => (
+                  <StandalonePurchaseCard key={purchase.id} purchase={purchase} />
                 ))}
               </div>
             </TitledPanel>
@@ -651,6 +668,22 @@ export function BillingView({ homeHref, plans, addOns, usageRows, wallet }: Bill
           <BillingFaqSection />
         </div>
       </ContentShell>
+
+      <AddCreditsDialog
+        open={topUpOpen}
+        onOpenChange={setTopUpOpen}
+        title="Add Interview Copilot credits"
+        description="Ran out mid-session? Top up now and keep going, on top of your monthly plan allowance."
+        centsPerCredit={TOPUP_CENTS_PER_CREDIT}
+        minimumDollars={TOPUP_MINIMUM_DOLLARS}
+        presetDollars={TOPUP_PRESET_DOLLARS}
+        currentBalanceCredits={Math.round(centsToCredits(remainingCents))}
+        onPurchase={(credits) => {
+          const addedCents = creditsToCents(credits)
+          setRemainingCents((prev) => prev + addedCents)
+          setTotalCents((prev) => prev + addedCents)
+        }}
+      />
     </AppWorkspace>
   )
 }

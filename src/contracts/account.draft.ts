@@ -26,23 +26,21 @@ export type BillingPlanCard = {
   readonly current?: boolean
 }
 
-// Resume Builder and Auto Apply — sold separately from every plan tier as recurring unlocks.
-export type BillingAddOnNestedUpsell = {
-  readonly name: string
-  readonly price: string
-  readonly cadence: string
-  readonly description: string
-}
-
-export type BillingAddOn = {
+// Resume Builder and Auto Apply — standalone, pay-as-you-go products, no subscription
+// required. Each has its own prepaid credit balance, bought via preset amounts + a custom
+// "Other" input, with a hard-floor minimum. See PRICING.md §2.1.
+export type BillingStandalonePurchase = {
   readonly id: string
   readonly name: string
-  readonly price: string
-  readonly cadence: string
+  readonly rateLabel: string
+  /** e.g. 10 for $0.10/credit, 100 for $1/credit. */
+  readonly centsPerCredit: number
+  readonly minimumDollars: number
+  readonly presetDollars: readonly number[]
   readonly description: string
   readonly features: readonly string[]
-  readonly unlocked: boolean
-  readonly nestedUpsell: BillingAddOnNestedUpsell
+  /** Plain informational note, e.g. Auto Apply's done-for-you packages — not a locked upsell. */
+  readonly note?: string
 }
 
 export type TutorialItem = {

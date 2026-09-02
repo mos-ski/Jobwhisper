@@ -1,5 +1,5 @@
 import { BillingView } from '@/features/account/account-view'
-import { billingAddOns, billingPlans, creditUsageRows } from '@/mocks/account'
+import { billingPlans, billingStandalonePurchases, creditUsageRows } from '@/mocks/account'
 import { CREDIT_WALLET } from '@/mocks/wallet'
 
 export function BillingPage() {
@@ -7,7 +7,7 @@ export function BillingPage() {
     <BillingView
       homeHref="/v3/app"
       plans={billingPlans}
-      addOns={billingAddOns}
+      standalonePurchases={billingStandalonePurchases}
       usageRows={creditUsageRows}
       wallet={{ remainingCents: CREDIT_WALLET.balanceCents, totalCents: CREDIT_WALLET.totalCents, resetDateLabel: CREDIT_WALLET.resetDateLabel }}
     />
