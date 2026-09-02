@@ -1,4 +1,4 @@
-import { button, divider, eyebrow, heading, infoTable, paragraph, pill, renderEmailShell } from '../shell'
+import { button, divider, heading, infoTable, paragraph, pill, renderEmailShell } from '../shell'
 import { formatDateTimeInZone } from '../format'
 import type { EmailTemplateBuilder } from '../types'
 
@@ -6,7 +6,6 @@ export const buildCopilotReportEmail: EmailTemplateBuilder = (timeZone) => {
   const sessionTime = formatDateTimeInZone(new Date('2026-09-01T18:00:00Z'), timeZone)
 
   const body = `
-${eyebrow('Interview Copilot')}
 ${heading('Your Interview Copilot session report is ready')}
 ${paragraph(`Your live session for the Product Manager role at Coinbase (${sessionTime}) has been recorded and evaluated.`)}
 ${infoTable([

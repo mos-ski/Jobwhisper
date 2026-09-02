@@ -1,4 +1,4 @@
-import { FONT, brand, button, divider, escapeHtml, eyebrow, heading, paragraph, renderEmailShell } from '../shell'
+import { FONT, brand, button, divider, escapeHtml, heading, paragraph, renderEmailShell } from '../shell'
 import { formatDateInZone } from '../format'
 import type { EmailTemplateBuilder } from '../types'
 
@@ -28,7 +28,6 @@ export const buildMeetingRecapEmail: EmailTemplateBuilder = (timeZone) => {
   const meetingDate = formatDateInZone(new Date('2026-09-01T17:00:00Z'), timeZone)
 
   const body = `
-${eyebrow('Meeting recap')}
 ${heading('Recap: Discovery call with Acme Corp')}
 ${paragraph(`${meetingDate} &middot; 45 minutes &middot; 4 attendees`, { muted: true })}
 ${paragraph('Here\'s a summary of what was discussed, generated from your call recording.')}

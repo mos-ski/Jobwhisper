@@ -98,18 +98,6 @@ export function escapeHtml(value: string): string {
     .replace(/'/g, '&#39;')
 }
 
-export function eyebrow(text: string, tone: 'live' | 'neutral' = 'neutral'): string {
-  const color = tone === 'live' ? brand.live : brand.mutedLight
-  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 14px;">
-<tr>
-<td style="padding:0 7px 0 0;">
-<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="width:6px;height:6px;line-height:6px;font-size:0;border-radius:50%;background-color:${color};">&nbsp;</td></tr></table>
-</td>
-<td style="font-family:${FONT};font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:${color};">${escapeHtml(text)}</td>
-</tr>
-</table>`
-}
-
 export function heading(text: string): string {
   return `<h1 style="margin:0 0 16px;font-family:${DISPLAY_FONT};font-size:24px;line-height:30px;font-weight:700;color:${brand.ink};">${escapeHtml(text)}</h1>`
 }
@@ -150,11 +138,21 @@ export function infoTable(rows: Array<[string, string]>): string {
 </table>`
 }
 
-export function calloutBox(html: string, tone: 'live' | 'positive' | 'neutral' = 'neutral'): string {
-  const bg = tone === 'live' ? brand.liveSurface : tone === 'positive' ? brand.positiveSurface : brand.paperSoft
-  const borderColor = tone === 'live' ? brand.live : tone === 'positive' ? brand.positive : brand.paperLine
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:${bg};border-left:3px solid ${borderColor};border-radius:4px;">
-<tr><td style="padding:14px 16px;font-family:${FONT};font-size:14px;line-height:21px;color:${brand.textLight};">${html}</td></tr>
+// The same dark ink caption panel + colored tag/dot used for the "Live — interviewer"
+// device on the VSL page, not a generic pastel/colored-left-border alert box.
+export function calloutBox(tag: string, html: string, tone: 'live' | 'neutral' = 'neutral'): string {
+  const dotColor = tone === 'live' ? brand.live : '#ffffff'
+  const tagColor = tone === 'live' ? brand.live : brand.mutedDark
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:${brand.ink};border-radius:6px;">
+<tr><td style="padding:18px 20px;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;">
+<tr>
+<td style="padding:0 6px 0 0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="width:6px;height:6px;line-height:6px;font-size:0;border-radius:50%;background-color:${dotColor};">&nbsp;</td></tr></table></td>
+<td style="font-family:${FONT};font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:${tagColor};">${escapeHtml(tag)}</td>
+</tr>
+</table>
+<p style="margin:0;font-family:${FONT};font-size:14px;line-height:21px;color:#ffffff;">${html}</p>
+</td></tr>
 </table>`
 }
 

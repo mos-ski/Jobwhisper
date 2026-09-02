@@ -1,4 +1,4 @@
-import { FONT, brand, button, divider, escapeHtml, eyebrow, heading, paragraph, pill, renderEmailShell } from '../shell'
+import { FONT, brand, button, divider, escapeHtml, heading, paragraph, pill, renderEmailShell } from '../shell'
 import type { EmailTemplateBuilder } from '../types'
 
 const JOBS = [
@@ -32,7 +32,6 @@ function jobList(): string {
 
 export const buildJobAlertEmail: EmailTemplateBuilder = () => {
   const body = `
-${eyebrow('Job matches')}
 ${heading('3 new matches for Product Manager roles')}
 ${paragraph('Based on your Auto Apply preferences, here are today\'s strongest matches.')}
 ${jobList()}
