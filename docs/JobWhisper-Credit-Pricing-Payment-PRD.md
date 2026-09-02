@@ -18,7 +18,7 @@ There are three layers here, and they need to stay conceptually separate even th
 
 ### 2.1 What a credit is worth
 
-- One credit was worth **$0.40 USD**, fixed — this constant no longer holds. Confirmed 2026-09-02 (in response to why Coding/Meeting Copilot still showed "2 credits/min"): the new model normalizes to **1 credit per metered unit** (1 credit/min, 1 credit/prompt) for easy mental math, with the dollar value of that 1 credit varying by feature — $0.10 for Interview Copilot, $0.20 for Interview Prep, $0.80 for Coding/Meeting Copilot, $0.10 for a Resume Builder prompt. There is no longer a single fixed $/credit constant across features. Still not fully nailed down: whether "credit" survives as a display concept at all under this model, or whether it's cleaner to just bill these as flat per-unit dollar rates with no credit abstraction in between — but the "always 1 unit" part is confirmed.
+- One credit was worth **$0.40 USD**, fixed — this constant no longer holds. Confirmed 2026-09-02: the new model normalizes to **1 credit per metered unit** (1 credit/min, 1 credit/prompt) for easy mental math, with the dollar value of that 1 credit varying by feature — $0.10 for Interview Copilot, Coding Copilot, and Meeting Copilot alike, $0.20 for Interview Prep, $0.10 for a Resume Builder prompt. There is no longer a single fixed $/credit constant across features. Still not fully nailed down: whether "credit" survives as a display concept at all under this model, or whether it's cleaner to just bill these as flat per-unit dollar rates with no credit abstraction in between — but the "always 1 unit" part is confirmed.
 - Behind the scenes, every balance should be tracked in real currency (cents), never in "credits" as a native unit — credits are purely how the number is presented to the user. This matters for the payment build: money in, money out, and the ledger should all be cents; the credit figure is a conversion applied only when something is displayed.
 - Credit amounts shown to a user are always a whole number, rounded up in magnitude — never rounded down in a way that could make a real deduction look like it cost "0 credits." A dollar figure shown next to a credit amount is always an exact conversion, never approximated or prefixed with "~".
 
@@ -31,12 +31,12 @@ There are three layers here, and they need to stay conceptually separate even th
 | Auto Apply — done-for-you | One **successful** done-for-you application | $10 / successful application |
 | Interview Prep | Per minute of a live practice session | $0.20 / credit / min |
 | Interview Copilot | Per minute of a live session | $0.10 / credit / min |
-| Coding Copilot | Per minute of a live session | 1 credit ($0.80) / min *(no new dollar rate given — kept the old $0.80, restated as 1 credit/min for consistency, not 2)* |
-| Meeting Copilot | Per minute of a live session | 1 credit ($0.80) / min *(same as above)* |
+| Coding Copilot | Per minute of a live session | $0.10 / credit / min |
+| Meeting Copilot | Per minute of a live session | $0.10 / credit / min |
 | ATS Scoring | Click "Score Resume" | Free |
 | AI Suggester | Rewrite a phrase or statement | Free |
 
-Corrected 2026-09-02, per `PRICING.md` §3. Three changes beyond the numbers themselves: Auto Apply is now **success-gated** (charged only when an application actually succeeds, not per attempt — the old 3-credit/application rate charged on submission regardless of outcome); Resume Builder's unit changed from "message" to "prompt"; and every rate is now **1 credit per unit**, never 2 or 3 — see §2.1's updated note. Coding/Meeting Copilot were corrected from "2 credits/min" to "1 credit/min" for this reason, keeping the same $0.80 dollar value (no new dollar figure was given for those two, only the credit-count convention changed).
+Corrected 2026-09-02, per `PRICING.md` §3. Three changes beyond the numbers themselves: Auto Apply is now **success-gated** (charged only when an application actually succeeds, not per attempt — the old 3-credit/application rate charged on submission regardless of outcome); Resume Builder's unit changed from "message" to "prompt"; and every rate is now **1 credit per unit**, never 2 or 3 — see §2.1's updated note. Coding/Meeting Copilot are now confirmed at **$0.10/credit/min**, same as Interview Copilot — not the old $0.80 (that was a placeholder while these two had no new rate; a real number has now been given, and all three Copilot modes charge the same $0.10/min).
 
 A separate, related initiative — a desktop version of the interview copilot sold under different pricing — currently plans to bill live sessions by the hour (1 credit per hour or fraction of an hour) instead of per minute, at different subscription prices ($49/$79 instead of $100/$200). If both are meant to be the same underlying product, this needs to be reconciled into one metering model and one price before either ships — see the open questions in §8.
 

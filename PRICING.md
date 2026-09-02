@@ -42,6 +42,8 @@ This is the live, editable source of truth for pricing: what's actually charged 
 | Feature | Rate | Was |
 |---|---|---|
 | Interview Copilot | $0.10 / credit / min | $0.80/min (2 credits) |
+| Coding Copilot | $0.10 / credit / min | $0.80/min (2 credits) |
+| Meeting Copilot | $0.10 / credit / min | $0.80/min (2 credits) |
 | Interview Prep | $0.20 / credit / min | $0.80/min (2 credits) |
 | Auto Apply — self-serve | $1 / successful applied job | $1.20/application (3 credits), not success-gated |
 | Auto Apply — done-for-you | $10 / successful job | new |
@@ -51,11 +53,11 @@ This is the live, editable source of truth for pricing: what's actually charged 
 
 *(Interview Prep corrected from an earlier same-day $0.12 to $0.20 — a typo in the first pass, not two different numbers in flux. Resume Builder's unit corrected from "message" to "prompt" — same $0.10 rate, just the more accurate word for what triggers the charge.)*
 
-**Ambiguity resolved 2026-09-02:** the fixed $0.40/credit constant (`docs/CREDIT_PRICING_PAYMENT_PRD.md` §2.1) is dropped. The new model is **1 credit per metered unit, always** (1 credit/min, 1 credit/prompt — never 2 or 3 like the old rates), with the *dollar value* of that 1 credit varying by feature: $0.10 for Interview Copilot, $0.20 for Interview Prep, $0.80 for Coding/Meeting Copilot. So "$0.10/credit/min" reads as "1 credit per minute, and in this context a credit is worth $0.10" — confirmed by the correction that Coding/Meeting Copilot's old "2 credits/min" was wrong and should be "1 credit/min" (same $0.80). Still open: whether "credit" survives as a user-facing display concept at all under this model, versus just billing flat per-unit dollar amounts with no credit language in between.
+**Ambiguity resolved 2026-09-02:** the fixed $0.40/credit constant (`docs/CREDIT_PRICING_PAYMENT_PRD.md` §2.1) is dropped. The new model is **1 credit per metered unit, always** (1 credit/min, 1 credit/prompt — never 2 or 3 like the old rates), with the *dollar value* of that 1 credit varying by feature. So "$0.10/credit/min" reads as "1 credit per minute, and in this context a credit is worth $0.10." Still open: whether "credit" survives as a user-facing display concept at all under this model, versus just billing flat per-unit dollar amounts with no credit language in between.
 
 **Also new:** Auto Apply is now explicitly **success-gated** ("successful auto applied job" / "successful done for you job") — a user is charged only when an application actually succeeds, not per attempt. This wasn't true of the old 3-credit/application rate and needs to be reflected in whatever metering logic gets built (`docs/CREDIT_PRICING_PAYMENT_PRD.md` §4.6 on holds/ledger will need updating for this — a hold that never converts to a charge if the application fails, rather than a hold that always settles).
 
-This table doesn't yet cover Coding Copilot or Meeting Copilot with a new dollar figure — assume the old $0.80/min value stands for those until corrected. **But the credit-count convention does apply to them**: corrected 2026-09-02 to **1 credit/min**, not the old "2 credits/min" — every rate in this new model is 1 credit per unit (1/min, 1/prompt), never 2 or 3, so the dollar value varies by feature but the credit count never does. See `docs/JobWhisper-Credit-Pricing-Payment-PRD.md` §2.1 for the fuller note on what this means for the credit system generally.
+**Coding Copilot and Meeting Copilot are confirmed at $0.10/credit/min** (2026-09-02), same as Interview Copilot — all three Copilot modes now charge identically. This replaces an earlier placeholder that kept them at the old $0.80/min while only fixing the credit-count wording; a real rate has since been given.
 
 ## 4. Live pricing surfaces (where these numbers need to actually get wired in)
 
