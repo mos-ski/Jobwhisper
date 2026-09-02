@@ -43,6 +43,8 @@ Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold st
 
 *(Correcting my own error, not the founder's: I'd previously written ≈50/100/200 here, an order of magnitude off — the actual typo was in the credits figure, not the minutes. ≈500/1,000/2,000 is the number that's actually close to the exact 470/990/1,970 derivation.)*
 
+**Freemium tier, revised 2026-09-02:** a non-subscriber gets **50 minutes/month**, free — not 5 credits as the older PRDs state. Since 1 credit = 1 minute (§3), that's the same thing as saying 50 credits/month, just stated in the more intuitive unit. Refreshes monthly on a rolling basis (reset anchor — calendar month vs. rolling 30 days from signup — still unspecified, carried over unresolved from the older PRDs).
+
 **Premium includes Full-Auto Mode** (decided 2026-09-02, see §2) — Premium subscribers get Full-Auto job selection as part of the $197/mo plan. This is the one place the core subscription and the Auto Apply upsell touch each other; everything else in §2 is sold independently of Starter/Pro/Premium.
 
 **Still not corrected anywhere in code or docs:** feature access matrix (Interview/Coding/Meeting mode gating) and annual pricing. `docs/PRICING_STRATEGY_PRD.md` §2–§5 still describes the *structure* (which tier gets which Copilot modes) using the old prices.

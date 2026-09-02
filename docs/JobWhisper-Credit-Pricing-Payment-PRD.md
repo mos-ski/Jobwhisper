@@ -50,7 +50,7 @@ There are three ways a wallet balance increases:
 
 ### 2.4 Free trial balance
 
-A user with no active subscription still gets **5 free credits every month**, on a rolling basis. Before this can be built against real time, product needs to confirm the reset anchor: does it reset on the calendar month, or 30 days from the date the person signed up?
+A user with no active subscription still gets **50 minutes (50 credits) every month, free** — revised 2026-09-02, up from the original 5 credits. Same unit as everywhere else in the new model (1 credit = 1 minute, `PRICING.md` §3). Still on a rolling basis. Before this can be built against real time, product needs to confirm the reset anchor: does it reset on the calendar month, or 30 days from the date the person signed up?
 
 ## 3. Subscription Plans & Pricing
 
