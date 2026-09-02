@@ -31,15 +31,17 @@ Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold st
 
 ## 1. Plan 1 — Ace Your Interview (subscription tiers, corrected 2026-09-02)
 
-| Tier | Price | Credits/mo (= min/mo of Copilot) | Notes |
-|---|---|---|---|
-| **Starter** | **$47/month** | 470 | was $20/mo, 20 credits |
-| **Pro** | **$99/month** | 990 | was $100/mo, 100 credits |
-| **Premium** | **$197/month** | 1,970 | was $200/mo, 200 credits |
+| Tier | Price | Credits/mo (approx.) |
+|---|---|---|
+| **Starter** | **$47/month** | ≈50 credits |
+| **Pro** | **$99/month** | ≈100 credits |
+| **Premium** | **$197/month** | ≈200 credits |
 
 **First-time Pro offer:** $40 first month, renews at $99/month. This resolves an inconsistency that existed across older docs (the transition plan alone said $99, $100, and $100 in three different places for the renewal price) and also resolves the coincidence flagged in the previous version of this file — VSL's checkout should now explicitly charge $40 first month / $99 renewal to match, not just happen to be close.
 
-**Credits/mo re-derived 2026-09-02** as price ÷ $0.10 (the Interview Copilot/Coding/Meeting/Prep rate, §3 — all four now equal) — see `docs/JobWhisper-Credit-Pricing-Payment-PRD.md` §3.1 for the full derivation. One thing worth confirming before treating it as final: this implies **zero gross margin on the credit allowance itself** (the subscription price converts 1:1 into usable Copilot/Prep minutes). Since Interview Prep's rate was brought down to match Copilot's exactly (§3), "credits/mo" is now a clean single minutes-equivalent across every live-session feature — the earlier caveat about Prep buying half as many minutes no longer applies.
+**Credits/mo revised 2026-09-02 to round, approximate numbers** (≈50/100/200) instead of the previous exact price ÷ $0.10 derivation (470/990/1,970) — cleaner for marketing, and it walks back the "zero gross margin" issue that exact derivation implied, since ≈50 credits ($5 of Copilot time at $0.10/credit/min) is well under the $47 price.
+
+**Flagging a real conflict, not resolving it myself:** you also said these round numbers are "50 credits / **500 minutes**," "100 credits / **1,000 mins**," "200 credits / **2,000 mins**" — a 10:1 ratio. But §3's rate is $0.10/credit **per minute**, i.e. 1 credit = 1 minute, established a few corrections back. At that rate, 50 credits is 50 minutes, not 500. Before I put "500/1,000/2,000 minutes" anywhere: is that a typo (one extra zero, meant 50/100/200 min, matching credits 1:1), or is the *subscription* credit meant to convert to minutes differently than Plan 2's per-action credit does? I've left minutes out of the table above rather than guess.
 
 **Premium includes Full-Auto Mode** (decided 2026-09-02, see §2) — Premium subscribers get Full-Auto job selection as part of the $197/mo plan. This is the one place the core subscription and the Auto Apply upsell touch each other; everything else in §2 is sold independently of Starter/Pro/Premium.
 
