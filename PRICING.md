@@ -33,7 +33,6 @@ Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold fu
 
 | Tier | Price | Credits/mo (approx.) | ~min/mo of Copilot |
 |---|---|---|---|
-| **Free** | **$0/month** | 50 credits | 50 min |
 | **Starter** | **$47/month** | ≈500 credits | ≈500 min |
 | **Pro** | **$99/month** | ≈1,000 credits | ≈1,000 min |
 | **Premium** | **$197/month** | ≈2,000 credits | ≈2,000 min |
@@ -44,24 +43,26 @@ Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold fu
 
 *(Correcting my own error, not the founder's: I'd previously written ≈50/100/200 here, an order of magnitude off — the actual typo was in the credits figure, not the minutes. ≈500/1,000/2,000 is the number that's actually close to the exact 470/990/1,970 derivation.)*
 
-**Free tier revised 2026-09-02:** 50 min/mo, not the 5 credits the older PRDs state — added to the table above as its own row rather than a separate concept. Refreshes monthly on a rolling basis (reset anchor — calendar month vs. rolling 30 days from signup — still unspecified, carried over unresolved from the older PRDs).
+**Not a plan — the un-subscribed state.** Revised 2026-09-02: someone with no active subscription still gets 50 min/mo, up from the 5 credits the older PRDs state. **This is intentionally not shown as a "Free" plan card anywhere in the UI** — no tier row, no pricing table entry — it's just what happens by default before someone subscribes, not a fourth option being sold alongside Starter/Pro/Premium. (I'd added it as a table row in an earlier pass; pulled back out of both tables in this one, per that instruction.) Refreshes monthly on a rolling basis — reset anchor (calendar month vs. rolling 30 days from signup) still unspecified, carried over unresolved from the older PRDs.
 
 ### 1.1 Feature access matrix — what each tier actually unlocks
 
-| Capability | Free | Starter | Pro | Premium |
-|---|---|---|---|---|
-| Interview Prep | ✓ | ✓ | ✓ | ✓ |
-| Interview Copilot (web) | ✓ | ✓ | ✓ | ✓ |
-| Interview Copilot (desktop app) | — | — | ✓ | ✓ |
-| Coding Copilot | — | — | ✓ | ✓ |
-| Meeting Copilot | — | — | ✓ | ✓ |
-| Monthly minutes (§ above) | 50 | ≈500 | ≈1,000 | ≈2,000 |
+| Capability | Starter | Pro | Premium |
+|---|---|---|---|
+| Interview Prep | ✓ | ✓ | ✓ |
+| Interview Copilot (web) | ✓ | ✓ | ✓ |
+| Interview Copilot (desktop app) | — | ✓ | ✓ |
+| Coding Copilot | — | ✓ | ✓ |
+| Meeting Copilot | — | ✓ | ✓ |
+| Monthly minutes (§ above) | ≈500 | ≈1,000 | ≈2,000 |
+
+The un-subscribed/free state (50 min/mo, §1 above) isn't a column here on purpose — it's not a plan, so it doesn't belong in a table meant to compare plans. In practice it behaves like a capped version of the Starter row (Interview Prep + web Copilot only), but that's carried over from the older PRDs, not something separately reconfirmed.
 
 **Revised 2026-09-02: Meeting Copilot moved from Premium-only to included in Pro.** Auto Apply Full-Auto Mode is **removed from this table entirely** — Plan 1 is interview-only now, no cross-reference into Plan 2/3 (see §2.3, rewritten).
 
 **This raises a real question I'm not resolving myself: with Meeting Copilot now in both Pro and Premium, what does Premium actually add over Pro?** Before this change, Premium's differentiators were Meeting Copilot access *and* the Full-Auto Mode tie-in — both are gone now (Full-Auto per §2.3, Meeting Copilot per the line above). As written, the only thing separating Premium from Pro is minutes/mo (≈2,000 vs ≈1,000) and price ($197 vs $99) — same feature set, more of it, twice the cost. That may be intentional (a pure usage tier, not a feature tier), but it's worth saying out loud rather than leaving Premium's rationale to erode silently across a few small decisions.
 
-**Caveat, don't treat the row structure above as freshly confirmed either:** it's still carried over from `docs/PRICING_STRATEGY_PRD.md` §2 except where explicitly revised in this session. Whether Free really gets full-tier Prep/web-Copilot access (just capped at 50 min) hasn't been separately reconfirmed since Free was only just added.
+**Caveat, don't treat the row structure above as freshly confirmed either:** it's still carried over from `docs/PRICING_STRATEGY_PRD.md` §2 except where explicitly revised in this session.
 
 **Still not corrected anywhere in code:** the feature access matrix now lives in §1.1 above, but nothing in `src/mocks/billing.ts`/`account.ts` reflects it. Annual pricing is also still unaddressed.
 
