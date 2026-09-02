@@ -1,6 +1,6 @@
 # Lightforth to Jobwhisper Transition Plan
 
-> **Note:** converted from a PDF for editing. The pricing table in this document is now superseded by `PRICING.md` at the repo root (corrected 2026-09-02) — kept below exactly as originally written for reference. Everything else here (migration mechanics, timeline, checklist, email campaign) is not a pricing matter and is unaffected.
+> **Note:** converted from a PDF for editing. All pricing below has been corrected to match `PRICING.md` at the repo root (2026-09-02) — this is no longer the original PDF text, it's live and current.
 
 ## Objective
 
@@ -14,9 +14,7 @@ Lightforth will remain live for 30–60 days. Existing users can continue access
 
 Lightforth visitor → explores product (or landing page) → attempts to subscribe → sees Jobwhisper transition prompt → creates Jobwhisper account → receives first-time Pro offer → pays → completes Jobwhisper onboarding.
 
-Suggested message: "Lightforth is now Jobwhisper. We've rebuilt the experience with a new account system, flexible plans and more focused career tools. Continue on Jobwhisper and get Pro for $20 for your first month, normally $99/month. Renews at $99/month."
-
-*(As originally written. Note this PDF is internally inconsistent about the Pro renewal price — this line says $99/month, the pricing table below says "$20 first month; 80% off; renews at $100/month," and the Email Campaign section below says "$20 for the first month, normally $100/month." **`PRICING.md` resolves this: $40 first month, renews at $99/month** — a correction from 2026-09-02, not a pick between the two numbers already here.)*
+Suggested message: "Lightforth is now Jobwhisper. We've rebuilt the experience with a new account system, flexible plans and more focused career tools. Continue on Jobwhisper and get Pro for $40 for your first month, normally $99/month. Renews at $99/month."
 
 ## Existing Lightforth Users
 
@@ -34,16 +32,16 @@ If it is not possible, stop the next Lightforth renewal only after preserving th
 
 ## Jobwhisper Pricing
 
-**Superseded — see `PRICING.md` for corrected numbers.** As originally written in this plan:
-
 | Offer | Price | Notes |
 |---|---|---|
 | Starter | $47/month | 20 credits; Interview Prep; Interview Copilot Web ~200mins |
 | Pro | $99/month | 100 credits; Web + Desktop; Coding Copilot ~10,000mins |
-| First-Time Pro Offer | $20 first month | 80% off; renews at $100/month |
+| First-Time Pro Offer | $40 first month | Renews at $99/month |
 | Premium | $197/month | 2000 credits; Pro features; Meeting Copilot; Priority Support ~20,000mins |
-| Resume Builder | $15/month add-on | Separate paid unlock |
-| Auto Apply | $40/month add-on | Separate paid unlock |
+| Resume Builder | $15/month add-on | Separate paid unlock — usage-based rate also applies per `PRICING.md` §3 ($0.10/prompt); whether the flat monthly unlock and the per-prompt rate both apply, or the flat fee is replaced, is unresolved |
+| Auto Apply | $40/month add-on | Separate paid unlock — same open question as Resume Builder, against the new $1/successful job (self-serve) and $10/successful job (done-for-you) rates in `PRICING.md` §3 |
+| Done-for-you (small) | $497 | See `PRICING.md` §2 — differentiator vs. the $999 tier not yet specified |
+| Done-for-you (full) | $999 | See `PRICING.md` §2 |
 
 *(Typo preserved from the original: the Pro row says "~10,00mins" — presumably 10,000, matching the pattern of Starter's ~200mins and Premium's ~20,000mins scaling by 100x/tier, but not corrected here since the actual number wasn't confirmed.)*
 
@@ -51,7 +49,7 @@ If it is not possible, stop the next Lightforth renewal only after preserving th
 
 Persistent banner: "Lightforth is now Jobwhisper. We're moving to a rebuilt platform with a new account and pricing system. Create your Jobwhisper account to continue."
 
-At the payment stage, new users should see the stronger commercial migration message and be redirected to the Jobwhisper $20 first-month Pro offer. *(See the note above — this first-month number is now $40 per `PRICING.md`.)*
+At the payment stage, new users should see the stronger commercial migration message and be redirected to the Jobwhisper $40 first-month Pro offer.
 
 Existing users should have a clear Migration Support option for subscriptions, credits, previous account information and billing issues.
 
@@ -60,7 +58,7 @@ Existing users should have a clear Migration Support option for subscriptions, c
 - **Email 1: Announcement.** Lightforth is now Jobwhisper. Explain the rebrand and 30–60 day transition.
 - **Email 2: Existing User Migration.** Explain new account creation, same-email verification and how paid value will be handled.
 - **Email 3: What Has Changed.** Introduce the new plans, credit system, Copilots and paid add-ons.
-- **Email 4: First-Time Offer.** Promote Pro at $20 for the first month, normally $100/month, with renewal clearly disclosed. *(Numbers superseded — see above.)*
+- **Email 4: First-Time Offer.** Promote Pro at $40 for the first month, normally $99/month, with renewal clearly disclosed.
 - **Email 5: Migration Reminder.** Remind remaining users to move before Lightforth retirement and provide support.
 
 ## US Relaunch Cleanup

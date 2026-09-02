@@ -2,7 +2,7 @@
 
 Product Requirements Document · v1.0 · Draft, In Review · Author: Product
 
-> **Note:** this is a converted-to-editable-markdown version of a PDF that was in `docs/`. Its content substantially overlaps with `docs/CREDIT_PRICING_PAYMENT_PRD.md` (same subject, different prose, largely the same numbers) — the two were apparently written independently. **For current, corrected numbers, `PRICING.md` at the repo root is the source of truth**, not either of these two PRDs; both are kept as background/rationale, not as the live reference.
+> **Note:** this is a converted-to-editable-markdown version of a PDF that was in `docs/`. Its content substantially overlaps with `docs/CREDIT_PRICING_PAYMENT_PRD.md` (same subject, different prose) — the two were apparently written independently. Pricing and rate numbers below have been corrected to match `PRICING.md` at the repo root (2026-09-02); the architecture/process sections (§4 onward) are original and unaffected.
 
 This document specifies how JobWhisper's credit system, subscription pricing, and payment processing should work together. It's written to be read start to finish by an engineer picking up the build — it explains the product decisions that are settled, and flags, explicitly, the ones that still need a call from the business before they can be built.
 
@@ -18,7 +18,7 @@ There are three layers here, and they need to stay conceptually separate even th
 
 ### 2.1 What a credit is worth
 
-- One credit is worth **$0.40 USD**, fixed. *(See `PRICING.md` — this value is now superseded for several features by the new per-unit rates given 2026-09-02; not yet reconciled into a single model.)*
+- One credit was worth **$0.40 USD**, fixed — this constant is now in question. The 2026-09-02 rate corrections (§2.2) don't divide evenly against $0.40, so either this constant is being redefined, or the new rates bypass the credit abstraction and bill in direct dollars per unit. Unresolved — see `PRICING.md` §3.
 - Behind the scenes, every balance should be tracked in real currency (cents), never in "credits" as a native unit — credits are purely how the number is presented to the user. This matters for the payment build: money in, money out, and the ledger should all be cents; the credit figure is a conversion applied only when something is displayed.
 - Credit amounts shown to a user are always a whole number, rounded up in magnitude — never rounded down in a way that could make a real deduction look like it cost "0 credits." A dollar figure shown next to a credit amount is always an exact conversion, never approximated or prefixed with "~".
 
@@ -26,16 +26,17 @@ There are three layers here, and they need to stay conceptually separate even th
 
 | Feature | What triggers a charge | Rate |
 |---|---|---|
-| Resume Builder | One prompt/message sent to the AI | 1 credit ($0.40) / message |
-| Auto Apply | One successful job application submitted | 3 credits ($1.20) / application |
-| Interview Prep | Per minute of a live practice session | 2 credits ($0.80) / min |
-| Interview Copilot | Per minute of a live session | 2 credits ($0.80) / min |
-| Coding Copilot | Per minute of a live session | 2 credits ($0.80) / min |
-| Meeting Copilot | Per minute of a live session | 2 credits ($0.80) / min |
+| Resume Builder | One prompt sent to the AI | $0.10 / prompt |
+| Auto Apply — self-serve | One **successful** job application | $1 / successful application |
+| Auto Apply — done-for-you | One **successful** done-for-you application | $10 / successful application |
+| Interview Prep | Per minute of a live practice session | $0.20 / credit / min |
+| Interview Copilot | Per minute of a live session | $0.10 / credit / min |
+| Coding Copilot | Per minute of a live session | 2 credits ($0.80) / min *(no new rate given — old rate stands)* |
+| Meeting Copilot | Per minute of a live session | 2 credits ($0.80) / min *(no new rate given — old rate stands)* |
 | ATS Scoring | Click "Score Resume" | Free |
 | AI Suggester | Rewrite a phrase or statement | Free |
 
-**These per-feature rates are superseded by `PRICING.md`'s new usage-based rates (2026-09-02)** — Resume Builder, Auto Apply, Copilot, and Interview Prep all have new numbers there. This table is kept for historical reference only.
+Corrected 2026-09-02, per `PRICING.md` §3. Two changes beyond the numbers themselves: Auto Apply is now **success-gated** (charged only when an application actually succeeds, not per attempt — the old 3-credit/application rate charged on submission regardless of outcome), and Resume Builder's unit changed from "message" to "prompt." The "$X/credit/min" phrasing for Interview Prep/Copilot is ambiguous against the $0.40/credit constant in §2.1 — see the note there.
 
 A separate, related initiative — a desktop version of the interview copilot sold under different pricing — currently plans to bill live sessions by the hour (1 credit per hour or fraction of an hour) instead of per minute, at different subscription prices ($49/$79 instead of $100/$200). If both are meant to be the same underlying product, this needs to be reconciled into one metering model and one price before either ships — see the open questions in §8.
 
@@ -53,15 +54,17 @@ A user with no active subscription still gets **5 free credits every month**, on
 
 ## 3. Subscription Plans & Pricing
 
-**Numbers in this section are superseded — see `PRICING.md`.** Kept below exactly as originally written, for reference.
-
 ### 3.1 Plan tiers
 
 | Tier | Price | Surface | Interview | Coding | Meeting | Credits/mo |
 |---|---|---|---|---|---|---|
-| Starter | $20/mo · $192/yr | Web only | Yes | No | No | 20 |
-| Pro | $100/mo · $960/yr | Web + Desktop | Yes | Yes | No | 100 |
-| Premium | $200/mo · $1,920/yr | Web + Desktop | Yes | Yes | Yes | 200 |
+| Starter | $47/mo | Web only | Yes | No | No | 20 *(not yet re-derived for the new price — see below)* |
+| Pro | $99/mo | Web + Desktop | Yes | Yes | No | 100 *(not yet re-derived)* |
+| Premium | $197/mo | Web + Desktop | Yes | Yes | Yes | 200 *(not yet re-derived)* |
+
+Prices corrected 2026-09-02 (was $20/$100/$200 — see `PRICING.md` §1). Annual pricing ($192/$960/$1,920/yr under the old prices) not yet re-derived for the new monthly prices. Per-tier credit allowances also not yet re-derived — these are almost certainly wrong now given the underlying per-feature rates changed too (§2.2), but no new numbers have been given for them specifically.
+
+**First-time Pro offer:** $40 first month, renews at $99/month (matches the VSL checkout's intro pricing — see `PRICING.md` §1).
 
 Resume Builder and Auto Apply are deliberately excluded from every tier, including Premium — they're sold separately as add-ons (§3.2). This is a strategic choice: rather than capping revenue per user at the top subscription tier, Resume Builder and Auto Apply each become their own upsell surface with room to keep growing account value well past the Premium price point.
 
@@ -73,6 +76,10 @@ Add-ons require an active subscription of any tier — they aren't sold to accou
 |---|---|---|
 | Resume Builder | $15/mo | AI Suggestions & Premium Templates — price not yet set, unlocked only once Resume Builder itself is active |
 | Auto Apply | $40/mo | Full-Auto Mode — +$10/mo, removes the manual step of picking which jobs to apply to, unlocked only once Auto Apply itself is active |
+
+**Open conflict, unresolved (`PRICING.md` §6.1):** §2.2 above now also prices Resume Builder at $0.10/prompt and Auto Apply at $1–$10/successful job. It's not decided whether these flat monthly add-on prices still stand *alongside* the new usage-based rates (e.g. $40/mo unlocks the feature, then usage is metered on top), or whether the flat add-on model is being replaced by pure pay-per-use. Do not assume either answer when implementing — this needs a product decision first.
+
+**Done-for-you plans (new, not in the original PRD):** $497 and $999 flat packages exist alongside the $10/successful-job done-for-you rate above — same open-conflict shape as Auto Apply. See `PRICING.md` §2.
 
 At checkout, when a user subscribes to any tier, offer Auto Apply and/or Resume Builder as an order bump before the purchase completes — unchecked by default, cart total updates live if the user adds one, and it's dismissible without blocking the base subscription. The further unlocks inside each add-on (Full-Auto Mode, AI Suggestions) are not offered at this moment — they should be surfaced later, inside the add-on's own product experience, once the user is actually using it.
 
