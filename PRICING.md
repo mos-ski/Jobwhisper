@@ -15,7 +15,7 @@ Users are sold one of three distinct intents — these aren't three tiers of one
 | **3. Find Jobs, Done For You** (§2.2) | Same question, but hands-off | Auto Apply + Resume Builder + a human success manager + Jobwhisper product access | Flat committed package ($497 / $997) |
 | **The Marketplace** (§5) | — | One-time content: swipe files, scripts, templates | Flat one-time purchases, $9–$29 |
 
-Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold standalone — no Starter/Pro/Premium required — except that being a Premium subscriber changes *how* Plan 2's Auto Apply behaves (§2.3).
+Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold fully standalone — no Starter/Pro/Premium required, and (revised 2026-09-02) no subscription tier changes how they behave either. The two are cleanly decoupled now.
 
 ## Pricing documents in this repo
 
@@ -54,13 +54,14 @@ Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold st
 | Interview Copilot (web) | ✓ | ✓ | ✓ | ✓ |
 | Interview Copilot (desktop app) | — | — | ✓ | ✓ |
 | Coding Copilot | — | — | ✓ | ✓ |
-| Meeting Copilot | — | — | — | ✓ |
-| Auto Apply Full-Auto Mode (§2.3, a Plan 2 perk unlocked by this tier) | — | — | — | ✓ |
+| Meeting Copilot | — | — | ✓ | ✓ |
 | Monthly minutes (§ above) | 50 | ≈500 | ≈1,000 | ≈2,000 |
 
-**Caveat, don't treat this as freshly confirmed:** the row structure (which tier gets which Copilot mode) is carried over unchanged from `docs/PRICING_STRATEGY_PRD.md` §2 — only the headline prices and credit amounts have actually been revisited in the 2026-09-02 planning conversations. Whether Interview Prep and web Copilot really belong on the *Free* row specifically (as opposed to, say, Free only getting Prep, or a lower cap than the paid tiers) hasn't been explicitly reconfirmed since Free itself was only just added (§1). Worth a real yes/no before this goes into a UI.
+**Revised 2026-09-02: Meeting Copilot moved from Premium-only to included in Pro.** Auto Apply Full-Auto Mode is **removed from this table entirely** — Plan 1 is interview-only now, no cross-reference into Plan 2/3 (see §2.3, rewritten).
 
-**Premium includes Full-Auto Mode** (decided 2026-09-02, see §2) — Premium subscribers get Full-Auto job selection as part of the $197/mo plan. This is the one place the core subscription and the Auto Apply upsell touch each other; everything else in §2 is sold independently of Starter/Pro/Premium.
+**This raises a real question I'm not resolving myself: with Meeting Copilot now in both Pro and Premium, what does Premium actually add over Pro?** Before this change, Premium's differentiators were Meeting Copilot access *and* the Full-Auto Mode tie-in — both are gone now (Full-Auto per §2.3, Meeting Copilot per the line above). As written, the only thing separating Premium from Pro is minutes/mo (≈2,000 vs ≈1,000) and price ($197 vs $99) — same feature set, more of it, twice the cost. That may be intentional (a pure usage tier, not a feature tier), but it's worth saying out loud rather than leaving Premium's rationale to erode silently across a few small decisions.
+
+**Caveat, don't treat the row structure above as freshly confirmed either:** it's still carried over from `docs/PRICING_STRATEGY_PRD.md` §2 except where explicitly revised in this session. Whether Free really gets full-tier Prep/web-Copilot access (just capped at 50 min) hasn't been separately reconfirmed since Free was only just added.
 
 **Still not corrected anywhere in code:** the feature access matrix now lives in §1.1 above, but nothing in `src/mocks/billing.ts`/`account.ts` reflects it. Annual pricing is also still unaddressed.
 
@@ -100,14 +101,16 @@ A real person manually applies on the user's behalf, with a success manager assi
 
 **Confirmed 2026-09-02: the $497 (small, 50-job) package is added to the VSL checkout's cart** as one of the selectable add-on line items, alongside the existing swipe files/templates/scripts (§4.2, §5) — not replacing that stack, joining it. Not addressed: whether the $997 (large) package also goes in the cart, or is reserved for the post-purchase cross-sell pop-up already noted in §7 (which would make sense — $497 as a low-friction in-cart add, $997 as the bigger-commitment follow-up pitch once someone's already bought something). That connection is a plausible reading, not a confirmed decision — don't build it that way without checking.
 
-### 2.3 Full-Auto Mode — a Premium perk, mechanics confirmed
+### 2.3 Job selection — a free preference, not a paid tier
 
-The old "$10/mo Full-Auto Mode" paid toggle is retired. **Confirmed 2026-09-02, folded into Premium (Plan 1) instead, and now mechanically concrete:**
+**Revised 2026-09-02, superseding the "Full-Auto is a Premium perk" decision from earlier the same day.** "Full-Auto Mode" as a Premium-subscription-gated concept is retired entirely — it's not a $10/mo toggle, and it's not folded into Premium either. Instead, it's a **free preference inside Auto Apply itself** (Plan 2/3), open to everyone regardless of subscription:
 
-- **Premium subscribers:** set job preferences once, Auto Apply runs autonomously, user is notified when the target job count is reached. No per-application confirmation step.
-- **Everyone else (Plan 2, no Premium):** the AI still drives everything — finds, filters, tailors, prepares each application — but the user has to click "apply" themselves to actually submit each one.
+- **Select jobs yourself** — you pick which roles from the matched list get applied to.
+- **Let the AI select** — the AI picks jobs matching your criteria on your behalf.
 
-So the AI is always the one *doing* the work in both cases; Premium's actual perk is removing the manual submit-click, not doing more AI work than the base product already does.
+Either way, the AI still does the actual applying — this preference is only about who curates the target list, not who submits.
+
+**What this leaves unresolved:** the earlier mechanic ("Premium subscribers get notified when done and never click 'apply'; everyone else clicks 'apply' per job to submit") doesn't obviously survive this change. If job selection is free for everyone, is submission also always automatic now (matching "Auto Apply" as a product name), or does a manual per-job submit-confirmation step still exist for someone, gated some other way? Not addressed in this message — don't assume either answer.
 
 ### 2.4 Resume Builder standalone gating — resolved
 
@@ -183,9 +186,9 @@ A screenshot of an older, **Lightforth-branded** checkout step ("Wait — Boost 
 4. ~~Auto-Apply Concierge ($499)~~ — superseded by the $497/50-job DFY package. See §5.
 5. ~~Auto Apply in the subscribe-time checkout order bump~~ — removed (Resume Builder too). See §4.1.
 6. ~~Does Auto Apply require a subscription~~ — no, standalone-purchasable. See §2.
-7. ~~Full-Auto Mode's fate~~ — folded into Premium as an included perk. See §2.3.
+7. ~~Full-Auto Mode's fate~~ — **superseded again, 2026-09-02.** Not a Premium perk after all (that lasted less than a day) — retired entirely as a paid/gated concept. Job selection (self-pick vs. AI-pick) is now a free preference inside Auto Apply, open to everyone. See §2.3.
 8. ~~Resume Builder: standalone or subscription-gated~~ — standalone, same as Auto Apply. See §2.4.
-9. ~~What does "Full-Auto is a Premium perk" mean mechanically~~ — Premium sets preferences and gets notified when done (fully autonomous); everyone else gets AI-prepared applications but clicks "apply" per job themselves. See §2.3.
+9. ~~What does "Full-Auto is a Premium perk" mean mechanically~~ — moot, the premise changed. See item 7 and §2.3.
 10. ~~VSL's $999 Resume & LinkedIn Overhaul vs. the $997 DFY package~~ — same product. VSL needs rebuilding to present the actual $497/$997 packages. See §2.2, §4.2.
 11. ~~Is the credit purchase a recurring monthly charge or a one-time top-up~~ — one-time, valid 12 months, spent down at whatever pace usage happens. See §2.1.
 12. ~~Interview Prep priced above Interview Copilot~~ — fixed by matching Prep's rate down to $0.10, same as Copilot. Not a pricing-logic argument, just a decision to make them equal. See §3.
@@ -194,7 +197,9 @@ A screenshot of an older, **Lightforth-branded** checkout step ("Wait — Boost 
 
 13. **Is the $5/$10 minimum a hard floor** on the "Other" custom input (can't type in less) **or just the placeholder/suggested amount** (could theoretically still enter less)? Not specified — the Codex reference implies a floor (it validates the amount some other way), but that's inference, not confirmation.
 14. **Nothing about Plans 2/3 exists in the app yet** — `src/mocks/billing.ts`/`account.ts` still show the old flat add-on model, and there's no "Add credits" purchase UI, no DFY package selector, and no Auto Apply product surface at all beyond the auto-apply-view.tsx mock screens (which predate this whole redesign and don't reflect it). This is a bigger build than updating numbers in existing mocks — treat the whole Plan 2/3 purchase flow as net-new.
-15. Everything already flagged as open in `docs/PRICING_STRATEGY_PRD.md` §8 and `docs/CREDIT_PRICING_PAYMENT_PRD.md` §8 that isn't addressed above is still open (annual pricing, referral bonus amount, Stripe sign-off, refund/dispute policy, tax, multi-currency).
+15. **What actually differentiates Premium from Pro now?** (§1.1) Meeting Copilot moved to Pro and Full-Auto Mode stopped being a Premium perk in the same conversation — the only things left are more minutes and 2x the price, same feature set. Might be intentional (a pure usage tier), but flagging it explicitly rather than letting it go unnoticed.
+16. **Does Auto Apply's submission step still have a manual-vs-automatic split anywhere?** (§2.3) The old mechanic — Premium auto-submits, everyone else clicks "apply" per job — was tied to the now-retired Full-Auto/Premium link. Whether *any* version of manual submit-confirmation survives, for anyone, isn't addressed.
+17. Everything already flagged as open in `docs/PRICING_STRATEGY_PRD.md` §8 and `docs/CREDIT_PRICING_PAYMENT_PRD.md` §8 that isn't addressed above is still open (annual pricing, referral bonus amount, Stripe sign-off, refund/dispute policy, tax, multi-currency).
 
 ## 7. Marketing & upsell flows (backlog)
 
