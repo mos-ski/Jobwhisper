@@ -1433,6 +1433,29 @@ function JobList({
   )
 }
 
+function ApplicationQuestionCard({ question, answer }: { readonly question: string; readonly answer: string }) {
+  const [expanded, setExpanded] = useState(false)
+  const needsTruncation = answer.length > 120
+  const displayAnswer = needsTruncation && !expanded ? answer.slice(0, 120) + '...' : answer
+
+  return (
+    <div className="rounded-lg border border-border bg-surface p-4">
+      <p className="text-sm leading-6 text-ink">{question}</p>
+      <p className="mt-2 text-sm leading-6 text-ink-muted">{displayAnswer}</p>
+      {needsTruncation ? (
+        <button
+          type="button"
+          onClick={() => setExpanded((prev) => !prev)}
+          className="mt-2 flex items-center gap-1 text-sm font-medium text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+        >
+          <ChevronDown aria-hidden="true" className={cn('size-3.5 transition-transform', expanded && 'rotate-180')} />
+          {expanded ? 'Show less' : 'Show more'}
+        </button>
+      ) : null}
+    </div>
+  )
+}
+
 function JobPreview({
   job,
   onClose,
@@ -1569,6 +1592,21 @@ function JobPreview({
                     </li>
                   ))}
                 </ul>
+                <button type="button" className="flex items-center gap-1.5 text-sm font-medium text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                  <Play aria-hidden="true" className="size-3.5" />
+                  See Replay
+                </button>
+              </section>
+            ) : null}
+
+            {applied && job.applicationQuestions && job.applicationQuestions.length > 0 ? (
+              <section className="grid gap-2">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Application Questions</h3>
+                <div className="grid gap-3">
+                  {job.applicationQuestions.map((qa) => (
+                    <ApplicationQuestionCard key={qa.question} question={qa.question} answer={qa.answer} />
+                  ))}
+                </div>
               </section>
             ) : null}
 
