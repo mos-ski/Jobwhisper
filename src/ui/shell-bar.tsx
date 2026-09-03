@@ -54,7 +54,7 @@ export const ShellBar = forwardRef<HTMLElement, ShellBarProps>(
           </span>
         </nav>
 
-        <div className="flex min-h-9 shrink-0 items-center gap-8">
+        <div className="flex min-h-9 shrink-0 items-center gap-4">
           {children}
           {secondaryAction ? (
             <a href={secondaryAction.href} className="hidden min-h-9 items-center gap-3 rounded-soft px-2 text-base font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:inline-flex">

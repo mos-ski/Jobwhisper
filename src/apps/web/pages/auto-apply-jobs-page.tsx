@@ -1,6 +1,7 @@
 import { autoApplyJobs } from '@/mocks/auto-apply'
 import { resumeDocument } from '@/mocks/resume'
 import { AutoApplyJobsView } from '@/features/auto-apply/auto-apply-view'
+import { CREDIT_WALLET } from '@/mocks/wallet'
 
 export function AutoApplyJobsPage({ selectedJobId }: { readonly selectedJobId?: string }) {
   const selectedJob = autoApplyJobs.find((job) => job.id === selectedJobId)
@@ -17,6 +18,7 @@ export function AutoApplyJobsPage({ selectedJobId }: { readonly selectedJobId?: 
       selectedJob={selectedJob}
       isPremiumUser={false}
       resumePreview={resumeDocument}
+      creditUsage={{ remainingCents: CREDIT_WALLET.balanceCents, totalCents: CREDIT_WALLET.totalCents }}
     />
   )
 }

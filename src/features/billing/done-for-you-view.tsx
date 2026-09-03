@@ -1,12 +1,15 @@
 import { useState } from 'react'
 import { Check } from 'lucide-react'
 
-import { Button, ShellBar, Tooltip, TooltipContent, TooltipTrigger } from '@/ui'
+import { AppShell } from '@/features/dashboard/app-nav'
+import { formatCredits } from '@/lib/credits'
+import { Button, CreditShellBar, Tooltip, TooltipContent, TooltipTrigger, type CreditUsageIndicatorProps } from '@/ui'
 
 export type DoneForYouViewProps = {
   readonly homeHref: string
   readonly backHref: string
   readonly usageHref: string
+  readonly creditUsage?: Pick<CreditUsageIndicatorProps, 'remainingCents' | 'totalCents' | 'billingHref'>
 }
 
 const DFY_PACKAGES = [
@@ -77,12 +80,19 @@ function PackageDetailsTable() {
   )
 }
 
-export function DoneForYouView({ homeHref, backHref, usageHref }: DoneForYouViewProps) {
+export function DoneForYouView({ homeHref, backHref, usageHref, creditUsage }: DoneForYouViewProps) {
   const [sentId, setSentId] = useState<string | null>(null)
 
   return (
-    <main className="min-h-screen bg-canvas text-ink">
-      <ShellBar homeHref={homeHref} parent={{ href: backHref, label: 'Billing & subscription' }} current="Done-For-You" closeHref={backHref} closeLabel="Close done-for-you" />
+    <AppShell>
+      <CreditShellBar
+        homeHref={homeHref}
+        parent={{ href: backHref, label: 'Billing & subscription' }}
+        current="Done-For-You"
+        closeHref={backHref}
+        closeLabel="Close done-for-you"
+        creditUsage={creditUsage ? { ...creditUsage, formatCredits } : undefined}
+      />
       <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
         <article className="w-full min-w-0 bg-surface shadow-panel">
           <div className="flex min-h-[5rem] flex-wrap items-center justify-between gap-3 border-b border-border px-4 sm:px-6 lg:px-8">
@@ -135,6 +145,6 @@ export function DoneForYouView({ homeHref, backHref, usageHref }: DoneForYouView
         </article>
         <PackageDetailsTable />
       </section>
-    </main>
+    </AppShell>
   )
 }

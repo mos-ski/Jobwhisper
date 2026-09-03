@@ -2,10 +2,11 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, Download, FileText, HelpCircle, Minus, Plus, Target, X } from 'lucide-react'
 
 import type { ResumeBuilderSession, ResumeBuilderTab, ResumeChatState, ResumeDocument, ResumeHistoryRow, ResumeSectionId, ResumeTemplate } from '@/contracts/resume.draft'
-import { AiSuggestionAction, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, FormField, FormPanel, FormPanelFooter, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, TipModal, TipModalTrigger, UploadedFileDialog } from '@/ui'
+import { AiSuggestionAction, cn, CreditShellBar, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, FormField, FormPanel, FormPanelFooter, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, TipModal, TipModalTrigger, UploadedFileDialog, type CreditUsageIndicatorProps } from '@/ui'
 import { AppShell } from '@/features/dashboard/app-nav'
 import { useTypewriter } from '@/hooks/useTypewriter'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
+import { formatCredits } from '@/lib/credits'
 
 export type ResumeUploadViewProps = {
   readonly homeHref: string
@@ -41,6 +42,7 @@ export type ResumeHistoryViewProps = {
   readonly createHref: string
   readonly editorHref: string
   readonly rows: readonly ResumeHistoryRow[]
+  readonly creditUsage?: Pick<CreditUsageIndicatorProps, 'remainingCents' | 'totalCents' | 'billingHref'>
 }
 
 const sectionLabels: Record<ResumeSectionId, string> = {
@@ -1570,10 +1572,10 @@ export function ResumeEditorView({ homeHref, document, session, templates, tab, 
   )
 }
 
-export function ResumeHistoryView({ homeHref, createHref, editorHref, rows }: ResumeHistoryViewProps) {
+export function ResumeHistoryView({ homeHref, createHref, editorHref, rows, creditUsage }: ResumeHistoryViewProps) {
   return (
     <Workspace>
-      <BuilderHeader homeHref={homeHref} current="History" />
+      <CreditShellBar homeHref={homeHref} current="History" closeHref={homeHref} closeLabel="Close resume builder" creditUsage={creditUsage ? { ...creditUsage, formatCredits } : undefined} />
       <section className="px-4 py-8 lg:px-12 xl:px-24">
         <DataTable
           title="Past Resumes"

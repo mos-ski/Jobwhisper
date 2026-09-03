@@ -31,8 +31,8 @@ import type { ContextDocumentRow } from '@/contracts/documents.draft'
 import type { ResumeHistoryRow } from '@/contracts/resume.draft'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
 import { AppShell } from '@/features/dashboard/app-nav'
-import { centsToCredits, creditsToCents } from '@/lib/credits'
-import { AiSuggestionAction, Avatar, Badge, Button, Checkbox, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, UploadedFileDialog } from '@/ui'
+import { centsToCredits, creditsToCents, formatCredits } from '@/lib/credits'
+import { AiSuggestionAction, Avatar, Badge, Button, Checkbox, cn, CreditShellBar, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, UploadedFileDialog, type CreditUsageIndicatorProps } from '@/ui'
 import { useCameraStream } from '@/hooks/useCameraStream'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 import { useTypewriter } from '@/hooks/useTypewriter'
@@ -85,6 +85,7 @@ export type InterviewHistoryViewProps = {
   readonly createHref: string
   readonly reportHref: string
   readonly rows: readonly InterviewHistoryRow[]
+  readonly creditUsage?: Pick<CreditUsageIndicatorProps, 'remainingCents' | 'totalCents' | 'billingHref'>
 }
 
 export type InterviewReportViewProps = {
@@ -1303,10 +1304,10 @@ export function InterviewPreparingReportView({ homeHref, steps, onComplete }: In
   )
 }
 
-export function InterviewHistoryView({ homeHref, createHref, reportHref, rows }: InterviewHistoryViewProps) {
+export function InterviewHistoryView({ homeHref, createHref, reportHref, rows, creditUsage }: InterviewHistoryViewProps) {
   return (
     <Workspace>
-      <InterviewHeader homeHref={homeHref} current="History" />
+      <CreditShellBar homeHref={homeHref} current="History" closeHref={homeHref} closeLabel="Close interview prep" creditUsage={creditUsage ? { ...creditUsage, formatCredits } : undefined} />
       <section className="px-4 py-8 lg:px-12 xl:px-24">
         <DataTable
           title="Past Interview Practice"

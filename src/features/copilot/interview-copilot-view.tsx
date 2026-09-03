@@ -21,7 +21,7 @@ import type {
   CopilotTranscriptTurn,
 } from '@/contracts/copilot.draft'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
-import { centsToCredits, creditsToCents } from '@/lib/credits'
+import { centsToCredits, creditsToCents, formatCredits } from '@/lib/credits'
 import {
   AiSuggestionAction,
   Avatar,
@@ -29,6 +29,7 @@ import {
   Button,
   Checkbox,
   cn,
+  CreditShellBar,
   DataTable,
   Dialog,
   DialogClose,
@@ -53,6 +54,7 @@ import {
   TabsList,
   UploadedFileDialog,
   TabsTrigger,
+  type CreditUsageIndicatorProps,
 } from '@/ui'
 
 const copilotModeMeta: Record<
@@ -129,6 +131,7 @@ export type CopilotHistoryViewProps = {
   readonly createHref: string
   readonly reportHref: string
   readonly rows: readonly CopilotHistoryRow[]
+  readonly creditUsage?: Pick<CreditUsageIndicatorProps, 'remainingCents' | 'totalCents' | 'billingHref'>
 }
 
 export type CopilotReportViewProps = {
@@ -2007,13 +2010,19 @@ export function CopilotCompleteView({ homeHref, sessionHref, historyHref, report
   )
 }
 
-export function CopilotHistoryView({ homeHref, createHref, reportHref, rows }: CopilotHistoryViewProps) {
+export function CopilotHistoryView({ homeHref, createHref, reportHref, rows, creditUsage }: CopilotHistoryViewProps) {
   const [activeMode, setActiveMode] = useState<CopilotMode>('interview')
   const filteredRows = rows.filter((row) => row.mode === activeMode)
 
   return (
     <Workspace>
-      <CopilotHeader homeHref={homeHref} current="History" />
+      <CreditShellBar
+        homeHref={homeHref}
+        current="History"
+        closeHref={homeHref}
+        closeLabel="Close interview copilot"
+        creditUsage={creditUsage ? { ...creditUsage, formatCredits } : undefined}
+      />
       <section className="px-4 py-8 lg:px-12 xl:px-24">
         <div className="mx-auto max-w-7xl bg-surface shadow-panel">
           <div className="flex min-h-[5rem] items-center justify-between gap-4 border-b border-border px-8">
