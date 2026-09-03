@@ -1,9 +1,9 @@
 import { AlertTriangle, Apple, Check, ChevronDown, Copy, ExternalLink, EyeOff, Monitor, Moon, Play, Sun, Upload } from 'lucide-react'
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 
 import type { BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
-import { centsToCredits, creditsToCents, formatCredits } from '@/lib/credits'
+import { centsToCredits, creditsToCents, formatCredits, usagePercent } from '@/lib/credits'
 import {
   Accordion,
   AccordionItem,
@@ -11,7 +11,6 @@ import {
   AccordionTrigger,
   Button,
   cn,
-  CreditCard,
   DataTable,
   Dialog,
   DialogDescription,
@@ -23,8 +22,6 @@ import {
   Switch,
 } from '@/ui'
 
-const PRO_OFFER_SECONDS = 10 * 60
-const PRO_OFFER_PRICE = 40
 const TOPUP_MINIMUM_DOLLARS = 10
 // Matches lib/credits.ts's CENTS_PER_CREDIT so a top-up lands on the same credit scale
 // already shown by the wallet card above (formatCredits), not PRICING.md §3's per-feature
@@ -33,12 +30,16 @@ const TOPUP_CENTS_PER_CREDIT = 40
 // $0.40/credit (TOPUP_CENTS_PER_CREDIT) only divides evenly into whole credits at multiples
 // of $0.40 — $25 would be 62.5 credits, so presets stick to $10/$20/$50.
 const TOPUP_PRESET_DOLLARS = [10, 20, 50]
+// Auto Apply's per-application rate ($1/credit) means every whole dollar is already a whole
+// credit — no divisibility constraint like the wallet's $0.40/credit shim above.
+const AUTO_APPLY_CENTS_PER_CREDIT = 100
+const AUTO_APPLY_MINIMUM_DOLLARS = 10
+const AUTO_APPLY_PRESET_DOLLARS = [25, 50, 100]
+// Resume Builder's $0.10/credit rate — any whole-dollar amount divides evenly.
+const RESUME_BUILDER_CENTS_PER_CREDIT = 10
+const RESUME_BUILDER_MINIMUM_DOLLARS = 5
+const RESUME_BUILDER_PRESET_DOLLARS = [10, 25, 50]
 
-function formatOfferTime(seconds: number) {
-  const minutes = Math.floor(seconds / 60)
-  const remainingSeconds = seconds % 60
-  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
-}
 
 export type DownloadsViewProps = {
   readonly homeHref: string
@@ -61,6 +62,7 @@ export type BillingViewProps = {
   readonly plans: readonly BillingPlanCard[]
   readonly standalonePurchases: readonly BillingStandalonePurchase[]
   readonly usageRows: readonly CreditUsageRow[]
+  readonly historyRows: readonly CreditHistoryRow[]
   readonly wallet: BillingWallet
 }
 
@@ -193,102 +195,6 @@ export function TutorialsView({ homeHref, tutorials }: TutorialsViewProps) {
   )
 }
 
-function PlanCard({
-  plan,
-  annual,
-  currentIndex,
-  index,
-  cardRef,
-  offerAvailable = false,
-  offerApplied = false,
-  onApplyOffer,
-}: {
-  readonly plan: BillingPlanCard
-  readonly annual: boolean
-  readonly currentIndex: number
-  readonly index: number
-  readonly cardRef?: (el: HTMLElement | null) => void
-  readonly offerAvailable?: boolean
-  readonly offerApplied?: boolean
-  readonly onApplyOffer?: () => void
-}) {
-  const price = annual ? plan.annualPrice : plan.price
-  const cadence = annual ? plan.annualCadence : plan.cadence
-  const isCurrent = plan.current === true
-  const actionLabel = isCurrent ? 'Current Plan' : index < currentIndex ? 'Downgrade' : 'Upgrade'
-  const offerActive = offerAvailable && offerApplied
-
-  return (
-    <article
-      ref={cardRef}
-      className={cn(
-        'flex w-[82%] shrink-0 snap-center flex-col rounded-panel border p-6 md:w-auto md:min-h-[29rem] md:shrink',
-        isCurrent ? 'border-positive bg-positive-surface/40' : 'border-border bg-surface',
-      )}
-    >
-      <div className="flex items-center gap-2">
-        <h3 className="text-lg font-bold">{plan.name}</h3>
-        {isCurrent ? <span className="rounded-pill border border-positive bg-positive-surface px-2.5 py-0.5 text-xs font-semibold text-positive">Current</span> : null}
-      </div>
-      {offerActive ? (
-        <>
-          <p className="mt-6 flex items-baseline gap-2">
-            <span className="text-base font-semibold text-ink-muted line-through">{price}</span>
-            <span className="text-2xl font-black text-accent">${PRO_OFFER_PRICE}</span>
-          </p>
-          <p className="mt-1 text-sm font-medium text-positive">First-time offer applied, then {price} {cadence}</p>
-        </>
-      ) : (
-        <p className="mt-6 text-2xl font-black">
-          {price} <span className="text-sm font-medium text-ink-muted">{cadence}</span>
-        </p>
-      )}
-      {offerAvailable && !offerApplied ? (
-        <button
-          type="button"
-          onClick={onApplyOffer}
-          className="mt-2 inline-flex w-fit items-center gap-1.5 rounded-pill bg-accent-subtle px-3 py-1 text-xs font-bold text-accent-text transition-colors hover:bg-accent-muted"
-        >
-          First-time offer: Apply for ${PRO_OFFER_PRICE}
-        </button>
-      ) : null}
-      <p className="mt-6 font-bold">{plan.credits}</p>
-      <p className="mt-4 min-h-14 text-sm leading-6 text-ink-muted">{plan.description}</p>
-      {offerActive ? (
-        <a
-          href="/v3/billing"
-          className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-soft bg-accent px-4 py-2.5 text-sm font-medium text-on-accent hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-        >
-          Subscribe for ${PRO_OFFER_PRICE}
-        </a>
-      ) : isCurrent ? (
-        <span className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-soft border border-input px-4 py-2.5 text-sm font-medium text-ink-muted opacity-60">
-          Current Plan
-        </span>
-      ) : (
-        <a
-          href="/v3/billing"
-          className={cn(
-            'mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-soft px-4 py-2.5 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
-            index > currentIndex ? 'bg-accent text-on-accent hover:bg-accent-hover' : 'border border-input text-ink hover:bg-surface-subtle',
-          )}
-        >
-          {actionLabel}
-        </a>
-      )}
-      <ul className="mt-6 grid gap-3 border-b border-border pb-6 text-sm text-ink-muted">
-        {plan.features.map((feature) => (
-          <li key={feature} className="flex items-center gap-3">
-            <Check aria-hidden="true" className="size-4 text-ink-muted" />
-            {feature}
-          </li>
-        ))}
-      </ul>
-      <p className="mt-auto pt-5 text-sm font-medium italic text-accent-text">{plan.note}</p>
-    </article>
-  )
-}
-
 const cancellationReasons: readonly { readonly label: string; readonly value: string }[] = [
   { label: 'Select a reason', value: '' },
   { label: 'Too expensive', value: 'too-expensive' },
@@ -393,16 +299,6 @@ function CancelSubscriptionDialog({ renewalLabel }: { readonly renewalLabel: str
   )
 }
 
-function AnnualToggle({ annual, onToggle }: { readonly annual: boolean; readonly onToggle: () => void }) {
-  return (
-    <div className="flex items-center gap-3 text-sm font-semibold text-ink">
-      <Switch checked={annual} onCheckedChange={onToggle} aria-label="Toggle annual billing" />
-      Annual
-      <span className="rounded-pill border border-positive bg-positive-surface px-2 py-0.5 text-xs font-medium text-positive">(save 20%)</span>
-    </div>
-  )
-}
-
 const billingFaqs: readonly { readonly question: string; readonly answer: string }[] = [
   { question: 'How does usage-based pricing work?', answer: 'Each feature is metered by what it actually costs to run, per message for Resume Builder, per successful application for Auto-Apply, per minute for live Interview Prep and Copilot sessions. See the rate table above for exact pricing. Jobwhisper only charges for successful actions, so a failed Auto-Apply submission never costs anything.' },
   { question: 'Does unused balance roll over to next month?', answer: 'Your plan’s monthly included usage resets on your renewal date and does not carry forward. Any balance you’ve added yourself through a top-up is different, that stays on your account until you spend it.' },
@@ -410,10 +306,10 @@ const billingFaqs: readonly { readonly question: string; readonly answer: string
   { question: 'Can I change plans at any time?', answer: 'Yes. Upgrades take effect immediately and unlock the new plan’s features right away. Downgrades take effect at the start of your next billing cycle, so you keep your current plan’s benefits until then.' },
   { question: 'How do I cancel my subscription?', answer: 'Use the Cancel Subscription button above. You’ll keep full access until your current billing period ends, after which your account moves to the Free plan. You can renew at any time before then.' },
   { question: 'What happens to my data if I cancel?', answer: 'Your saved resumes, cover letters, application history, and interview reports stay in your account. You just lose access to paid features like Auto-Apply and Copilot sessions until you resubscribe.' },
-  { question: 'Is the first-time offer available more than once?', answer: 'No. The $40 first-time Pro offer is available once per account, only before the countdown on this page expires. After it’s redeemed or the timer runs out, your plan renews at the regular $99/month price.' },
+  { question: 'Is the first-time offer available more than once?', answer: 'No. The $40 first-time Pro offer is available once per account, shown when you sign up. After your first month, your plan renews at the regular $99/month price.' },
   { question: 'What payment methods do you accept?', answer: 'We accept all major debit and credit cards. Payments are processed securely and your card details are never stored on Jobwhisper’s servers.' },
   { question: 'Do you offer refunds?', answer: 'We don’t offer refunds for partial billing periods, but you can cancel at any time to stop future charges, you’ll keep access through the end of the period you already paid for.' },
-  { question: 'Can I add more balance without upgrading my plan?', answer: 'Yes. Use the Add Funds link above to earn bonus balance through referrals, or use Add credits to buy more Interview Copilot balance mid-cycle ($10 minimum), it stays on your account until you spend it, on top of what your plan already includes.' },
+  { question: 'Can I add more balance without upgrading my plan?', answer: 'Yes. Use Buy credits on any balance above to top up mid-cycle ($5–$10 minimum depending on the feature), it stays on your account until you spend it, on top of what your plan already includes.' },
   { question: 'Do Resume Builder and Auto Apply require a subscription?', answer: 'No. Both are sold separately from Starter, Pro, and Premium, buy credits once in the Pay-as-you-go section below and spend them at your own pace. They work the same whether or not you have an active plan.' },
 ]
 
@@ -471,219 +367,298 @@ function CreditUsageTable({ rows }: { readonly rows: readonly CreditUsageRow[] }
   )
 }
 
-function StandalonePurchaseCard({ purchase }: { readonly purchase: BillingStandalonePurchase }) {
-  const [balanceCredits, setBalanceCredits] = useState(0)
+type CreditBalanceCardProps = {
+  readonly title: string
+  readonly rateLabel: string
+  readonly balanceCredits: number
+  readonly centsPerCredit: number
+  readonly minimumDollars: number
+  readonly presetDollars: readonly number[]
+  readonly onPurchase: (credits: number) => void
+  readonly reloadHint: string
+}
+
+function CreditBalanceCard({ title, rateLabel, balanceCredits, centsPerCredit, minimumDollars, presetDollars, onPurchase, reloadHint }: CreditBalanceCardProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [autoReload, setAutoReload] = useState(false)
 
   return (
-    <article className="flex flex-col gap-4 rounded-panel border border-border bg-surface p-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h3 className="text-base font-bold text-ink">{purchase.name}</h3>
-          <p className="mt-1 text-sm leading-5 text-ink-muted">{purchase.description}</p>
-        </div>
-        <p className="whitespace-nowrap text-end text-sm font-semibold text-ink-muted">{purchase.rateLabel}</p>
+    <section>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h3 className="text-base font-bold text-ink">{title}</h3>
+        <p className="text-sm text-ink-muted">{rateLabel}</p>
       </div>
-      <ul className="grid gap-1.5 text-sm text-ink-muted">
-        {purchase.features.map((feature) => (
-          <li key={feature} className="flex items-start gap-2">
-            <Check aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent" />
-            <span>{feature}</span>
-          </li>
-        ))}
-      </ul>
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
-        <p className="text-sm text-ink-muted">
-          Balance: <span className="font-semibold text-ink">{balanceCredits} credits</span>
-        </p>
-        <Button onClick={() => setDialogOpen(true)} className="w-full sm:w-fit">Add credits</Button>
-      </div>
-      {purchase.note ? (
-        <div className="rounded-soft border border-dashed border-border bg-surface-subtle p-3">
-          <p className="text-sm text-ink-muted">{purchase.note}</p>
+      <div className="mt-3 rounded-panel border border-border bg-surface">
+        <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
+          <div>
+            <p className="text-2xl font-black text-ink">{balanceCredits} credits</p>
+            <p className="text-sm text-ink-muted">Current balance</p>
+          </div>
+          <Button onClick={() => setDialogOpen(true)}>Buy credits</Button>
         </div>
-      ) : null}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border p-4 sm:p-5">
+          <div>
+            <p className="text-sm font-semibold text-ink">Automatic reload</p>
+            <p className="text-sm text-ink-muted">{reloadHint}</p>
+          </div>
+          <Switch checked={autoReload} onCheckedChange={setAutoReload} aria-label={`Toggle automatic reload for ${title}`} />
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border p-4 sm:p-5">
+          <p className="text-sm font-semibold text-ink">Buy credits for someone else</p>
+          <Button variant="secondary" size="sm" disabled>
+            Gift credits
+          </Button>
+        </div>
+      </div>
       <AddCreditsDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        title={`Add ${purchase.name} credits`}
-        description={`$${purchase.minimumDollars} minimum, credits are valid 12 months from purchase.`}
-        centsPerCredit={purchase.centsPerCredit}
-        minimumDollars={purchase.minimumDollars}
-        presetDollars={purchase.presetDollars}
+        title={`Add ${title.replace(/ Credits$/, '')} credits`}
+        description={`$${minimumDollars} minimum, credits are valid 12 months from purchase.`}
+        centsPerCredit={centsPerCredit}
+        minimumDollars={minimumDollars}
+        presetDollars={presetDollars}
         currentBalanceCredits={balanceCredits}
-        onPurchase={(credits) => setBalanceCredits((prev) => prev + credits)}
+        onPurchase={onPurchase}
       />
-    </article>
+    </section>
   )
 }
 
-export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet }: BillingViewProps) {
-  const [annual, setAnnual] = useState(true)
+function DoneForYouCard() {
+  const [selectedId, setSelectedId] = useState<'dfy-small' | 'dfy-large'>('dfy-small')
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [sent, setSent] = useState(false)
+  const packages = {
+    'dfy-small': { jobs: 50, price: 497, access: '+ 1 month of Jobwhisper access' },
+    'dfy-large': { jobs: 100, price: 997, access: '+ 3 months of Jobwhisper access' },
+  } as const
+  const selected = packages[selectedId]
+
+  return (
+    <section>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h3 className="text-base font-bold text-ink">Done-For-You</h3>
+        <p className="text-sm text-ink-muted">$10 / successful job</p>
+      </div>
+      <div className="mt-3 rounded-panel border border-border bg-surface p-4 sm:p-5">
+        <p className="text-sm text-ink-muted">A real success manager applies to matched jobs on your behalf, resume tailoring and job scouting included.</p>
+        <div className="mt-4 grid gap-2 sm:grid-cols-2">
+          {(Object.keys(packages) as (keyof typeof packages)[]).map((id) => {
+            const pkg = packages[id]
+            const isSelected = id === selectedId
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setSelectedId(id)}
+                className={cn(
+                  'rounded-lg border p-3 text-start transition-colors',
+                  isSelected ? 'border-accent bg-accent-subtle/40' : 'border-border hover:border-ink-muted',
+                )}
+              >
+                <p className="text-sm font-bold text-ink">{pkg.jobs} jobs &middot; ${pkg.price}</p>
+                <p className="mt-0.5 text-xs text-ink-muted">{pkg.access}</p>
+              </button>
+            )
+          })}
+        </div>
+        <Button onClick={() => setDialogOpen(true)} className="mt-4 w-full sm:w-fit">
+          Get Started &middot; ${selected.price}
+        </Button>
+      </div>
+      <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setSent(false) }}>
+        <DialogPopup aria-label="Get Done-For-You">
+          {sent ? (
+            <div className="grid gap-4 text-center">
+              <span className="mx-auto grid size-12 place-items-center rounded-full bg-positive-surface text-positive">
+                <Check aria-hidden="true" className="size-6" />
+              </span>
+              <div>
+                <DialogTitle>Request sent</DialogTitle>
+                <DialogDescription>A Jobwhisper success manager will reach out within one business day to get your {selected.jobs}-job package started.</DialogDescription>
+              </div>
+              <Button className="w-full" onClick={() => setDialogOpen(false)}>Done</Button>
+            </div>
+          ) : (
+            <>
+              <DialogTitle>Get Done-For-You</DialogTitle>
+              <DialogDescription>
+                ${selected.price} for {selected.jobs} applications over 1 month, {selected.access.toLowerCase()}. A success manager applies on your behalf and tailors your resume for every role.
+              </DialogDescription>
+              <Button className="mt-6 w-full" onClick={() => setSent(true)}>Confirm &middot; ${selected.price}</Button>
+            </>
+          )}
+        </DialogPopup>
+      </Dialog>
+    </section>
+  )
+}
+
+export function BillingView({ homeHref, plans, standalonePurchases, usageRows, historyRows, wallet }: BillingViewProps) {
   const currentPlan = plans.find((plan) => plan.current) ?? plans[0]
-  const currentIndex = currentPlan ? plans.indexOf(currentPlan) : 0
-  const carouselRef = useRef<HTMLDivElement>(null)
-  const cardRefs = useRef<Partial<Record<string, HTMLElement>>>({})
-  const recommendedPlanId = (plans.find((plan) => plan.popular) ?? plans[0])?.id
-  const [activePlanId, setActivePlanId] = useState<string | undefined>(recommendedPlanId)
-  const [proOfferSecondsLeft, setProOfferSecondsLeft] = useState(PRO_OFFER_SECONDS)
-  const [proOfferApplied, setProOfferApplied] = useState(false)
-  const proOfferExpired = proOfferSecondsLeft === 0
-  const proOfferRelevant = currentPlan?.id !== 'pro'
-  const [topUpOpen, setTopUpOpen] = useState(false)
   const [remainingCents, setRemainingCents] = useState(wallet.remainingCents)
   const [totalCents, setTotalCents] = useState(wallet.totalCents)
+  const [autoApplyBalance, setAutoApplyBalance] = useState(0)
+  const [resumeBuilderBalance, setResumeBuilderBalance] = useState(0)
 
-  useEffect(() => {
-    const countdown = window.setInterval(() => {
-      setProOfferSecondsLeft((seconds) => Math.max(0, seconds - 1))
-    }, 1000)
-    return () => window.clearInterval(countdown)
-  }, [])
-
-  useEffect(() => {
-    const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches
-    if (!isMobile) return
-    const container = carouselRef.current
-    const card = recommendedPlanId ? cardRefs.current[recommendedPlanId] : undefined
-    if (!container || !card) return
-    container.scrollLeft = card.offsetLeft - (container.clientWidth - card.clientWidth) / 2
-  }, [recommendedPlanId])
-
-  useEffect(() => {
-    const container = carouselRef.current
-    if (!container) return
-    function handleScroll() {
-      const containerCenter = container!.scrollLeft + container!.clientWidth / 2
-      let closestId: string | undefined
-      let closestDistance = Infinity
-      for (const plan of plans) {
-        const card = cardRefs.current[plan.id]
-        if (!card) continue
-        const cardCenter = card.offsetLeft + card.clientWidth / 2
-        const distance = Math.abs(cardCenter - containerCenter)
-        if (distance < closestDistance) {
-          closestDistance = distance
-          closestId = plan.id
-        }
-      }
-      if (closestId) setActivePlanId(closestId)
-    }
-    container.addEventListener('scroll', handleScroll, { passive: true })
-    return () => container.removeEventListener('scroll', handleScroll)
-  }, [plans])
+  const autoApplyPurchase = standalonePurchases.find((purchase) => purchase.id === 'auto-apply')
+  const resumeBuilderPurchase = standalonePurchases.find((purchase) => purchase.id === 'resume-builder')
+  const copilotBalanceCredits = Math.round(centsToCredits(remainingCents))
+  const copilotPercent = usagePercent(remainingCents, totalCents)
 
   return (
     <AppWorkspace>
       <ShellBar homeHref={homeHref} current="Billing & subscription" closeHref={homeHref} closeLabel="Close billing" />
       <ContentShell>
         <div className="grid gap-6">
-          <TitledPanel title="Billing & Subscription">
-            <div className="grid gap-5 md:grid-cols-2">
-              <section className="rounded-panel border border-border p-4 sm:p-6">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-sm text-ink-muted">You&apos;re on</span>
-                  <span className="font-semibold text-ink">{currentPlan?.name.charAt(0)}{currentPlan?.name.slice(1).toLowerCase()} plan</span>
-                  <span className="rounded-pill bg-accent-subtle px-2.5 py-0.5 text-xs font-medium text-accent-text">Monthly</span>
-                </div>
-                <p className="mt-2 text-sm text-ink-muted">Renews {wallet.resetDateLabel}</p>
-                <div className="mt-5 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
-                  <CancelSubscriptionDialog renewalLabel="September 9th, 2026" />
-                  <p className="text-end">
-                    <span className="text-3xl font-black text-ink sm:text-4xl">{currentPlan?.price}</span>{' '}
-                    <span className="text-sm text-ink-muted">per month</span>
-                  </p>
-                </div>
-              </section>
-              <CreditCard
-                remainingCents={remainingCents}
-                totalCents={totalCents}
-                formatAmount={formatCredits}
-                resetDate={wallet.resetDateLabel}
-                bonusHref="/v3/settings?tab=referral"
-                detailsHref="/v3/billing/usage"
-                className="shadow-none"
-                onTopUp={() => setTopUpOpen(true)}
-              />
-            </div>
-          </TitledPanel>
+          <div>
+            <h1 className="text-2xl font-semibold leading-tight text-ink">Usage &amp; Billing</h1>
+            <p className="mt-1 text-sm text-ink-muted">
+              Manage your plan, credit balances, and payment method. For anything else, visit{' '}
+              <a href="/v3/settings" className="text-accent-text underline underline-offset-4 hover:text-accent">Settings</a>.
+            </p>
+          </div>
 
-          <TitledPanel title="Billing & Subscription" action={<AnnualToggle annual={annual} onToggle={() => setAnnual((prev) => !prev)} />}>
-            {!proOfferExpired && proOfferRelevant ? (
-              <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-panel border border-accent-muted bg-accent-subtle px-4 py-3 sm:px-5">
-                <p className="text-sm font-medium text-accent-text">
-                  <span className="font-bold uppercase tracking-wide">First-time offer</span>, get Pro for just ${PRO_OFFER_PRICE} today.
-                </p>
-                <span className="rounded-pill bg-surface px-3 py-1 text-xs font-bold text-accent-text shadow-control">
-                  Ends in {formatOfferTime(proOfferSecondsLeft)}
-                </span>
+          <TitledPanel title="Your Plan">
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-border p-4 sm:p-5">
+              <div>
+                <p className="font-semibold text-ink">{currentPlan?.name.charAt(0)}{currentPlan?.name.slice(1).toLowerCase()} plan</p>
+                <p className="mt-1 text-sm text-ink-muted">{currentPlan?.price} per month &middot; renews {wallet.resetDateLabel}</p>
               </div>
-            ) : null}
-            <div
-              ref={carouselRef}
-              className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:grid md:snap-none md:grid-cols-2 md:overflow-visible md:pb-0 lg:grid-cols-3"
-            >
-              {plans.map((plan, index) => (
-                <PlanCard
-                  key={plan.id}
-                  plan={plan}
-                  annual={annual}
-                  currentIndex={currentIndex}
-                  index={index}
-                  cardRef={(el) => {
-                    if (el) cardRefs.current[plan.id] = el
-                    else delete cardRefs.current[plan.id]
-                  }}
-                  offerAvailable={plan.id === 'pro' && !proOfferExpired && proOfferRelevant}
-                  offerApplied={proOfferApplied}
-                  onApplyOffer={() => setProOfferApplied(true)}
-                />
-              ))}
-            </div>
-            <div className="mt-4 flex justify-center gap-2 md:hidden">
-              {plans.map((plan) => (
-                <span
-                  key={plan.id}
-                  className={cn('h-1.5 rounded-full transition-all', plan.id === activePlanId ? 'w-5 bg-accent' : 'w-1.5 bg-border')}
-                />
-              ))}
+              <a
+                href="/v3/auth/choose-plan"
+                className="inline-flex min-h-10 items-center justify-center rounded-lg border border-input px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                View plans
+              </a>
             </div>
           </TitledPanel>
 
           <div id="add-ons">
-            <TitledPanel title="Pay-as-you-go">
-              <p className="mb-5 text-sm text-ink-muted">
-                Resume Builder and Auto Apply aren&apos;t part of any plan, no subscription needed. Buy credits once, spend them at your own pace, valid 12 months.
-              </p>
-              <div className="grid gap-5 md:grid-cols-2">
-                {standalonePurchases.map((purchase) => (
-                  <StandalonePurchaseCard key={purchase.id} purchase={purchase} />
-                ))}
-              </div>
-            </TitledPanel>
+          <TitledPanel title="Credits &amp; Balances">
+            <div className="grid gap-6">
+              <CreditBalanceCard
+                title="Interview Copilot Credits"
+                rateLabel="$0.10 / credit / min"
+                balanceCredits={copilotBalanceCredits}
+                centsPerCredit={TOPUP_CENTS_PER_CREDIT}
+                minimumDollars={TOPUP_MINIMUM_DOLLARS}
+                presetDollars={TOPUP_PRESET_DOLLARS}
+                reloadHint="Buy more automatically if you run out mid-session."
+                onPurchase={(credits) => {
+                  const addedCents = creditsToCents(credits)
+                  setRemainingCents((prev) => prev + addedCents)
+                  setTotalCents((prev) => prev + addedCents)
+                }}
+              />
+              {autoApplyPurchase ? (
+                <CreditBalanceCard
+                  title="Auto Apply Credits"
+                  rateLabel={autoApplyPurchase.rateLabel}
+                  balanceCredits={autoApplyBalance}
+                  centsPerCredit={autoApplyPurchase.centsPerCredit}
+                  minimumDollars={autoApplyPurchase.minimumDollars}
+                  presetDollars={autoApplyPurchase.presetDollars}
+                  reloadHint="Buy more automatically when your balance runs low."
+                  onPurchase={(credits) => setAutoApplyBalance((prev) => prev + credits)}
+                />
+              ) : null}
+              {resumeBuilderPurchase ? (
+                <CreditBalanceCard
+                  title="Resume Builder Credits"
+                  rateLabel={resumeBuilderPurchase.rateLabel}
+                  balanceCredits={resumeBuilderBalance}
+                  centsPerCredit={resumeBuilderPurchase.centsPerCredit}
+                  minimumDollars={resumeBuilderPurchase.minimumDollars}
+                  presetDollars={resumeBuilderPurchase.presetDollars}
+                  reloadHint="Buy more automatically when your balance runs low."
+                  onPurchase={(credits) => setResumeBuilderBalance((prev) => prev + credits)}
+                />
+              ) : null}
+              <DoneForYouCard />
+            </div>
+          </TitledPanel>
           </div>
 
+          <TitledPanel title="Usage">
+            <div className="rounded-panel border border-border bg-surface">
+              <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
+                <div>
+                  <p className="text-sm font-semibold text-ink">Interview Copilot</p>
+                  <p className="text-sm text-ink-muted">Resets {wallet.resetDateLabel}</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-2 w-32 overflow-hidden rounded-pill bg-surface-subtle sm:w-48">
+                    <div className={cn('h-full rounded-pill', copilotPercent > 20 ? 'bg-accent' : 'bg-danger')} style={{ inlineSize: `${copilotPercent}%` }} />
+                  </div>
+                  <span className="w-16 shrink-0 text-end text-sm font-semibold text-ink">{copilotPercent}% left</span>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border p-4 sm:p-5">
+                <div>
+                  <p className="text-sm font-semibold text-ink">Auto Apply</p>
+                  <p className="text-sm text-ink-muted">Prepaid credits, valid 12 months</p>
+                </div>
+                <span className="text-sm font-semibold text-ink">{autoApplyBalance} credits remaining</span>
+              </div>
+            </div>
+          </TitledPanel>
+
+          <div id="usage-breakdown">
+            <UsageChart rows={historyRows} />
+          </div>
+
+          <TitledPanel title="Payment Method">
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-border p-4 sm:p-5">
+              <div className="flex items-center gap-3">
+                <span className="grid h-9 w-12 shrink-0 place-items-center rounded-md bg-surface-subtle text-xs font-bold text-ink-muted">MC</span>
+                <div>
+                  <p className="text-sm font-semibold text-ink">Mastercard &middot;&middot;&middot;&middot; 4242</p>
+                  <p className="text-sm text-ink-muted">Expires 08/29</p>
+                </div>
+              </div>
+              <Button variant="secondary">Manage card</Button>
+            </div>
+          </TitledPanel>
+
+          <TitledPanel title="Usage History">
+            <DataTable
+              rows={historyRows}
+              itemLabel={(row) => row.feature}
+              selectable={false}
+              minTableWidthClassName="min-w-[54rem]"
+              columns={[
+                { key: 'feature', label: 'Feature', className: 'w-[14rem]', render: (row) => <span className="font-semibold">{row.feature}</span> },
+                { key: 'description', label: 'Description', className: 'w-[22rem]', render: (row) => row.description },
+                { key: 'dateTime', label: 'Date & Time', className: 'w-[12rem]', render: (row) => row.dateTime },
+                {
+                  key: 'amount',
+                  label: 'Amount',
+                  className: 'w-[7rem] text-end',
+                  render: (row) => (
+                    <span className={cn('font-semibold', row.amount > 0 ? 'text-positive' : row.amount < 0 ? 'text-ink' : 'text-ink-muted')}>
+                      {row.amount > 0 ? `+${formatCredits(row.amount)}` : formatCredits(row.amount)}
+                    </span>
+                  ),
+                },
+                { key: 'balanceAfter', label: 'Balance', className: 'w-[7rem] text-end', render: (row) => formatCredits(row.balanceAfter) },
+              ]}
+            />
+          </TitledPanel>
+
           <CreditUsageTable rows={usageRows} />
+
+          <TitledPanel title="Cancel Plan">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <p className="text-sm text-ink-muted">Cancel anytime. You&apos;ll keep full access until your current billing period ends.</p>
+              <CancelSubscriptionDialog renewalLabel="September 9th, 2026" />
+            </div>
+          </TitledPanel>
 
           <BillingFaqSection />
         </div>
       </ContentShell>
-
-      <AddCreditsDialog
-        open={topUpOpen}
-        onOpenChange={setTopUpOpen}
-        title="Add Interview Copilot credits"
-        description="Ran out mid-session? Top up now and keep going, on top of your monthly plan allowance."
-        centsPerCredit={TOPUP_CENTS_PER_CREDIT}
-        minimumDollars={TOPUP_MINIMUM_DOLLARS}
-        presetDollars={TOPUP_PRESET_DOLLARS}
-        currentBalanceCredits={Math.round(centsToCredits(remainingCents))}
-        onPurchase={(credits) => {
-          const addedCents = creditsToCents(credits)
-          setRemainingCents((prev) => prev + addedCents)
-          setTotalCents((prev) => prev + addedCents)
-        }}
-      />
     </AppWorkspace>
   )
 }
