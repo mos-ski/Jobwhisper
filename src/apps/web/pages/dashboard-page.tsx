@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { DashboardView } from '@/features/dashboard/dashboard-view'
 import { dashboardActions, dashboardInstallPrompt, dashboardNavItems } from '@/mocks/dashboard'
 import { candidateSession } from '@/mocks/sessions'
-import { CREDIT_WALLET, TRIAL_BALANCE_CENTS, TRIAL_TOTAL_CENTS } from '@/mocks/wallet'
+import { AUTO_APPLY_WALLET, CREDIT_WALLET, RESUME_BUILDER_WALLET, TRIAL_BALANCE_CENTS, TRIAL_TOTAL_CENTS } from '@/mocks/wallet'
 
 export function DashboardPage() {
   const [params] = useSearchParams()
@@ -37,6 +37,10 @@ export function DashboardPage() {
       installPrompt={dashboardInstallPrompt}
       creditBalanceCents={creditBalanceCents}
       totalCreditsCents={totalCreditsCents}
+      autoApplyBalanceCredits={AUTO_APPLY_WALLET.balanceCredits}
+      autoApplyTotalCredits={AUTO_APPLY_WALLET.totalCredits}
+      resumeBuilderBalanceCredits={RESUME_BUILDER_WALLET.balanceCredits}
+      resumeBuilderTotalCredits={RESUME_BUILDER_WALLET.totalCredits}
       isLoading={params.get('state') === 'loading'}
       activeDropdown={activeDropdown}
       creditNotice={creditNotice}

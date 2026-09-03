@@ -2,14 +2,12 @@ import { useState } from 'react'
 import { Check } from 'lucide-react'
 
 import { AppShell } from '@/features/dashboard/app-nav'
-import { formatCredits } from '@/lib/credits'
-import { Button, CreditShellBar, Tooltip, TooltipContent, TooltipTrigger, type CreditUsageIndicatorProps } from '@/ui'
+import { Button, ShellBar, Tooltip, TooltipContent, TooltipTrigger } from '@/ui'
 
 export type DoneForYouViewProps = {
   readonly homeHref: string
   readonly backHref: string
   readonly usageHref: string
-  readonly creditUsage?: Pick<CreditUsageIndicatorProps, 'remainingCents' | 'totalCents' | 'billingHref'>
 }
 
 const DFY_PACKAGES = [
@@ -80,18 +78,17 @@ function PackageDetailsTable() {
   )
 }
 
-export function DoneForYouView({ homeHref, backHref, usageHref, creditUsage }: DoneForYouViewProps) {
+export function DoneForYouView({ homeHref, backHref, usageHref }: DoneForYouViewProps) {
   const [sentId, setSentId] = useState<string | null>(null)
 
   return (
     <AppShell>
-      <CreditShellBar
+      <ShellBar
         homeHref={homeHref}
         parent={{ href: backHref, label: 'Billing & subscription' }}
         current="Done-For-You"
         closeHref={backHref}
         closeLabel="Close done-for-you"
-        creditUsage={creditUsage ? { ...creditUsage, formatCredits } : undefined}
       />
       <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
         <article className="w-full min-w-0 bg-surface shadow-panel">

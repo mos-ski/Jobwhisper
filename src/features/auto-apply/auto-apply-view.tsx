@@ -19,7 +19,6 @@ import {
 } from '@/contracts/auto-apply.draft'
 import type { ResumeDocument, ResumeHistoryRow } from '@/contracts/resume.draft'
 import { AppShell as AppNavShell } from '@/features/dashboard/app-nav'
-import { formatCredits } from '@/lib/credits'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 import { COUNTRIES } from '@/data/countries'
 import {
@@ -37,7 +36,6 @@ import {
   FormSelectField,
   FormTextArea,
   JobwhisperAiIcon,
-  CreditShellBar,
   ListPickerDialog,
   ReviewSummaryList,
   ShellBar,
@@ -45,7 +43,6 @@ import {
   TipModalTrigger,
   UploadedFileDialog,
 } from '@/ui'
-import type { CreditUsageIndicatorProps } from '@/ui'
 import { useAgentSession, type AgentSession, type FeedEvent, type FeedLink } from '@/hooks/useAgentSession'
 
 export type AutoApplyUploadViewProps = {
@@ -91,7 +88,6 @@ export type AutoApplyJobsViewProps = {
   readonly selectedJob?: AutoApplyJob
   readonly isPremiumUser?: boolean
   readonly resumePreview: ResumeDocument
-  readonly creditUsage?: Pick<CreditUsageIndicatorProps, 'remainingCents' | 'totalCents' | 'billingHref'>
 }
 
 export type AutoApplyAppliedViewProps = {
@@ -113,20 +109,7 @@ const tabs = [
   { key: 'applied', label: 'Applied' },
 ] as const
 
-function Header({ homeHref, current = 'Auto Apply', actionHref, creditUsage }: { readonly homeHref: string; readonly current?: string; readonly actionHref?: string; readonly creditUsage?: Pick<CreditUsageIndicatorProps, 'remainingCents' | 'totalCents' | 'billingHref'> }) {
-  if (creditUsage) {
-    return (
-      <CreditShellBar
-        homeHref={homeHref}
-        current={current}
-        closeHref={homeHref}
-        closeLabel="Close auto apply"
-        secondaryAction={actionHref ? { label: 'Update Preference', href: actionHref, icon: <img aria-hidden="true" src="/v3-assets/figma/sidebar-briefcase.svg" alt="" className="size-5" /> } : undefined}
-        creditUsage={{ ...creditUsage, formatCredits }}
-      />
-    )
-  }
-
+function Header({ homeHref, current = 'Auto Apply', actionHref }: { readonly homeHref: string; readonly current?: string; readonly actionHref?: string }) {
   return (
     <ShellBar
       homeHref={homeHref}
@@ -1805,7 +1788,7 @@ function applyJobFilters(jobs: readonly AutoApplyJob[], search: string, filters:
   })
 }
 
-export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, appliedHref, resumeHistoryHref, jobs, selectedJob: initialSelectedJob, isPremiumUser = false, resumePreview, creditUsage }: AutoApplyJobsViewProps) {
+export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, appliedHref, resumeHistoryHref, jobs, selectedJob: initialSelectedJob, isPremiumUser = false, resumePreview }: AutoApplyJobsViewProps) {
   const [selectedJob, setSelectedJob] = useState<AutoApplyJob | undefined>(initialSelectedJob)
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<JobFilters>(DEFAULT_FILTERS)
@@ -1816,7 +1799,7 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
 
   return (
     <Workspace>
-      <Header homeHref={homeHref} creditUsage={creditUsage} />
+      <Header homeHref={homeHref} />
       <section className="px-0 py-4 lg:p-8">
         <div className="mx-auto max-w-7xl">
           <div className="min-h-[56rem] bg-surface shadow-panel">

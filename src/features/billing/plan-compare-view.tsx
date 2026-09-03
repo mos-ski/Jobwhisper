@@ -4,8 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 import type { BillingPlanCard } from '@/contracts/account.draft'
 import { AppShell } from '@/features/dashboard/app-nav'
-import { formatCredits } from '@/lib/credits'
-import { Badge, Button, cn, CreditShellBar, Switch, type CreditUsageIndicatorProps } from '@/ui'
+import { Badge, Button, cn, ShellBar, Switch } from '@/ui'
 
 type FeatureRow = {
   readonly capability: string
@@ -75,7 +74,6 @@ export type PlanCompareViewProps = {
   readonly homeHref: string
   readonly plans: readonly BillingPlanCard[]
   readonly backHref: string
-  readonly creditUsage?: Pick<CreditUsageIndicatorProps, 'remainingCents' | 'totalCents' | 'billingHref'>
 }
 
 function PlanCard({ plan, annual, index }: { readonly plan: BillingPlanCard; readonly annual: boolean; readonly index: number }) {
@@ -133,18 +131,17 @@ function PlanCard({ plan, annual, index }: { readonly plan: BillingPlanCard; rea
   )
 }
 
-export function PlanCompareView({ homeHref, plans, backHref, creditUsage }: PlanCompareViewProps) {
+export function PlanCompareView({ homeHref, plans, backHref }: PlanCompareViewProps) {
   const [annual, setAnnual] = useState(true)
 
   return (
     <AppShell>
-      <CreditShellBar
+      <ShellBar
         homeHref={homeHref}
         parent={{ href: backHref, label: 'Billing & subscription' }}
         current="Choose a plan"
         closeHref={backHref}
         closeLabel="Close plan selection"
-        creditUsage={creditUsage ? { ...creditUsage, formatCredits } : undefined}
       />
       <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
         <article className="w-full min-w-0 bg-surface shadow-panel">

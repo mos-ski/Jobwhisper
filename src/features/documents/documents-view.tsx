@@ -3,8 +3,7 @@ import { useState, type ReactNode } from 'react'
 
 import type { ContextDocumentRow } from '@/contracts/documents.draft'
 import { AppShell } from '@/features/dashboard/app-nav'
-import { formatCredits } from '@/lib/credits'
-import { cn, CreditShellBar, DataTable, FormPanel, FormPanelFooter, FormTextArea, Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger, OptionStack, ShellBar, UpgradeDialog, type CreditUsageIndicatorProps } from '@/ui'
+import { cn, DataTable, FormPanel, FormPanelFooter, FormTextArea, Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger, OptionStack, ShellBar, UpgradeDialog } from '@/ui'
 
 function Workspace({ children }: { readonly children: ReactNode }) {
   return <AppShell>{children}</AppShell>
@@ -17,13 +16,16 @@ export type DocumentsViewProps = {
   /** Knowledge Base document cap for the current plan — Starter 3 / Pro 5 / Premium 10. See PRICING.md §1.1. */
   readonly limit: number
   readonly planName: string
-  readonly creditUsage?: Pick<CreditUsageIndicatorProps, 'remainingCents' | 'totalCents' | 'billingHref'>
 }
 
 export type DocumentsAddViewProps = {
   readonly homeHref: string
   readonly documentsHref: string
   readonly manualHref: string
+  readonly documentCount: number
+  /** Knowledge Base document cap for the current plan — Starter 3 / Pro 5 / Premium 10. See PRICING.md §1.1. */
+  readonly limit: number
+  readonly planName: string
 }
 
 export type DocumentsManualViewProps = {
@@ -51,23 +53,19 @@ function RowActionsMenu({ label }: { readonly label: string }) {
   )
 }
 
-export function DocumentsView({ homeHref, addHref, rows, limit, planName, creditUsage }: DocumentsViewProps) {
+export function DocumentsView({ homeHref, addHref, rows, limit, planName }: DocumentsViewProps) {
   const atLimit = rows.length >= limit
   const [limitDialogOpen, setLimitDialogOpen] = useState(false)
 
   return (
     <Workspace>
-      <CreditShellBar
+      <ShellBar
         homeHref={homeHref}
         current="Knowledge Base"
         closeHref={homeHref}
         closeLabel="Close documents"
-        creditUsage={creditUsage ? { ...creditUsage, formatCredits } : undefined}
       />
       <section className="px-4 py-8 lg:px-12 xl:px-24">
-        <p className="mx-auto mb-3 max-w-7xl text-end text-sm text-ink-muted">
-          <span className={cn('font-semibold', atLimit ? 'text-warning' : 'text-ink')}>{rows.length}</span> of {limit} documents used on the {planName} plan
-        </p>
         <DataTable
           title="Knowledge Base"
           searchLabel="Search documents"
@@ -124,7 +122,9 @@ export function DocumentsView({ homeHref, addHref, rows, limit, planName, credit
   )
 }
 
-export function DocumentsAddView({ homeHref, documentsHref, manualHref }: DocumentsAddViewProps) {
+export function DocumentsAddView({ homeHref, documentsHref, manualHref, documentCount, limit, planName }: DocumentsAddViewProps) {
+  const atLimit = documentCount >= limit
+
   return (
     <Workspace>
       <ShellBar homeHref={homeHref} current="Knowledge Base" closeHref={homeHref} closeLabel="Close documents" />
@@ -134,6 +134,9 @@ export function DocumentsAddView({ homeHref, documentsHref, manualHref }: Docume
           step="1/2"
           footer={<FormPanelFooter backHref={documentsHref} nextHref={documentsHref} nextLabel="Continue" />}
         >
+          <p className="text-end text-sm text-ink-muted">
+            <span className={cn('font-semibold', atLimit ? 'text-warning' : 'text-ink')}>{documentCount}</span> of {limit} documents used on the {planName} plan
+          </p>
           <OptionStack
             options={[
               { id: 'upload', label: 'Upload Documents', href: documentsHref, iconSrc: '/v3-assets/figma/form-upload.svg', variant: 'primary' },

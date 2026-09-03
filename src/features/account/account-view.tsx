@@ -20,6 +20,7 @@ import {
   DialogTrigger,
   SelectField,
   ShellBar,
+  Switch,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -394,6 +395,7 @@ type CreditBalanceCardProps = {
 
 function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, centsPerCredit, minimumDollars, presetDollars, onPurchase, reloadHint }: CreditBalanceCardProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [autoReload, setAutoReload] = useState(false)
   const percentLeft = totalCredits > 0 ? Math.max(0, Math.min(100, Math.round((balanceCredits / totalCredits) * 100))) : 100
   const featureName = title.replace(/ Credits$/, '')
 
@@ -417,10 +419,11 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
           <Button onClick={() => setDialogOpen(true)} className="shrink-0">Buy credits</Button>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border p-4 sm:p-5">
-          <p className="text-sm font-semibold text-ink">Buy credits for someone else</p>
-          <Button variant="secondary" size="sm" disabled>
-            Gift credits
-          </Button>
+          <div>
+            <p className="text-sm font-semibold text-ink">Automatic reload</p>
+            <p className="text-sm text-ink-muted">{reloadHint}</p>
+          </div>
+          <Switch checked={autoReload} onCheckedChange={setAutoReload} aria-label={`Toggle automatic reload for ${title}`} />
         </div>
       </div>
       <AddCreditsDialog

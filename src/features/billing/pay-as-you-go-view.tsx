@@ -4,14 +4,12 @@ import { Check } from 'lucide-react'
 import type { BillingStandalonePurchase } from '@/contracts/account.draft'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
 import { AppShell } from '@/features/dashboard/app-nav'
-import { formatCredits } from '@/lib/credits'
-import { Button, CreditShellBar, type CreditUsageIndicatorProps } from '@/ui'
+import { Button, ShellBar } from '@/ui'
 
 export type PayAsYouGoViewProps = {
   readonly homeHref: string
   readonly backHref: string
   readonly purchases: readonly BillingStandalonePurchase[]
-  readonly creditUsage?: Pick<CreditUsageIndicatorProps, 'remainingCents' | 'totalCents' | 'billingHref'>
 }
 
 type PurchaseTerms = {
@@ -107,16 +105,15 @@ function PurchaseCard({ purchase, index }: { readonly purchase: BillingStandalon
   )
 }
 
-export function PayAsYouGoView({ homeHref, backHref, purchases, creditUsage }: PayAsYouGoViewProps) {
+export function PayAsYouGoView({ homeHref, backHref, purchases }: PayAsYouGoViewProps) {
   return (
     <AppShell>
-      <CreditShellBar
+      <ShellBar
         homeHref={homeHref}
         parent={{ href: backHref, label: 'Billing & subscription' }}
         current="Pay-as-you-go"
         closeHref={backHref}
         closeLabel="Close pay-as-you-go"
-        creditUsage={creditUsage ? { ...creditUsage, formatCredits } : undefined}
       />
       <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
         <article className="w-full min-w-0 bg-surface shadow-panel">

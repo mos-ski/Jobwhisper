@@ -1,11 +1,11 @@
-import { ArrowRight, ChevronRight, CircleHelp, Code2, CreditCard, ExternalLink, Gift, Lock, LogOut, Mail, Menu, Monitor, PanelLeftClose, PanelLeftOpen, Play, Settings, User, Video, X } from 'lucide-react'
+import { ChevronRight, CircleHelp, Code2, ExternalLink, Lock, LogOut, Mail, Menu, Monitor, PanelLeftClose, PanelLeftOpen, Play, Settings, User, Video, X } from 'lucide-react'
 import { FaApple } from 'react-icons/fa'
 import { SiGoogleplay } from 'react-icons/si'
 import { useState, type ReactNode } from 'react'
 
 import type { DashboardAction, DashboardActionId, DashboardInstallPrompt, DashboardNavItem } from '@/contracts/dashboard.draft'
 import type { UserIdentity } from '@/contracts/identity'
-import { formatCredits, usagePercent } from '@/lib/credits'
+import { centsToCredits, formatCredits, usagePercent } from '@/lib/credits'
 import { Button, cn, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, JobwhisperIcon, JobwhisperMark, SideMenu, UpgradeDialog } from '@/ui'
 import { BriefcaseActionIcon, CopilotActionIcon, MonitorActionIcon, ResumeActionIcon } from './dashboard-action-icons'
 import {
@@ -27,6 +27,10 @@ export type DashboardViewProps = {
   readonly installPrompt: DashboardInstallPrompt
   readonly creditBalanceCents: number
   readonly totalCreditsCents: number
+  readonly autoApplyBalanceCredits: number
+  readonly autoApplyTotalCredits: number
+  readonly resumeBuilderBalanceCredits: number
+  readonly resumeBuilderTotalCredits: number
   readonly isLoading?: boolean
   readonly activeDropdown?: 'help' | 'credits' | 'profile'
   readonly creditNotice?: 'low' | 'empty'
@@ -183,40 +187,93 @@ function HelpModal({ open, onOpenChange }: { readonly open: boolean; readonly on
   )
 }
 
-function CreditDropdown({ creditBalanceCents, totalCreditsCents, forceOpen = false }: { readonly creditBalanceCents: number; readonly totalCreditsCents: number; readonly forceOpen?: boolean }) {
-  const remainingPercent = usagePercent(creditBalanceCents, totalCreditsCents)
-  const progressStyle = { inlineSize: `${remainingPercent}%` }
+function CreditIcon({ className }: { readonly className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 29.9911 29.9911" fill="none" className={className}>
+      <path d="M9.53467 17.3274L14.1033 14.5419V8.72991" stroke="currentColor" strokeWidth="2.03323" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M27.4918 21.2437V17.4948C27.4918 16.4585 25.3925 15.6204 22.8057 15.6204C20.219 15.6204 18.121 16.4598 18.1196 17.4948V24.9926C18.121 26.0275 20.2177 26.867 22.8057 26.867C25.3938 26.867 27.4905 26.0275 27.4918 24.9926V17.4948" stroke="currentColor" strokeWidth="2.03323" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M18.121 17.4948C18.121 18.5298 20.219 19.3692 22.8071 19.3692C25.3951 19.3692 27.4918 18.5298 27.4918 17.4948" stroke="currentColor" strokeWidth="2.03323" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M18.1196 21.2437C18.1196 22.2786 20.2177 23.1181 22.8057 23.1181C25.3938 23.1181 27.4918 22.2786 27.4918 21.2437" stroke="currentColor" strokeWidth="2.03323" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M24.7042 11.2467C23.3946 5.50973 17.8829 1.7531 12.0643 2.63157C6.2457 3.51005 2.08872 8.72642 2.53108 14.5943C2.97344 20.4622 7.86548 24.9964 13.75 24.9926" stroke="currentColor" strokeWidth="2.03323" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function creditPercentLeft(balance: number, total: number): number {
+  return total > 0 ? Math.max(0, Math.min(100, Math.round((balance / total) * 100))) : 100
+}
+
+type CreditDropdownRow = {
+  readonly label: string
+  readonly balanceCredits: number
+  readonly percentLeft: number
+}
+
+function CreditDropdown({
+  creditBalanceCents,
+  totalCreditsCents,
+  autoApplyBalanceCredits,
+  autoApplyTotalCredits,
+  resumeBuilderBalanceCredits,
+  resumeBuilderTotalCredits,
+  forceOpen = false,
+}: {
+  readonly creditBalanceCents: number
+  readonly totalCreditsCents: number
+  readonly autoApplyBalanceCredits: number
+  readonly autoApplyTotalCredits: number
+  readonly resumeBuilderBalanceCredits: number
+  readonly resumeBuilderTotalCredits: number
+  readonly forceOpen?: boolean
+}) {
+  const rows: readonly CreditDropdownRow[] = [
+    {
+      label: 'Interview Copilot',
+      balanceCredits: Math.round(centsToCredits(creditBalanceCents)),
+      percentLeft: usagePercent(creditBalanceCents, totalCreditsCents),
+    },
+    {
+      label: 'Auto Apply',
+      balanceCredits: autoApplyBalanceCredits,
+      percentLeft: creditPercentLeft(autoApplyBalanceCredits, autoApplyTotalCredits),
+    },
+    {
+      label: 'Resume Builder',
+      balanceCredits: resumeBuilderBalanceCredits,
+      percentLeft: creditPercentLeft(resumeBuilderBalanceCredits, resumeBuilderTotalCredits),
+    },
+  ]
 
   return (
     <section
       aria-label="Usage balance"
       className={cn(
-        'absolute end-0 top-full z-20 mt-3 hidden w-[min(16rem,calc(100vw-2rem))] overflow-hidden rounded-md border border-border bg-surface text-xs shadow-popover group-focus-within:block group-hover:block',
+        'absolute end-0 top-full z-20 mt-3 hidden w-[min(18rem,calc(100vw-2rem))] overflow-hidden rounded-lg border border-border bg-surface shadow-popover group-focus-within:block group-hover:block',
         forceOpen ? 'block' : undefined,
       )}
     >
-      <div className="grid gap-3 px-4 py-3">
-        <div className="flex min-h-9 items-center justify-between gap-4">
-          <h2 className="text-sm font-medium leading-6 text-ink">Usage balance</h2>
-          <a href="/v3/billing" className="inline-flex min-h-7 items-center justify-center gap-1 rounded-lg border border-border bg-surface px-2 text-xs font-semibold text-ink-muted shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-            Upgrade
-            <ArrowRight aria-hidden="true" className="size-3" />
-          </a>
-        </div>
-        <div className="grid gap-1.5">
-          <div className="flex items-center justify-between gap-4 text-sm text-ink-muted">
-            <span>Usage this month</span>
-            <span className="font-medium text-ink">{remainingPercent}% remaining</span>
+      <div className="grid gap-4 px-4 py-4">
+        <h2 className="text-sm font-semibold text-ink">Credit balances</h2>
+        {rows.map((row) => (
+          <div key={row.label}>
+            <div className="flex items-center justify-between gap-3 text-sm">
+              <span className="font-medium text-ink">{row.label}</span>
+              <span className="text-ink-muted">{row.balanceCredits} credits</span>
+            </div>
+            <div className="mt-1.5 flex items-center gap-2">
+              <div className="h-1.5 flex-1 overflow-hidden rounded-pill bg-surface-subtle">
+                <div className={cn('h-full rounded-pill', row.percentLeft > 20 ? 'bg-accent' : 'bg-danger')} style={{ inlineSize: `${row.percentLeft}%` }} />
+              </div>
+              <span className="shrink-0 text-xs font-medium text-ink-muted">{row.percentLeft}%</span>
+            </div>
           </div>
-          <div className="h-2 overflow-hidden rounded-pill bg-surface-subtle">
-            <div className="h-full rounded-pill bg-accent shadow-control" style={progressStyle} />
-          </div>
-          <p className="text-end text-xs font-medium leading-5 text-ink-muted">{formatCredits(creditBalanceCents)} remaining</p>
-        </div>
+        ))}
       </div>
-      <a href="/v3/billing" className="flex min-h-12 items-center justify-center gap-2 bg-accent px-3 text-sm font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-        <Gift aria-hidden="true" className="size-4" />
-        Add Funds
+      <a
+        href="/v3/billing"
+        className="block border-t border-border px-4 py-2.5 text-center text-sm text-ink-muted transition-colors hover:bg-surface-subtle hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+      >
+        See detailed breakdown
       </a>
     </section>
   )
@@ -293,6 +350,10 @@ function DashboardHeader({
   navItems,
   creditBalanceCents,
   totalCreditsCents,
+  autoApplyBalanceCredits,
+  autoApplyTotalCredits,
+  resumeBuilderBalanceCredits,
+  resumeBuilderTotalCredits,
   activeDropdown,
   creditNotice,
   collapsed,
@@ -302,6 +363,10 @@ function DashboardHeader({
   readonly navItems: readonly DashboardNavItem[]
   readonly creditBalanceCents: number
   readonly totalCreditsCents: number
+  readonly autoApplyBalanceCredits: number
+  readonly autoApplyTotalCredits: number
+  readonly resumeBuilderBalanceCredits: number
+  readonly resumeBuilderTotalCredits: number
   readonly activeDropdown?: 'help' | 'credits' | 'profile'
   readonly creditNotice?: 'low' | 'empty'
   readonly collapsed: boolean
@@ -331,10 +396,18 @@ function DashboardHeader({
       <div className="flex items-center gap-4">
         <div className="group relative">
           <a href="/v3/billing" aria-label={`${formatCredits(creditBalanceCents)} balance remaining`} className="relative grid size-11 place-items-center rounded-soft text-accent-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-            <CreditCard aria-hidden="true" className="size-6" />
+            <CreditIcon className="size-6" />
             <span className="absolute -start-1.5 top-1 grid min-w-4 place-items-center rounded-pill bg-danger px-1 text-[10px] font-semibold leading-4 text-on-danger">{usagePercent(creditBalanceCents, totalCreditsCents)}%</span>
           </a>
-          <CreditDropdown creditBalanceCents={creditBalanceCents} totalCreditsCents={totalCreditsCents} forceOpen={activeDropdown === 'credits'} />
+          <CreditDropdown
+            creditBalanceCents={creditBalanceCents}
+            totalCreditsCents={totalCreditsCents}
+            autoApplyBalanceCredits={autoApplyBalanceCredits}
+            autoApplyTotalCredits={autoApplyTotalCredits}
+            resumeBuilderBalanceCredits={resumeBuilderBalanceCredits}
+            resumeBuilderTotalCredits={resumeBuilderTotalCredits}
+            forceOpen={activeDropdown === 'credits'}
+          />
         </div>
         <div className="group relative hidden lg:block">
           <a href="/v3/help" aria-label="Help" className="grid size-11 place-items-center rounded-soft text-accent-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
@@ -482,14 +555,14 @@ function InstallPrompt({ installPrompt }: { readonly installPrompt: DashboardIns
     <section className="w-fit max-w-full rounded-panel bg-accent-subtle p-3 lg:absolute lg:bottom-14 lg:end-8" aria-label="Install apps">
       <div className="flex items-center gap-3">
         <img src={installPrompt.qrSrc} alt="QR code to install Jobwhisper apps" className="size-16 shrink-0 rounded-soft object-cover" />
-        <div className="grid gap-2 pe-14 lg:pe-0">
+        <div className="grid gap-2">
           <p className="text-sm font-medium text-accent">{installPrompt.title}</p>
-          <div className="flex flex-wrap gap-2">
-            <a href={installPrompt.desktopHref} className="inline-flex min-h-8 items-center justify-center gap-1 rounded-pill bg-accent px-3 text-xs font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+          <div className="flex flex-nowrap gap-2 overflow-x-auto">
+            <a href={installPrompt.desktopHref} className="inline-flex min-h-8 shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-pill bg-accent px-3 text-xs font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
               <Monitor aria-hidden="true" className="size-4" />
               Install Desktop
             </a>
-            <a href={installPrompt.mobileHref} className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-pill bg-accent px-3 text-xs font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+            <a href={installPrompt.mobileHref} className="inline-flex min-h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-pill bg-accent px-3 text-xs font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
               <FaApple aria-hidden="true" className="size-4" />
               <SiGoogleplay aria-hidden="true" className="size-3.5" />
               Install Mobile
@@ -501,7 +574,21 @@ function InstallPrompt({ installPrompt }: { readonly installPrompt: DashboardIns
   )
 }
 
-export function DashboardView({ user, navItems, actions, installPrompt, creditBalanceCents, totalCreditsCents, isLoading = false, activeDropdown, creditNotice }: DashboardViewProps) {
+export function DashboardView({
+  user,
+  navItems,
+  actions,
+  installPrompt,
+  creditBalanceCents,
+  totalCreditsCents,
+  autoApplyBalanceCredits,
+  autoApplyTotalCredits,
+  resumeBuilderBalanceCredits,
+  resumeBuilderTotalCredits,
+  isLoading = false,
+  activeDropdown,
+  creditNotice,
+}: DashboardViewProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [upgradeAction, setUpgradeAction] = useState<DashboardAction | null>(null)
   const [helpModalOpen, setHelpModalOpen] = useState(false)
@@ -517,6 +604,10 @@ export function DashboardView({ user, navItems, actions, installPrompt, creditBa
         navItems={navItems}
         creditBalanceCents={creditBalanceCents}
         totalCreditsCents={totalCreditsCents}
+        autoApplyBalanceCredits={autoApplyBalanceCredits}
+        autoApplyTotalCredits={autoApplyTotalCredits}
+        resumeBuilderBalanceCredits={resumeBuilderBalanceCredits}
+        resumeBuilderTotalCredits={resumeBuilderTotalCredits}
         activeDropdown={activeDropdown}
         creditNotice={creditNotice}
         collapsed={collapsed}

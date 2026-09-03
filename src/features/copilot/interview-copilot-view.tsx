@@ -21,7 +21,7 @@ import type {
   CopilotTranscriptTurn,
 } from '@/contracts/copilot.draft'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
-import { centsToCredits, creditsToCents, formatCredits } from '@/lib/credits'
+import { centsToCredits, creditsToCents } from '@/lib/credits'
 import {
   AiSuggestionAction,
   Avatar,
@@ -29,7 +29,6 @@ import {
   Button,
   Checkbox,
   cn,
-  CreditShellBar,
   DataTable,
   Dialog,
   DialogClose,
@@ -54,7 +53,6 @@ import {
   TabsList,
   UploadedFileDialog,
   TabsTrigger,
-  type CreditUsageIndicatorProps,
 } from '@/ui'
 
 const copilotModeMeta: Record<
@@ -131,7 +129,6 @@ export type CopilotHistoryViewProps = {
   readonly createHref: string
   readonly reportHref: string
   readonly rows: readonly CopilotHistoryRow[]
-  readonly creditUsage?: Pick<CreditUsageIndicatorProps, 'remainingCents' | 'totalCents' | 'billingHref'>
 }
 
 export type CopilotReportViewProps = {
@@ -1847,11 +1844,12 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
           open={topUpOpen}
           onOpenChange={setTopUpOpen}
           title="Add Interview Copilot credits"
-          description="You're out of balance for this session. Add credits to keep going, your session will resume right where you left off."
+          description="Interview Copilot"
           centsPerCredit={TOPUP_CENTS_PER_CREDIT}
           minimumDollars={TOPUP_MINIMUM_DOLLARS}
           presetDollars={TOPUP_PRESET_DOLLARS}
           currentBalanceCredits={Math.ceil(centsToCredits(balanceCents))}
+          autoReloadHint="Buy more automatically if you run out mid-session."
           onPurchase={handleAddFunds}
         />
       </main>
@@ -1978,11 +1976,12 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
         open={topUpOpen}
         onOpenChange={setTopUpOpen}
         title="Add Interview Copilot credits"
-        description="You're out of balance for this session. Add credits to keep going, your session will resume right where you left off."
+        description="Interview Copilot"
         centsPerCredit={TOPUP_CENTS_PER_CREDIT}
         minimumDollars={TOPUP_MINIMUM_DOLLARS}
         presetDollars={TOPUP_PRESET_DOLLARS}
         currentBalanceCredits={Math.ceil(centsToCredits(balanceCents))}
+        autoReloadHint="Buy more automatically if you run out mid-session."
         onPurchase={handleAddFunds}
       />
     </main>
@@ -2010,18 +2009,17 @@ export function CopilotCompleteView({ homeHref, sessionHref, historyHref, report
   )
 }
 
-export function CopilotHistoryView({ homeHref, createHref, reportHref, rows, creditUsage }: CopilotHistoryViewProps) {
+export function CopilotHistoryView({ homeHref, createHref, reportHref, rows }: CopilotHistoryViewProps) {
   const [activeMode, setActiveMode] = useState<CopilotMode>('interview')
   const filteredRows = rows.filter((row) => row.mode === activeMode)
 
   return (
     <Workspace>
-      <CreditShellBar
+      <ShellBar
         homeHref={homeHref}
         current="History"
         closeHref={homeHref}
         closeLabel="Close interview copilot"
-        creditUsage={creditUsage ? { ...creditUsage, formatCredits } : undefined}
       />
       <section className="px-4 py-8 lg:px-12 xl:px-24">
         <div className="mx-auto max-w-7xl bg-surface shadow-panel">

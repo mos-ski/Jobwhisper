@@ -31,8 +31,8 @@ import type { ContextDocumentRow } from '@/contracts/documents.draft'
 import type { ResumeHistoryRow } from '@/contracts/resume.draft'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
 import { AppShell } from '@/features/dashboard/app-nav'
-import { centsToCredits, creditsToCents, formatCredits } from '@/lib/credits'
-import { AiSuggestionAction, Avatar, Badge, Button, Checkbox, cn, CreditShellBar, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, UploadedFileDialog, type CreditUsageIndicatorProps } from '@/ui'
+import { centsToCredits, creditsToCents } from '@/lib/credits'
+import { AiSuggestionAction, Avatar, Badge, Button, Checkbox, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, UploadedFileDialog } from '@/ui'
 import { useCameraStream } from '@/hooks/useCameraStream'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 import { useTypewriter } from '@/hooks/useTypewriter'
@@ -85,7 +85,6 @@ export type InterviewHistoryViewProps = {
   readonly createHref: string
   readonly reportHref: string
   readonly rows: readonly InterviewHistoryRow[]
-  readonly creditUsage?: Pick<CreditUsageIndicatorProps, 'remainingCents' | 'totalCents' | 'billingHref'>
 }
 
 export type InterviewReportViewProps = {
@@ -1062,11 +1061,12 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
           open={topUpOpen}
           onOpenChange={setTopUpOpen}
           title="Add Interview Prep credits"
-          description="You're out of balance for this session. Add credits to keep going, your session will resume right where you left off."
+          description="Interview Prep"
           centsPerCredit={TOPUP_CENTS_PER_CREDIT}
           minimumDollars={TOPUP_MINIMUM_DOLLARS}
           presetDollars={TOPUP_PRESET_DOLLARS}
           currentBalanceCredits={Math.ceil(centsToCredits(balanceCents))}
+          autoReloadHint="Buy more automatically if you run out mid-session."
           onPurchase={handleAddFunds}
         />
       </main>
@@ -1186,11 +1186,12 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
         open={topUpOpen}
         onOpenChange={setTopUpOpen}
         title="Add Interview Prep credits"
-        description="You're out of balance for this session. Add credits to keep going, your session will resume right where you left off."
+        description="Interview Prep"
         centsPerCredit={TOPUP_CENTS_PER_CREDIT}
         minimumDollars={TOPUP_MINIMUM_DOLLARS}
         presetDollars={TOPUP_PRESET_DOLLARS}
         currentBalanceCredits={Math.ceil(centsToCredits(balanceCents))}
+        autoReloadHint="Buy more automatically if you run out mid-session."
         onPurchase={handleAddFunds}
       />
     </main>
@@ -1304,10 +1305,10 @@ export function InterviewPreparingReportView({ homeHref, steps, onComplete }: In
   )
 }
 
-export function InterviewHistoryView({ homeHref, createHref, reportHref, rows, creditUsage }: InterviewHistoryViewProps) {
+export function InterviewHistoryView({ homeHref, createHref, reportHref, rows }: InterviewHistoryViewProps) {
   return (
     <Workspace>
-      <CreditShellBar homeHref={homeHref} current="History" closeHref={homeHref} closeLabel="Close interview prep" creditUsage={creditUsage ? { ...creditUsage, formatCredits } : undefined} />
+      <ShellBar homeHref={homeHref} current="History" closeHref={homeHref} closeLabel="Close interview prep" />
       <section className="px-4 py-8 lg:px-12 xl:px-24">
         <DataTable
           title="Past Interview Practice"
