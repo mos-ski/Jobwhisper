@@ -1,7 +1,13 @@
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import { GripHorizontal } from 'lucide-react'
 
 import { cn } from '@/ui'
+
+const DesktopFrameContext = createContext<HTMLDivElement | null>(null)
+
+export function useDesktopFrameElement(): HTMLDivElement | null {
+  return useContext(DesktopFrameContext)
+}
 
 const MIN_WIDTH = 720
 const MIN_HEIGHT = 480
@@ -38,6 +44,7 @@ export type DesktopShellProps = {
 
 export function DesktopShell({ children }: DesktopShellProps) {
   const [frame, setFrame] = useState<WindowFrame>(initialFrame)
+  const [frameEl, setFrameEl] = useState<HTMLDivElement | null>(null)
   const dragState = useRef<{ readonly startX: number; readonly startY: number; readonly originX: number; readonly originY: number } | null>(null)
   const resizeState = useRef<{ readonly startX: number; readonly startY: number; readonly originWidth: number; readonly originHeight: number } | null>(null)
 
@@ -85,6 +92,7 @@ export function DesktopShell({ children }: DesktopShellProps) {
       <div aria-hidden="true" className="pointer-events-none absolute -left-40 -top-40 size-[560px] rounded-full bg-accent-subtle blur-3xl" />
       <div aria-hidden="true" className="pointer-events-none absolute -bottom-48 -right-32 size-[620px] rounded-full bg-accent-muted blur-3xl" />
       <div
+        ref={setFrameEl}
         className="absolute flex flex-col overflow-hidden rounded-xl shadow-2xl ring-1 ring-black/5"
         style={{ left: frame.x, top: frame.y, width: frame.width, height: frame.height }}
       >
@@ -98,7 +106,9 @@ export function DesktopShell({ children }: DesktopShellProps) {
             <span className="size-3.5 rounded-full bg-[#28c840]" />
           </div>
         </div>
-        <div className="min-h-0 flex-1 overflow-auto">{children}</div>
+        <DesktopFrameContext.Provider value={frameEl}>
+          <div className="min-h-0 flex-1 overflow-auto">{children}</div>
+        </DesktopFrameContext.Provider>
         <div
           onPointerDown={handleResizePointerDown}
           role="presentation"

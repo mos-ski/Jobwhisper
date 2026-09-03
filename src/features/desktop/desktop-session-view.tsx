@@ -6,7 +6,9 @@ import { CopilotTranscriptPanel } from '@/features/copilot/interview-copilot-vie
 import { settingsProfile } from '@/mocks/account'
 import { authPlanFixtures, billingSnapshot } from '@/mocks/billing'
 import { copilotInterviewTranscript, copilotLiveSession } from '@/mocks/copilot'
-import { Avatar, Badge, Button, cn, Dialog, DialogClose, DialogPopup, DialogTitle } from '@/ui'
+import { Avatar, Badge, Button, cn, Dialog, DialogClose, DialogTitle } from '@/ui'
+
+import { DesktopDialogPopup } from './desktop-dialog'
 
 function formatElapsed(seconds: number): string {
   const mm = String(Math.floor(seconds / 60)).padStart(2, '0')
@@ -111,7 +113,7 @@ function SessionSettingsModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogPopup aria-label="Session settings" className="border-live-border bg-live-panel text-white before:bg-white/20 sm:max-w-lg">
+      <DesktopDialogPopup aria-label="Session settings" className="border border-live-border bg-live-panel p-6 text-white">
         <DialogClose className="text-white/50 hover:text-white" />
         <DialogTitle className="text-lg font-semibold text-white">Settings</DialogTitle>
         <div className="mt-4 flex max-h-[65vh] flex-col gap-4 overflow-y-auto sm:max-h-[28rem] sm:flex-row sm:gap-0">
@@ -276,7 +278,7 @@ function SessionSettingsModal({
             ) : null}
           </div>
         </div>
-      </DialogPopup>
+      </DesktopDialogPopup>
     </Dialog>
   )
 }
