@@ -12,7 +12,6 @@ import {
   PhoneOff,
   Play,
   Settings,
-  Sparkles,
   Video,
   VideoOff,
   Volume2,
@@ -272,7 +271,7 @@ export function InterviewConfigureView({ homeHref, uploadHref, voiceHref, sessio
                 onClick={handleFillFromResume}
                 className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-text hover:text-accent sm:col-span-full"
               >
-                <Sparkles aria-hidden="true" className="size-4" />
+                <JobwhisperAiIcon className="size-4" />
                 Fill fields from resume
               </button>
           </div>

@@ -1,11 +1,12 @@
 import { useState, type ChangeEvent, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, ChevronDown, FileText, Plus, Sparkles, X, Zap } from 'lucide-react'
+import { ArrowLeft, ChevronDown, FileText, Plus, X, Zap } from 'lucide-react'
 
 import type { CopilotModelTier } from '@/contracts/copilot.draft'
 import { KnowledgeBasePickerDialog } from '@/features/documents/knowledge-base-picker-dialog'
 import { copilotSetup } from '@/mocks/copilot'
 import { contextDocumentRows } from '@/mocks/documents'
+import { JobwhisperAiIcon } from '@/ui'
 
 const AI_SUGGESTION =
   'Focus on the last two years of product launches — probe for measurable impact, cross-functional negotiation, and how they handled a launch that slipped.'
@@ -59,8 +60,6 @@ export function DesktopConfigureView() {
   const navigate = useNavigate()
   const [targetRole, setTargetRole] = useState('')
   const [companyName, setCompanyName] = useState('')
-  const [interviewType, setInterviewType] = useState('Introductory')
-  const [difficulty, setDifficulty] = useState('Medium')
   const [additionalContext, setAdditionalContext] = useState(copilotSetup.additionalContext)
   const [selectedDocIds, setSelectedDocIds] = useState<ReadonlySet<string>>(new Set())
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -95,15 +94,6 @@ export function DesktopConfigureView() {
 
         <div className="grid gap-3 p-8">
           <div className="flex gap-6">
-            <DarkField label="Interview type">
-              <DarkSelect value={interviewType} onChange={setInterviewType} options={['Introductory', 'Behavioral', 'Product case']} />
-            </DarkField>
-            <DarkField label="Difficulty">
-              <DarkSelect value={difficulty} onChange={setDifficulty} options={['Easy', 'Medium', 'Hard']} />
-            </DarkField>
-          </div>
-
-          <div className="flex gap-6">
             <DarkField label="Target Role">
               <input
                 value={targetRole}
@@ -127,7 +117,7 @@ export function DesktopConfigureView() {
             onClick={handleFillFromResume}
             className="inline-flex items-center gap-1.5 self-start text-sm font-semibold text-[#0052ff]"
           >
-            <Sparkles aria-hidden="true" className="size-3.5" />
+            <JobwhisperAiIcon className="size-3.5" />
             Fill fields from resume
           </button>
 

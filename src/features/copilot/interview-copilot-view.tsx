@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode, type RefObject } from 'react'
-import { ArrowLeft, ArrowUpDown, ChevronDown, ChevronRight, ChevronUp, Code2, FileText, MessageCircle, Pause, PhoneOff, Play, Plus, Send, Settings, Sparkles, Users, Video, VideoOff, X } from 'lucide-react'
+import { ArrowLeft, ArrowUpDown, ChevronDown, ChevronRight, ChevronUp, Code2, FileText, MessageCircle, Pause, PhoneOff, Play, Plus, Send, Settings, Users, Video, VideoOff, X } from 'lucide-react'
 
 import type { ContextDocumentRow } from '@/contracts/documents.draft'
 import type { ResumeHistoryRow } from '@/contracts/resume.draft'
@@ -286,26 +286,6 @@ export function CopilotConfigureView({ homeHref, uploadHref, preferencesHref, se
         >
           {mode === 'interview' ? (
             <div className="grid gap-3 sm:grid-cols-2">
-              <FormSelectField
-                id="copilot-interview-type"
-                label="Interview type"
-                defaultValue={setup.interviewType.toLowerCase()}
-                options={[
-                  { label: 'Introductory', value: 'introductory' },
-                  { label: 'Behavioral', value: 'behavioral' },
-                  { label: 'Product case', value: 'product case' },
-                ]}
-              />
-              <FormSelectField
-                id="copilot-difficulty"
-                label="Difficulty"
-                defaultValue={setup.difficulty.toLowerCase()}
-                options={[
-                  { label: 'Easy', value: 'easy' },
-                  { label: 'Medium', value: 'medium' },
-                  { label: 'Hard', value: 'hard' },
-                ]}
-              />
               <FormField id="copilot-target-role" label="Target Role" placeholder="e.g. Senior Software Engineer" value={targetRole} onChange={(event) => setTargetRole(event.target.value)} />
               <FormField id="copilot-company" label="Company Name" placeholder="e.g. Google, Meta" value={companyName} onChange={(event) => setCompanyName(event.target.value)} />
               <button
@@ -313,7 +293,7 @@ export function CopilotConfigureView({ homeHref, uploadHref, preferencesHref, se
                 onClick={handleFillFromResume}
                 className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-text hover:text-accent sm:col-span-full"
               >
-                <Sparkles aria-hidden="true" className="size-4" />
+                <JobwhisperAiIcon className="size-4" />
                 Fill fields from resume
               </button>
             </div>
