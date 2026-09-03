@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 
 import { DesktopCompleteView } from '@/features/desktop/desktop-complete-view'
 import { DesktopConfigureView } from '@/features/desktop/desktop-configure-view'
+import { DesktopHomeView } from '@/features/desktop/desktop-home-view'
 import { DesktopPermissionsView } from '@/features/desktop/desktop-permissions-view'
 import { DesktopSessionView } from '@/features/desktop/desktop-session-view'
 import { DesktopShell } from '@/features/desktop/desktop-shell'
@@ -13,6 +14,7 @@ export default function DesktopApp() {
       <Routes>
         <Route index element={<DesktopSignInView />} />
         <Route path="permissions" element={<DesktopPermissionsView />} />
+        <Route path="home" element={<DesktopHomeView />} />
         <Route path="configure" element={<DesktopConfigureView />} />
         <Route path="session" element={<DesktopSessionView />} />
         <Route path="complete" element={<DesktopCompleteView />} />

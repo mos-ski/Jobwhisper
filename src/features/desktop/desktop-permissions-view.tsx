@@ -104,7 +104,7 @@ export function DesktopPermissionsView() {
           {allGranted ? (
             <button
               type="button"
-              onClick={() => navigate('/desktop/configure')}
+              onClick={() => navigate('/desktop/home')}
               className="mt-1 flex h-10 w-full items-center justify-center rounded-lg bg-[#0052ff] text-sm font-medium text-white"
             >
               Continue

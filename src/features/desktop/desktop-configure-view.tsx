@@ -97,7 +97,7 @@ export function DesktopConfigureView() {
     if (step === 2) {
       setStep(1)
     } else {
-      navigate('/desktop/permissions')
+      navigate('/desktop/home')
     }
   }
 
