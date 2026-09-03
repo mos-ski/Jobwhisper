@@ -4,7 +4,7 @@ import type { MarketplaceItem } from '@/contracts/marketplace.draft'
 export const marketplaceItems: readonly MarketplaceItem[] = [
   {
     id: 'swipe',
-    name: '5 Must-Master Interview Questions — Answer Swipe File',
+    name: '5 Must-Master Interview Questions: Answer Swipe File',
     priceDollars: 19,
     description: 'Word-for-word answer frameworks for the questions that end interviews early.',
   },
@@ -24,7 +24,7 @@ export const marketplaceItems: readonly MarketplaceItem[] = [
     id: 'salary',
     name: 'Salary Negotiation Word-for-Word Scripts',
     priceDollars: 15,
-    description: 'Exactly what to say when they ask your salary expectations — and when they make an offer.',
+    description: 'Exactly what to say when they ask your salary expectations, and when they make an offer.',
   },
   {
     id: 'linkedin',

@@ -1,4 +1,4 @@
-import { AlertTriangle, Apple, Check, ChevronDown, Clock, Copy, ExternalLink, EyeOff, Gift, Mail, Monitor, Moon, Play, Sun, Upload } from 'lucide-react'
+import { AlertTriangle, Apple, Check, ChevronDown, Clock, Copy, ExternalLink, EyeOff, Gift, Mail, Monitor, Moon, Play, ShoppingCart, Sun, Trash2, Upload } from 'lucide-react'
 import { SiGooglechrome } from 'react-icons/si'
 import { useEffect, useState, type ReactNode } from 'react'
 
@@ -16,6 +16,7 @@ import {
   cn,
   DataTable,
   Dialog,
+  DialogClose,
   DialogDescription,
   DialogPopup,
   DialogTitle,
@@ -223,9 +224,7 @@ export function TutorialsView({ homeHref, tutorials }: TutorialsViewProps) {
   )
 }
 
-function MarketplaceCard({ item }: { readonly item: MarketplaceItem }) {
-  const [purchased, setPurchased] = useState(false)
-
+function MarketplaceCard({ item, inCart, onToggleCart }: { readonly item: MarketplaceItem; readonly inCart: boolean; readonly onToggleCart: () => void }) {
   return (
     <div className="flex flex-col gap-3 border border-border bg-surface p-[18px]">
       <div className="min-w-0 flex-1">
@@ -234,14 +233,14 @@ function MarketplaceCard({ item }: { readonly item: MarketplaceItem }) {
       </div>
       <div className="mt-auto flex items-center justify-between gap-3 pt-2">
         <span className="text-base font-semibold text-ink">${item.priceDollars}</span>
-        <Button variant={purchased ? 'secondary' : 'primary'} disabled={purchased} onClick={() => setPurchased(true)}>
-          {purchased ? (
+        <Button variant={inCart ? 'secondary' : 'primary'} onClick={onToggleCart}>
+          {inCart ? (
             <span className="inline-flex items-center gap-1.5">
               <Check aria-hidden="true" className="size-4" />
-              Purchased
+              In Cart
             </span>
           ) : (
-            `Buy for $${item.priceDollars}`
+            'Add to Cart'
           )}
         </Button>
       </div>
@@ -249,20 +248,118 @@ function MarketplaceCard({ item }: { readonly item: MarketplaceItem }) {
   )
 }
 
+function CartDrawer({
+  open,
+  onOpenChange,
+  items,
+  onRemove,
+  onCheckout,
+}: {
+  readonly open: boolean
+  readonly onOpenChange: (open: boolean) => void
+  readonly items: readonly MarketplaceItem[]
+  readonly onRemove: (id: string) => void
+  readonly onCheckout: () => void
+}) {
+  const total = items.reduce((sum, item) => sum + item.priceDollars, 0)
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogPopup placement="end-sheet" aria-label="Shopping cart" className="flex max-h-[85vh] flex-col p-0 lg:max-h-none">
+        <div className="flex shrink-0 items-center justify-between border-b border-border px-5 py-4">
+          <DialogTitle className="text-base">Cart</DialogTitle>
+          <DialogClose className="static" />
+        </div>
+        <div className="grid flex-1 gap-4 overflow-y-auto p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+          {items.length === 0 ? (
+            <p className="py-8 text-center text-sm text-ink-muted">Your cart is empty.</p>
+          ) : (
+            items.map((item) => (
+              <div key={item.id} className="flex items-start justify-between gap-3 border-b border-border pb-4 last:border-b-0 last:pb-0">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-ink">{item.name}</p>
+                  <p className="mt-1 text-sm text-ink-muted">${item.priceDollars}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onRemove(item.id)}
+                  className="grid size-8 shrink-0 place-items-center rounded-soft text-ink-muted hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  aria-label={`Remove ${item.name} from cart`}
+                >
+                  <Trash2 aria-hidden="true" className="size-4" />
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+        {items.length > 0 ? (
+          <div className="flex shrink-0 flex-col gap-3 border-t border-border px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <div className="flex items-center justify-between text-sm font-semibold text-ink">
+              <span>Total</span>
+              <span>${total}</span>
+            </div>
+            <Button onClick={onCheckout}>Checkout • ${total}</Button>
+          </div>
+        ) : null}
+      </DialogPopup>
+    </Dialog>
+  )
+}
+
 export function MarketplaceView({ homeHref, items }: MarketplaceViewProps) {
+  const [cartIds, setCartIds] = useState<ReadonlySet<string>>(new Set())
+  const [cartOpen, setCartOpen] = useState(false)
+  const cartItems = items.filter((item) => cartIds.has(item.id))
+
+  function toggleCart(id: string) {
+    setCartIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  function removeFromCart(id: string) {
+    setCartIds((prev) => {
+      const next = new Set(prev)
+      next.delete(id)
+      return next
+    })
+  }
+
+  function checkout() {
+    setCartIds(new Set())
+    setCartOpen(false)
+  }
+
   return (
     <AppWorkspace>
       <ShellBar homeHref={homeHref} current="Marketplace" closeHref={homeHref} closeLabel="Close marketplace" />
       <ContentShell>
-        <TitledPanel title="Marketplace">
-          <p className="-mt-2 mb-2 text-sm text-ink-muted">One-time resources to help you land the job faster — no subscription or credits required.</p>
+        <TitledPanel
+          title="Marketplace"
+          action={
+            <button
+              type="button"
+              onClick={() => setCartOpen(true)}
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-text hover:text-accent"
+            >
+              <ShoppingCart aria-hidden="true" className="size-4" />
+              Cart
+              {cartItems.length > 0 ? <span className="rounded-pill bg-accent px-1.5 py-0.5 text-xs font-bold text-on-accent">{cartItems.length}</span> : null}
+            </button>
+          }
+        >
+          <p className="-mt-2 mb-2 text-sm text-ink-muted">One-time resources to help you land the job faster, no subscription or credits required.</p>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((item) => (
-              <MarketplaceCard key={item.id} item={item} />
+              <MarketplaceCard key={item.id} item={item} inCart={cartIds.has(item.id)} onToggleCart={() => toggleCart(item.id)} />
             ))}
           </div>
         </TitledPanel>
       </ContentShell>
+      <CartDrawer open={cartOpen} onOpenChange={setCartOpen} items={cartItems} onRemove={removeFromCart} onCheckout={checkout} />
     </AppWorkspace>
   )
 }

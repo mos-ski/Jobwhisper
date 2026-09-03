@@ -215,7 +215,6 @@ export function InterviewConfigureView({ homeHref, uploadHref, voiceHref, sessio
   const [modelTier, setModelTier] = useState<CopilotModelTier>(session.modelTier)
   const [responseLanguage, setResponseLanguage] = useState(session.responseLanguage)
   const [autoAnswer, setAutoAnswer] = useState(false)
-  const [saveTranscript, setSaveTranscript] = useState(session.saveTranscript)
   const selectedDocuments = documents.filter((doc) => selectedDocIds.has(doc.id))
   const { type, isTyping } = useTypewriter()
 
@@ -327,10 +326,7 @@ export function InterviewConfigureView({ homeHref, uploadHref, voiceHref, sessio
               <Checkbox checked={autoAnswer} onCheckedChange={(checked) => setAutoAnswer(Boolean(checked))} label="Auto Answer (Beta)" />
               <p className="ms-6 mt-0.5 text-xs text-ink-muted">Skip attempting each question yourself — reveal the AI's model answer immediately instead.</p>
             </div>
-            <div>
-              <Checkbox checked={saveTranscript} onCheckedChange={(checked) => setSaveTranscript(Boolean(checked))} label="Save Transcript" />
-              <p className="ms-6 mt-0.5 text-xs text-ink-muted">Keep a written transcript of this session in your history.</p>
-            </div>
+
           </div>
         </FormPanel>
       </section>
