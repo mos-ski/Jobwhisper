@@ -435,71 +435,6 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
   )
 }
 
-const DFY_PACKAGES = {
-  'dfy-small': { jobs: 50, price: 497, access: '+ 1 month of Jobwhisper access' },
-  'dfy-large': { jobs: 100, price: 997, access: '+ 3 months of Jobwhisper access' },
-} as const
-
-function DoneForYouSignUp() {
-  const [selectedId, setSelectedId] = useState<keyof typeof DFY_PACKAGES>('dfy-small')
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [sent, setSent] = useState(false)
-  const selected = DFY_PACKAGES[selectedId]
-
-  return (
-    <>
-      <Button
-        variant="secondary"
-        onClick={() => setDialogOpen(true)}
-        className="shrink-0 border-input text-ink"
-      >
-        Sign up
-      </Button>
-      <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setSent(false) }}>
-        <DialogPopup aria-label="Get Done-For-You">
-          {sent ? (
-            <div className="grid gap-4 text-center">
-              <span className="mx-auto grid size-12 place-items-center rounded-full bg-positive-surface text-positive">
-                <Check aria-hidden="true" className="size-6" />
-              </span>
-              <div>
-                <DialogTitle>Request sent</DialogTitle>
-                <DialogDescription>A Jobwhisper success manager will reach out within one business day to get your {selected.jobs}-job package started.</DialogDescription>
-              </div>
-              <Button className="w-full" onClick={() => setDialogOpen(false)}>Done</Button>
-            </div>
-          ) : (
-            <>
-              <DialogTitle>Done-For-You</DialogTitle>
-              <DialogDescription>A real success manager applies to matched jobs on your behalf, resume tailoring and job scouting included.</DialogDescription>
-              <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                {(Object.keys(DFY_PACKAGES) as (keyof typeof DFY_PACKAGES)[]).map((id) => {
-                  const pkg = DFY_PACKAGES[id]
-                  const isSelected = id === selectedId
-                  return (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => setSelectedId(id)}
-                      className={cn(
-                        'rounded-lg border p-3 text-start transition-colors',
-                        isSelected ? 'border-accent bg-accent-subtle/40' : 'border-border hover:border-ink-muted',
-                      )}
-                    >
-                      <p className="text-sm font-bold text-ink">{pkg.jobs} jobs &middot; ${pkg.price}</p>
-                      <p className="mt-0.5 text-xs text-ink-muted">{pkg.access}</p>
-                    </button>
-                  )
-                })}
-              </div>
-              <Button className="mt-4 w-full" onClick={() => setSent(true)}>Confirm &middot; ${selected.price}</Button>
-            </>
-          )}
-        </DialogPopup>
-      </Dialog>
-    </>
-  )
-}
 
 export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet }: BillingViewProps) {
   const currentPlan = plans.find((plan) => plan.current) ?? plans[0]
@@ -542,7 +477,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                     <p className="mt-1 text-sm text-ink-muted">{currentPlan?.price} per month &middot; renews {wallet.resetDateLabel}</p>
                   </div>
                   <a
-                    href="/v3/auth/choose-plan"
+                    href="/v3/billing/plans"
                     className="inline-flex min-h-10 items-center justify-center rounded-lg border border-input px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                   >
                     View plans
@@ -563,7 +498,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                     </p>
                   </div>
                   <a
-                    href="#add-ons"
+                    href="/v3/billing/credits"
                     className="inline-flex min-h-10 items-center justify-center rounded-lg border border-input px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                   >
                     Buy credits
@@ -578,7 +513,12 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                     <p className="font-semibold text-ink">Done for you</p>
                     <p className="mt-1 text-sm text-ink-muted">A real success manager applies to matched jobs on your behalf</p>
                   </div>
-                  <DoneForYouSignUp />
+                  <a
+                    href="/v3/billing/done-for-you"
+                    className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-lg border border-input px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  >
+                    Sign up
+                  </a>
                 </div>
               </div>
             </div>

@@ -24,6 +24,8 @@ export type BillingPlanCard = {
   readonly note: string
   readonly popular?: boolean
   readonly current?: boolean
+  /** Short label next to the plan name, e.g. "2x usage" on Premium. */
+  readonly tag?: string
 }
 
 // Resume Builder and Auto Apply — standalone, pay-as-you-go products, no subscription

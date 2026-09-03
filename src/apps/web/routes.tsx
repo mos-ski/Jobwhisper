@@ -15,6 +15,9 @@ import { AutoApplyPreferencesPage } from './pages/auto-apply-preferences-page'
 import { AutoApplyReviewPage } from './pages/auto-apply-review-page'
 import { AutoApplyUploadPage } from './pages/auto-apply-upload-page'
 import { BillingPage } from './pages/billing-page'
+import { BillingPlansPage } from './pages/billing-plans-page'
+import { BillingPayAsYouGoPage } from './pages/billing-pay-as-you-go-page'
+import { BillingDoneForYouPage } from './pages/billing-done-for-you-page'
 import { CreditHistoryPage } from './pages/credit-history-page'
 import { CopilotCompletePage } from './pages/copilot-complete-page'
 import { CopilotConfigurePage } from './pages/copilot-configure-page'
@@ -108,6 +111,18 @@ export function WebRoutes() {
 
   if (routePath === '/billing') {
     return <BillingPage />
+  }
+
+  if (routePath === '/billing/plans') {
+    return <BillingPlansPage />
+  }
+
+  if (routePath === '/billing/credits') {
+    return <BillingPayAsYouGoPage />
+  }
+
+  if (routePath === '/billing/done-for-you') {
+    return <BillingDoneForYouPage />
   }
 
   if (routePath === '/billing/usage') {

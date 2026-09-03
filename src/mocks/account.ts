@@ -69,8 +69,9 @@ export const billingPlans: readonly BillingPlanCard[] = [
     annualCadence: 'per year',
     credits: '≈4,000 credits included',
     description: 'Everything Pro has, at 2x the size, for power users who live in interviews.',
-    features: ['≈4,000 credits per month, "2x size"', 'All features from PRO', 'Priority support'],
+    features: ['≈4,000 credits per month', 'All features from PRO', 'Priority support'],
     note: 'Best for power users who live in interviews and meetings',
+    tag: '2x usage',
   },
 ]
 
@@ -84,7 +85,7 @@ export const billingStandalonePurchases: readonly BillingStandalonePurchase[] = 
     centsPerCredit: 10,
     minimumDollars: 5,
     presetDollars: [10, 25, 50],
-    description: 'AI-tailored resumes for every role. Pay as you go, no subscription required — credits are valid 12 months.',
+    description: 'AI-tailored resumes for every role. Pay as you go, no subscription required, credits are valid 12 months.',
     features: ['AI-tailored resumes for every job', 'Unlimited downloads', 'ATS scoring included free'],
   },
   {
@@ -94,7 +95,7 @@ export const billingStandalonePurchases: readonly BillingStandalonePurchase[] = 
     centsPerCredit: 100,
     minimumDollars: 10,
     presetDollars: [25, 50, 100],
-    description: 'Let Jobwhisper apply to jobs for you. Pay as you go, no subscription required — credits are valid 12 months. Only charged when an application succeeds.',
+    description: 'Let Jobwhisper apply to jobs for you. Pay as you go, no subscription required, credits are valid 12 months. Only charged when an application succeeds.',
     features: ['Scout, Filter, Tailor & Driver agents', 'Free preference: select jobs yourself, or let the AI select for you, same cost either way'],
     note: 'Want a person to do it for you instead? Done-For-You packages start at $497 for 50 applications, with a success manager and a month of Jobwhisper access included.',
   },
