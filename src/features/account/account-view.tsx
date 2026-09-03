@@ -1,4 +1,4 @@
-import { AlertTriangle, Apple, Check, ChevronDown, Copy, ExternalLink, EyeOff, Monitor, Moon, Play, Sun, Upload } from 'lucide-react'
+import { AlertTriangle, Apple, Check, ChevronDown, Copy, ExternalLink, EyeOff, Gift, Monitor, Moon, Play, Sun, Upload } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 
 import type { BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
@@ -24,6 +24,12 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/ui'
+
+// Referral bonus amount is still an open item in PRICING.md §7 — 1,000 credits is a
+// placeholder pending a real number, shared here so the billing widget and the Referral
+// settings page can't drift apart the way "3 credits" vs. a new figure would.
+const REFERRAL_BONUS_CREDITS = 1000
+const REFERRAL_LINK = 'https://app.jobwhisper.ai/auth/signup?code=Adedamolaiosmk'
 
 const TOPUP_MINIMUM_DOLLARS = 10
 // Matches lib/credits.ts's CENTS_PER_CREDIT so a top-up lands on the same credit scale
@@ -436,6 +442,48 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
 }
 
 
+function BillingReferralPrompt({ referralsHref }: { readonly referralsHref: string }) {
+  const [copied, setCopied] = useState(false)
+
+  function handleCopy() {
+    if (typeof navigator === 'undefined') return
+    navigator.clipboard.writeText(REFERRAL_LINK).then(() => {
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  return (
+    <section className="w-fit max-w-full rounded-panel bg-accent-subtle p-3" aria-label="Refer a friend">
+      <div className="flex items-center gap-3">
+        <span className="grid size-16 shrink-0 place-items-center rounded-soft bg-surface text-accent">
+          <Gift aria-hidden="true" className="size-7" />
+        </span>
+        <div className="grid gap-2 pe-1">
+          <p className="text-sm font-medium text-accent">Earn {REFERRAL_BONUS_CREDITS.toLocaleString()} credits when your referral subscribes.</p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-pill bg-accent px-3 text-xs font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              <Copy aria-hidden="true" className="size-4" />
+              {copied ? 'Copied!' : 'Copy referral link'}
+            </button>
+            <a
+              href={referralsHref}
+              className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-pill bg-accent px-3 text-xs font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              <Gift aria-hidden="true" className="size-4" />
+              View referrals
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet }: BillingViewProps) {
   const currentPlan = plans.find((plan) => plan.current) ?? plans[0]
   const [remainingCents, setRemainingCents] = useState(wallet.remainingCents)
@@ -463,6 +511,8 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
               <a href="/v3/settings" className="text-accent-text underline underline-offset-4 hover:text-accent">Settings</a>.
             </p>
           </div>
+
+          <BillingReferralPrompt referralsHref="/v3/settings?tab=referral" />
 
           <TitledPanel title="Your Plan">
             <div className="grid gap-[12px]">
@@ -971,10 +1021,10 @@ function ReferralSettings({ referrals, activeTab }: { readonly referrals: readon
           <SettingsTabs activeTab={activeTab} />
         </div>
         <div className="rounded-panel bg-accent-subtle p-8">
-          <h2 className="text-3xl font-bold leading-tight text-ink">Earn 3 credits in free balance</h2>
-          <p className="mt-2 text-sm text-ink-muted">You get 3 credits added to your balance when your referral signs up and subscribes.</p>
+          <h2 className="text-3xl font-bold leading-tight text-ink">Earn {REFERRAL_BONUS_CREDITS.toLocaleString()} credits in free balance</h2>
+          <p className="mt-2 text-sm text-ink-muted">You get {REFERRAL_BONUS_CREDITS.toLocaleString()} credits added to your balance when your referral signs up and subscribes.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {['https://app.jobwhisper.ai/auth/signup?code=Adedamolaiosmk', 'Adedamolaiosmk'].map((value, index) => (
+            {[REFERRAL_LINK, 'Adedamolaiosmk'].map((value, index) => (
               <div key={value} className="min-w-0 rounded-soft border border-accent bg-surface px-3 py-2">
                 <p className="text-xs text-ink-muted">{index === 0 ? 'Referral Link' : 'Referral Code'}</p>
                 <div className="mt-1 flex items-center gap-3">
@@ -988,8 +1038,8 @@ function ReferralSettings({ referrals, activeTab }: { readonly referrals: readon
           </div>
           <ul className="mt-6 grid gap-2 text-sm text-ink">
             <li>• Invite a friend using your link</li>
-            <li>• They sign up → you earn 3 credits in free balance</li>
-            <li>• Refer 5 friends → unlock 15 credits in balance + bonus tools</li>
+            <li>• They sign up, you earn {REFERRAL_BONUS_CREDITS.toLocaleString()} credits in free balance</li>
+            <li>• Refer 5 friends, unlock {(REFERRAL_BONUS_CREDITS * 5).toLocaleString()} credits in balance plus bonus tools</li>
           </ul>
         </div>
       </TitledPanel>
