@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode, type RefObject } from 'react'
-import { ArrowLeft, ArrowUpDown, ChevronDown, ChevronRight, ChevronUp, Code2, FileText, MessageCircle, Pause, PhoneOff, Play, Plus, Send, Settings, Users, Video, VideoOff, X } from 'lucide-react'
+import { ArrowLeft, ArrowUpDown, ChevronDown, ChevronRight, ChevronUp, Code2, FileText, MessageCircle, Pause, PhoneOff, Play, Plus, Send, Settings, Sparkles, Users, Video, VideoOff, X } from 'lucide-react'
 
 import type { ContextDocumentRow } from '@/contracts/documents.draft'
 import type { ResumeHistoryRow } from '@/contracts/resume.draft'
 import { AppShell } from '@/features/dashboard/app-nav'
+import { KnowledgeBasePickerDialog } from '@/features/documents/knowledge-base-picker-dialog'
 import { useCameraStream } from '@/hooks/useCameraStream'
 import { useTypewriter } from '@/hooks/useTypewriter'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
@@ -12,6 +13,7 @@ import type {
   CopilotHistoryRow,
   CopilotLiveSession,
   CopilotMode,
+  CopilotModelTier,
   CopilotPermissionStep,
   CopilotReport,
   CopilotResponseLength,
@@ -26,14 +28,11 @@ import {
   AiSuggestionAction,
   Avatar,
   Badge,
-  Button,
   Checkbox,
   cn,
   DataTable,
   Dialog,
-  DialogClose,
   DialogPopup,
-  DialogTitle,
   DocumentDropAction,
   ExampleResponseCard,
   FormChoiceGroup,
@@ -113,6 +112,7 @@ export type CopilotLiveViewProps = {
   readonly transcriptBank?: readonly CopilotTranscriptTurn[]
   readonly codingBank?: readonly CopilotCodingTurn[]
   readonly demoMode?: boolean
+  readonly initialAutoAnswer?: boolean
 }
 
 export type CopilotCompleteViewProps = {
@@ -248,10 +248,12 @@ const COPILOT_AI_SUGGESTION =
 export function CopilotConfigureView({ homeHref, uploadHref, preferencesHref, setup, knowledgeBaseDocuments }: CopilotConfigureViewProps) {
   const mode = setup.mode
   const [additionalContext, setAdditionalContext] = useState(setup.additionalContext)
+  const [targetRole, setTargetRole] = useState('')
+  const [companyName, setCompanyName] = useState('')
   const [selectedDocIds, setSelectedDocIds] = useState<ReadonlySet<string>>(new Set())
   const [pickerOpen, setPickerOpen] = useState(false)
-  const [draftDocIds, setDraftDocIds] = useState<ReadonlySet<string>>(new Set())
-  const selectedDocuments = knowledgeBaseDocuments.filter((doc) => selectedDocIds.has(doc.id))
+  const [documents, setDocuments] = useState(knowledgeBaseDocuments)
+  const selectedDocuments = documents.filter((doc) => selectedDocIds.has(doc.id))
   const { type, isTyping } = useTypewriter()
 
   function handleAiSuggestion() {
@@ -259,18 +261,9 @@ export function CopilotConfigureView({ homeHref, uploadHref, preferencesHref, se
     type(COPILOT_AI_SUGGESTION, (partial) => setAdditionalContext(base + partial))
   }
 
-  function openDocumentPicker() {
-    setDraftDocIds(selectedDocIds)
-    setPickerOpen(true)
-  }
-
-  function toggleDraftDoc(id: string) {
-    setDraftDocIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
+  function handleFillFromResume() {
+    setTargetRole(setup.targetRole)
+    setCompanyName(setup.companyName)
   }
 
   return (
@@ -313,8 +306,16 @@ export function CopilotConfigureView({ homeHref, uploadHref, preferencesHref, se
                   { label: 'Hard', value: 'hard' },
                 ]}
               />
-              <FormField id="copilot-target-role" label="Target Role" placeholder="e.g. Senior Software Engineer" />
-              <FormField id="copilot-company" label="Company Name" placeholder="e.g. Google, Meta" />
+              <FormField id="copilot-target-role" label="Target Role" placeholder="e.g. Senior Software Engineer" value={targetRole} onChange={(event) => setTargetRole(event.target.value)} />
+              <FormField id="copilot-company" label="Company Name" placeholder="e.g. Google, Meta" value={companyName} onChange={(event) => setCompanyName(event.target.value)} />
+              <button
+                type="button"
+                onClick={handleFillFromResume}
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-text hover:text-accent sm:col-span-full"
+              >
+                <Sparkles aria-hidden="true" className="size-4" />
+                Fill fields from resume
+              </button>
             </div>
           ) : mode === 'coding' ? (
             <div className="grid gap-3 sm:grid-cols-2">
@@ -345,7 +346,7 @@ export function CopilotConfigureView({ homeHref, uploadHref, preferencesHref, se
               <FormField id="copilot-meeting-company" label="Client / Team" placeholder="e.g. Product Team" />
             </div>
           )}
-          <DocumentDropAction onTrigger={openDocumentPicker} hint="Add from Knowledge Base">
+          <DocumentDropAction onTrigger={() => setPickerOpen(true)} hint="Add from Knowledge Base">
             {selectedDocuments.length > 0 ? (
               <span className="flex flex-wrap justify-center gap-2">
                 {selectedDocuments.map((doc) => (
@@ -368,52 +369,15 @@ export function CopilotConfigureView({ homeHref, uploadHref, preferencesHref, se
         </FormPanel>
       </section>
 
-      <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
-        <DialogPopup aria-label="Add documents from Knowledge Base">
-          <DialogClose />
-          <DialogTitle>Add from Knowledge Base</DialogTitle>
-          <p className="mt-1 text-sm text-ink-muted">Select the documents you want Copilot to use as context for this session.</p>
-          <div className="mt-4 rounded-lg border-2 border-dashed border-border p-6 text-center hover:border-accent transition-colors">
-            <input
-              type="file"
-              id="doc-upload"
-              className="sr-only"
-              accept=".pdf,.doc,.docx,.txt"
-              onChange={() => {}}
-            />
-            <label htmlFor="doc-upload" className="cursor-pointer">
-              <Plus aria-hidden="true" className="mx-auto size-6 text-ink-muted" />
-              <p className="mt-2 text-sm font-medium text-ink">Upload a new document</p>
-              <p className="mt-1 text-xs text-ink-muted">PDF, DOC, DOCX or TXT</p>
-            </label>
-          </div>
-          <div className="mt-4 grid max-h-60 gap-1 overflow-y-auto">
-            {knowledgeBaseDocuments.length === 0 ? (
-              <p className="py-6 text-center text-sm text-ink-muted">No documents in your Knowledge Base yet.</p>
-            ) : (
-              knowledgeBaseDocuments.map((doc) => (
-                <label key={doc.id} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 hover:bg-surface-subtle">
-                  <Checkbox checked={draftDocIds.has(doc.id)} onCheckedChange={() => toggleDraftDoc(doc.id)} aria-label={doc.name} />
-                  <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{doc.name}</span>
-                  <span className="shrink-0 text-xs text-ink-muted">{doc.sizeOrUrl}</span>
-                </label>
-              ))
-            )}
-          </div>
-          <div className="mt-6 flex justify-end gap-3">
-            <Button variant="ghost" onClick={() => setPickerOpen(false)}>Cancel</Button>
-            <Button
-              onClick={() => {
-                setSelectedDocIds(draftDocIds)
-                setPickerOpen(false)
-              }}
-            >
-              Add Selected
-            </Button>
-          </div>
-        </DialogPopup>
-      </Dialog>
+      <KnowledgeBasePickerDialog
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        documents={documents}
+        selectedIds={selectedDocIds}
+        onConfirm={setSelectedDocIds}
+        onAddDocument={(doc) => setDocuments((prev) => [...prev, doc])}
+        description="Select the documents you want Copilot to use as context for this session."
+      />
     </Workspace>
   )
 }
@@ -453,6 +417,10 @@ const RESPONSE_MODE_EXAMPLES: Record<CopilotResponseMode, { readonly helperText:
 export function CopilotPreferencesView({ homeHref, configureHref, shareHref, setup }: CopilotPreferencesViewProps) {
   const [responseMode, setResponseMode] = useState(setup.responseMode)
   const [responseLength, setResponseLength] = useState(setup.responseLength)
+  const [modelTier, setModelTier] = useState<CopilotModelTier>(setup.modelTier)
+  const [responseLanguage, setResponseLanguage] = useState(setup.responseLanguage)
+  const [autoAnswer, setAutoAnswer] = useState(setup.autoAnswer)
+  const [saveTranscript, setSaveTranscript] = useState(setup.saveTranscript)
   const activeExample = RESPONSE_MODE_EXAMPLES[responseMode]
 
   return (
@@ -487,6 +455,43 @@ export function CopilotPreferencesView({ homeHref, configureHref, shareHref, set
               selected={responseLength}
               onSelectedChange={setResponseLength}
             />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <FormSelectField
+                id="copilot-model-tier"
+                label="Model"
+                value={modelTier}
+                onValueChange={(value) => setModelTier(value as CopilotModelTier)}
+                options={[
+                  { label: 'Balanced', value: 'balanced' },
+                  { label: 'Precision', value: 'precision' },
+                ]}
+              />
+              <FormSelectField
+                id="copilot-response-language"
+                label="Response language"
+                value={responseLanguage}
+                onValueChange={setResponseLanguage}
+                options={[
+                  { label: 'English', value: 'English' },
+                  { label: 'Spanish', value: 'Spanish' },
+                  { label: 'French', value: 'French' },
+                  { label: 'German', value: 'German' },
+                  { label: 'Portuguese', value: 'Portuguese' },
+                  { label: 'Mandarin Chinese', value: 'Mandarin Chinese' },
+                ]}
+              />
+            </div>
+            <div className="grid gap-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Behavior</p>
+              <div>
+                <Checkbox checked={autoAnswer} onCheckedChange={(checked) => setAutoAnswer(Boolean(checked))} label="Auto Answer (Beta)" />
+                <p className="ms-6 mt-0.5 text-xs text-ink-muted">Copilot answers live-interviewer questions automatically instead of waiting for a manual trigger.</p>
+              </div>
+              <div>
+                <Checkbox checked={saveTranscript} onCheckedChange={(checked) => setSaveTranscript(Boolean(checked))} label="Save Transcript" />
+                <p className="ms-6 mt-0.5 text-xs text-ink-muted">Keep a written transcript of this session in your history.</p>
+              </div>
+            </div>
         </FormPanel>
       </section>
     </Workspace>
@@ -1631,7 +1636,7 @@ const TOPUP_CENTS_PER_CREDIT = 40
 // of $0.40 — $25 would be 62.5 credits, so presets stick to $10/$20/$50.
 const TOPUP_PRESET_DOLLARS = [10, 20, 50]
 
-export function CopilotLiveView({ completeHref, session, isLoading = false, transcriptBank = [], codingBank = [], demoMode = false }: CopilotLiveViewProps) {
+export function CopilotLiveView({ completeHref, session, isLoading = false, transcriptBank = [], codingBank = [], demoMode = false, initialAutoAnswer = false }: CopilotLiveViewProps) {
   const [assistantMessages, setAssistantMessages] = useState<readonly AiAssistantMessage[]>([])
   const [draft, setDraft] = useState('')
   const assistantScrollRef = useRef<HTMLDivElement>(null)
@@ -1645,7 +1650,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
   const [autoScroll, setAutoScroll] = useState(true)
   const [scrollSpeed, setScrollSpeed] = useState(3)
   const [fontSize, setFontSize] = useState(14)
-  const [responseMode, setResponseMode] = useState<'auto' | 'manual'>('manual')
+  const [responseMode, setResponseMode] = useState<'auto' | 'manual'>(initialAutoAnswer ? 'auto' : 'manual')
   const [activityLabel, setActivityLabel] = useState(session.activityLabel)
   const [showChat, setShowChat] = useState(false)
   const [videoEnabled, setVideoEnabled] = useState(true)
