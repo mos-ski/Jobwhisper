@@ -3,7 +3,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 
 import type { BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
-import { centsToCredits, creditsToCents, formatCredits, usagePercent } from '@/lib/credits'
+import { centsToCredits, creditsToCents, formatCredits } from '@/lib/credits'
 import {
   Accordion,
   AccordionItem,
@@ -62,7 +62,6 @@ export type BillingViewProps = {
   readonly plans: readonly BillingPlanCard[]
   readonly standalonePurchases: readonly BillingStandalonePurchase[]
   readonly usageRows: readonly CreditUsageRow[]
-  readonly historyRows: readonly CreditHistoryRow[]
   readonly wallet: BillingWallet
 }
 
@@ -371,6 +370,8 @@ type CreditBalanceCardProps = {
   readonly title: string
   readonly rateLabel: string
   readonly balanceCredits: number
+  /** When given, shows a progress bar + "N% left" against this total (e.g. Plan 1's monthly allowance). Omitted for prepaid, non-resetting balances like Auto Apply/Resume Builder, which have no total to compare against. */
+  readonly totalCredits?: number
   readonly centsPerCredit: number
   readonly minimumDollars: number
   readonly presetDollars: readonly number[]
@@ -378,9 +379,10 @@ type CreditBalanceCardProps = {
   readonly reloadHint: string
 }
 
-function CreditBalanceCard({ title, rateLabel, balanceCredits, centsPerCredit, minimumDollars, presetDollars, onPurchase, reloadHint }: CreditBalanceCardProps) {
+function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, centsPerCredit, minimumDollars, presetDollars, onPurchase, reloadHint }: CreditBalanceCardProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [autoReload, setAutoReload] = useState(false)
+  const percentLeft = totalCredits ? Math.max(0, Math.min(100, Math.round((balanceCredits / totalCredits) * 100))) : undefined
 
   return (
     <section>
@@ -390,11 +392,22 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, centsPerCredit, m
       </div>
       <div className="mt-3 rounded-panel border border-border bg-surface">
         <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
-          <div>
-            <p className="text-2xl font-black text-ink">{balanceCredits} credits</p>
-            <p className="text-sm text-ink-muted">Current balance</p>
+          <div className="min-w-0 flex-1">
+            {percentLeft !== undefined ? (
+              <>
+                <p className="text-sm text-ink-muted">{balanceCredits} credits left</p>
+                <div className="mt-2 flex items-center gap-3">
+                  <div className="h-2 max-w-64 flex-1 overflow-hidden rounded-pill bg-surface-subtle">
+                    <div className={cn('h-full rounded-pill', percentLeft > 20 ? 'bg-accent' : 'bg-danger')} style={{ inlineSize: `${percentLeft}%` }} />
+                  </div>
+                  <span className="shrink-0 text-sm font-semibold text-ink">{percentLeft}% left</span>
+                </div>
+              </>
+            ) : (
+              <p className="text-2xl font-black text-ink">{balanceCredits} credits</p>
+            )}
           </div>
-          <Button onClick={() => setDialogOpen(true)}>Buy credits</Button>
+          <Button onClick={() => setDialogOpen(true)} className="shrink-0">Buy credits</Button>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border p-4 sm:p-5">
           <div>
@@ -425,48 +438,26 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, centsPerCredit, m
   )
 }
 
-function DoneForYouCard() {
-  const [selectedId, setSelectedId] = useState<'dfy-small' | 'dfy-large'>('dfy-small')
+const DFY_PACKAGES = {
+  'dfy-small': { jobs: 50, price: 497, access: '+ 1 month of Jobwhisper access' },
+  'dfy-large': { jobs: 100, price: 997, access: '+ 3 months of Jobwhisper access' },
+} as const
+
+function DoneForYouSignUp() {
+  const [selectedId, setSelectedId] = useState<keyof typeof DFY_PACKAGES>('dfy-small')
   const [dialogOpen, setDialogOpen] = useState(false)
   const [sent, setSent] = useState(false)
-  const packages = {
-    'dfy-small': { jobs: 50, price: 497, access: '+ 1 month of Jobwhisper access' },
-    'dfy-large': { jobs: 100, price: 997, access: '+ 3 months of Jobwhisper access' },
-  } as const
-  const selected = packages[selectedId]
+  const selected = DFY_PACKAGES[selectedId]
 
   return (
-    <section>
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="text-base font-bold text-ink">Done-For-You</h3>
-        <p className="text-sm text-ink-muted">$10 / successful job</p>
-      </div>
-      <div className="mt-3 rounded-panel border border-border bg-surface p-4 sm:p-5">
-        <p className="text-sm text-ink-muted">A real success manager applies to matched jobs on your behalf, resume tailoring and job scouting included.</p>
-        <div className="mt-4 grid gap-2 sm:grid-cols-2">
-          {(Object.keys(packages) as (keyof typeof packages)[]).map((id) => {
-            const pkg = packages[id]
-            const isSelected = id === selectedId
-            return (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setSelectedId(id)}
-                className={cn(
-                  'rounded-lg border p-3 text-start transition-colors',
-                  isSelected ? 'border-accent bg-accent-subtle/40' : 'border-border hover:border-ink-muted',
-                )}
-              >
-                <p className="text-sm font-bold text-ink">{pkg.jobs} jobs &middot; ${pkg.price}</p>
-                <p className="mt-0.5 text-xs text-ink-muted">{pkg.access}</p>
-              </button>
-            )
-          })}
-        </div>
-        <Button onClick={() => setDialogOpen(true)} className="mt-4 w-full sm:w-fit">
-          Get Started &middot; ${selected.price}
-        </Button>
-      </div>
+    <>
+      <Button
+        variant="secondary"
+        onClick={() => setDialogOpen(true)}
+        className="shrink-0 border-input text-ink"
+      >
+        Sign Up
+      </Button>
       <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setSent(false) }}>
         <DialogPopup aria-label="Get Done-For-You">
           {sent ? (
@@ -482,20 +473,38 @@ function DoneForYouCard() {
             </div>
           ) : (
             <>
-              <DialogTitle>Get Done-For-You</DialogTitle>
-              <DialogDescription>
-                ${selected.price} for {selected.jobs} applications over 1 month, {selected.access.toLowerCase()}. A success manager applies on your behalf and tailors your resume for every role.
-              </DialogDescription>
-              <Button className="mt-6 w-full" onClick={() => setSent(true)}>Confirm &middot; ${selected.price}</Button>
+              <DialogTitle>Done-For-You</DialogTitle>
+              <DialogDescription>A real success manager applies to matched jobs on your behalf, resume tailoring and job scouting included.</DialogDescription>
+              <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                {(Object.keys(DFY_PACKAGES) as (keyof typeof DFY_PACKAGES)[]).map((id) => {
+                  const pkg = DFY_PACKAGES[id]
+                  const isSelected = id === selectedId
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => setSelectedId(id)}
+                      className={cn(
+                        'rounded-lg border p-3 text-start transition-colors',
+                        isSelected ? 'border-accent bg-accent-subtle/40' : 'border-border hover:border-ink-muted',
+                      )}
+                    >
+                      <p className="text-sm font-bold text-ink">{pkg.jobs} jobs &middot; ${pkg.price}</p>
+                      <p className="mt-0.5 text-xs text-ink-muted">{pkg.access}</p>
+                    </button>
+                  )
+                })}
+              </div>
+              <Button className="mt-4 w-full" onClick={() => setSent(true)}>Confirm &middot; ${selected.price}</Button>
             </>
           )}
         </DialogPopup>
       </Dialog>
-    </section>
+    </>
   )
 }
 
-export function BillingView({ homeHref, plans, standalonePurchases, usageRows, historyRows, wallet }: BillingViewProps) {
+export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet }: BillingViewProps) {
   const currentPlan = plans.find((plan) => plan.current) ?? plans[0]
   const [remainingCents, setRemainingCents] = useState(wallet.remainingCents)
   const [totalCents, setTotalCents] = useState(wallet.totalCents)
@@ -505,7 +514,8 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, h
   const autoApplyPurchase = standalonePurchases.find((purchase) => purchase.id === 'auto-apply')
   const resumeBuilderPurchase = standalonePurchases.find((purchase) => purchase.id === 'resume-builder')
   const copilotBalanceCredits = Math.round(centsToCredits(remainingCents))
-  const copilotPercent = usagePercent(remainingCents, totalCents)
+  const copilotTotalCredits = Math.round(centsToCredits(totalCents))
+  const findJobsTotalCredits = autoApplyBalance + resumeBuilderBalance
 
   return (
     <AppWorkspace>
@@ -521,27 +531,71 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, h
           </div>
 
           <TitledPanel title="Your Plan">
-            <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-border p-4 sm:p-5">
+            <div className="grid gap-5">
               <div>
-                <p className="font-semibold text-ink">{currentPlan?.name.charAt(0)}{currentPlan?.name.slice(1).toLowerCase()} plan</p>
-                <p className="mt-1 text-sm text-ink-muted">{currentPlan?.price} per month &middot; renews {wallet.resetDateLabel}</p>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Ace Your Interview</p>
+                <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-border p-4 sm:p-5">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-ink">{currentPlan?.name.charAt(0)}{currentPlan?.name.slice(1).toLowerCase()} plan</p>
+                      <span className="rounded-pill bg-accent-subtle px-2.5 py-0.5 text-xs font-medium text-accent-text">Active</span>
+                    </div>
+                    <p className="mt-1 text-sm text-ink-muted">{currentPlan?.price} per month &middot; renews {wallet.resetDateLabel}</p>
+                  </div>
+                  <a
+                    href="/v3/auth/choose-plan"
+                    className="inline-flex min-h-10 items-center justify-center rounded-lg border border-input px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  >
+                    View plans
+                  </a>
+                </div>
               </div>
-              <a
-                href="/v3/auth/choose-plan"
-                className="inline-flex min-h-10 items-center justify-center rounded-lg border border-input px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-              >
-                View plans
-              </a>
+
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Find Jobs Yourself</p>
+                <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-border p-4 sm:p-5">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-ink">Prepaid credits</p>
+                      {findJobsTotalCredits > 0 ? <span className="rounded-pill bg-accent-subtle px-2.5 py-0.5 text-xs font-medium text-accent-text">Active</span> : null}
+                    </div>
+                    <p className="mt-1 text-sm text-ink-muted">
+                      {findJobsTotalCredits > 0 ? `${findJobsTotalCredits} total credits · valid 12 months from purchase` : 'Auto Apply + Resume Builder, no subscription required'}
+                    </p>
+                  </div>
+                  <a
+                    href="#add-ons"
+                    className="inline-flex min-h-10 items-center justify-center rounded-lg border border-input px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  >
+                    Buy Credits
+                  </a>
+                </div>
+              </div>
+
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Done For You</p>
+                <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-border p-4 sm:p-5">
+                  <div>
+                    <p className="font-semibold text-ink">Done for you</p>
+                    <p className="mt-1 text-sm text-ink-muted">A real success manager applies to matched jobs on your behalf</p>
+                  </div>
+                  <DoneForYouSignUp />
+                </div>
+              </div>
             </div>
           </TitledPanel>
 
           <div id="add-ons">
-          <TitledPanel title="Credits &amp; Balances">
+          <TitledPanel
+            title="Credits &amp; Balances"
+            action={<a href="/v3/billing/usage" className="text-sm font-semibold text-accent-text underline underline-offset-4 hover:text-accent">View usage details</a>}
+          >
             <div className="grid gap-6">
               <CreditBalanceCard
                 title="Interview Copilot Credits"
                 rateLabel="$0.10 / credit / min"
                 balanceCredits={copilotBalanceCredits}
+                totalCredits={copilotTotalCredits}
                 centsPerCredit={TOPUP_CENTS_PER_CREDIT}
                 minimumDollars={TOPUP_MINIMUM_DOLLARS}
                 presetDollars={TOPUP_PRESET_DOLLARS}
@@ -576,37 +630,8 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, h
                   onPurchase={(credits) => setResumeBuilderBalance((prev) => prev + credits)}
                 />
               ) : null}
-              <DoneForYouCard />
             </div>
           </TitledPanel>
-          </div>
-
-          <TitledPanel title="Usage">
-            <div className="rounded-panel border border-border bg-surface">
-              <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
-                <div>
-                  <p className="text-sm font-semibold text-ink">Interview Copilot</p>
-                  <p className="text-sm text-ink-muted">Resets {wallet.resetDateLabel}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="h-2 w-32 overflow-hidden rounded-pill bg-surface-subtle sm:w-48">
-                    <div className={cn('h-full rounded-pill', copilotPercent > 20 ? 'bg-accent' : 'bg-danger')} style={{ inlineSize: `${copilotPercent}%` }} />
-                  </div>
-                  <span className="w-16 shrink-0 text-end text-sm font-semibold text-ink">{copilotPercent}% left</span>
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border p-4 sm:p-5">
-                <div>
-                  <p className="text-sm font-semibold text-ink">Auto Apply</p>
-                  <p className="text-sm text-ink-muted">Prepaid credits, valid 12 months</p>
-                </div>
-                <span className="text-sm font-semibold text-ink">{autoApplyBalance} credits remaining</span>
-              </div>
-            </div>
-          </TitledPanel>
-
-          <div id="usage-breakdown">
-            <UsageChart rows={historyRows} />
           </div>
 
           <TitledPanel title="Payment Method">
@@ -622,30 +647,6 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, h
             </div>
           </TitledPanel>
 
-          <TitledPanel title="Usage History">
-            <DataTable
-              rows={historyRows}
-              itemLabel={(row) => row.feature}
-              selectable={false}
-              minTableWidthClassName="min-w-[54rem]"
-              columns={[
-                { key: 'feature', label: 'Feature', className: 'w-[14rem]', render: (row) => <span className="font-semibold">{row.feature}</span> },
-                { key: 'description', label: 'Description', className: 'w-[22rem]', render: (row) => row.description },
-                { key: 'dateTime', label: 'Date & Time', className: 'w-[12rem]', render: (row) => row.dateTime },
-                {
-                  key: 'amount',
-                  label: 'Amount',
-                  className: 'w-[7rem] text-end',
-                  render: (row) => (
-                    <span className={cn('font-semibold', row.amount > 0 ? 'text-positive' : row.amount < 0 ? 'text-ink' : 'text-ink-muted')}>
-                      {row.amount > 0 ? `+${formatCredits(row.amount)}` : formatCredits(row.amount)}
-                    </span>
-                  ),
-                },
-                { key: 'balanceAfter', label: 'Balance', className: 'w-[7rem] text-end', render: (row) => formatCredits(row.balanceAfter) },
-              ]}
-            />
-          </TitledPanel>
 
           <CreditUsageTable rows={usageRows} />
 
