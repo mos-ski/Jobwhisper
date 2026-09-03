@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
-import { AlertTriangle, ArrowLeft, ArrowUpLeft, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ExternalLink, FileText, Filter, LinkIcon, Lock, PenLine, Play, RefreshCw, Search, Send, Settings, X, Zap, Trash2, Download, Mail } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, ArrowUpLeft, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ExternalLink, FileText, Filter, Globe, LinkIcon, Lock, PenLine, Play, RefreshCw, Search, Send, Settings, X, Zap, Trash2, Download, Mail } from 'lucide-react'
+import { SiGooglechrome, SiGoogleplay } from 'react-icons/si'
 
 import type { AutoApplyApplication, AutoApplyJob, AutoApplyOutcome, AutoApplySetup } from '@/contracts/auto-apply.draft'
 import {
@@ -337,7 +338,11 @@ type AutoApplyMethodCard = {
   readonly iconSrc: string
   readonly iconClassName: string
   readonly href: string
+  readonly leadingIcons: readonly ReactNode[]
+  readonly trailingIcon?: ReactNode
 }
+
+const AVAILABILITY_ICON_CLASS = 'size-[13.5px] text-ink-muted/50'
 
 export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref, extensionHref }: AutoApplyMethodViewProps) {
   const [selected, setSelected] = useState<AutoApplyMethodId>('full-auto')
@@ -349,8 +354,9 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
       description: 'Jobwhisper finds matching jobs and applies to them for you, fully hands-off.',
       availability: 'Available on web',
       iconSrc: '/v3-assets/figma/auto-apply-method-full-auto.svg',
-      iconClassName: 'h-[48px] w-[54.938px]',
+      iconClassName: 'h-[42px] w-[48.07px]',
       href: fullAutoHref,
+      leadingIcons: [<Globe key="globe" aria-hidden="true" className={AVAILABILITY_ICON_CLASS} />],
     },
     {
       id: 'assisted',
@@ -358,17 +364,23 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
       description: 'Jobwhisper finds and ranks matching jobs. You review the list and choose which ones to apply to.',
       availability: 'Available on Web & Mobile App',
       iconSrc: '/v3-assets/figma/auto-apply-method-pick-jobs.svg',
-      iconClassName: 'h-[48.867px] w-[56.121px]',
+      iconClassName: 'size-[42px]',
       href: jobsHref,
+      leadingIcons: [
+        <Globe key="globe" aria-hidden="true" className={AVAILABILITY_ICON_CLASS} />,
+        <SiGoogleplay key="play" aria-hidden="true" className={AVAILABILITY_ICON_CLASS} />,
+      ],
     },
     {
       id: 'extension',
       title: 'Browser Extension',
       description: 'Apply directly from LinkedIn, Glassdoor, Indeed, and Workable with the Jobwhisper extension installed.',
       availability: 'Download Extension',
-      iconSrc: '/v3-assets/figma/auto-apply-method-extension.png',
-      iconClassName: 'h-[48.867px] w-[56.133px] rounded-sm object-cover',
+      iconSrc: '/v3-assets/figma/auto-apply-method-extension.svg',
+      iconClassName: 'h-[42px] w-[48.234px]',
       href: extensionHref,
+      leadingIcons: [<SiGooglechrome key="chrome" aria-hidden="true" className={AVAILABILITY_ICON_CLASS} />],
+      trailingIcon: <ArrowUpLeft aria-hidden="true" className={AVAILABILITY_ICON_CLASS} />,
     },
   ]
 
@@ -403,9 +415,10 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
                   <div className="h-[85px] w-[163px]">
                     <p className="text-[12px] leading-[18px] text-ink-muted">{method.description}</p>
                   </div>
-                  <p className="mt-auto flex items-center gap-[2px] text-[8.8px] font-medium leading-[16.2px] text-ink-muted/50">
-                    {method.id === 'extension' ? <ArrowUpLeft aria-hidden="true" className="size-2.5" /> : null}
+                  <p className="mt-auto flex items-center gap-[4px] text-[8.8px] font-medium leading-[16.2px] text-ink-muted/50">
+                    {method.leadingIcons}
                     {method.availability}
+                    {method.trailingIcon}
                   </p>
                 </button>
               )
