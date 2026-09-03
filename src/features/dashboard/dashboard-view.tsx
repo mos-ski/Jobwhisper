@@ -455,9 +455,14 @@ function ActionCard({ action, onLockedClick }: { readonly action: DashboardActio
     <>
       <span
         aria-hidden="true"
-        className="flex h-[57.6px] w-[56.5px] shrink-0 items-center justify-center text-ink transition-transform duration-200 group-hover:scale-110 group-focus-visible:scale-110 motion-reduce:transition-none"
+        className="relative flex h-[57.6px] w-[56.5px] shrink-0 items-center justify-center transition-transform duration-200 group-hover:scale-110 group-focus-visible:scale-110 motion-reduce:transition-none"
       >
-        {locked ? <Lock aria-hidden="true" className="size-6 text-ink-muted" /> : <img src={actionIconById[action.id]} alt="" className="size-full object-contain" />}
+        <img src={actionIconById[action.id]} alt="" className={cn('size-full object-contain', locked && 'opacity-50 grayscale')} />
+        {locked ? (
+          <span className="absolute -bottom-1 -right-1 grid size-5 place-items-center rounded-full border border-border bg-surface shadow-control">
+            <Lock aria-hidden="true" className="size-3 text-ink-muted" />
+          </span>
+        ) : null}
       </span>
       <div className="grid gap-1.5">
         <div className="flex flex-wrap items-center gap-2">
