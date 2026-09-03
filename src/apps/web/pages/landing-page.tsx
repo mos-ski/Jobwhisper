@@ -392,7 +392,7 @@ function MomentsSection() {
           {INTERVIEW_MOMENTS.map(({ Icon, title, body }) => (
             <article key={title} className="rounded-lg border border-border bg-canvas p-5">
               <Icon aria-hidden="true" className="mb-5 size-6 text-accent-text" />
-              <h3 className="text-lg font-bold text-ink">{title}</h3>
+              <h3 className="font-gowun text-lg font-bold text-ink">{title}</h3>
               <p className="mt-3 text-sm leading-6 text-ink-muted">{body}</p>
             </article>
           ))}
@@ -419,7 +419,7 @@ function ChatGptContrastSection() {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="rounded-lg border border-border bg-surface p-6">
             <CircleHelp aria-hidden="true" className="mb-5 size-6 text-warning" />
-            <h3 className="text-lg font-bold text-ink">General AI</h3>
+            <h3 className="font-gowun text-lg font-bold text-ink">General AI</h3>
             <p className="mt-3 text-sm leading-6 text-ink-muted">
               Useful before the call, but you still need to paste your resume, job description, question, and role while
               someone is waiting.
@@ -427,7 +427,7 @@ function ChatGptContrastSection() {
           </div>
           <div className="rounded-lg border border-accent bg-accent-subtle p-6">
             <ShieldCheck aria-hidden="true" className="mb-5 size-6 text-accent-text" />
-            <h3 className="text-lg font-bold text-ink">Jobwhisper</h3>
+            <h3 className="font-gowun text-lg font-bold text-ink">Jobwhisper</h3>
             <p className="mt-3 text-sm leading-6 text-ink-muted">
               Your context is already there, and Interview Copilot is built around the live interview conversation.
             </p>

@@ -632,7 +632,7 @@ export function DashboardView({
         <DashboardSidebar navItems={navItems} collapsed={collapsed} />
         <section className="relative min-h-[calc(100vh-3.5rem)] flex-1 px-4 py-10 sm:px-6 sm:py-12 lg:px-16 lg:py-36">
           <div className="mx-auto w-full max-w-3xl">
-            <h1 className="text-xl font-semibold leading-tight text-ink sm:text-2xl">Welcome, what would you like to do today?</h1>
+            <h1 className="font-gowun text-xl font-semibold leading-tight text-ink sm:text-2xl">Welcome, what would you like to do today?</h1>
             <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {actions.map((action) => (
                 <ActionCard key={action.id} action={action} onLockedClick={setUpgradeAction} />

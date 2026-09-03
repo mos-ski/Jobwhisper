@@ -117,7 +117,7 @@ function TitledPanel({ title, action, children }: { readonly title: string; read
   return (
     <article className="w-full min-w-0 bg-surface shadow-panel">
       <div className="flex min-h-[5rem] flex-wrap items-center justify-between gap-3 border-b border-border px-4 sm:px-6 lg:px-8">
-        <h1 className="text-lg font-medium leading-5 text-ink sm:text-xl">{title}</h1>
+        <h1 className="font-gowun text-lg font-medium leading-5 text-ink sm:text-xl">{title}</h1>
         {action}
       </div>
       <div className="p-4 sm:p-6 lg:p-8">{children}</div>
@@ -250,7 +250,7 @@ function CartDrawer({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup placement="end-sheet" aria-label="Shopping cart" className="flex max-h-[85vh] flex-col p-0 lg:max-h-none">
         <div className="flex shrink-0 items-center justify-between border-b border-border px-5 py-4">
-          <DialogTitle className="text-base">Cart</DialogTitle>
+          <DialogTitle className="font-gowun text-base">Cart</DialogTitle>
           <DialogClose className="static" />
         </div>
         <div className="grid flex-1 gap-4 overflow-y-auto p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
@@ -425,7 +425,7 @@ function CancelSubscriptionDialog({ renewalLabel }: { readonly renewalLabel: str
       <DialogPopup aria-label="Cancel subscription">
         {step === 'confirmed' ? (
           <>
-            <DialogTitle className="text-danger">Subscription scheduled to cancel</DialogTitle>
+            <DialogTitle className="font-gowun text-danger">Subscription scheduled to cancel</DialogTitle>
             <DialogDescription>
               You&apos;ll keep full access until {renewalLabel}. After that you&apos;ll move to the Free plan. You can renew anytime before then.
             </DialogDescription>
@@ -435,7 +435,7 @@ function CancelSubscriptionDialog({ renewalLabel }: { readonly renewalLabel: str
           <>
             <div className="flex items-center gap-3">
               <AlertTriangle aria-hidden="true" className="size-6 shrink-0 text-danger" />
-              <DialogTitle className="text-danger">Cancel Subscription</DialogTitle>
+              <DialogTitle className="font-gowun text-danger">Cancel Subscription</DialogTitle>
             </div>
             {step === 'warning' ? (
               <>
@@ -586,7 +586,7 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
   return (
     <section>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="text-base font-bold text-ink">{title}</h3>
+        <h3 className="font-gowun text-base font-bold text-ink">{title}</h3>
         <p className="text-sm text-ink-muted">{rateLabel}</p>
       </div>
       <div className="mt-3 border border-border bg-surface">
@@ -703,7 +703,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
       <ContentShell>
         <div className="grid gap-6">
           <div>
-            <h1 className="text-2xl font-semibold leading-tight text-ink">Usage &amp; Billing</h1>
+            <h1 className="font-gowun text-2xl font-semibold leading-tight text-ink">Usage &amp; Billing</h1>
             <p className="mt-1 text-sm text-ink-muted">
               Manage your plan, credit balances, and payment method. For anything else, visit{' '}
               <a href="/v3/settings" className="text-accent-text underline underline-offset-4 hover:text-accent">Settings</a>.
@@ -924,8 +924,8 @@ function UsageChart({ rows }: { readonly rows: readonly CreditHistoryRow[] }) {
 
   return (
     <TitledPanel title="Usage Details">
-      <p className="text-2xl font-black sm:text-3xl">
-        {formatCredits(totalUsed)} <span className="text-sm font-medium text-ink-muted sm:text-base">used in last {dayRange} days</span>
+      <p className="font-gowun text-2xl font-black sm:text-3xl">
+        {formatCredits(totalUsed)} <span className="font-sans text-sm font-medium text-ink-muted sm:text-base">used in last {dayRange} days</span>
       </p>
       <div className="mt-4 flex flex-wrap gap-3">
         <div className="relative">
@@ -1149,7 +1149,7 @@ function AppearanceSettings() {
   return (
     <article className="w-full bg-surface shadow-panel">
       <div className="flex min-h-[5rem] items-center border-b border-border px-8">
-        <h1 className="text-xl font-medium leading-5 text-ink">Appearance</h1>
+        <h1 className="font-gowun text-xl font-medium leading-5 text-ink">Appearance</h1>
       </div>
       <div className="p-8">
         <p className="text-sm text-ink-muted">Choose how Jobwhisper looks on this device.</p>
@@ -1235,7 +1235,7 @@ function ReferralSettings({ referrals, activeTab }: { readonly referrals: readon
           <SettingsTabs activeTab={activeTab} />
         </div>
         <div className="rounded-panel bg-accent-subtle p-8">
-          <h2 className="text-3xl font-bold leading-tight text-ink">Earn {REFERRAL_BONUS_CREDITS.toLocaleString()} credits in free balance</h2>
+          <h2 className="font-gowun text-3xl font-bold leading-tight text-ink">Earn {REFERRAL_BONUS_CREDITS.toLocaleString()} credits in free balance</h2>
           <p className="mt-2 text-sm text-ink-muted">You get {REFERRAL_BONUS_CREDITS.toLocaleString()} credits added to your balance when your referral signs up and subscribes.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {[REFERRAL_LINK, 'Adedamolaiosmk'].map((value, index) => (

@@ -38,7 +38,7 @@ function FeatureAccessMatrix() {
   return (
     <article className="mt-6 w-full min-w-0 bg-surface shadow-panel">
       <div className="flex min-h-[5rem] flex-col justify-center gap-1 border-b border-border px-4 sm:px-6 lg:px-8">
-        <h2 className="text-base font-semibold text-ink">Feature access matrix</h2>
+        <h2 className="font-gowun text-base font-semibold text-ink">Feature access matrix</h2>
         <p className="text-sm text-ink-muted">What each tier actually unlocks.</p>
       </div>
       <div className="relative p-4 sm:p-6 lg:p-8">
@@ -88,13 +88,13 @@ function PlanCard({ plan, annual, index }: { readonly plan: BillingPlanCard; rea
       )}
     >
       <div className="flex items-center gap-2">
-        <h2 className="text-sm font-bold tracking-wide text-ink">{plan.name}</h2>
+        <h2 className="font-gowun text-sm font-bold tracking-wide text-ink">{plan.name}</h2>
         {plan.tag ? <span className="text-sm font-medium text-ink-muted">{plan.tag}</span> : null}
         {plan.current ? <Badge variant="positive">Current</Badge> : null}
       </div>
 
       <p className="mt-4 flex items-baseline gap-1.5">
-        <span className="text-3xl font-bold text-ink">{annual ? plan.annualPrice : plan.price}</span>
+        <span className="font-gowun text-3xl font-bold text-ink">{annual ? plan.annualPrice : plan.price}</span>
         <span className="text-sm text-ink-muted">{annual ? plan.annualCadence : plan.cadence}</span>
       </p>
 
@@ -146,7 +146,7 @@ export function PlanCompareView({ homeHref, plans, backHref }: PlanCompareViewPr
       <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
         <article className="w-full min-w-0 bg-surface shadow-panel">
           <div className="flex min-h-[5rem] flex-wrap items-center justify-between gap-3 border-b border-border px-4 sm:px-6 lg:px-8">
-            <h1 className="text-lg font-medium leading-5 text-ink sm:text-xl">Billing &amp; Subscription</h1>
+            <h1 className="font-gowun text-lg font-medium leading-5 text-ink sm:text-xl">Billing &amp; Subscription</h1>
             <div className="flex items-center gap-2.5">
               <span className="text-sm font-medium text-ink">Annual</span>
               <Switch checked={annual} onCheckedChange={setAnnual} />

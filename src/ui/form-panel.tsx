@@ -75,7 +75,7 @@ export const FormPanel = forwardRef<HTMLFormElement, FormPanelProps>(
       <>
         <form ref={ref} data-slot="form-panel" className={cn('mx-auto w-full max-w-[30rem] border border-border bg-surface shadow-panel', className)} {...props}>
           <header data-slot="form-panel-header" className="flex min-h-20 items-center justify-center gap-2 border-b border-border px-6 py-7 text-center">
-            <h1 className="text-xl font-medium leading-7 text-ink">{title}</h1>
+            <h1 className="font-gowun text-xl font-medium leading-7 text-ink">{title}</h1>
             {step ? <span className="text-sm font-medium leading-5 text-ink-muted">{step}</span> : null}
           </header>
           {uploadedFile ? (
@@ -165,7 +165,7 @@ export function UploadedFileDialog({ open, onOpenChange, fileName, fileUrl, cont
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup aria-label="Resume uploaded" className="sm:max-w-lg">
-        <DialogTitle>Resume uploaded</DialogTitle>
+        <DialogTitle className="font-gowun">Resume uploaded</DialogTitle>
         <div className="mt-4 overflow-hidden rounded-lg border border-border">
           {fileUrl ? (
             <iframe
@@ -494,7 +494,7 @@ export const ExampleResponseCard = forwardRef<HTMLDivElement, ExampleResponseCar
   function ExampleResponseCard({ children, helperText, className, ...props }, ref) {
     return (
       <div ref={ref} data-slot="example-response-card" className={cn('grid gap-3', className)} {...props}>
-        <blockquote className="rounded-lg border border-border bg-surface-subtle px-4 py-3 text-sm leading-6 text-ink-muted">
+        <blockquote className="font-gowun rounded-lg border border-border bg-surface-subtle px-4 py-3 text-sm leading-6 text-ink-muted">
           {children}
         </blockquote>
         {helperText ? <p className="text-xs leading-5 text-ink-muted">{helperText}</p> : null}

@@ -1039,7 +1039,7 @@ function AppShell({
       <section className="p-4 lg:p-8">
         <div className="mx-auto min-h-[56rem] max-w-7xl bg-surface shadow-panel">
           <div className="border-b border-border px-8 py-8">
-            <h1 className="text-xl font-medium">{title}</h1>
+            <h1 className="font-gowun text-xl font-medium">{title}</h1>
           </div>
           <div className="p-8">
             <nav aria-label="Auto apply sections" className="flex gap-6 border-b border-border text-sm font-medium">
@@ -1415,7 +1415,7 @@ function JobPreview({
         </div>
         <div className="flex items-center justify-between px-6 pb-4">
           <div>
-            <h2 className="text-xl font-bold leading-tight text-ink">{job.title}</h2>
+            <h2 className="font-gowun text-xl font-bold leading-tight text-ink">{job.title}</h2>
             <p className="mt-1 text-sm text-ink-muted">{job.company}{job.location ? ` · ${job.location}` : ''}</p>
           </div>
           <button type="button" onClick={onClose} aria-label="Close job preview" className="grid size-10 shrink-0 place-items-center rounded-lg text-ink-muted transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
@@ -1551,7 +1551,7 @@ function GetResumeDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup aria-label="Get a tailored resume">
         <DialogClose />
-        <DialogTitle>Get a tailored resume</DialogTitle>
+        <DialogTitle className="font-gowun">Get a tailored resume</DialogTitle>
         <DialogDescription>
           Jobwhisper will tailor a resume for <span className="font-semibold text-ink">{job.title}</span> at <span className="font-semibold text-ink">{job.company}</span>, using this job's description. This uses <span className="font-semibold text-ink">1 Resume Builder credit</span> ($0.10).
         </DialogDescription>
@@ -1589,7 +1589,7 @@ function ResumeUsedDialog({
         </div>
         <div className="flex-1 overflow-y-auto bg-canvas px-4 py-6 sm:px-8">
           <div className="mx-auto max-w-2xl rounded-lg border border-border bg-surface p-8 shadow-panel">
-            <h1 className="text-2xl font-bold text-ink">{resume.candidateName}</h1>
+            <h1 className="font-gowun text-2xl font-bold text-ink">{resume.candidateName}</h1>
             <p className="mt-1 text-sm text-ink-muted">
               {resume.email} · {resume.location} · {resume.linkedinUrl}
             </p>
@@ -1777,7 +1777,7 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
         <div className="mx-auto max-w-7xl">
           <div className="min-h-[56rem] bg-surface shadow-panel">
             <div className="flex min-h-[5rem] items-center justify-between gap-4 border-b border-border px-[16px] sm:px-8">
-              <h1 className="text-xl font-medium leading-5 text-ink">Jobs</h1>
+              <h1 className="font-gowun text-xl font-medium leading-5 text-ink">Jobs</h1>
               <a href={setupHref} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                 Update Preference
               </a>
@@ -1868,7 +1868,7 @@ function AutoApplyPreferencesDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup aria-label="Automate job applications">
         <DialogClose />
-        <DialogTitle>Automate job applications</DialogTitle>
+        <DialogTitle className="font-gowun">Automate job applications</DialogTitle>
         <p className="mt-1 text-sm text-ink-muted">
           Let Jobwhisper automatically apply to jobs that match your preferences, up to a daily limit you set.
         </p>
@@ -1968,7 +1968,7 @@ function RetryApplicationModal({
             <>
               <div className="flex items-center gap-3">
                 <CheckCircle2 aria-hidden="true" className="size-6 shrink-0 text-positive" />
-                <DialogTitle>Application resubmitted</DialogTitle>
+                <DialogTitle className="font-gowun">Application resubmitted</DialogTitle>
               </div>
               <DialogDescription className="text-ink">
                 We&apos;ve resubmitted your application to {job.company} with the updated information. We&apos;ll let you know once we hear back.
@@ -1985,7 +1985,7 @@ function RetryApplicationModal({
             <>
               <div className="flex items-center gap-3">
                 <AlertTriangle aria-hidden="true" className="size-6 shrink-0 text-warning" />
-                <DialogTitle>Needs Review</DialogTitle>
+                <DialogTitle className="font-gowun">Needs Review</DialogTitle>
               </div>
               <DialogDescription className="text-ink">
                 {job.reviewNote ?? 'This application needs some missing information before it can be retried.'}
@@ -2057,7 +2057,7 @@ export function AutoApplyAppliedView({ homeHref, setupHref, agentHref, jobsHref,
         <div className="mx-auto max-w-7xl">
           <div className="min-h-[56rem] bg-surface shadow-panel">
             <div className="flex min-h-[5rem] items-center justify-between gap-4 border-b border-border px-[16px] sm:px-8">
-              <h1 className="text-xl font-medium leading-5 text-ink">Applied</h1>
+              <h1 className="font-gowun text-xl font-medium leading-5 text-ink">Applied</h1>
               <a href={setupHref} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                 Update Preference
               </a>

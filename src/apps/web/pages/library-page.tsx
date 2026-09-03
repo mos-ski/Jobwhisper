@@ -243,7 +243,7 @@ function LibraryPageInner() {
           <div className="mb-10 flex items-start justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-accent-text">Design System</p>
-              <h1 className="mt-3 text-4xl font-semibold tracking-normal">Jobwhisper Component Library</h1>
+              <h1 className="font-gowun mt-3 text-4xl font-semibold tracking-normal">Jobwhisper Component Library</h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-ink-muted">
                 Every UI primitive, its variants, and all states. Use this as the reference for building screens.
               </p>
@@ -493,7 +493,7 @@ function LibraryPageInner() {
             <Button onClick={() => setDialogOpen(true)}>Open Dialog</Button>
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogPopup>
-                <DialogTitle>Confirm action</DialogTitle>
+                <DialogTitle className="font-gowun">Confirm action</DialogTitle>
                 <DialogDescription>
                   Are you sure you want to proceed?
                 </DialogDescription>
@@ -677,7 +677,7 @@ function LibraryPageInner() {
             <Button onClick={() => setSheetOpen(true)}>Open Sheet</Button>
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
               <SheetContent side="right">
-                <SheetTitle>Settings</SheetTitle>
+                <SheetTitle className="font-gowun">Settings</SheetTitle>
                 <div className="mt-4 grid gap-4">
                   <TextField id="sheet-name" label="Name" placeholder="Enter your name" />
                   <TextField id="sheet-email" label="Email" placeholder="Enter your email" />
@@ -851,7 +851,7 @@ function LibraryPageInner() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-xl border border-border bg-surface p-5 shadow-panel">
                 <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Credits remaining</p>
-                <p className="mt-2 text-3xl font-bold text-ink">247<span className="text-lg text-ink-muted"> / 300</span></p>
+                <p className="font-gowun mt-2 text-3xl font-bold text-ink">247<span className="font-sans text-lg text-ink-muted"> / 300</span></p>
                 <div className="mt-3 h-2 overflow-hidden rounded-pill bg-surface-subtle">
                   <div className="h-full rounded-pill bg-accent transition-[width]" style={{ width: '82%' }} />
                 </div>
@@ -860,7 +860,7 @@ function LibraryPageInner() {
               </div>
               <div className="rounded-xl border border-danger/30 bg-danger-surface p-5">
                 <p className="text-xs font-semibold uppercase tracking-wide text-danger">Low credits</p>
-                <p className="mt-2 text-3xl font-bold text-danger">3<span className="text-lg text-danger/70"> / 300</span></p>
+                <p className="font-gowun mt-2 text-3xl font-bold text-danger">3<span className="font-sans text-lg text-danger/70"> / 300</span></p>
                 <div className="mt-3 h-2 overflow-hidden rounded-pill bg-danger/20">
                   <div className="h-full rounded-pill bg-danger transition-[width]" style={{ width: '1%' }} />
                 </div>
@@ -943,11 +943,11 @@ function LibraryPageInner() {
               <div className="grid gap-4 md:grid-cols-3">
                 <article className="flex flex-col rounded-panel border border-border bg-surface p-6">
                   <div className="flex min-h-8 items-center gap-2 border-b border-border pb-4">
-                    <h3 className="text-lg font-semibold text-ink">Starter</h3>
+                    <h3 className="font-gowun text-lg font-semibold text-ink">Starter</h3>
                   </div>
                   <div className="flex flex-1 flex-col pt-5">
                     <div className="flex flex-wrap items-end gap-1">
-                      <span className="text-4xl font-semibold leading-tight text-ink">$27</span>
+                      <span className="font-gowun text-4xl font-semibold leading-tight text-ink">$27</span>
                       <span className="pb-2 text-sm font-medium text-ink">per month</span>
                     </div>
                     <p className="mt-5 text-sm font-semibold text-ink">15 Credits</p>
@@ -965,12 +965,12 @@ function LibraryPageInner() {
                 </article>
                 <article className="flex flex-col rounded-panel border border-border bg-accent-subtle p-6">
                   <div className="flex min-h-8 items-center gap-2 border-b border-border pb-4">
-                    <h3 className="text-lg font-semibold text-ink">Pro</h3>
+                    <h3 className="font-gowun text-lg font-semibold text-ink">Pro</h3>
                     <Badge>Popular</Badge>
                   </div>
                   <div className="flex flex-1 flex-col pt-5">
                     <div className="flex flex-wrap items-end gap-1">
-                      <span className="text-4xl font-semibold leading-tight text-ink">$49</span>
+                      <span className="font-gowun text-4xl font-semibold leading-tight text-ink">$49</span>
                       <span className="pb-2 text-sm font-medium text-ink">per month</span>
                     </div>
                     <p className="mt-5 text-sm font-semibold text-ink">50 Credits</p>
@@ -989,11 +989,11 @@ function LibraryPageInner() {
                 </article>
                 <article className="flex flex-col rounded-panel border border-border bg-surface p-6">
                   <div className="flex min-h-8 items-center gap-2 border-b border-border pb-4">
-                    <h3 className="text-lg font-semibold text-ink">Premium</h3>
+                    <h3 className="font-gowun text-lg font-semibold text-ink">Premium</h3>
                   </div>
                   <div className="flex flex-1 flex-col pt-5">
                     <div className="flex flex-wrap items-end gap-1">
-                      <span className="text-4xl font-semibold leading-tight text-ink">$79</span>
+                      <span className="font-gowun text-4xl font-semibold leading-tight text-ink">$79</span>
                       <span className="pb-2 text-sm font-medium text-ink">per month</span>
                     </div>
                     <p className="mt-5 text-sm font-semibold text-ink">100 Credits</p>

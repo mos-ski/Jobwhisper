@@ -24,7 +24,7 @@ export function DemoPricingPanel({ onClaimOffer }: DemoPricingPanelProps) {
   return (
     <div className="flex w-full shrink-0 flex-col gap-6 border-t border-border bg-canvas p-6 sm:p-8 lg:w-[30%] lg:border-l lg:border-t-0 lg:justify-center">
       <div>
-        <h2 className="text-xl font-semibold text-ink">See Jobwhisper in action</h2>
+        <h2 className="font-gowun text-xl font-semibold text-ink">See Jobwhisper in action</h2>
         <p className="mt-2 text-sm text-ink-muted">Get 60% off your first month while you try it.</p>
       </div>
 
@@ -51,7 +51,7 @@ export function DemoPricingPanel({ onClaimOffer }: DemoPricingPanelProps) {
               ) : null}
 
               <div className="mt-3 flex flex-wrap items-end gap-1">
-                <span className="text-4xl font-semibold leading-tight text-ink">${discounted ? firstMonthPrice : plan.priceMonthly}</span>
+                <span className="font-gowun text-4xl font-semibold leading-tight text-ink">${discounted ? firstMonthPrice : plan.priceMonthly}</span>
                 <span className="pb-1 text-sm font-medium text-ink">per month</span>
               </div>
               {discounted ? (

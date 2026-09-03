@@ -775,7 +775,7 @@ function CopilotLiveSettingsModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup aria-label="Session settings" className="border-white/10 bg-[#1a2332] text-white before:bg-white/20 sm:max-w-lg">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Settings</h2>
+          <h2 className="font-gowun text-lg font-semibold">Settings</h2>
           <button type="button" onClick={() => onOpenChange(false)} className="grid size-8 place-items-center rounded-lg text-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30" aria-label="Close settings">
             <X aria-hidden="true" className="size-5" />
           </button>
@@ -1090,7 +1090,7 @@ const COPILOT_REPORT_LABELS: Record<
 function CopilotTalkTimeCard({ talkTime }: { readonly talkTime: CopilotTalkTime }) {
   return (
     <div className="rounded-panel border border-border p-6 shadow-control">
-      <h3 className="text-lg font-bold leading-7">Talk Time</h3>
+      <h3 className="font-gowun text-lg font-bold leading-7">Talk Time</h3>
       <div className="mt-4 flex h-3 overflow-hidden rounded-pill bg-surface-subtle">
         <div className="bg-accent" style={{ inlineSize: `${talkTime.userPercent}%` }} />
         <div className="bg-border" style={{ inlineSize: `${talkTime.otherPercent}%` }} />
@@ -1128,7 +1128,7 @@ export function CopilotReportView({ homeHref, historyHref, report, mode }: Copil
         <div className="mx-auto flex max-w-[64rem] flex-col gap-4 pt-8">
           <article className="w-full bg-surface shadow-panel">
             <div className="flex min-h-[5rem] items-center border-b border-border px-8">
-              <h1 className="text-xl font-medium leading-5 text-ink">Report</h1>
+              <h1 className="font-gowun text-xl font-medium leading-5 text-ink">Report</h1>
             </div>
 
             <div className="px-8 pt-6">
@@ -1142,11 +1142,11 @@ export function CopilotReportView({ homeHref, historyHref, report, mode }: Copil
                 <TabsContent value="summary">
                   <div className="flex flex-col gap-6 pb-8">
                     <div className="flex flex-col items-start gap-6 rounded-panel border border-border p-6 shadow-control sm:flex-row sm:items-center">
-                      <div className="grid size-28 shrink-0 place-items-center rounded-full border-8 border-positive/30 bg-positive-surface text-4xl font-black text-positive">
+                      <div className="font-gowun grid size-28 shrink-0 place-items-center rounded-full border-8 border-positive/30 bg-positive-surface text-4xl font-black text-positive">
                         {report.score}
                       </div>
                       <div>
-                        <h2 className="text-xl font-bold leading-8">Summary</h2>
+                        <h2 className="font-gowun text-xl font-bold leading-8">Summary</h2>
                         <p className="mt-2 text-base leading-7 text-ink-muted">{report.summary}</p>
                       </div>
                     </div>
@@ -1169,7 +1169,7 @@ export function CopilotReportView({ homeHref, historyHref, report, mode }: Copil
                 <TabsContent value="call">
                   <div className="flex flex-col gap-6 pb-8">
                     <div className="rounded-panel border border-border p-6 shadow-control lg:p-8">
-                      <h3 className="text-lg font-bold leading-7">{reportLabels.recordingHeading}</h3>
+                      <h3 className="font-gowun text-lg font-bold leading-7">{reportLabels.recordingHeading}</h3>
                       <div className="mt-4 flex min-h-16 items-center gap-4 rounded-panel border border-border bg-surface-subtle p-3">
                         <button type="button" aria-label="Play recording" className="grid size-12 place-items-center rounded-lg bg-accent text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                           <Play aria-hidden="true" className="size-5" />
@@ -1255,7 +1255,7 @@ function TranscriptBubble({
         {accentIndex !== null ? <span aria-hidden="true" className={cn('size-1.5 shrink-0 rounded-full', SPEAKER_DOT_ACCENTS[accentIndex])} /> : null}
         {speaker}
       </p>
-      <p className="whitespace-pre-wrap break-words text-brand-bar-text" style={{ fontSize: `${fontSize}px` }}>{text}</p>
+      <p className={cn('whitespace-pre-wrap break-words text-brand-bar-text', kind === 'ai' && 'font-gowun')} style={{ fontSize: `${fontSize}px` }}>{text}</p>
     </div>
   )
 }
@@ -1999,7 +1999,7 @@ export function CopilotCompleteView({ homeHref, sessionHref, historyHref, report
       <section className="px-4 py-9">
         <form className="mx-auto w-full max-w-lg border border-border bg-surface shadow-control">
           <div className="grid gap-5 p-8">
-            <h1 className="text-3xl font-semibold">{meta.completeTitle}</h1>
+            <h1 className="font-gowun text-3xl font-semibold">{meta.completeTitle}</h1>
             <p className="text-base leading-6 text-ink-muted">
               Thank you for completing your AI {meta.sessionNoun}{companyName ? ` with ${companyName}` : ''}.
             </p>
@@ -2027,7 +2027,7 @@ export function CopilotHistoryView({ homeHref, createHref, reportHref, rows }: C
       <section className="px-4 py-8 lg:px-12 xl:px-24">
         <div className="mx-auto max-w-7xl bg-surface shadow-panel">
           <div className="flex min-h-[5rem] items-center justify-between gap-4 border-b border-border px-8">
-            <h1 className="text-xl font-medium leading-5 text-ink">Past Copilot Sessions</h1>
+            <h1 className="font-gowun text-xl font-medium leading-5 text-ink">Past Copilot Sessions</h1>
             <a
               href={`${createHref}?mode=${activeMode}`}
               className="inline-flex min-h-10 shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-lg bg-accent px-4 py-2 text-base font-semibold leading-6 text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"

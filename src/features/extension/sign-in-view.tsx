@@ -28,7 +28,7 @@ export function ExtensionSignInView({ onSignIn }: ExtensionSignInViewProps) {
     <div className="flex min-h-full flex-col items-center justify-center gap-6 bg-canvas px-6 py-10 text-center">
       <JobwhisperIcon className="size-10 text-brand-mark" />
       <div>
-        <h1 className="text-lg font-semibold text-ink">Sign in to Jobwhisper</h1>
+        <h1 className="font-gowun text-lg font-semibold text-ink">Sign in to Jobwhisper</h1>
         <p className="mt-1 text-sm text-ink-muted">This signs in the extension only. Your other devices stay as they are.</p>
       </div>
       <form onSubmit={handleSubmit} className="grid w-full gap-3 text-left">

@@ -44,7 +44,7 @@ function PackageDetailsTable() {
   return (
     <article className="mt-6 w-full min-w-0 bg-surface shadow-panel">
       <div className="flex min-h-[5rem] flex-col justify-center gap-1 border-b border-border px-4 sm:px-6 lg:px-8">
-        <h2 className="text-base font-semibold text-ink">Package details</h2>
+        <h2 className="font-gowun text-base font-semibold text-ink">Package details</h2>
         <p className="text-sm text-ink-muted">Sold as flat, committed packages, not open per-job billing.</p>
       </div>
       <div className="relative p-4 sm:p-6 lg:p-8">
@@ -93,7 +93,7 @@ export function DoneForYouView({ homeHref, backHref, usageHref }: DoneForYouView
       <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
         <article className="w-full min-w-0 bg-surface shadow-panel">
           <div className="flex min-h-[5rem] flex-wrap items-center justify-between gap-3 border-b border-border px-4 sm:px-6 lg:px-8">
-            <h1 className="text-lg font-medium leading-5 text-ink sm:text-xl">Done-For-You</h1>
+            <h1 className="font-gowun text-lg font-medium leading-5 text-ink sm:text-xl">Done-For-You</h1>
             <Tooltip>
               <TooltipTrigger
                 render={
@@ -114,7 +114,7 @@ export function DoneForYouView({ homeHref, backHref, usageHref }: DoneForYouView
               >
                 <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Premium</p>
                 <p className="mt-4 flex items-baseline gap-1.5">
-                  <span className="text-3xl font-bold text-ink">${pkg.price}</span>
+                  <span className="font-gowun text-3xl font-bold text-ink">${pkg.price}</span>
                   <span className="text-sm text-ink-muted">per month</span>
                 </p>
                 <p className="mt-4 text-sm font-bold text-ink">{pkg.jobs}</p>

@@ -414,7 +414,7 @@ export function InterviewVoiceView({ homeHref, configureHref, sessionHref, voice
         <div className="mx-auto w-full max-w-[720px]">
           <div className="border border-border bg-surface shadow-control">
             <div className="flex items-center justify-center gap-2 border-b border-border px-8 py-6">
-              <h1 className="text-lg font-medium">Choose interviewer voice</h1>
+              <h1 className="font-gowun text-lg font-medium">Choose interviewer voice</h1>
               <span className="text-xs text-ink-muted">2/2</span>
             </div>
             <div className="grid grid-cols-2 gap-x-5 gap-y-4 px-4 py-6 sm:grid-cols-2 sm:px-10 sm:py-8 lg:grid-cols-3">
@@ -696,7 +696,7 @@ function InterviewLiveSettingsModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup aria-label="Session settings" className="border-white/10 bg-[#1a2332] text-white before:bg-white/20 sm:max-w-lg">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Settings</h2>
+          <h2 className="font-gowun text-lg font-semibold">Settings</h2>
           <button type="button" onClick={() => onOpenChange(false)} className="grid size-8 place-items-center rounded-lg text-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30" aria-label="Close settings">
             <X aria-hidden="true" className="size-5" />
           </button>
@@ -1246,7 +1246,7 @@ export function InterviewCompleteView({ homeHref, sessionHref, preparingReportHr
             <span className="mx-auto grid size-16 place-items-center rounded-full bg-positive-surface text-positive">
               <Check aria-hidden="true" className="size-8" />
             </span>
-            <h1 className="text-2xl font-bold leading-8">Your Interview is complete!</h1>
+            <h1 className="font-gowun text-2xl font-bold leading-8">Your Interview is complete!</h1>
             <p className="mx-auto max-w-md text-sm leading-6 text-ink-muted">
               Thank you for completing your AI interview{companyName ? ` with ${companyName}` : ''}.
             </p>
@@ -1308,7 +1308,7 @@ export function InterviewPreparingReportView({ homeHref, steps, onComplete }: In
       <section className="px-4 py-12">
         <div className="mx-auto w-full max-w-lg border border-border bg-surface shadow-control">
           <div className="flex items-center justify-center gap-2 border-b border-border px-8 py-8">
-            <h1 className="text-xl font-medium">Preparing your coaching report...</h1>
+            <h1 className="font-gowun text-xl font-medium">Preparing your coaching report...</h1>
             <span className="text-sm text-ink-muted">1/2</span>
           </div>
           <div className="grid gap-4 p-8">
@@ -1474,7 +1474,7 @@ export function InterviewReportView({ homeHref, scenariosHref, practiceHref, rep
         <div className="mx-auto flex max-w-[64rem] flex-col gap-4 pt-8">
           <article className="w-full bg-surface shadow-panel">
             <div className="flex min-h-[5rem] items-center border-b border-border px-8">
-              <h1 className="text-xl font-medium leading-5 text-ink">Report</h1>
+              <h1 className="font-gowun text-xl font-medium leading-5 text-ink">Report</h1>
             </div>
 
             <div className="px-8 pt-6">
@@ -1491,7 +1491,7 @@ export function InterviewReportView({ homeHref, scenariosHref, practiceHref, rep
                       <div className="flex items-center gap-4">
                         <img src={report.interviewerImageSrc} alt="" className="size-16 rounded-full border-2 border-border object-cover shadow-control" />
                         <div>
-                          <h2 className="text-2xl font-bold leading-8">{report.title}</h2>
+                          <h2 className="font-gowun text-2xl font-bold leading-8">{report.title}</h2>
                           <p className="mt-1 text-sm text-ink-muted">{report.subtitle}</p>
                         </div>
                       </div>
@@ -1502,11 +1502,11 @@ export function InterviewReportView({ homeHref, scenariosHref, practiceHref, rep
                     </div>
 
                     <div className="flex flex-col items-start gap-6 rounded-panel border border-border p-6 shadow-control sm:flex-row sm:items-center">
-                      <div className="grid size-28 shrink-0 place-items-center rounded-full border-8 border-positive/30 bg-positive-surface text-4xl font-black text-positive">
+                      <div className="font-gowun grid size-28 shrink-0 place-items-center rounded-full border-8 border-positive/30 bg-positive-surface text-4xl font-black text-positive">
                         {report.score}
                       </div>
                       <div>
-                        <h2 className="text-xl font-bold leading-8">Summary</h2>
+                        <h2 className="font-gowun text-xl font-bold leading-8">Summary</h2>
                         <p className="mt-2 text-base leading-7 text-ink-muted">{report.summary}</p>
                       </div>
                     </div>
@@ -1527,7 +1527,7 @@ export function InterviewReportView({ homeHref, scenariosHref, practiceHref, rep
                 <TabsContent value="call">
                   <div className="flex flex-col gap-6 pb-8">
                     <div className="rounded-panel border border-border p-6 shadow-control lg:p-8">
-                      <h3 className="text-lg font-bold leading-7">Call Recording</h3>
+                      <h3 className="font-gowun text-lg font-bold leading-7">Call Recording</h3>
                       <div className="mt-4 flex min-h-16 items-center gap-4 rounded-panel border border-border bg-surface-subtle p-3">
                         <button type="button" aria-label="Play recording" className="grid size-12 place-items-center rounded-lg bg-accent text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                           <Play aria-hidden="true" className="size-5" />

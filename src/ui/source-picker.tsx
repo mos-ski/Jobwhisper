@@ -52,7 +52,7 @@ export const SourcePicker = forwardRef<HTMLDivElement, SourcePickerProps>(functi
 ) {
   return (
     <div ref={ref} data-slot="source-picker" className={cn('flex min-h-[48rem] flex-col items-center justify-center', className)}>
-      <h1 className="text-lg font-semibold leading-7 text-ink">{title}</h1>
+      <h1 className="font-gowun text-lg font-semibold leading-7 text-ink">{title}</h1>
       <div className={cn('mt-4 grid w-full gap-3', options.length > 1 ? 'max-w-lg grid-cols-2' : 'max-w-xs grid-cols-1')}>
         {options.map((option) => (
           <SourcePickerTile key={option.label} option={option} />

@@ -75,7 +75,7 @@ export function KnowledgeBasePickerDialog({
     >
       <Popup aria-label="Add documents from Knowledge Base">
         <DialogClose />
-        <DialogTitle>Add from Knowledge Base</DialogTitle>
+        <DialogTitle className="font-gowun">Add from Knowledge Base</DialogTitle>
         <p className="mt-1 text-sm text-ink-muted">{description}</p>
 
         {documents.length > 0 ? (
