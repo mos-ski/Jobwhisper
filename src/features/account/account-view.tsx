@@ -1,5 +1,4 @@
-import { AlertTriangle, Apple, Check, ChevronDown, Clock, Copy, ExternalLink, EyeOff, Gift, Mail, Monitor, Moon, Play, ShoppingCart, Sun, Trash2, Upload } from 'lucide-react'
-import { SiGooglechrome } from 'react-icons/si'
+import { AlertTriangle, Check, ChevronDown, Clock, Copy, ExternalLink, EyeOff, Gift, Mail, Moon, Play, ShoppingCart, Sun, Trash2, Upload } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 
 import type { BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
@@ -126,18 +125,6 @@ function TitledPanel({ title, action, children }: { readonly title: string; read
   )
 }
 
-function DownloadIcon({ id }: { readonly id: DownloadItem['id'] }) {
-  if (id === 'windows') {
-    return <Monitor aria-hidden="true" className="size-10" />
-  }
-
-  if (id === 'extension') {
-    return <SiGooglechrome aria-hidden="true" className="size-9" />
-  }
-
-  return <Apple aria-hidden="true" className="size-10" />
-}
-
 export function DownloadsView({ homeHref, downloads }: DownloadsViewProps) {
   return (
     <AppWorkspace>
@@ -147,8 +134,8 @@ export function DownloadsView({ homeHref, downloads }: DownloadsViewProps) {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {downloads.map((item) => (
               <div key={item.id} className="flex items-start gap-3 border border-border bg-surface p-[18px]">
-                <span className="grid size-[87px] shrink-0 place-items-center text-ink" aria-hidden="true">
-                  <DownloadIcon id={item.id} />
+                <span className="block h-[87px] w-[100px] shrink-0 overflow-hidden">
+                  <img src={item.imageSrc} alt="" className="size-full object-cover" />
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold text-ink">{item.title}</p>
