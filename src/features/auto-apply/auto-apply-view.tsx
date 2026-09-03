@@ -1788,6 +1788,23 @@ function applyJobFilters(jobs: readonly AutoApplyJob[], search: string, filters:
   })
 }
 
+function AutoApplyExtensionPromo() {
+  return (
+    <div className="mb-3 flex items-start gap-6 border border-border bg-surface p-[18px]">
+      <img src="/v3-assets/figma/auto-apply-extension-icon.svg" alt="" className="h-[42px] w-[48.2px] shrink-0" />
+      <div className="min-w-0 flex-1">
+        <p className="text-xs font-bold text-ink">Apply with our Auto Apply Extension</p>
+        <p className="mt-1 text-xs text-ink-muted">Apply directly from LinkedIn, Glassdoor, Indeed, and Workable with the Jobwhisper extension installed.</p>
+        <a href="/v3/extension" className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-ink-muted hover:text-ink">
+          <SiGooglechrome aria-hidden="true" className="size-3" />
+          Download Extension
+          <ArrowUpLeft aria-hidden="true" className="size-3" />
+        </a>
+      </div>
+    </div>
+  )
+}
+
 export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, appliedHref, resumeHistoryHref, jobs, selectedJob: initialSelectedJob, isPremiumUser = false, resumePreview }: AutoApplyJobsViewProps) {
   const [selectedJob, setSelectedJob] = useState<AutoApplyJob | undefined>(initialSelectedJob)
   const [search, setSearch] = useState('')
@@ -1850,6 +1867,7 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
                       <Settings aria-hidden="true" className="size-4" />
                     </button>
                   </div>
+                  <AutoApplyExtensionPromo />
                   <div className="-mx-[16px] sm:mx-0">
                     <JobList jobs={filtered} selectedJob={selectedJob} onSelectJob={(job) => setSelectedJob(selectedJob?.id === job.id ? undefined : job)} />
                   </div>
@@ -2168,6 +2186,7 @@ export function AutoApplyAppliedView({ homeHref, setupHref, agentHref, jobsHref,
                       Refresh
                     </button>
                   </div>
+                  <AutoApplyExtensionPromo />
                   <div className="-mx-[16px] sm:mx-0">
                     <JobList
                       jobs={filtered}
