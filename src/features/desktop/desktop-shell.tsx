@@ -98,9 +98,9 @@ export function DesktopShell({ children }: DesktopShellProps) {
       >
         <div
           onPointerDown={handleTitleBarPointerDown}
-          className="flex h-9 shrink-0 cursor-grab items-center bg-[#141d2e] px-4 select-none active:cursor-grabbing"
+          className="flex h-[68px] shrink-0 cursor-grab items-center bg-[#141d2e] px-[27px] select-none active:cursor-grabbing"
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-[7px]">
             <span className="size-3.5 rounded-full bg-[#ff5f57]" />
             <span className="size-3.5 rounded-full bg-[#febc2e]" />
             <span className="size-3.5 rounded-full bg-[#28c840]" />
