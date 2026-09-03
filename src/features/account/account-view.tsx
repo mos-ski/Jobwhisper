@@ -3,6 +3,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 
 import type { BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
+import { AppShell } from '@/features/dashboard/app-nav'
 import { centsToCredits, creditsToCents, formatCredits } from '@/lib/credits'
 import {
   Accordion,
@@ -94,7 +95,7 @@ export type SettingsViewProps = {
 }
 
 function AppWorkspace({ children }: { readonly children: ReactNode }) {
-  return <main className="min-h-screen bg-canvas text-ink">{children}</main>
+  return <AppShell>{children}</AppShell>
 }
 
 function ContentShell({ children }: { readonly children: ReactNode }) {
@@ -458,7 +459,7 @@ function BillingReferralPrompt({ referralsHref }: { readonly referralsHref: stri
   }
 
   return (
-    <section className="fixed bottom-4 end-4 z-shell w-fit max-w-[calc(100vw-2rem)] rounded-panel bg-accent-subtle p-3 shadow-panel" aria-label="Refer a friend">
+    <section className="animate-slide-in-right fixed bottom-4 end-4 z-shell w-fit max-w-[calc(100vw-2rem)] rounded-panel bg-accent-subtle p-3 shadow-panel" aria-label="Refer a friend">
       <div className="flex items-center gap-3">
         <span className="grid size-16 shrink-0 place-items-center rounded-soft bg-surface text-accent">
           <Gift aria-hidden="true" className="size-7" />
@@ -522,7 +523,10 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
             <div className="grid gap-[12px]">
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Ace Your Interview</p>
-                <div className="flex items-start gap-[24px] rounded-panel border border-border bg-surface p-[18px]">
+                <div
+                  style={{ animationFillMode: 'backwards' }}
+                  className="flex animate-ease-in-bottom items-start gap-[24px] rounded-panel border border-border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control"
+                >
                   <img src="/v3-assets/figma/plan-row-interview.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
@@ -542,7 +546,10 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
 
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Find Jobs Yourself</p>
-                <div className="flex items-start gap-[24px] rounded-panel border border-border bg-surface p-[18px]">
+                <div
+                  style={{ animationDelay: '60ms', animationFillMode: 'backwards' }}
+                  className="flex animate-ease-in-bottom items-start gap-[24px] rounded-panel border border-border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control"
+                >
                   <img src="/v3-assets/figma/plan-row-jobs.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
@@ -564,7 +571,10 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
 
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Done For You</p>
-                <div className="flex items-start gap-[24px] rounded-panel border border-border bg-surface p-[18px]">
+                <div
+                  style={{ animationDelay: '120ms', animationFillMode: 'backwards' }}
+                  className="flex animate-ease-in-bottom items-start gap-[24px] rounded-panel border border-border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control"
+                >
                   <img src="/v3-assets/figma/plan-row-dfy.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
                   <div className="min-w-0 flex-1">
                     <p className="text-[14.4px] font-semibold leading-[21.6px] text-ink">Real Human Job Application</p>

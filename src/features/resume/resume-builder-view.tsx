@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, Download, FileText,
 
 import type { ResumeBuilderSession, ResumeBuilderTab, ResumeChatState, ResumeDocument, ResumeHistoryRow, ResumeSectionId, ResumeTemplate } from '@/contracts/resume.draft'
 import { AiSuggestionAction, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, FormField, FormPanel, FormPanelFooter, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, TipModal, TipModalTrigger, UploadedFileDialog } from '@/ui'
+import { AppShell } from '@/features/dashboard/app-nav'
 import { useTypewriter } from '@/hooks/useTypewriter'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 
@@ -131,7 +132,7 @@ function BuilderHeader({
 }
 
 function Workspace({ children }: { readonly children: ReactNode }) {
-  return <main className="min-h-screen bg-canvas text-ink">{children}</main>
+  return <AppShell>{children}</AppShell>
 }
 
 function PaperShell({ children, compact = false }: { readonly children: ReactNode; readonly compact?: boolean }) {

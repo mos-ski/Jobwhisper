@@ -3,6 +3,7 @@ import { Check, Minus } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 import type { BillingPlanCard } from '@/contracts/account.draft'
+import { AppShell } from '@/features/dashboard/app-nav'
 import { Badge, Button, cn, ShellBar, Switch } from '@/ui'
 
 type FeatureRow = {
@@ -75,11 +76,17 @@ export type PlanCompareViewProps = {
   readonly backHref: string
 }
 
-function PlanCard({ plan, annual }: { readonly plan: BillingPlanCard; readonly annual: boolean }) {
+function PlanCard({ plan, annual, index }: { readonly plan: BillingPlanCard; readonly annual: boolean; readonly index: number }) {
   const navigate = useNavigate()
 
   return (
-    <article className={cn('flex flex-col rounded-panel border p-6', plan.current ? 'border-positive' : 'border-border')}>
+    <article
+      style={{ animationDelay: `${index * 70}ms`, animationFillMode: 'backwards' }}
+      className={cn(
+        'flex animate-ease-in-bottom flex-col rounded-panel border p-6 transition-all duration-normal ease-default hover:-translate-y-0.5 hover:shadow-control',
+        plan.current ? 'border-positive' : 'border-border',
+      )}
+    >
       <div className="flex items-center gap-2">
         <h2 className="text-sm font-bold tracking-wide text-ink">{plan.name}</h2>
         {plan.tag ? <span className="text-sm font-medium text-ink-muted">{plan.tag}</span> : null}
@@ -141,8 +148,8 @@ export function PlanCompareView({ homeHref, plans, backHref }: PlanCompareViewPr
             </div>
           </div>
           <div className="grid gap-5 p-4 sm:p-6 lg:p-8 md:grid-cols-3">
-            {plans.map((plan) => (
-              <PlanCard key={plan.id} plan={plan} annual={annual} />
+            {plans.map((plan, index) => (
+              <PlanCard key={plan.id} plan={plan} annual={annual} index={index} />
             ))}
           </div>
         </article>

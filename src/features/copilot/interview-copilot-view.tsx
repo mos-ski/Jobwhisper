@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowUpDown, ChevronDown, ChevronRight, ChevronUp, Code2, Fi
 
 import type { ContextDocumentRow } from '@/contracts/documents.draft'
 import type { ResumeHistoryRow } from '@/contracts/resume.draft'
+import { AppShell } from '@/features/dashboard/app-nav'
 import { useCameraStream } from '@/hooks/useCameraStream'
 import { useTypewriter } from '@/hooks/useTypewriter'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
@@ -158,7 +159,7 @@ function CopilotHeader({
 }
 
 function Workspace({ children }: { readonly children: ReactNode }) {
-  return <main className="min-h-screen bg-canvas text-ink">{children}</main>
+  return <AppShell>{children}</AppShell>
 }
 
 function PaperShell({ children }: { readonly children: ReactNode }) {

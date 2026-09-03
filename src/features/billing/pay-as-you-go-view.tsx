@@ -59,12 +59,15 @@ function HowItsBoughtTable() {
   )
 }
 
-function PurchaseCard({ purchase }: { readonly purchase: BillingStandalonePurchase }) {
+function PurchaseCard({ purchase, index }: { readonly purchase: BillingStandalonePurchase; readonly index: number }) {
   const [balance, setBalance] = useState(0)
   const [dialogOpen, setDialogOpen] = useState(false)
 
   return (
-    <article className="flex flex-col rounded-panel border border-border p-6">
+    <article
+      style={{ animationDelay: `${index * 70}ms`, animationFillMode: 'backwards' }}
+      className="flex animate-ease-in-bottom flex-col rounded-panel border border-border p-6 transition-all duration-normal ease-default hover:-translate-y-0.5 hover:shadow-control"
+    >
       <h2 className="text-base font-bold text-ink">{purchase.name}</h2>
       <p className="mt-2 text-sm leading-5 text-ink-muted">{purchase.description}</p>
       <p className="mt-4 text-sm font-bold text-ink">{purchase.rateLabel}</p>
@@ -114,8 +117,8 @@ export function PayAsYouGoView({ homeHref, backHref, purchases }: PayAsYouGoView
               Resume Builder and Auto Apply aren&apos;t part of any plan, no subscription needed. Buy credits once, spend them at your own pace, valid 12 months.
             </p>
             <div className="mt-5 grid gap-5 md:grid-cols-2">
-              {purchases.map((purchase) => (
-                <PurchaseCard key={purchase.id} purchase={purchase} />
+              {purchases.map((purchase, index) => (
+                <PurchaseCard key={purchase.id} purchase={purchase} index={index} />
               ))}
             </div>
           </div>

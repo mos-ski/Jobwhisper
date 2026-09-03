@@ -1,8 +1,13 @@
 import { Download, Pencil, Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 
 import type { ContextDocumentRow } from '@/contracts/documents.draft'
+import { AppShell } from '@/features/dashboard/app-nav'
 import { cn, DataTable, FormPanel, FormPanelFooter, FormTextArea, Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger, OptionStack, ShellBar, UpgradeDialog } from '@/ui'
+
+function Workspace({ children }: { readonly children: ReactNode }) {
+  return <AppShell>{children}</AppShell>
+}
 
 export type DocumentsViewProps = {
   readonly homeHref: string
@@ -49,7 +54,7 @@ export function DocumentsView({ homeHref, addHref, rows, limit, planName }: Docu
   const [limitDialogOpen, setLimitDialogOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-canvas text-ink">
+    <Workspace>
       <ShellBar homeHref={homeHref} current="Knowledge Base" closeHref={homeHref} closeLabel="Close documents" />
       <section className="px-4 py-8 lg:px-12 xl:px-24">
         <p className="mx-auto mb-3 max-w-7xl text-end text-sm text-ink-muted">
@@ -107,13 +112,13 @@ export function DocumentsView({ homeHref, addHref, rows, limit, planName }: Docu
         ctaLabel="View plans"
         ctaHref="/v3/billing"
       />
-    </div>
+    </Workspace>
   )
 }
 
 export function DocumentsAddView({ homeHref, documentsHref, manualHref }: DocumentsAddViewProps) {
   return (
-    <div className="min-h-screen bg-canvas text-ink">
+    <Workspace>
       <ShellBar homeHref={homeHref} current="Knowledge Base" closeHref={homeHref} closeLabel="Close documents" />
       <section className="px-4 py-9">
         <FormPanel
@@ -131,13 +136,13 @@ export function DocumentsAddView({ homeHref, documentsHref, manualHref }: Docume
           <p className="text-xs font-medium leading-5 text-ink-muted">Add a file, webpage, or custom context for Jobwhisper to use across resumes and interviews.</p>
         </FormPanel>
       </section>
-    </div>
+    </Workspace>
   )
 }
 
 export function DocumentsManualView({ homeHref, backHref, nextHref }: DocumentsManualViewProps) {
   return (
-    <div className="min-h-screen bg-canvas text-ink">
+    <Workspace>
       <ShellBar homeHref={homeHref} current="Knowledge Base" closeHref={homeHref} closeLabel="Close documents" />
       <section className="px-4 py-9">
         <FormPanel
@@ -152,6 +157,6 @@ export function DocumentsManualView({ homeHref, backHref, nextHref }: DocumentsM
           />
         </FormPanel>
       </section>
-    </div>
+    </Workspace>
   )
 }

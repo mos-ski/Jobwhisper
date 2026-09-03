@@ -99,8 +99,12 @@ export function DoneForYouView({ homeHref, backHref, usageHref }: DoneForYouView
             </Tooltip>
           </div>
           <div className="grid gap-5 p-4 sm:p-6 lg:p-8 md:grid-cols-2">
-            {DFY_PACKAGES.map((pkg) => (
-              <article key={pkg.id} className="flex flex-col rounded-panel border border-border p-6">
+            {DFY_PACKAGES.map((pkg, index) => (
+              <article
+                key={pkg.id}
+                style={{ animationDelay: `${index * 70}ms`, animationFillMode: 'backwards' }}
+                className="flex animate-ease-in-bottom flex-col rounded-panel border border-border p-6 transition-all duration-normal ease-default hover:-translate-y-0.5 hover:shadow-control"
+              >
                 <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Premium</p>
                 <p className="mt-4 flex items-baseline gap-1.5">
                   <span className="text-3xl font-bold text-ink">${pkg.price}</span>

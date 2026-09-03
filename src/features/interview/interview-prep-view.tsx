@@ -30,6 +30,7 @@ import type {
 import type { ContextDocumentRow } from '@/contracts/documents.draft'
 import type { ResumeHistoryRow } from '@/contracts/resume.draft'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
+import { AppShell } from '@/features/dashboard/app-nav'
 import { centsToCredits, creditsToCents } from '@/lib/credits'
 import { AiSuggestionAction, Avatar, Badge, Button, Checkbox, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, UploadedFileDialog } from '@/ui'
 import { useCameraStream } from '@/hooks/useCameraStream'
@@ -115,7 +116,7 @@ function InterviewHeader({
 }
 
 function Workspace({ children }: { readonly children: ReactNode }) {
-  return <main className="min-h-screen bg-canvas text-ink">{children}</main>
+  return <AppShell>{children}</AppShell>
 }
 
 function PaperShell({ children, label = 'Interview prep workspace' }: { readonly children: ReactNode; readonly label?: string }) {

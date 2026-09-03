@@ -18,6 +18,7 @@ import {
   WORK_SCHEDULE_OPTIONS,
 } from '@/contracts/auto-apply.draft'
 import type { ResumeDocument, ResumeHistoryRow } from '@/contracts/resume.draft'
+import { AppShell } from '@/features/dashboard/app-nav'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 import { COUNTRIES } from '@/data/countries'
 import {
@@ -121,7 +122,7 @@ function Header({ homeHref, current = 'Auto Apply', actionHref }: { readonly hom
 }
 
 function Workspace({ children }: { readonly children: ReactNode }) {
-  return <main className="min-h-screen bg-canvas text-ink">{children}</main>
+  return <AppShell>{children}</AppShell>
 }
 
 function PaperShell({ children }: { readonly children: ReactNode }) {
@@ -397,7 +398,7 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
           footer={<FormPanelFooter backHref={backHref} nextHref={activeHref} nextLabel="Choose this Way" />}
         >
           <div className="grid gap-3 sm:grid-cols-3">
-            {methods.map((method) => {
+            {methods.map((method, index) => {
               const isSelected = method.id === selected
               return (
                 <button
@@ -405,13 +406,14 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
                   type="button"
                   onClick={() => setSelected(method.id)}
                   aria-pressed={isSelected}
+                  style={{ animationDelay: `${index * 60}ms`, animationFillMode: 'backwards' }}
                   className={cn(
-                    'flex flex-col items-start gap-[24px] rounded-[1px] border p-[18px] text-start transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+                    'flex animate-ease-in-bottom flex-col items-start gap-[24px] rounded-[1px] border p-[18px] text-start transition-all duration-normal ease-default hover:-translate-y-0.5 hover:shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
                     isSelected ? 'border-accent bg-accent-subtle/40' : 'border-border bg-surface hover:border-ink-muted',
                   )}
                 >
                   <img src={method.iconSrc} alt="" className={method.iconClassName} />
-                  <h3 className={cn('text-[12.6px] font-bold leading-[18.9px]', isSelected ? 'text-accent-text' : 'text-ink')}>{method.title}</h3>
+                  <h3 className={cn('text-[12.6px] font-bold leading-[18.9px] transition-colors duration-normal ease-default', isSelected ? 'text-accent-text' : 'text-ink')}>{method.title}</h3>
                   <div className="h-[85px] w-[163px]">
                     <p className="text-[12px] leading-[18px] text-ink-muted">{method.description}</p>
                   </div>

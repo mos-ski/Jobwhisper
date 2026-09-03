@@ -43,15 +43,16 @@ export const SideMenu = forwardRef<HTMLElement, SideMenuProps>(
                 href={item.href}
                 title={collapsed ? item.label : undefined}
                 className={cn(
-                  'flex min-h-9 w-full items-center gap-3 overflow-hidden rounded py-1.5 font-medium leading-6 text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
-                  collapsed ? 'justify-center px-0' : 'px-6',
+                  'mx-3 flex w-[calc(100%-1.5rem)] min-h-9 items-center gap-3 overflow-hidden rounded-md py-1.5 font-medium leading-6 transition-colors duration-normal ease-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+                  collapsed ? 'justify-center px-0' : 'px-3',
+                  item.active ? 'bg-accent-subtle text-accent-text' : 'text-ink hover:bg-surface-subtle',
                 )}
                 aria-current={item.active ? 'page' : undefined}
               >
-                <span className="size-5 shrink-0 text-ink [&>svg]:size-5 [&>img]:size-5" aria-hidden="true">
+                <span className="size-5 shrink-0 [&>svg]:size-5 [&>img]:size-5" aria-hidden="true">
                   {item.icon}
                 </span>
-                <span className={cn('min-w-0 flex-1 truncate text-sm text-ink', collapsed && 'sr-only')}>{item.label}</span>
+                <span className={cn('min-w-0 flex-1 truncate text-sm', collapsed && 'sr-only')}>{item.label}</span>
               </a>
             </div>
           ))}
