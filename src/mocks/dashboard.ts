@@ -7,9 +7,12 @@ export const dashboardNavItems: readonly DashboardNavItem[] = [
   { label: 'Interview Prep', href: '/v3/interview-prep/history' },
   { label: 'Interviews & Meetings', href: '/v3/interview-copilot/history' },
   { label: 'Knowledge Base', href: '/v3/documents' },
+  { label: 'Marketplace', href: '/v3/marketplace' },
   { label: 'Download Apps', href: '/v3/downloads' },
   { label: 'Billing & subscription', href: '/v3/billing' },
   { label: 'Settings', href: '/v3/settings' },
+  { label: 'Tutorial', href: '/v3/tutorials' },
+  { label: 'Support', href: '/v3/support' },
 ]
 
 export const dashboardActions: readonly DashboardAction[] = [
@@ -67,7 +70,7 @@ export const dashboardActions: readonly DashboardAction[] = [
 
 export const dashboardInstallPrompt: DashboardInstallPrompt = {
   title: 'Take Copilot with you. Install the app.',
-  qrSrc: '/v3-assets/Barcode.png',
+  qrSrc: '/v3-assets/figma/install-qr-code.png',
   desktopHref: '/v3/downloads/desktop',
   mobileHref: '/v3/downloads/mobile',
 }

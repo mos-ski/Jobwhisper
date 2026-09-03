@@ -17,7 +17,10 @@ import {
   DownloadIcon,
   InterviewPrepIcon,
   KnowledgeBaseIcon,
+  MarketplaceIcon,
   SettingsIcon,
+  SupportIcon,
+  TutorialIcon,
 } from './dashboard-nav-icons'
 
 export type DashboardViewProps = {
@@ -43,16 +46,21 @@ const navIconByLabel: Record<string, ReactNode> = {
   'Interview Prep': <InterviewPrepIcon />,
   'Interviews & Meetings': <CopilotIcon />,
   'Knowledge Base': <KnowledgeBaseIcon />,
+  Marketplace: <MarketplaceIcon />,
   'Download Apps': <DownloadIcon />,
   'Billing & subscription': <BillingIcon />,
   Settings: <SettingsIcon />,
+  Tutorial: <TutorialIcon />,
+  Support: <SupportIcon />,
 }
+
+const NAV_DIVIDER_LABELS = new Set(['Knowledge Base', 'Tutorial'])
 
 function toSideMenuItems(navItems: readonly DashboardNavItem[]) {
   return navItems.map((item) => ({
     ...item,
     icon: navIconByLabel[item.label] ?? <SettingsIcon />,
-    dividerBefore: item.label === 'Knowledge Base',
+    dividerBefore: NAV_DIVIDER_LABELS.has(item.label),
   }))
 }
 
