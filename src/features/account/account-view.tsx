@@ -454,7 +454,7 @@ function BillingReferralPrompt({ referralsHref }: { readonly referralsHref: stri
   }
 
   return (
-    <section className="w-fit max-w-full rounded-panel bg-accent-subtle p-3" aria-label="Refer a friend">
+    <section className="fixed bottom-4 start-4 z-shell w-fit max-w-[calc(100vw-2rem)] rounded-panel bg-accent-subtle p-3 shadow-panel" aria-label="Refer a friend">
       <div className="flex items-center gap-3">
         <span className="grid size-16 shrink-0 place-items-center rounded-soft bg-surface text-accent">
           <Gift aria-hidden="true" className="size-7" />
