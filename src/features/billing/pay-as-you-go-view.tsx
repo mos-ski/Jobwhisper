@@ -94,12 +94,13 @@ function PurchaseCard({ purchase, index }: { readonly purchase: BillingStandalon
       <AddCreditsDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        title={`Add ${purchase.name} credits`}
-        description={`$${purchase.minimumDollars} minimum, credits are valid 12 months from purchase.`}
+        title="Add credits"
+        description={purchase.name}
         centsPerCredit={purchase.centsPerCredit}
         minimumDollars={purchase.minimumDollars}
         presetDollars={purchase.presetDollars}
         currentBalanceCredits={balance}
+        autoReloadHint={`Buy more automatically when your ${purchase.name} balance runs low.`}
         onPurchase={(credits) => setBalance((prev) => prev + credits)}
       />
     </article>
