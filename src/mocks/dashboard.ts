@@ -21,6 +21,7 @@ export const dashboardActions: readonly DashboardAction[] = [
     title: 'Tailor my Resume',
     description: 'Let Jobwhisper craft your perfect resume tailored to every role and optimized for results.',
     href: '/v3/resume',
+    linkStyle: 'arrow',
     locked: true,
     lockMessage: 'Resume Builder is sold separately, no subscription required. Buy credits from $5, pay $0.10 per prompt for AI-tailored resumes and unlimited downloads.',
     lockCta: 'Buy Resume Builder credits',
@@ -31,12 +32,14 @@ export const dashboardActions: readonly DashboardAction[] = [
     title: 'Practice For Interview',
     description: 'Practice with AI interviewers, get actionable feedback, and walk into interviews more confident than ever.',
     href: '/v3/interview-prep',
+    linkStyle: 'arrow',
   },
   {
     id: 'interview-copilot',
     title: 'Start Interview Copilot',
     description: 'Live AI assistance during interviews, real-time suggestions as the conversation happens.',
     href: '/v3/interview-copilot?mode=interview',
+    linkStyle: 'arrow',
   },
   {
     id: 'auto-apply',
@@ -70,6 +73,7 @@ export const dashboardActions: readonly DashboardAction[] = [
     title: 'Done for you',
     description: 'A real success manager applies to matched jobs on your behalf, resume tailoring and job scouting included.',
     href: '/v3/billing/done-for-you',
+    linkStyle: 'external',
   },
 ]
 

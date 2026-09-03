@@ -1,4 +1,4 @@
-import { ChevronRight, CircleHelp, ExternalLink, Lock, LogOut, Mail, Menu, Monitor, PanelLeftClose, PanelLeftOpen, Play, Settings, User, X } from 'lucide-react'
+import { ArrowUpRight, ChevronRight, CircleHelp, ExternalLink, Lock, LogOut, Mail, Menu, Monitor, PanelLeftClose, PanelLeftOpen, Play, Settings, User, X } from 'lucide-react'
 import { FaApple } from 'react-icons/fa'
 import { SiGoogleplay } from 'react-icons/si'
 import { useState, type ReactNode } from 'react'
@@ -448,27 +448,29 @@ function ActionCard({ action, onLockedClick }: { readonly action: DashboardActio
   const locked = action.locked ?? false
 
   const cardClassName = cn(
-    'group flex min-h-44 flex-col gap-3 rounded-lg border border-border bg-surface px-5 py-4 text-start shadow-control transition duration-200 ease-out hover:border-accent hover:bg-accent-subtle focus-visible:border-accent focus-visible:bg-accent-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus motion-reduce:transition-none sm:hover:-translate-y-0.5',
+    'group flex flex-col gap-3 rounded-[9px] border border-border bg-surface px-[18px] py-3 text-start shadow-control transition duration-200 ease-out hover:border-accent hover:bg-accent-subtle focus-visible:border-accent focus-visible:bg-accent-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus motion-reduce:transition-none sm:hover:-translate-y-0.5',
   )
 
   const content = (
     <>
       <span
         aria-hidden="true"
-        className="flex size-14 items-center justify-center text-ink transition-transform duration-200 group-hover:scale-110 group-focus-visible:scale-110 motion-reduce:transition-none"
+        className="flex h-[57.6px] w-[56.5px] shrink-0 items-center justify-center text-ink transition-transform duration-200 group-hover:scale-110 group-focus-visible:scale-110 motion-reduce:transition-none"
       >
-        {locked ? <Lock aria-hidden="true" className="size-6 text-ink-muted" /> : <img src={actionIconById[action.id]} alt="" className="size-14 object-contain" />}
+        {locked ? <Lock aria-hidden="true" className="size-6 text-ink-muted" /> : <img src={actionIconById[action.id]} alt="" className="size-full object-contain" />}
       </span>
       <div className="grid gap-1.5">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="text-sm font-bold tracking-normal text-ink transition-colors duration-200 group-hover:text-accent group-focus-visible:text-accent motion-reduce:transition-none">
-            {action.title} <span aria-hidden="true">-&gt;</span>
+          <h2 className="text-sm font-medium leading-[18px] tracking-[-0.28px] text-ink transition-colors duration-200 group-hover:text-accent group-focus-visible:text-accent motion-reduce:transition-none">
+            {action.title}
+            {action.linkStyle === 'arrow' ? <span aria-hidden="true"> →</span> : null}
+            {action.linkStyle === 'external' ? <ArrowUpRight aria-hidden="true" className="ms-1 inline size-3.5 align-[-1px]" /> : null}
           </h2>
           {action.badge ? (
-            <span className="rounded-soft bg-positive-surface px-1.5 py-0.5 text-xs font-bold uppercase tracking-wide text-positive">{action.badge}</span>
+            <span className="rounded-[4px] bg-[#e8e8e8] px-1.5 py-0.5 text-[9px] font-bold uppercase leading-[13.5px] tracking-[0.45px] text-[#475467]">{action.badge}</span>
           ) : null}
         </div>
-        <p className="text-xs font-medium leading-5 text-ink-muted">{action.description}</p>
+        <p className="text-xs leading-[18px] tracking-[-0.24px] text-ink-muted">{action.description}</p>
       </div>
     </>
   )
@@ -544,8 +546,8 @@ function DashboardLoadingView() {
             <SkeletonBlock className="h-8 w-full max-w-lg" />
             <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {Array.from({ length: 7 }, (_, index) => (
-                <div key={index} className="min-h-44 rounded-lg border border-border bg-surface px-5 py-4 shadow-control">
-                  <SkeletonBlock className="size-14" />
+                <div key={index} className="min-h-44 rounded-[9px] border border-border bg-surface px-[18px] py-3 shadow-control">
+                  <SkeletonBlock className="h-[57.6px] w-[56.5px]" />
                   <SkeletonBlock className="mt-5 h-4 w-40" />
                   <SkeletonBlock className="mt-3 h-12 w-full" />
                 </div>

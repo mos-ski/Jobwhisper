@@ -14,6 +14,8 @@ export type DashboardAction = {
   readonly href: string
   readonly featured?: boolean
   readonly badge?: string
+  /** Trailing indicator next to the title — 'arrow' for a same-product action, 'external' for a card that leaves into a different flow (e.g. a purchase page). Omit for no indicator. */
+  readonly linkStyle?: 'arrow' | 'external'
   readonly locked?: boolean
   /** Overrides the default "Upgrade to Premium" dialog copy — e.g. for an add-on unlock instead of a plan upgrade. */
   readonly lockMessage?: string
