@@ -8,6 +8,7 @@ export type AutoApplySetup = {
   readonly dob: string;
   readonly country: string;
   readonly city: string;
+  readonly state: string;
   readonly streetAddress: string;
   readonly postalCode: string;
   readonly linkedIn: string;
@@ -47,6 +48,7 @@ export const DEFAULT_AUTO_APPLY_SETUP: AutoApplySetup = {
   dob: '',
   country: 'Nigeria',
   city: '',
+  state: '',
   streetAddress: 'Lagos',
   postalCode: '10001',
   linkedIn: '',
@@ -84,6 +86,11 @@ export type AutoApplyJob = {
   readonly company: string;
   readonly location: string;
   readonly type: string;
+  readonly experienceLevelLabel: string;
+  readonly salaryLabel: string;
+  readonly applicantsLabel: string;
+  readonly highlightTag?: string;
+  readonly perks: readonly string[];
   readonly matchPercent: number;
   readonly source: string;
   readonly dateLabel: string;
@@ -100,6 +107,7 @@ export type AutoApplyJob = {
   readonly appliedDateHeading?: string;
   readonly events?: readonly AutoApplyApplicationEvent[];
   readonly activityLog?: readonly string[];
+  readonly applicationQuestions?: readonly AutoApplyApplicationQuestion[];
   readonly creditsRemaining: number;
   readonly creditsTotal: number;
 };
@@ -107,6 +115,11 @@ export type AutoApplyJob = {
 export type AutoApplyApplicationEvent = {
   readonly label: string;
   readonly time: string;
+};
+
+export type AutoApplyApplicationQuestion = {
+  readonly question: string;
+  readonly answer: string;
 };
 
 export type AutoApplyApplication = {

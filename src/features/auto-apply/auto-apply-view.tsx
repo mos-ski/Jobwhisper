@@ -24,6 +24,9 @@ import { COUNTRIES } from '@/data/countries'
 import {
   Checkbox,
   cn,
+  Collapsible,
+  CollapsiblePanel,
+  CollapsibleTrigger,
   Dialog,
   DialogClose,
   DialogDescription,
@@ -1468,6 +1471,8 @@ function JobPreview({
         <div className="flex-1 overflow-y-auto px-6 pb-6">
           <div className="flex flex-wrap items-center gap-2">
             {applied && job.outcome ? <OutcomeBadge outcome={job.outcome} /> : <JobStatusBadge status={job.status} className="rounded-full" />}
+            <span className="rounded-full border border-border px-3 py-1 text-xs font-medium text-ink">{job.salaryLabel}</span>
+            <span className="rounded-full border border-border px-3 py-1 text-xs font-medium text-ink">{job.postedDateLabel}</span>
             {!applied ? (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-subtle px-3 py-1 text-xs font-medium text-ink-muted">
                 <CircleHelp aria-hidden="true" className="size-3.5" />
