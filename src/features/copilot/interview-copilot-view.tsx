@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode, type RefObject } from 'react'
-import { ArrowLeft, ArrowUpDown, ChevronDown, ChevronRight, ChevronUp, Code2, FileText, MessageCircle, Pause, PhoneOff, Play, Plus, Send, Settings, Users, Video, VideoOff, X } from 'lucide-react'
+import { ArrowLeft, ArrowUpDown, ChevronDown, ChevronRight, ChevronUp, CircleHelp, Code2, FileText, MessageCircle, Pause, PhoneOff, Play, Plus, Send, Settings, Users, Video, VideoOff, X } from 'lucide-react'
 
 import type { ContextDocumentRow } from '@/contracts/documents.draft'
 import type { ResumeHistoryRow } from '@/contracts/resume.draft'
@@ -13,7 +13,7 @@ import type {
   CopilotHistoryRow,
   CopilotLiveSession,
   CopilotMode,
-  CopilotModelTier,
+  CopilotModel,
   CopilotPermissionStep,
   CopilotReport,
   CopilotResponseLength,
@@ -50,6 +50,9 @@ import {
   Tabs,
   TabsContent,
   TabsList,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
   UploadedFileDialog,
   TabsTrigger,
 } from '@/ui'
@@ -367,9 +370,9 @@ const RESPONSE_MODE_EXAMPLES: Record<CopilotResponseMode, { readonly helperText:
     helperText: 'Best for candidates who want a direct, no-frills answer',
     example: (
       <>
-        "I redesigned a <strong>vehicle maintenance app</strong> that had low engagement. Led a team to identify pain points,
-        improved UI, and introduced a personalized dashboard. <strong>Engagement increased by 30% in 3 months</strong>, and
-        customer satisfaction improved significantly."
+        "I redesigned a vehicle maintenance app that had low engagement. Led a team to identify pain points, improved UI,
+        and introduced a personalized dashboard. Engagement increased by 30% in 3 months, and customer satisfaction
+        improved significantly."
       </>
     ),
   },
@@ -377,9 +380,9 @@ const RESPONSE_MODE_EXAMPLES: Record<CopilotResponseMode, { readonly helperText:
     helperText: 'Best for candidates who want the key points, not a full script',
     example: (
       <>
-        • <strong>Situation:</strong> vehicle maintenance app, low engagement
-        <br />• <strong>Action:</strong> led team, identified pain points, redesigned UI
-        <br />• <strong>Result:</strong> <strong>+30% engagement in 3 months</strong>
+        • Situation: vehicle maintenance app, low engagement
+        <br />• Action: led team, identified pain points, redesigned UI
+        <br />• Result: +30% engagement in 3 months
       </>
     ),
   },
@@ -387,8 +390,8 @@ const RESPONSE_MODE_EXAMPLES: Record<CopilotResponseMode, { readonly helperText:
     helperText: 'Best for candidates who want guidance on how to answer, not the answer itself',
     example: (
       <>
-        Lead with the outcome, mention the <strong>30% engagement lift</strong> first, then walk back through what you
-        changed. Keep the redesign details brief; the interviewer is listening for impact, not implementation.
+        Lead with the outcome, mention the 30% engagement lift first, then walk back through what you changed. Keep the
+        redesign details brief; the interviewer is listening for impact, not implementation.
       </>
     ),
   },
@@ -397,7 +400,7 @@ const RESPONSE_MODE_EXAMPLES: Record<CopilotResponseMode, { readonly helperText:
 export function CopilotPreferencesView({ homeHref, configureHref, shareHref, setup }: CopilotPreferencesViewProps) {
   const [responseMode, setResponseMode] = useState(setup.responseMode)
   const [responseLength, setResponseLength] = useState(setup.responseLength)
-  const [modelTier, setModelTier] = useState<CopilotModelTier>(setup.modelTier)
+  const [model, setModel] = useState<CopilotModel>(setup.model)
   const [responseLanguage, setResponseLanguage] = useState(setup.responseLanguage)
   const [autoAnswer, setAutoAnswer] = useState(setup.autoAnswer)
   const [saveTranscript, setSaveTranscript] = useState(setup.saveTranscript)

@@ -86,7 +86,6 @@ export type AutoApplyJobsViewProps = {
   readonly resumeHistoryHref: string
   readonly jobs: readonly AutoApplyJob[]
   readonly selectedJob?: AutoApplyJob
-  readonly isPremiumUser?: boolean
   readonly resumePreview: ResumeDocument
 }
 
@@ -324,7 +323,7 @@ export function AutoApplyReviewView({ homeHref, contactHref, additionalHref, met
 export type AutoApplyMethodViewProps = {
   readonly homeHref: string
   readonly backHref: string
-  readonly fullAutoHref: string
+  readonly agentHref: string
   readonly jobsHref: string
   readonly extensionHref: string
 }
@@ -341,12 +340,16 @@ type AutoApplyMethodCard = {
   readonly href: string
   readonly leadingIcons: readonly ReactNode[]
   readonly trailingIcon?: ReactNode
+  readonly availabilityClassName?: string
 }
 
 const AVAILABILITY_ICON_CLASS = 'size-[13.5px] text-ink-muted/50'
 
-export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref, extensionHref }: AutoApplyMethodViewProps) {
+export function AutoApplyMethodView({ homeHref, backHref, agentHref, jobsHref, extensionHref }: AutoApplyMethodViewProps) {
   const [selected, setSelected] = useState<AutoApplyMethodId>('full-auto')
+  const [preferencesOpen, setPreferencesOpen] = useState(false)
+  const [extensionAdded, setExtensionAdded] = useState(false)
+  const [fullAutoConfigured, setFullAutoConfigured] = useState(false)
 
   const methods: readonly AutoApplyMethodCard[] = [
     {
@@ -356,7 +359,7 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
       availability: 'Available on web',
       iconSrc: '/v3-assets/figma/auto-apply-method-full-auto.svg',
       iconClassName: 'h-[42px] w-[48.07px]',
-      href: fullAutoHref,
+      href: agentHref,
       leadingIcons: [<Globe key="globe" aria-hidden="true" className={AVAILABILITY_ICON_CLASS} />],
     },
     {
@@ -376,16 +379,23 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
       id: 'extension',
       title: 'Browser Extension',
       description: 'Apply directly from LinkedIn, Glassdoor, Indeed, and Workable with the Jobwhisper extension installed.',
-      availability: 'Download Extension',
+      availability: extensionAdded ? 'Extension added' : 'Download Extension',
       iconSrc: '/v3-assets/figma/auto-apply-method-extension.svg',
       iconClassName: 'h-[42px] w-[48.234px]',
       href: extensionHref,
-      leadingIcons: [<SiGooglechrome key="chrome" aria-hidden="true" className={AVAILABILITY_ICON_CLASS} />],
-      trailingIcon: <ArrowUpLeft aria-hidden="true" className={AVAILABILITY_ICON_CLASS} />,
+      leadingIcons: [<SiGooglechrome key="chrome" aria-hidden="true" className="size-[13.5px] text-accent" />],
+      trailingIcon: extensionAdded ? <Check aria-hidden="true" className="size-[13.5px] text-accent" /> : <ArrowUpLeft aria-hidden="true" className="size-[13.5px] text-accent" />,
+      availabilityClassName: 'text-ink',
     },
   ]
 
-  const activeHref = methods.find((method) => method.id === selected)?.href ?? fullAutoHref
+  const activeHref = methods.find((method) => method.id === selected)?.href ?? agentHref
+  const nextLabel =
+    selected === 'full-auto' && !fullAutoConfigured
+      ? 'Set Preference'
+      : selected === 'extension' && !extensionAdded
+        ? 'Add to Chrome'
+        : 'Choose this Way'
 
   return (
     <Workspace>
@@ -395,7 +405,22 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
           title="Choose How You Auto Apply"
           step="4/4"
           className="max-w-3xl"
-          footer={<FormPanelFooter backHref={backHref} nextHref={activeHref} nextLabel="Choose this Way" />}
+          footer={
+            <FormPanelFooter
+              backHref={backHref}
+              nextHref={activeHref}
+              nextLabel={nextLabel}
+              onNextClick={(event) => {
+                if (selected === 'full-auto' && !fullAutoConfigured) {
+                  event.preventDefault()
+                  setPreferencesOpen(true)
+                } else if (selected === 'extension' && !extensionAdded) {
+                  event.preventDefault()
+                  setExtensionAdded(true)
+                }
+              }}
+            />
+          }
         >
           <div className="grid gap-3 sm:grid-cols-3">
             {methods.map((method, index) => {
@@ -417,7 +442,7 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
                   <div className="h-[85px] w-[163px]">
                     <p className="text-[12px] leading-[18px] text-ink-muted">{method.description}</p>
                   </div>
-                  <p className="mt-auto flex items-center gap-[4px] text-[8.8px] font-medium leading-[16.2px] text-ink-muted/50">
+                  <p className={cn('mt-auto flex items-center gap-[4px] text-[8.8px] font-medium leading-[16.2px]', method.availabilityClassName ?? 'text-ink-muted/50')}>
                     {method.leadingIcons}
                     {method.availability}
                     {method.trailingIcon}
@@ -434,80 +459,11 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
           </div>
         </FormPanel>
       </section>
-    </Workspace>
-  )
-}
-
-export type AutoApplyFullAutoConsentViewProps = {
-  readonly homeHref: string
-  readonly backHref: string
-  readonly agentHref: string
-}
-
-export function AutoApplyFullAutoConsentView({ homeHref, backHref, agentHref }: AutoApplyFullAutoConsentViewProps) {
-  const [startTiming, setStartTiming] = useState<'now' | 'tomorrow'>('now')
-  const [jobsPerDay, setJobsPerDay] = useState(10)
-  const [agreed, setAgreed] = useState(false)
-
-  return (
-    <Workspace>
-      <Header homeHref={homeHref} />
-      <section className="px-4 py-9">
-        <FormPanel
-          title="Full Auto Apply"
-          footer={<FormPanelFooter backHref={backHref} nextHref={agentHref} nextLabel="Start Full Auto" nextDisabled={!agreed} />}
-        >
-          <div className="grid gap-2">
-            <p className="text-sm font-semibold text-ink">When should Jobwhisper start?</p>
-            <div className="grid grid-cols-2 gap-2">
-              {(['now', 'tomorrow'] as const).map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  onClick={() => setStartTiming(option)}
-                  className={cn(
-                    'min-h-10 rounded-lg border px-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
-                    startTiming === option ? 'border-accent bg-accent-subtle text-accent-text' : 'border-input text-ink-muted hover:border-border hover:text-ink',
-                  )}
-                >
-                  {option === 'now' ? 'Right away' : 'Tomorrow morning'}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-5 grid gap-2">
-            <label htmlFor="jobs-per-day" className="text-sm font-semibold text-ink">
-              Applications per day
-            </label>
-            <input
-              id="jobs-per-day"
-              type="number"
-              min={1}
-              max={50}
-              value={jobsPerDay}
-              onChange={(event) => setJobsPerDay(Math.max(1, Math.min(50, Number(event.target.value) || 1)))}
-              className="min-h-11 w-24 rounded-lg border border-input bg-surface px-3 py-2 text-sm text-ink shadow-control outline-none focus:border-focus focus:ring-2 focus:ring-focus"
-            />
-            <p className="text-xs text-ink-muted">You can change this anytime from the agent dashboard.</p>
-          </div>
-
-          <div className="mt-6 rounded-panel border border-warning bg-warning-surface p-4">
-            <div className="flex items-start gap-2">
-              <AlertTriangle aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-warning" />
-              <div className="grid gap-2 text-sm leading-5 text-warning">
-                <p>Jobwhisper's AI will submit applications on your behalf without asking before each one. We can't guarantee interviews or offers, and we're not responsible for what gets submitted while Full Auto is running.</p>
-                <p>Check in on your agent every few days. Don't leave it running unattended for weeks at a time.</p>
-              </div>
-            </div>
-          </div>
-
-          <label className="mt-4 flex items-start gap-3 text-sm leading-5 text-ink">
-            <Checkbox checked={agreed} onCheckedChange={(value) => setAgreed(value === true)} className="mt-0.5" />
-            <span>I understand and agree to let Jobwhisper apply to jobs on my behalf.</span>
-          </label>
-        </FormPanel>
-      </section>
+      <AutoApplyPreferencesDialog
+        open={preferencesOpen}
+        onOpenChange={setPreferencesOpen}
+        onSave={() => setFullAutoConfigured(true)}
+      />
     </Workspace>
   )
 }
@@ -1805,7 +1761,7 @@ function AutoApplyExtensionPromo() {
   )
 }
 
-export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, appliedHref, resumeHistoryHref, jobs, selectedJob: initialSelectedJob, isPremiumUser = false, resumePreview }: AutoApplyJobsViewProps) {
+export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, appliedHref, resumeHistoryHref, jobs, selectedJob: initialSelectedJob, resumePreview }: AutoApplyJobsViewProps) {
   const [selectedJob, setSelectedJob] = useState<AutoApplyJob | undefined>(initialSelectedJob)
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<JobFilters>(DEFAULT_FILTERS)
@@ -1885,98 +1841,38 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
           </div>
         </div>
       </section>
-      <AutoApplySettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} isPremium={isPremiumUser} />
+      <AutoApplyPreferencesDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </Workspace>
   )
 }
 
-function AutoApplySettingsDialog({
+function AutoApplyPreferencesDialog({
   open,
   onOpenChange,
-  isPremium,
+  onSave,
 }: {
   readonly open: boolean
   readonly onOpenChange: (open: boolean) => void
-  readonly isPremium: boolean
+  readonly onSave?: () => void
 }) {
-  const [autoApplyEnabled, setAutoApplyEnabled] = useState(false)
-  const [dailyQuota, setDailyQuota] = useState(5)
+  const [dailyQuota, setDailyQuota] = useState(10)
   const [startTime, setStartTime] = useState('09:00')
-  const [showUpgradeGate, setShowUpgradeGate] = useState(false)
+  const [agreed, setAgreed] = useState(false)
 
   function handleSave() {
-    if (!isPremium) {
-      setShowUpgradeGate(true)
-      return
-    }
     onOpenChange(false)
-  }
-
-  if (showUpgradeGate) {
-    return (
-      <Dialog
-        open={open}
-        onOpenChange={(nextOpen) => {
-          onOpenChange(nextOpen)
-          if (!nextOpen) setShowUpgradeGate(false)
-        }}
-      >
-        <DialogPopup aria-label="Upgrade to Premium">
-          <DialogClose />
-          <span aria-hidden="true" className="grid size-11 place-items-center rounded-xl border border-border bg-surface-raised text-ink-muted shadow-control [&>svg]:size-5">
-            <Lock aria-hidden="true" />
-          </span>
-          <DialogTitle className="mt-4">Upgrade to Premium</DialogTitle>
-          <p className="mt-1 text-sm text-ink-muted">
-            Automating job applications is available on our Premium plan. Upgrade to save this quota and let Jobwhisper apply to matching jobs for you automatically.
-          </p>
-          <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-            <button
-              type="button"
-              onClick={() => setShowUpgradeGate(false)}
-              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-border px-4 text-sm font-medium text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-            >
-              Not now
-            </button>
-            <a
-              href="/v3/billing"
-              className="inline-flex min-h-11 items-center justify-center rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-            >
-              Upgrade Plan
-            </a>
-          </div>
-        </DialogPopup>
-      </Dialog>
-    )
+    onSave?.()
   }
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(nextOpen) => {
-        onOpenChange(nextOpen)
-        if (!nextOpen) setShowUpgradeGate(false)
-      }}
-    >
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup aria-label="Automate job applications">
         <DialogClose />
         <DialogTitle>Automate job applications</DialogTitle>
         <p className="mt-1 text-sm text-ink-muted">
           Let Jobwhisper automatically apply to jobs that match your preferences, up to a daily limit you set.
         </p>
-        <label className="mt-5 flex items-center justify-between gap-3 rounded-lg border border-border p-4">
-          <span className="min-w-0">
-            <span className="block text-sm font-semibold text-ink">Auto-apply to matching jobs</span>
-            <span className="mt-0.5 block text-xs text-ink-muted">Applications are submitted automatically as new matches come in.</span>
-          </span>
-          <input
-            type="checkbox"
-            checked={autoApplyEnabled}
-            onChange={(event) => setAutoApplyEnabled(event.target.checked)}
-            className="size-5 shrink-0 rounded border-input text-accent focus:ring-2 focus:ring-focus"
-          />
-        </label>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
           <div className="grid gap-1.5">
             <label htmlFor="auto-apply-quota" className="text-sm font-medium text-ink">
               Applications per day
@@ -1988,8 +1884,7 @@ function AutoApplySettingsDialog({
               max={50}
               value={dailyQuota}
               onChange={(event) => setDailyQuota(Number(event.target.value))}
-              disabled={!autoApplyEnabled}
-              className="min-h-11 rounded-lg border border-input bg-surface px-3.5 py-2.5 text-sm text-ink shadow-control outline-none focus:border-focus focus:ring-2 focus:ring-focus disabled:cursor-not-allowed disabled:opacity-50"
+              className="min-h-11 rounded-lg border border-input bg-surface px-3.5 py-2.5 text-sm text-ink shadow-control outline-none focus:border-focus focus:ring-2 focus:ring-focus"
             />
           </div>
           <div className="grid gap-1.5">
@@ -2001,12 +1896,25 @@ function AutoApplySettingsDialog({
               type="time"
               value={startTime}
               onChange={(event) => setStartTime(event.target.value)}
-              disabled={!autoApplyEnabled}
-              className="min-h-11 rounded-lg border border-input bg-surface px-3.5 py-2.5 text-sm text-ink shadow-control outline-none focus:border-focus focus:ring-2 focus:ring-focus disabled:cursor-not-allowed disabled:opacity-50"
+              className="min-h-11 rounded-lg border border-input bg-surface px-3.5 py-2.5 text-sm text-ink shadow-control outline-none focus:border-focus focus:ring-2 focus:ring-focus"
             />
           </div>
         </div>
         <p className="mt-2 text-xs text-ink-muted">Jobwhisper will start submitting applications at this time each day, until your daily quota is reached.</p>
+
+        <div className="mt-4 flex items-start gap-2 border-s-2 border-warning bg-surface-subtle px-4 py-3">
+          <AlertTriangle aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-warning" />
+          <div className="grid gap-1.5 text-sm leading-5 text-ink-muted">
+            <p>Jobwhisper's AI will submit applications on your behalf without asking before each one. We can't guarantee interviews or offers, and we're not responsible for what gets submitted while automation is running.</p>
+            <p>Check in on your agent every few days. Don't leave it running unattended for weeks at a time.</p>
+          </div>
+        </div>
+
+        <label className="mt-4 flex items-start gap-3 text-sm leading-5 text-ink">
+          <Checkbox checked={agreed} onCheckedChange={(value) => setAgreed(value === true)} className="mt-0.5" />
+          <span>I understand and agree to let Jobwhisper apply to jobs on my behalf.</span>
+        </label>
+
         <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button
             type="button"
@@ -2018,7 +1926,8 @@ function AutoApplySettingsDialog({
           <button
             type="button"
             onClick={handleSave}
-            className="inline-flex min-h-11 items-center justify-center rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            disabled={!agreed}
+            className="inline-flex min-h-11 items-center justify-center rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:pointer-events-none disabled:opacity-50"
           >
             Save
           </button>

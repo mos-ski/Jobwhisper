@@ -4,7 +4,7 @@ export type CopilotResponseLength = 'short' | 'medium' | 'long';
 
 export type CopilotMode = 'interview' | 'coding' | 'meeting';
 
-export type CopilotModelTier = 'balanced' | 'precision';
+export type CopilotModel = 'openai' | 'anthropic' | 'gemini' | 'kimi' | 'qwen';
 
 export type CopilotSetup = {
   readonly mode: CopilotMode;
@@ -20,7 +20,7 @@ export type CopilotSetup = {
   readonly meetingAgenda?: string;
   readonly codingLanguage?: string;
   readonly responseLanguage: string;
-  readonly modelTier: CopilotModelTier;
+  readonly model: CopilotModel;
   readonly autoAnswer: boolean;
   readonly saveTranscript: boolean;
 };

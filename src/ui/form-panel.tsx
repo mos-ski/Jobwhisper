@@ -461,8 +461,8 @@ export function FormChoiceGroup<TValue extends string = string>({ label, name, o
             data-slot="form-choice"
             data-variant={option.value === selected ? 'selected' : 'default'}
             className={cn(
-              'flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors duration-normal ease-default focus-within:ring-2 focus-within:ring-focus',
-              option.value === selected ? 'border-accent bg-accent-subtle text-accent shadow-control' : 'border-input bg-surface text-ink-muted hover:border-border hover:text-ink',
+              'flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors duration-normal ease-default focus-within:ring-2 focus-within:ring-focus',
+              option.value === selected ? 'border-accent bg-accent-subtle font-semibold text-accent' : 'border-input bg-surface font-medium text-ink-muted hover:border-border hover:text-ink',
             )}
           >
             <input
@@ -494,10 +494,10 @@ export const ExampleResponseCard = forwardRef<HTMLDivElement, ExampleResponseCar
   function ExampleResponseCard({ children, helperText, className, ...props }, ref) {
     return (
       <div ref={ref} data-slot="example-response-card" className={cn('grid gap-3', className)} {...props}>
-        <blockquote className="rounded-lg border border-border bg-surface-subtle px-4 py-3 text-sm font-medium leading-7 text-ink shadow-control">
+        <blockquote className="rounded-lg border border-border bg-surface-subtle px-4 py-3 text-sm leading-6 text-ink-muted">
           {children}
         </blockquote>
-        {helperText ? <p className="text-xs font-semibold leading-5 text-ink-muted">{helperText}</p> : null}
+        {helperText ? <p className="text-xs leading-5 text-ink-muted">{helperText}</p> : null}
       </div>
     )
   },
