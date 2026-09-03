@@ -87,3 +87,17 @@ Production should replace these with backend-owned Copilot session, preference, 
 - `AutoApplyApplication` and `AutoApplyApplicationEvent` for submitted applications, event timelines, activity logs, and replay entry.
 
 Production should replace these with backend-owned auto-apply profile, job discovery, job match, application submission, credit deduction, and replay/audit contracts. Dates are display strings in this UI slice; backend contracts should expose ISO timestamps plus formatted presentation values if needed.
+
+## Admin Draft Contract
+
+`src/contracts/admin.draft.ts` defines temporary flat UI contracts for the admin app:
+
+- `AdminNavItem` / `AdminModuleId` for the six admin modules and their per-module "awaiting action" badge counts.
+- `AdminDateRange` and `AdminKpi` for the dashboard's range switcher and KPI tiles. `AdminKpi.higherIsBetter` exists so an inverse metric (churn) can render a rise as negative without encoding that meaning in color alone.
+- `AdminTrendPoint` for the revenue/credits time series, `AdminProductMixRow` and `AdminPlanMixRow` for the revenue and subscriber breakdowns.
+- `AdminAlert` for surfaced anomalies that deep-link into the module which can resolve them.
+- `AdminNotification` and `AdminSearchResult` for the shell's notification popover and global search.
+
+Production should replace these with backend-owned analytics/aggregation, notification, and search contracts. All money is integer cents and all dates are display strings in this UI slice; backend contracts should expose ISO timestamps plus formatted presentation values if needed. `AdminKpi.value` is polymorphic by `format` (cents, count, or percent) — a backend contract may prefer separate typed fields per metric instead.
+
+The signed-in admin reuses `src/contracts/identity.ts` unchanged: `role: 'admin'` plus the existing `admin:view` / `admin:users:manage` / `admin:credits:manage` / `admin:services:manage` permissions. No new identity fields were needed.

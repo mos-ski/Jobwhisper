@@ -343,6 +343,19 @@ const desktopRoutes = [
   },
 ] as const
 
+const adminRoutes = [
+  {
+    href: '/admin',
+    label: 'Admin dashboard',
+    description: 'KPI tiles, revenue/credits trend, needs-attention alerts, revenue by product, subscribers by plan.',
+  },
+  {
+    href: '/admin?state=loading',
+    label: 'Admin dashboard (loading)',
+    description: 'Skeleton state for the admin dashboard while metrics load.',
+  },
+] as const
+
 export function RouteIndexPage() {
   return (
     <main className="min-h-screen bg-canvas px-6 py-10 text-ink">
@@ -416,6 +429,23 @@ export function RouteIndexPage() {
           <h2 className="text-2xl font-semibold">Web app: Dashboard</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {appRoutes.map((route) => (
+              <a
+                key={route.href}
+                href={route.href}
+                aria-label={route.label}
+                className="rounded-panel border border-border bg-surface p-5 shadow-panel transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                <span className="text-lg font-semibold text-ink">{route.label}</span>
+                <span className="mt-2 block text-sm leading-6 text-ink-muted">{route.description}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-10">
+          <h2 className="text-2xl font-semibold">Admin app</h2>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {adminRoutes.map((route) => (
               <a
                 key={route.href}
                 href={route.href}

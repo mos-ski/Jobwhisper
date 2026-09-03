@@ -1,5 +1,6 @@
 import { useLocation } from 'react-router-dom'
 
+import { AdminDashboardPage } from './pages/admin-dashboard-page'
 import { AuthCreateAccountPage } from './pages/auth-create-account-page'
 import { AuthForgotPasswordPage } from './pages/auth-forgot-password-page'
 import { AuthPlanPage } from './pages/auth-plan-page'
@@ -56,6 +57,10 @@ import { ExtensionPage } from './pages/extension-page'
 export function WebRoutes() {
   const { pathname } = useLocation()
   const routePath = pathname.startsWith('/v3') ? pathname.slice(3) || '/' : pathname
+
+  if (routePath === '/admin') {
+    return <AdminDashboardPage />
+  }
 
   if (routePath === '/auth/sign-in') {
     return <AuthSignInPage />
