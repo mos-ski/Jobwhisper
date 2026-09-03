@@ -1,4 +1,4 @@
-export type DownloadPlatform = 'mac-apple-silicon' | 'mac-intel' | 'windows'
+export type DownloadPlatform = 'mac-apple-silicon' | 'mac-intel' | 'windows' | 'extension'
 
 export type DownloadItem = {
   readonly id: DownloadPlatform

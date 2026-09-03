@@ -1,4 +1,5 @@
 import { AlertTriangle, Apple, Check, ChevronDown, Copy, ExternalLink, EyeOff, Gift, Monitor, Moon, Play, Sun, Upload } from 'lucide-react'
+import { SiGooglechrome } from 'react-icons/si'
 import { useEffect, useState, type ReactNode } from 'react'
 
 import type { BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
@@ -117,6 +118,10 @@ function TitledPanel({ title, action, children }: { readonly title: string; read
 function DownloadIcon({ id }: { readonly id: DownloadItem['id'] }) {
   if (id === 'windows') {
     return <Monitor aria-hidden="true" className="size-5" />
+  }
+
+  if (id === 'extension') {
+    return <SiGooglechrome aria-hidden="true" className="size-4" />
   }
 
   return <Apple aria-hidden="true" className="size-5" />

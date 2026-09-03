@@ -31,6 +31,16 @@ export const downloadItems: readonly DownloadItem[] = [
     imageSrc: '/jobwhisper-home/download-modal/windows.png',
     href: 'https://jobwhisper-copilot-downloads.nyc3.digitaloceanspaces.com/Jobwhisper_Copilot_Setup_1.0.1.exe',
   },
+  {
+    id: 'extension',
+    title: 'Auto Apply Browser Extension',
+    platform: 'Browser Extension',
+    extension: 'Chrome',
+    cta: 'Add to Chrome',
+    support: 'Chrome, Edge, Brave, Opera',
+    imageSrc: '/extension/icons/icon-128.png',
+    href: '/v3/extension',
+  },
 ]
 
 export const billingPlans: readonly BillingPlanCard[] = [
