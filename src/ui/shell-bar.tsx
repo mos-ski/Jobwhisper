@@ -32,7 +32,7 @@ export const ShellBar = forwardRef<HTMLElement, ShellBarProps>(
       <header
         ref={ref}
         data-slot="shell-bar"
-        className={cn('flex min-h-14 items-center justify-between overflow-hidden border-b border-border bg-surface px-4 py-2 text-sm', className)}
+        className={cn('flex min-h-14 items-center justify-between border-b border-border bg-surface px-4 py-2 text-sm', className)}
         {...props}
       >
         <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-3">
