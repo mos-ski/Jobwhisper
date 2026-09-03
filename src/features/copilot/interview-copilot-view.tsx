@@ -1128,7 +1128,7 @@ export function CopilotReportView({ homeHref, historyHref, report, mode }: Copil
         <div className="mx-auto flex max-w-[64rem] flex-col gap-4 pt-8">
           <article className="w-full bg-surface shadow-panel">
             <div className="flex min-h-[5rem] items-center border-b border-border px-8">
-              <h1 className="font-gowun text-xl font-medium leading-5 text-ink">Report</h1>
+              <h1 className="font-gowun text-xl font-bold leading-5 text-ink">Report</h1>
             </div>
 
             <div className="px-8 pt-6">
@@ -1255,7 +1255,7 @@ function TranscriptBubble({
         {accentIndex !== null ? <span aria-hidden="true" className={cn('size-1.5 shrink-0 rounded-full', SPEAKER_DOT_ACCENTS[accentIndex])} /> : null}
         {speaker}
       </p>
-      <p className={cn('whitespace-pre-wrap break-words text-brand-bar-text', kind === 'ai' && 'font-gowun')} style={{ fontSize: `${fontSize}px` }}>{text}</p>
+      <p className={cn('whitespace-pre-wrap break-words text-brand-bar-text', kind === 'ai' && 'font-gowun font-medium')} style={{ fontSize: `${fontSize}px` }}>{text}</p>
     </div>
   )
 }
@@ -2027,7 +2027,7 @@ export function CopilotHistoryView({ homeHref, createHref, reportHref, rows }: C
       <section className="px-4 py-8 lg:px-12 xl:px-24">
         <div className="mx-auto max-w-7xl bg-surface shadow-panel">
           <div className="flex min-h-[5rem] items-center justify-between gap-4 border-b border-border px-8">
-            <h1 className="font-gowun text-xl font-medium leading-5 text-ink">Past Copilot Sessions</h1>
+            <h1 className="font-gowun text-xl font-bold leading-5 text-ink">Past Copilot Sessions</h1>
             <a
               href={`${createHref}?mode=${activeMode}`}
               className="inline-flex min-h-10 shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-lg bg-accent px-4 py-2 text-base font-semibold leading-6 text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"

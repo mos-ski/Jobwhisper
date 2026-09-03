@@ -1777,7 +1777,7 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
         <div className="mx-auto max-w-7xl">
           <div className="min-h-[56rem] bg-surface shadow-panel">
             <div className="flex min-h-[5rem] items-center justify-between gap-4 border-b border-border px-[16px] sm:px-8">
-              <h1 className="font-gowun text-xl font-medium leading-5 text-ink">Jobs</h1>
+              <h1 className="font-gowun text-xl font-bold leading-5 text-ink">Jobs</h1>
               <a href={setupHref} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                 Update Preference
               </a>
@@ -2057,7 +2057,7 @@ export function AutoApplyAppliedView({ homeHref, setupHref, agentHref, jobsHref,
         <div className="mx-auto max-w-7xl">
           <div className="min-h-[56rem] bg-surface shadow-panel">
             <div className="flex min-h-[5rem] items-center justify-between gap-4 border-b border-border px-[16px] sm:px-8">
-              <h1 className="font-gowun text-xl font-medium leading-5 text-ink">Applied</h1>
+              <h1 className="font-gowun text-xl font-bold leading-5 text-ink">Applied</h1>
               <a href={setupHref} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                 Update Preference
               </a>

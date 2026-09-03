@@ -117,7 +117,7 @@ function TitledPanel({ title, action, children }: { readonly title: string; read
   return (
     <article className="w-full min-w-0 bg-surface shadow-panel">
       <div className="flex min-h-[5rem] flex-wrap items-center justify-between gap-3 border-b border-border px-4 sm:px-6 lg:px-8">
-        <h1 className="font-gowun text-lg font-medium leading-5 text-ink sm:text-xl">{title}</h1>
+        <h1 className="font-gowun text-lg font-bold leading-5 text-ink sm:text-xl">{title}</h1>
         {action}
       </div>
       <div className="p-4 sm:p-6 lg:p-8">{children}</div>
@@ -1149,7 +1149,7 @@ function AppearanceSettings() {
   return (
     <article className="w-full bg-surface shadow-panel">
       <div className="flex min-h-[5rem] items-center border-b border-border px-8">
-        <h1 className="font-gowun text-xl font-medium leading-5 text-ink">Appearance</h1>
+        <h1 className="font-gowun text-xl font-bold leading-5 text-ink">Appearance</h1>
       </div>
       <div className="p-8">
         <p className="text-sm text-ink-muted">Choose how Jobwhisper looks on this device.</p>

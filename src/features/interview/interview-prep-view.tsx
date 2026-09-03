@@ -1474,7 +1474,7 @@ export function InterviewReportView({ homeHref, scenariosHref, practiceHref, rep
         <div className="mx-auto flex max-w-[64rem] flex-col gap-4 pt-8">
           <article className="w-full bg-surface shadow-panel">
             <div className="flex min-h-[5rem] items-center border-b border-border px-8">
-              <h1 className="font-gowun text-xl font-medium leading-5 text-ink">Report</h1>
+              <h1 className="font-gowun text-xl font-bold leading-5 text-ink">Report</h1>
             </div>
 
             <div className="px-8 pt-6">

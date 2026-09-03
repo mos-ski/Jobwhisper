@@ -494,7 +494,7 @@ export const ExampleResponseCard = forwardRef<HTMLDivElement, ExampleResponseCar
   function ExampleResponseCard({ children, helperText, className, ...props }, ref) {
     return (
       <div ref={ref} data-slot="example-response-card" className={cn('grid gap-3', className)} {...props}>
-        <blockquote className="font-gowun rounded-lg border border-border bg-surface-subtle px-4 py-3 text-sm leading-6 text-ink-muted">
+        <blockquote className="font-gowun font-medium rounded-lg border border-border bg-surface-subtle px-4 py-3 text-sm leading-6 text-ink-muted">
           {children}
         </blockquote>
         {helperText ? <p className="text-xs leading-5 text-ink-muted">{helperText}</p> : null}

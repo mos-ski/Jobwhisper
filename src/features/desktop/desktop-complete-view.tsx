@@ -10,7 +10,7 @@ export function DesktopCompleteView() {
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-0 size-[480px] -translate-x-1/2 -translate-y-1/3 rounded-full bg-[#0052ff]/25 blur-[100px]"
       />
-      <h1 className="relative max-w-md font-gowun text-4xl font-normal leading-[1.15] text-white">Interview completed!</h1>
+      <h1 className="relative max-w-md font-gowun text-4xl font-medium leading-[1.15] text-white">Interview completed!</h1>
       <div className="relative flex w-full max-w-80 flex-col gap-3">
         <button
           type="button"
