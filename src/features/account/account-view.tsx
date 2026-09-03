@@ -404,7 +404,7 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
         <h3 className="text-base font-bold text-ink">{title}</h3>
         <p className="text-sm text-ink-muted">{rateLabel}</p>
       </div>
-      <div className="mt-3 rounded-panel border border-border bg-surface">
+      <div className="mt-3 border border-border bg-surface">
         <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-ink">{balanceCredits} credits</p>
@@ -525,7 +525,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Ace Your Interview</p>
                 <div
                   style={{ animationFillMode: 'backwards' }}
-                  className="flex animate-ease-in-bottom items-start gap-[24px] rounded-panel border border-border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control"
+                  className="flex animate-ease-in-bottom items-start gap-[24px] border border-border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control"
                 >
                   <img src="/v3-assets/figma/plan-row-interview.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
                   <div className="min-w-0 flex-1">
@@ -548,7 +548,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Find Jobs Yourself</p>
                 <div
                   style={{ animationDelay: '60ms', animationFillMode: 'backwards' }}
-                  className="flex animate-ease-in-bottom items-start gap-[24px] rounded-panel border border-border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control"
+                  className="flex animate-ease-in-bottom items-start gap-[24px] border border-border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control"
                 >
                   <img src="/v3-assets/figma/plan-row-jobs.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
                   <div className="min-w-0 flex-1">
@@ -573,7 +573,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Done For You</p>
                 <div
                   style={{ animationDelay: '120ms', animationFillMode: 'backwards' }}
-                  className="flex animate-ease-in-bottom items-start gap-[24px] rounded-panel border border-border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control"
+                  className="flex animate-ease-in-bottom items-start gap-[24px] border border-border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control"
                 >
                   <img src="/v3-assets/figma/plan-row-dfy.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
                   <div className="min-w-0 flex-1">
@@ -660,7 +660,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
           </div>
 
           <TitledPanel title="Payment Method">
-            <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-border p-4 sm:p-5">
+            <div className="flex flex-wrap items-center justify-between gap-4 border border-border p-4 sm:p-5">
               <div className="flex items-center gap-[10.8px]">
                 <span className="grid w-[43.195px] shrink-0 place-items-center rounded-[5.4px] bg-surface-subtle py-2">
                   <img src="/v3-assets/figma/mastercard.svg" alt="Mastercard" className="size-8" />

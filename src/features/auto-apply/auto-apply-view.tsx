@@ -425,7 +425,7 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
                   aria-pressed={isSelected}
                   style={{ animationDelay: `${index * 60}ms`, animationFillMode: 'backwards' }}
                   className={cn(
-                    'flex animate-ease-in-bottom flex-col items-start gap-[24px] rounded-[1px] border p-[18px] text-start transition-all duration-normal ease-default hover:-translate-y-0.5 hover:shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+                    'flex animate-ease-in-bottom flex-col items-start gap-[24px] rounded-none border p-[18px] text-start transition-all duration-normal ease-default hover:-translate-y-0.5 hover:shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
                     isSelected ? 'border-accent bg-accent-subtle/40' : 'border-border bg-surface hover:border-ink-muted',
                   )}
                 >
