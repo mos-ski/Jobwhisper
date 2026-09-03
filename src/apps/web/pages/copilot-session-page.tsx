@@ -2,7 +2,7 @@ import { useSearchParams } from 'react-router-dom'
 
 import type { CopilotMode } from '@/contracts/copilot.draft'
 import { CopilotLiveView } from '@/features/copilot/interview-copilot-view'
-import { copilotCodingBank, copilotInterviewTranscript, copilotLiveSession, copilotMeetingTranscript } from '@/mocks/copilot'
+import { copilotCodingBank, copilotInterviewTranscript, copilotLiveSession, copilotMeetingTranscript, copilotSetup } from '@/mocks/copilot'
 
 const SESSION_TITLE: Record<CopilotMode, string> = {
   interview: 'Interview for UI/UX Designer',
@@ -23,6 +23,7 @@ export function CopilotSessionPage() {
       isLoading={params.get('state') === 'loading'}
       transcriptBank={session.mode === 'meeting' ? copilotMeetingTranscript : copilotInterviewTranscript}
       codingBank={copilotCodingBank}
+      initialAutoAnswer={copilotSetup.autoAnswer}
     />
   )
 }
