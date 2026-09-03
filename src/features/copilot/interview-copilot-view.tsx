@@ -440,13 +440,16 @@ export function CopilotPreferencesView({ homeHref, configureHref, shareHref, set
             />
             <div className="grid gap-3 sm:grid-cols-2">
               <FormSelectField
-                id="copilot-model-tier"
+                id="copilot-model"
                 label="Model"
-                value={modelTier}
-                onValueChange={(value) => setModelTier(value as CopilotModelTier)}
+                value={model}
+                onValueChange={(value) => setModel(value as CopilotModel)}
                 options={[
-                  { label: 'Balanced', value: 'balanced' },
-                  { label: 'Precision', value: 'precision' },
+                  { label: 'OpenAI', value: 'openai' },
+                  { label: 'Anthropic', value: 'anthropic' },
+                  { label: 'Gemini', value: 'gemini' },
+                  { label: 'Kimi', value: 'kimi' },
+                  { label: 'Qwen', value: 'qwen' },
                 ]}
               />
               <FormSelectField
@@ -466,13 +469,25 @@ export function CopilotPreferencesView({ homeHref, configureHref, shareHref, set
             </div>
             <div className="grid gap-2">
               <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Behavior</p>
-              <div>
-                <Checkbox checked={autoAnswer} onCheckedChange={(checked) => setAutoAnswer(Boolean(checked))} label="Auto Answer (Beta)" />
-                <p className="ms-6 mt-0.5 text-xs text-ink-muted">Copilot answers live-interviewer questions automatically instead of waiting for a manual trigger.</p>
-              </div>
-              <div>
-                <Checkbox checked={saveTranscript} onCheckedChange={(checked) => setSaveTranscript(Boolean(checked))} label="Save Transcript" />
-                <p className="ms-6 mt-0.5 text-xs text-ink-muted">Keep a written transcript of this session in your history.</p>
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                <span className="inline-flex items-center gap-1.5">
+                  <Checkbox checked={autoAnswer} onCheckedChange={(checked) => setAutoAnswer(Boolean(checked))} label="Auto Answer" />
+                  <Tooltip>
+                    <TooltipTrigger className="text-ink-muted hover:text-ink focus-visible:outline-none">
+                      <CircleHelp aria-hidden="true" className="size-3.5" />
+                    </TooltipTrigger>
+                    <TooltipContent>Copilot answers live-interviewer questions automatically instead of waiting for a manual trigger.</TooltipContent>
+                  </Tooltip>
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Checkbox checked={saveTranscript} onCheckedChange={(checked) => setSaveTranscript(Boolean(checked))} label="Save Transcript" />
+                  <Tooltip>
+                    <TooltipTrigger className="text-ink-muted hover:text-ink focus-visible:outline-none">
+                      <CircleHelp aria-hidden="true" className="size-3.5" />
+                    </TooltipTrigger>
+                    <TooltipContent>Keep a written transcript of this session in your history.</TooltipContent>
+                  </Tooltip>
+                </span>
               </div>
             </div>
         </FormPanel>

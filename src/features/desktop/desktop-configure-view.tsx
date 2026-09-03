@@ -2,7 +2,7 @@ import { useState, type ChangeEvent, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, ChevronDown, FileText, Plus, X, Zap } from 'lucide-react'
 
-import type { CopilotModelTier } from '@/contracts/copilot.draft'
+import type { CopilotModel } from '@/contracts/copilot.draft'
 import { KnowledgeBasePickerDialog } from '@/features/documents/knowledge-base-picker-dialog'
 import { copilotSetup } from '@/mocks/copilot'
 import { contextDocumentRows } from '@/mocks/documents'
@@ -10,6 +10,22 @@ import { JobwhisperAiIcon } from '@/ui'
 
 const AI_SUGGESTION =
   'Focus on the last two years of product launches — probe for measurable impact, cross-functional negotiation, and how they handled a launch that slipped.'
+
+const MODEL_LABELS: Record<CopilotModel, string> = {
+  openai: 'OpenAI',
+  anthropic: 'Anthropic',
+  gemini: 'Gemini',
+  kimi: 'Kimi',
+  qwen: 'Qwen',
+}
+
+const MODEL_BY_LABEL: Record<string, CopilotModel> = {
+  OpenAI: 'openai',
+  Anthropic: 'anthropic',
+  Gemini: 'gemini',
+  Kimi: 'kimi',
+  Qwen: 'qwen',
+}
 
 function DarkField({ label, children }: { readonly label: string; readonly children: ReactNode }) {
   return (
@@ -64,7 +80,7 @@ export function DesktopConfigureView() {
   const [selectedDocIds, setSelectedDocIds] = useState<ReadonlySet<string>>(new Set())
   const [pickerOpen, setPickerOpen] = useState(false)
   const [documents, setDocuments] = useState(contextDocumentRows)
-  const [modelTier, setModelTier] = useState<CopilotModelTier>(copilotSetup.modelTier)
+  const [model, setModel] = useState<CopilotModel>(copilotSetup.model)
   const [responseLanguage, setResponseLanguage] = useState(copilotSetup.responseLanguage)
   const [autoAnswer, setAutoAnswer] = useState(copilotSetup.autoAnswer)
   const [saveTranscript, setSaveTranscript] = useState(copilotSetup.saveTranscript)
@@ -174,7 +190,11 @@ export function DesktopConfigureView() {
 
           <div className="flex gap-6">
             <DarkField label="Model">
-              <DarkSelect value={modelTier === 'balanced' ? 'Balanced' : 'Precision'} onChange={(value) => setModelTier(value === 'Balanced' ? 'balanced' : 'precision')} options={['Balanced', 'Precision']} />
+              <DarkSelect
+                value={MODEL_LABELS[model]}
+                onChange={(value) => setModel(MODEL_BY_LABEL[value] ?? 'openai')}
+                options={Object.values(MODEL_LABELS)}
+              />
             </DarkField>
             <DarkField label="Response language">
               <DarkSelect value={responseLanguage} onChange={setResponseLanguage} options={['English', 'Spanish', 'French', 'German', 'Portuguese', 'Mandarin Chinese']} />
@@ -183,8 +203,10 @@ export function DesktopConfigureView() {
 
           <div className="grid gap-3 border-t border-white/15 pt-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-white/50">Behavior</p>
-            <DarkCheckboxRow checked={autoAnswer} onChange={setAutoAnswer} label="Auto Answer (Beta)" hint="Copilot answers live-interviewer questions automatically." />
-            <DarkCheckboxRow checked={saveTranscript} onChange={setSaveTranscript} label="Save Transcript" hint="Keep a written transcript of this session in your history." />
+            <div className="grid grid-cols-2 gap-3">
+              <DarkCheckboxRow checked={autoAnswer} onChange={setAutoAnswer} label="Auto Answer" hint="Copilot answers live-interviewer questions automatically." />
+              <DarkCheckboxRow checked={saveTranscript} onChange={setSaveTranscript} label="Save Transcript" hint="Keep a written transcript of this session in your history." />
+            </div>
           </div>
         </div>
 

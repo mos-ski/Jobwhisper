@@ -5,6 +5,7 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
+  CircleHelp,
   FileText,
   Mic,
   MicOff,
@@ -18,7 +19,7 @@ import {
   X,
 } from 'lucide-react'
 
-import type { CopilotModelTier } from '@/contracts/copilot.draft'
+import type { CopilotModel } from '@/contracts/copilot.draft'
 import type {
   InterviewHistoryRow,
   InterviewLiveSession,
@@ -34,7 +35,7 @@ import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
 import { AppShell } from '@/features/dashboard/app-nav'
 import { KnowledgeBasePickerDialog } from '@/features/documents/knowledge-base-picker-dialog'
 import { centsToCredits, creditsToCents } from '@/lib/credits'
-import { AiSuggestionAction, Avatar, Badge, Checkbox, cn, DataTable, Dialog, DialogPopup, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, UploadedFileDialog } from '@/ui'
+import { AiSuggestionAction, Avatar, Badge, Checkbox, cn, DataTable, Dialog, DialogPopup, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, Tooltip, TooltipContent, TooltipTrigger, UploadedFileDialog } from '@/ui'
 import { useCameraStream } from '@/hooks/useCameraStream'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 import { useTypewriter } from '@/hooks/useTypewriter'
@@ -212,7 +213,7 @@ export function InterviewConfigureView({ homeHref, uploadHref, voiceHref, sessio
   const [selectedDocIds, setSelectedDocIds] = useState<ReadonlySet<string>>(new Set())
   const [pickerOpen, setPickerOpen] = useState(false)
   const [documents, setDocuments] = useState(knowledgeBaseDocuments)
-  const [modelTier, setModelTier] = useState<CopilotModelTier>(session.modelTier)
+  const [model, setModel] = useState<CopilotModel>(session.model)
   const [responseLanguage, setResponseLanguage] = useState(session.responseLanguage)
   const [autoAnswer, setAutoAnswer] = useState(false)
   const [saveTranscript, setSaveTranscript] = useState(session.saveTranscript)
@@ -297,13 +298,16 @@ export function InterviewConfigureView({ homeHref, uploadHref, voiceHref, sessio
           <AiSuggestionAction onClick={handleAiSuggestion} disabled={isTyping} />
           <div className="grid gap-3 sm:grid-cols-2">
             <FormSelectField
-              id="interview-model-tier"
+              id="interview-model"
               label="Model"
-              value={modelTier}
-              onValueChange={(value) => setModelTier(value as CopilotModelTier)}
+              value={model}
+              onValueChange={(value) => setModel(value as CopilotModel)}
               options={[
-                { label: 'Balanced', value: 'balanced' },
-                { label: 'Precision', value: 'precision' },
+                { label: 'OpenAI', value: 'openai' },
+                { label: 'Anthropic', value: 'anthropic' },
+                { label: 'Gemini', value: 'gemini' },
+                { label: 'Kimi', value: 'kimi' },
+                { label: 'Qwen', value: 'qwen' },
               ]}
             />
             <FormSelectField
@@ -323,13 +327,25 @@ export function InterviewConfigureView({ homeHref, uploadHref, voiceHref, sessio
           </div>
           <div className="grid gap-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Behavior</p>
-            <div>
-              <Checkbox checked={autoAnswer} onCheckedChange={(checked) => setAutoAnswer(Boolean(checked))} label="Auto Answer (Beta)" />
-              <p className="ms-6 mt-0.5 text-xs text-ink-muted">Skip attempting each question yourself — reveal the AI's model answer immediately instead.</p>
-            </div>
-            <div>
-              <Checkbox checked={saveTranscript} onCheckedChange={(checked) => setSaveTranscript(Boolean(checked))} label="Save Transcript" />
-              <p className="ms-6 mt-0.5 text-xs text-ink-muted">Keep a written transcript of this session in your history.</p>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+              <span className="inline-flex items-center gap-1.5">
+                <Checkbox checked={autoAnswer} onCheckedChange={(checked) => setAutoAnswer(Boolean(checked))} label="Auto Answer" />
+                <Tooltip>
+                  <TooltipTrigger className="text-ink-muted hover:text-ink focus-visible:outline-none">
+                    <CircleHelp aria-hidden="true" className="size-3.5" />
+                  </TooltipTrigger>
+                  <TooltipContent>Skip attempting each question yourself, reveal the AI's model answer immediately instead.</TooltipContent>
+                </Tooltip>
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Checkbox checked={saveTranscript} onCheckedChange={(checked) => setSaveTranscript(Boolean(checked))} label="Save Transcript" />
+                <Tooltip>
+                  <TooltipTrigger className="text-ink-muted hover:text-ink focus-visible:outline-none">
+                    <CircleHelp aria-hidden="true" className="size-3.5" />
+                  </TooltipTrigger>
+                  <TooltipContent>Keep a written transcript of this session in your history.</TooltipContent>
+                </Tooltip>
+              </span>
             </div>
           </div>
         </FormPanel>

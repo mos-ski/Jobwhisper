@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
-import { AlertTriangle, ArrowLeft, ArrowUpLeft, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ExternalLink, FileText, Filter, Globe, LinkIcon, Lock, PenLine, Play, RefreshCw, Search, Send, Settings, X, Zap, Trash2, Download, Mail } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, ArrowUpLeft, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ExternalLink, FileText, Filter, Globe, LinkIcon, PenLine, Play, RefreshCw, Search, Send, Settings, X, Zap, Trash2, Download, Mail } from 'lucide-react'
 import { SiGooglechrome, SiGoogleplay } from 'react-icons/si'
 
 import type { AutoApplyApplication, AutoApplyJob, AutoApplyOutcome, AutoApplySetup } from '@/contracts/auto-apply.draft'

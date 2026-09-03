@@ -8,7 +8,6 @@ export function AutoApplyMethodPage() {
       agentHref="/v3/auto-apply/agent"
       jobsHref="/v3/auto-apply/jobs"
       extensionHref="/v3/extension"
-      isPremiumUser={false}
     />
   )
 }
