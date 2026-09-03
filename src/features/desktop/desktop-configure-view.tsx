@@ -8,6 +8,8 @@ import { copilotSetup } from '@/mocks/copilot'
 import { contextDocumentRows } from '@/mocks/documents'
 import { cn, JobwhisperAiIcon } from '@/ui'
 
+import { DesktopDialogPopup } from './desktop-dialog'
+
 const AI_SUGGESTION =
   'Focus on the last two years of product launches — probe for measurable impact, cross-functional negotiation, and how they handled a launch that slipped.'
 
@@ -263,6 +265,7 @@ export function DesktopConfigureView() {
         onAddDocument={(doc) => setDocuments((prev) => [...prev, doc])}
         description="Select the documents you want Jobwhisper to use as context for this session."
         listMaxHeightClassName="max-h-72"
+        popupComponent={DesktopDialogPopup}
       />
     </div>
   )

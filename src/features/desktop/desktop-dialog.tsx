@@ -17,7 +17,7 @@ export const DesktopDialogPopup = forwardRef<HTMLDivElement, DesktopDialogPopupP
         <BaseDialog.Popup
           ref={ref}
           className={cn(
-            'absolute left-1/2 top-1/2 z-modal max-h-[calc(100%-2.5rem)] w-[calc(100%-2.5rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl shadow-xl transition-[opacity,transform] duration-normal ease-default focus-visible:outline-none data-[ending-style]:-translate-y-[calc(50%-0.5rem)] data-[ending-style]:opacity-0 data-[starting-style]:-translate-y-[calc(50%-0.5rem)] data-[starting-style]:opacity-0 motion-reduce:transition-none',
+            'absolute left-1/2 top-1/2 z-modal max-h-[calc(100%-2.5rem)] w-[calc(100%-2.5rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-border bg-surface p-6 shadow-xl transition-[opacity,transform] duration-normal ease-default focus-visible:outline-none data-[ending-style]:-translate-y-[calc(50%-0.5rem)] data-[ending-style]:opacity-0 data-[starting-style]:-translate-y-[calc(50%-0.5rem)] data-[starting-style]:opacity-0 motion-reduce:transition-none',
             className,
           )}
           {...props}
