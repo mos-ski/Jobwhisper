@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, ArrowUpRight, Code2, Headset, MessageCircleMore, NotebookPen, Send, Sparkles } from 'lucide-react'
 
 import { cn } from '@/ui'
 
@@ -7,54 +6,32 @@ type DesktopHomeCard = {
   readonly id: string
   readonly title: string
   readonly description: string
-  readonly icon: typeof Sparkles
+  readonly icon: string
   readonly badge?: string
-  readonly action?: 'internal' | 'external'
+  readonly suffix?: '→' | '↗'
   readonly href?: string
 }
 
 const DESKTOP_HOME_CARDS: readonly DesktopHomeCard[] = [
   {
-    id: 'practice',
-    title: 'Practice For Interview',
-    description: 'Practice with AI interviewers, get actionable feedback, and walk into interviews more confident than ever.',
-    icon: Sparkles,
-    action: 'internal',
-    href: '/desktop/configure',
-  },
-  {
     id: 'copilot',
     title: 'Start Interview Copilot',
     description: 'From resume reviews to job matches and strategy tips, Copilot gives you smart insights at every step.',
-    icon: MessageCircleMore,
-    action: 'internal',
+    icon: '/v3-assets/figma/action-icon-copilot.svg',
+    suffix: '→',
     href: '/desktop/configure',
-  },
-  {
-    id: 'apply',
-    title: 'Apply for Jobs',
-    description: 'Let Jobwhisper auto-apply to relevant roles based on your preferences — no more job hunting stress.',
-    icon: Send,
-    badge: 'BETA',
   },
   {
     id: 'coding',
     title: 'Coding Interview',
     description: 'Live AI assistance for coding interviews — real-time hints as you work through the problem.',
-    icon: Code2,
+    icon: '/v3-assets/figma/action-icon-coding.svg',
   },
   {
     id: 'meeting',
     title: 'Meeting Copilot',
     description: 'Live AI assistance during meetings — real-time notes and talking points as the conversation happens.',
-    icon: NotebookPen,
-  },
-  {
-    id: 'done-for-you',
-    title: 'Done for you',
-    description: 'Let Jobwhisper auto-apply to relevant roles based on your preferences — no more job hunting stress.',
-    icon: Headset,
-    action: 'external',
+    icon: '/v3-assets/figma/action-icon-meeting.svg',
   },
 ]
 
@@ -62,13 +39,12 @@ export function DesktopHomeView() {
   const navigate = useNavigate()
 
   return (
-    <div className="h-full min-h-[520px] overflow-y-auto bg-[#0a1220] px-10 py-12">
-      <h1 className="text-2xl font-bold text-white">Welcome, what would you like to do today?</h1>
+    <div className="h-full min-h-[520px] overflow-y-auto bg-live-workspace px-10 py-12">
+      <p className="text-2xl font-semibold leading-tight text-white">Welcome, what would you like to do today?</p>
 
-      <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-[29px] flex flex-wrap gap-[9px]">
         {DESKTOP_HOME_CARDS.map((card) => {
-          const Icon = card.icon
-          const clickable = card.action === 'internal' && card.href
+          const clickable = Boolean(card.href)
 
           return (
             <button
@@ -77,21 +53,22 @@ export function DesktopHomeView() {
               disabled={!clickable}
               onClick={clickable ? () => navigate(card.href!) : undefined}
               className={cn(
-                'grid gap-4 rounded-xl bg-white p-6 text-left shadow-sm transition-colors',
-                clickable ? 'cursor-pointer hover:bg-white/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus' : 'cursor-default',
+                'flex w-[250px] flex-col items-start gap-3 rounded-[9px] border-[0.75px] border-[#eaecf0] bg-white px-[18px] py-3 text-left transition-colors',
+                clickable ? 'cursor-pointer hover:bg-[#f8fafc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus' : 'cursor-default',
               )}
             >
-              <Icon aria-hidden="true" className="size-9 text-[#0052ff]" />
-              <div>
-                <span className="flex items-center gap-2">
-                  <span className="text-lg font-semibold text-[#0a1220]">{card.title}</span>
-                  {card.action === 'internal' ? <ArrowRight aria-hidden="true" className="size-4 text-[#0a1220]" /> : null}
-                  {card.action === 'external' ? <ArrowUpRight aria-hidden="true" className="size-4 text-[#0a1220]" /> : null}
+              <img src={card.icon} alt="" className="h-[57.6px] w-[56.5px] shrink-0" />
+              <div className="grid gap-1.5">
+                <span className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-sm font-medium tracking-[-0.28px] text-[#32363a]">
+                    {card.title}
+                    {card.suffix ? <span className="ms-1">{card.suffix}</span> : null}
+                  </span>
                   {card.badge ? (
                     <span className="rounded-pill bg-[#eceef2] px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[#475467]">{card.badge}</span>
                   ) : null}
                 </span>
-                <p className="mt-2 text-sm leading-6 text-[#667085]">{card.description}</p>
+                <p className="text-xs font-normal leading-[18px] tracking-[-0.24px] text-[rgba(26,26,26,0.7)]">{card.description}</p>
               </div>
             </button>
           )
