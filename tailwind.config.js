@@ -6,7 +6,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Instrument Sans', 'system-ui', 'sans-serif'],
+        sans: ['Rethink Sans', 'system-ui', 'sans-serif'],
         rethink: ['Rethink Sans', 'system-ui', 'sans-serif'],
         gowun: ['Gowun Batang', 'Georgia', 'serif'],
       },
