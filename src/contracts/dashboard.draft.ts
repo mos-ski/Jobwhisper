@@ -5,6 +5,7 @@ export type DashboardActionId =
   | 'coding-copilot'
   | 'meeting-copilot'
   | 'auto-apply'
+  | 'done-for-you'
 
 export type DashboardAction = {
   readonly id: DashboardActionId

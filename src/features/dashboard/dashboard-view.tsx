@@ -1,4 +1,4 @@
-import { ChevronRight, CircleHelp, Code2, ExternalLink, Lock, LogOut, Mail, Menu, Monitor, PanelLeftClose, PanelLeftOpen, Play, Settings, User, Video, X } from 'lucide-react'
+import { ChevronRight, CircleHelp, ExternalLink, Lock, LogOut, Mail, Menu, Monitor, PanelLeftClose, PanelLeftOpen, Play, Settings, User, X } from 'lucide-react'
 import { FaApple } from 'react-icons/fa'
 import { SiGoogleplay } from 'react-icons/si'
 import { useState, type ReactNode } from 'react'
@@ -7,7 +7,6 @@ import type { DashboardAction, DashboardActionId, DashboardInstallPrompt, Dashbo
 import type { UserIdentity } from '@/contracts/identity'
 import { centsToCredits, formatCredits, usagePercent } from '@/lib/credits'
 import { Button, cn, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, JobwhisperIcon, JobwhisperMark, SideMenu, UpgradeDialog } from '@/ui'
-import { BriefcaseActionIcon, CopilotActionIcon, MonitorActionIcon, ResumeActionIcon } from './dashboard-action-icons'
 import {
   AutoApplyIcon,
   BillingIcon,
@@ -435,29 +434,30 @@ function DashboardHeader({
   )
 }
 
-const actionIconById: Record<DashboardActionId, ReactNode> = {
-  'resume-tailor': <ResumeActionIcon />,
-  'interview-practice': <MonitorActionIcon />,
-  'interview-copilot': <CopilotActionIcon />,
-  'coding-copilot': <Code2 aria-hidden="true" />,
-  'meeting-copilot': <Video aria-hidden="true" />,
-  'auto-apply': <BriefcaseActionIcon />,
+const actionIconById: Record<DashboardActionId, string> = {
+  'resume-tailor': '/v3-assets/figma/action-icon-resume.svg',
+  'interview-practice': '/v3-assets/figma/action-icon-interview-prep.svg',
+  'interview-copilot': '/v3-assets/figma/action-icon-copilot.svg',
+  'coding-copilot': '/v3-assets/figma/action-icon-coding.svg',
+  'meeting-copilot': '/v3-assets/figma/action-icon-meeting.svg',
+  'auto-apply': '/v3-assets/figma/action-icon-auto-apply.svg',
+  'done-for-you': '/v3-assets/figma/action-icon-dfy.svg',
 }
 
 function ActionCard({ action, onLockedClick }: { readonly action: DashboardAction; readonly onLockedClick: (action: DashboardAction) => void }) {
   const locked = action.locked ?? false
 
   const cardClassName = cn(
-    'group flex min-h-32 flex-col gap-3 rounded-lg border border-border bg-surface px-5 py-4 text-start shadow-control transition duration-200 ease-out hover:border-accent hover:bg-accent-subtle focus-visible:border-accent focus-visible:bg-accent-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus motion-reduce:transition-none sm:hover:-translate-y-0.5',
+    'group flex min-h-44 flex-col gap-3 rounded-lg border border-border bg-surface px-5 py-4 text-start shadow-control transition duration-200 ease-out hover:border-accent hover:bg-accent-subtle focus-visible:border-accent focus-visible:bg-accent-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus motion-reduce:transition-none sm:hover:-translate-y-0.5',
   )
 
   const content = (
     <>
       <span
         aria-hidden="true"
-        className="size-4 text-ink transition-transform duration-200 group-hover:scale-110 group-focus-visible:scale-110 motion-reduce:transition-none [&>svg]:size-4"
+        className="flex size-14 items-center justify-center text-ink transition-transform duration-200 group-hover:scale-110 group-focus-visible:scale-110 motion-reduce:transition-none"
       >
-        {locked ? <Lock aria-hidden="true" /> : actionIconById[action.id] ?? null}
+        {locked ? <Lock aria-hidden="true" className="size-6 text-ink-muted" /> : <img src={actionIconById[action.id]} alt="" className="size-14 object-contain" />}
       </span>
       <div className="grid gap-1.5">
         <div className="flex flex-wrap items-center gap-2">
@@ -543,9 +543,9 @@ function DashboardLoadingView() {
           <div className="mx-auto w-full max-w-3xl">
             <SkeletonBlock className="h-8 w-full max-w-lg" />
             <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {Array.from({ length: 4 }, (_, index) => (
-                <div key={index} className="min-h-32 rounded-lg border border-border bg-surface px-5 py-4 shadow-control">
-                  <SkeletonBlock className="size-4" />
+              {Array.from({ length: 7 }, (_, index) => (
+                <div key={index} className="min-h-44 rounded-lg border border-border bg-surface px-5 py-4 shadow-control">
+                  <SkeletonBlock className="size-14" />
                   <SkeletonBlock className="mt-5 h-4 w-40" />
                   <SkeletonBlock className="mt-3 h-12 w-full" />
                 </div>
