@@ -22,10 +22,6 @@ export const dashboardActions: readonly DashboardAction[] = [
     description: 'Let Jobwhisper craft your perfect resume tailored to every role and optimized for results.',
     href: '/v3/resume',
     linkStyle: 'arrow',
-    locked: true,
-    lockMessage: 'Resume Builder is sold separately, no subscription required. Buy credits from $5, pay $0.10 per prompt for AI-tailored resumes and unlimited downloads.',
-    lockCta: 'Buy Resume Builder credits',
-    lockHref: '/v3/billing#add-ons',
   },
   {
     id: 'interview-practice',
@@ -47,10 +43,6 @@ export const dashboardActions: readonly DashboardAction[] = [
     description: 'Let Jobwhisper auto-apply to relevant roles based on your preferences no more job hunting stress.',
     href: '/v3/auto-apply',
     badge: 'BETA',
-    locked: true,
-    lockMessage: 'Auto Apply is sold separately, no subscription required. Buy credits from $10, pay $1 per successful application, you choose the jobs, the agents handle the applications.',
-    lockCta: 'Buy Auto Apply credits',
-    lockHref: '/v3/billing#add-ons',
   },
   {
     id: 'coding-copilot',
