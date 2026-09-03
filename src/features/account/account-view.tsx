@@ -651,11 +651,13 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
 
           <TitledPanel title="Payment Method">
             <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-border p-4 sm:p-5">
-              <div className="flex items-center gap-3">
-                <span className="grid h-9 w-12 shrink-0 place-items-center rounded-md bg-surface-subtle text-xs font-bold text-ink-muted">MC</span>
+              <div className="flex items-center gap-[10.8px]">
+                <span className="grid w-[43.195px] shrink-0 place-items-center rounded-[5.4px] bg-surface-subtle py-2">
+                  <img src="/v3-assets/figma/mastercard.svg" alt="Mastercard" className="size-8" />
+                </span>
                 <div>
-                  <p className="text-sm font-semibold text-ink">Mastercard &middot;&middot;&middot;&middot; 4242</p>
-                  <p className="text-sm text-ink-muted">Expires 08/29</p>
+                  <p className="text-[11.7px] font-semibold leading-[17.55px] text-ink">Mastercard &middot;&middot;&middot;&middot; 4242</p>
+                  <p className="text-[11.7px] leading-[17.55px] text-ink-muted">Expires 08/29</p>
                 </div>
               </div>
               <Button variant="secondary">Manage card</Button>
