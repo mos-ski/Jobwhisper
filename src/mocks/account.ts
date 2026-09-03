@@ -23,7 +23,7 @@ export const downloadItems: readonly DownloadItem[] = [
   },
   {
     id: 'windows',
-    title: 'Copilot Extension (Windows)',
+    title: 'Copilot Desktop App (Windows)',
     platform: 'Application',
     extension: 'exe',
     cta: 'Desktop app for Windows',

@@ -128,14 +128,14 @@ function TitledPanel({ title, action, children }: { readonly title: string; read
 
 function DownloadIcon({ id }: { readonly id: DownloadItem['id'] }) {
   if (id === 'windows') {
-    return <Monitor aria-hidden="true" className="size-5" />
+    return <Monitor aria-hidden="true" className="size-10" />
   }
 
   if (id === 'extension') {
-    return <SiGooglechrome aria-hidden="true" className="size-4" />
+    return <SiGooglechrome aria-hidden="true" className="size-9" />
   }
 
-  return <Apple aria-hidden="true" className="size-5" />
+  return <Apple aria-hidden="true" className="size-10" />
 }
 
 export function DownloadsView({ homeHref, downloads }: DownloadsViewProps) {
@@ -144,30 +144,23 @@ export function DownloadsView({ homeHref, downloads }: DownloadsViewProps) {
       <ShellBar homeHref={homeHref} current="Download Apps" closeHref={homeHref} closeLabel="Close downloads" />
       <ContentShell>
         <TitledPanel title="Download Apps">
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {downloads.map((item) => (
-              <a
-                key={item.id}
-                href={item.href}
-                className="group flex min-w-0 flex-col gap-3 rounded-panel border border-border p-3 text-ink transition-colors duration-normal ease-default hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-              >
-                <span className="block h-[171px] w-full overflow-hidden rounded-soft bg-accent-subtle">
-                  <img src={item.imageSrc} alt="" className="size-full object-cover" />
+              <div key={item.id} className="flex items-start gap-3 border border-border bg-surface p-[18px]">
+                <span className="grid size-[87px] shrink-0 place-items-center text-ink" aria-hidden="true">
+                  <DownloadIcon id={item.id} />
                 </span>
-                <span className="flex w-full flex-col gap-3">
-                  <span className="text-base font-medium leading-6">{item.title}</span>
-                  <span className="flex items-center gap-2 whitespace-nowrap text-base leading-none text-ink-muted">
-                    <DownloadIcon id={item.id} />
-                    <span>{item.platform}</span>
-                    <span className="size-1 rounded-pill bg-current opacity-60" aria-hidden="true" />
-                    <span>{item.extension}</span>
-                  </span>
-                  <span className="inline-flex min-h-9 w-full items-center justify-center rounded-soft bg-accent px-3 text-sm font-semibold leading-6 text-on-accent transition-colors duration-normal group-hover:bg-accent-hover">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-ink">{item.title}</p>
+                  <p className="mt-1 text-sm text-ink-muted">{item.support}</p>
+                  <a
+                    href={item.href}
+                    className="mt-2 inline-flex min-h-9 items-center justify-center rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent shadow-control transition-colors duration-normal hover:bg-accent-hover"
+                  >
                     {item.cta}
-                  </span>
-                  <span className="min-h-5 text-sm leading-5 text-ink-muted">{item.support}</span>
-                </span>
-              </a>
+                  </a>
+                </div>
+              </div>
             ))}
           </div>
 
