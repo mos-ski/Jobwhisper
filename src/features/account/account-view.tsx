@@ -396,13 +396,17 @@ type CreditBalanceCardProps = {
   readonly presetDollars: readonly number[]
   readonly onPurchase: (credits: number) => void
   readonly reloadHint: string
+  /** Set when this credit type requires an active plan to purchase (e.g. Interview Copilot). See PRICING.md §1, §4. */
+  readonly requiresActivePlan?: boolean
+  readonly hasActivePlan?: boolean
 }
 
-function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, centsPerCredit, minimumDollars, presetDollars, onPurchase, reloadHint }: CreditBalanceCardProps) {
+function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, centsPerCredit, minimumDollars, presetDollars, onPurchase, reloadHint, requiresActivePlan, hasActivePlan }: CreditBalanceCardProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [autoReload, setAutoReload] = useState(false)
   const percentLeft = totalCredits > 0 ? Math.max(0, Math.min(100, Math.round((balanceCredits / totalCredits) * 100))) : 100
   const featureName = title.replace(/ Credits$/, '')
+  const locked = Boolean(requiresActivePlan) && !hasActivePlan
 
   return (
     <section>
@@ -420,15 +424,25 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
               </div>
               <span className="shrink-0 text-sm text-ink">{percentLeft}% left</span>
             </div>
+            {locked ? <p className="mt-2 text-sm text-ink-muted">Requires an active Ace Your Interview plan.</p> : null}
           </div>
-          <Button onClick={() => setDialogOpen(true)} className="shrink-0">Buy credits</Button>
+          {locked ? (
+            <a
+              href="/v3/billing/plans"
+              className="inline-flex h-9 shrink-0 items-center justify-center border border-input px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              View plans
+            </a>
+          ) : (
+            <Button onClick={() => setDialogOpen(true)} className="shrink-0">Buy credits</Button>
+          )}
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border p-4 sm:p-5">
           <div>
             <p className="text-sm font-semibold text-ink">Automatic reload</p>
             <p className="text-sm text-ink-muted">{reloadHint}</p>
           </div>
-          <Switch checked={autoReload} onCheckedChange={setAutoReload} aria-label={`Toggle automatic reload for ${title}`} />
+          <Switch checked={autoReload && !locked} onCheckedChange={setAutoReload} disabled={locked} aria-label={`Toggle automatic reload for ${title}`} />
         </div>
       </div>
       <AddCreditsDialog
@@ -492,6 +506,9 @@ function BillingReferralPrompt({ referralsHref }: { readonly referralsHref: stri
 
 export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet }: BillingViewProps) {
   const currentPlan = plans.find((plan) => plan.current) ?? plans[0]
+  // Interview Copilot credits are a subscription benefit — only purchasable with an active plan. Resume
+  // Builder and Auto Apply are standalone and always purchasable. See PRICING.md §1, §4.
+  const hasActivePlan = plans.some((plan) => plan.current)
   const [remainingCents, setRemainingCents] = useState(wallet.remainingCents)
   const [totalCents, setTotalCents] = useState(wallet.totalCents)
   const [autoApplyBalance, setAutoApplyBalance] = useState(0)
@@ -618,6 +635,8 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                 minimumDollars={TOPUP_MINIMUM_DOLLARS}
                 presetDollars={TOPUP_PRESET_DOLLARS}
                 reloadHint="Buy more automatically if you run out mid-session."
+                requiresActivePlan
+                hasActivePlan={hasActivePlan}
                 onPurchase={(credits) => {
                   const addedCents = creditsToCents(credits)
                   setRemainingCents((prev) => prev + addedCents)
