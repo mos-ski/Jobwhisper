@@ -19,6 +19,10 @@ export const copilotSetup: CopilotSetup = {
     'Use this space to include job description details, portfolio notes, or anything the interviewer should probe during the live call.',
   responseMode: 'default',
   responseLength: 'medium',
+  responseLanguage: 'English',
+  modelTier: 'balanced',
+  autoAnswer: false,
+  saveTranscript: true,
 }
 
 export const copilotShareSteps: readonly CopilotPermissionStep[] = [

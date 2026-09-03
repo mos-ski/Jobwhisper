@@ -1,3 +1,5 @@
+import type { CopilotModelTier } from './copilot.draft'
+
 export type InterviewType = 'introductory' | 'behavioral' | 'technical' | 'case-study';
 
 export type InterviewDifficulty = 'easy' | 'medium' | 'hard';
@@ -21,6 +23,9 @@ export type InterviewPrepSession = {
   readonly companyName: string;
   readonly additionalContext: string;
   readonly optionalDocuments: readonly string[];
+  readonly responseLanguage: string;
+  readonly modelTier: CopilotModelTier;
+  readonly saveTranscript: boolean;
 };
 
 export type InterviewParticipant = {

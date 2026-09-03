@@ -4,6 +4,8 @@ export type CopilotResponseLength = 'short' | 'medium' | 'long';
 
 export type CopilotMode = 'interview' | 'coding' | 'meeting';
 
+export type CopilotModelTier = 'balanced' | 'precision';
+
 export type CopilotSetup = {
   readonly mode: CopilotMode;
   readonly uploadedFileName: string;
@@ -17,6 +19,10 @@ export type CopilotSetup = {
   readonly meetingTitle?: string;
   readonly meetingAgenda?: string;
   readonly codingLanguage?: string;
+  readonly responseLanguage: string;
+  readonly modelTier: CopilotModelTier;
+  readonly autoAnswer: boolean;
+  readonly saveTranscript: boolean;
 };
 
 export type CopilotPermissionStep = {

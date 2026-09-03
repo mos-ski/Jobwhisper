@@ -10,6 +10,9 @@ export const interviewSession: InterviewPrepSession = {
   additionalContext:
     'I am preparing for a product manager interview focused on growth, user research, and cross-functional leadership. The role expects clear examples of prioritization, metrics, and stakeholder communication.',
   optionalDocuments: ['Product case notes.pdf'],
+  responseLanguage: 'English',
+  modelTier: 'balanced',
+  saveTranscript: true,
 }
 
 export const interviewerVoices: readonly InterviewerVoice[] = [
