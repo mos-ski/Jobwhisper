@@ -87,6 +87,7 @@ export type AutoApplyJobsViewProps = {
   readonly jobs: readonly AutoApplyJob[]
   readonly selectedJob?: AutoApplyJob
   readonly resumePreview: ResumeDocument
+  readonly preferredLocations: readonly string[]
 }
 
 export type AutoApplyAppliedViewProps = {
@@ -137,6 +138,30 @@ function matchLabel(percent: number): string {
 
 function Tag({ children }: { readonly children: ReactNode }) {
   return <span className="rounded-full bg-accent-subtle px-2 py-1 text-xs font-medium text-accent-text">{children}</span>
+}
+
+function AnimatedPercent({ value, className }: { readonly value: number; readonly className?: string }) {
+  const [displayed, setDisplayed] = useState(0)
+
+  useEffect(() => {
+    setDisplayed(0)
+    const durationMs = 600
+    const startTime = performance.now()
+    let frame: number
+
+    function tick(now: number) {
+      const elapsed = now - startTime
+      const progress = Math.min(1, elapsed / durationMs)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setDisplayed(Math.round(eased * value))
+      if (progress < 1) frame = requestAnimationFrame(tick)
+    }
+
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [value])
+
+  return <p className={className}>{displayed}%</p>
 }
 
 export function AutoApplyUploadView({ homeHref, contactHref, agentHref, uploadedFileName, savedResumes }: AutoApplyUploadViewProps) {
@@ -1285,6 +1310,26 @@ function OutcomeBadge({ outcome }: { readonly outcome: AutoApplyOutcome }) {
   return <span className="shrink-0 rounded-lg bg-warning-surface px-4 py-2 text-sm font-medium text-warning">Needs Review</span>
 }
 
+const JOB_STATUS_LABELS: Record<AutoApplyJob['status'], string> = {
+  applied: 'Applied',
+  new: 'New',
+  queued: 'Queued',
+  applying: 'Applying',
+  'posting-closed': 'Posting closed',
+}
+
+const JOB_STATUS_CLASSES: Record<AutoApplyJob['status'], string> = {
+  applied: 'bg-accent-subtle text-accent-text',
+  new: 'bg-warning-surface text-warning',
+  queued: 'bg-accent-subtle text-accent-text',
+  applying: 'bg-accent-subtle text-accent-text',
+  'posting-closed': 'bg-surface-subtle text-ink-muted',
+}
+
+function JobStatusBadge({ status, className }: { readonly status: AutoApplyJob['status']; readonly className?: string }) {
+  return <span className={cn('shrink-0 rounded-lg px-4 py-2 text-sm font-medium', JOB_STATUS_CLASSES[status], className)}>{JOB_STATUS_LABELS[status]}</span>
+}
+
 function JobList({
   jobs,
   selectedJob,
@@ -1354,16 +1399,10 @@ function JobList({
                   {job.company} - {job.location} - {job.type}
                 </span>
                 <span className="mt-1 block text-xs text-ink-muted">
-                  {job.dateLabel} - {job.source}
+                  Found {job.dateLabel} - {job.source}
                 </span>
               </span>
-              {variant === 'applied' && job.outcome ? (
-                <OutcomeBadge outcome={job.outcome} />
-              ) : job.status === 'applied' ? (
-                <span className="shrink-0 rounded-lg bg-accent-subtle px-4 py-2 text-sm font-medium text-accent-text">Applied</span>
-              ) : (
-                <span className="shrink-0 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-on-accent">Apply</span>
-              )}
+              {variant === 'applied' && job.outcome ? <OutcomeBadge outcome={job.outcome} /> : <JobStatusBadge status={job.status} />}
             </button>
           )
         })}
@@ -1396,11 +1435,15 @@ function JobPreview({
   onClose,
   applied = false,
   resumePreview,
+  preferredLocations = [],
+  setupHref,
 }: {
   readonly job: AutoApplyJob
   readonly onClose: () => void
   readonly applied?: boolean
   readonly resumePreview: ResumeDocument
+  readonly preferredLocations?: readonly string[]
+  readonly setupHref: string
 }) {
   const [resumePreviewOpen, setResumePreviewOpen] = useState(false)
   const [getResumeOpen, setGetResumeOpen] = useState(false)
@@ -1423,13 +1466,25 @@ function JobPreview({
           </button>
         </div>
         <div className="flex-1 overflow-y-auto px-6 pb-6">
-          <div className="flex items-center gap-2">
-            {applied && job.outcome ? (
-              <OutcomeBadge outcome={job.outcome} />
-            ) : (
-              <span className={cn('rounded-full px-3 py-1 text-xs font-semibold', applied ? 'bg-positive-surface text-positive' : 'bg-warning-surface text-warning')}>{applied ? 'Applied' : 'NEW'}</span>
-            )}
-            <span className="text-sm text-ink-muted">{job.dateLabel}</span>
+          <div className="flex flex-wrap items-center gap-2">
+            {applied && job.outcome ? <OutcomeBadge outcome={job.outcome} /> : <JobStatusBadge status={job.status} className="rounded-full" />}
+            {!applied ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-subtle px-3 py-1 text-xs font-medium text-ink-muted">
+                <CircleHelp aria-hidden="true" className="size-3.5" />
+                Still open? Not checked
+              </span>
+            ) : null}
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Posted</p>
+              <p className="mt-1 text-sm text-ink">{job.postedDateLabel}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Found</p>
+              <p className="mt-1 text-sm text-ink">{job.dateLabel}</p>
+            </div>
           </div>
 
           <div className="mt-5 grid gap-5">
@@ -1450,6 +1505,13 @@ function JobPreview({
               </section>
             ) : null}
 
+            {!applied && job.status === 'posting-closed' ? (
+              <section className="rounded-lg bg-surface-subtle p-4">
+                <h3 className="text-xs font-bold uppercase tracking-wide text-ink-muted">What Happened</h3>
+                <p className="mt-1 text-sm leading-6 text-ink-muted">The employer has taken this posting down.</p>
+              </section>
+            ) : null}
+
             {applied ? (
               <section className="grid gap-2">
                 <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Resume Used</h3>
@@ -1461,6 +1523,57 @@ function JobPreview({
                   <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
                   <span className="truncate">{job.resumeFileName}</span>
                 </button>
+              </section>
+            ) : null}
+
+            {applied && job.coverLetterFileName ? (
+              <section className="grid gap-2">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Cover Letter</h3>
+                <span className="flex min-w-0 items-center gap-2 text-sm text-ink">
+                  <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
+                  <span className="truncate">{job.coverLetterFileName}</span>
+                </span>
+              </section>
+            ) : null}
+
+            {applied && job.events && job.events.length > 0 ? (
+              <section className="grid gap-2">
+                {job.appliedDateHeading ? <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{job.appliedDateHeading}</h3> : null}
+                <ul className="grid gap-2">
+                  {job.events.map((event) => (
+                    <li key={event.label} className="flex items-center justify-between gap-3 text-sm">
+                      <span className="flex items-center gap-2 text-ink">
+                        <CheckCircle2 aria-hidden="true" className="size-4 shrink-0 text-positive" />
+                        {event.label}
+                      </span>
+                      <span className="shrink-0 text-ink-muted">{event.time}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+
+            {applied && job.activityLog && job.activityLog.length > 0 ? (
+              <section className="grid gap-2">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Activity Log</h3>
+                <ul className="grid gap-1.5">
+                  {job.activityLog.map((entry) => (
+                    <li key={entry} className="flex items-center gap-2 text-sm text-ink-muted">
+                      <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-ink-muted" />
+                      {entry}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+
+            {!applied ? (
+              <section className="grid gap-2">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Resume We&rsquo;ll Submit</h3>
+                <span className="flex min-w-0 items-center gap-2 text-sm text-ink">
+                  <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
+                  <span className="truncate">{job.resumeFileName}</span>
+                </span>
               </section>
             ) : null}
 
@@ -1489,8 +1602,18 @@ function JobPreview({
                 <section className="rounded-lg bg-positive-surface p-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-bold uppercase tracking-wide text-positive">{matchLabel(job.matchPercent)}</h3>
-                    <p className="text-2xl font-bold text-positive">{job.matchPercent}%</p>
+                    <AnimatedPercent key={job.id} value={job.matchPercent} className="text-2xl font-bold text-positive" />
                   </div>
+                  {job.matchBreakdown.length > 0 ? (
+                    <ul className="mt-3 grid gap-1.5 border-t border-positive/20 pt-3">
+                      {job.matchBreakdown.map((factor) => (
+                        <li key={factor.label} className="flex items-center justify-between gap-3 text-sm text-ink">
+                          <span>{factor.label}</span>
+                          <span className="shrink-0 font-semibold text-positive">+{factor.points}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
                 </section>
 
                 <div className="flex flex-wrap gap-2">{job.tags.map((tag) => <Tag key={tag}>{tag}</Tag>)}</div>
@@ -1503,8 +1626,10 @@ function JobPreview({
             ) : null}
           </div>
 
+          {!applied && job.status !== 'posting-closed' ? <ProfileIncompleteBanner preferredLocations={preferredLocations} setupHref={setupHref} /> : null}
+
           <div className="mt-6 grid gap-2 border-t border-border pt-5">
-            {applied ? (
+            {applied || job.status === 'posting-closed' ? (
               <>
                 <a href={job.listingUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                   <ExternalLink aria-hidden="true" className="size-4" />
@@ -1709,7 +1834,10 @@ function FilterDropdown({
               options={[
                 { label: 'All statuses', value: 'all' },
                 { label: 'New', value: 'new' },
+                { label: 'Queued', value: 'queued' },
+                { label: 'Applying', value: 'applying' },
                 { label: 'Applied', value: 'applied' },
+                { label: 'Posting closed', value: 'posting-closed' },
               ]}
             />
             {activeCount > 0 ? (
@@ -1744,6 +1872,23 @@ function applyJobFilters(jobs: readonly AutoApplyJob[], search: string, filters:
   })
 }
 
+function ProfileIncompleteBanner({ preferredLocations, setupHref }: { readonly preferredLocations: readonly string[]; readonly setupHref: string }) {
+  if (preferredLocations.length > 0) return null
+
+  return (
+    <div className="mb-3 border border-warning/30 bg-warning-surface p-[18px]">
+      <p className="text-xs font-bold uppercase tracking-wide text-warning">Finish your profile to apply</p>
+      <p className="mt-1 text-sm text-ink">Auto-Apply cannot complete an employer&rsquo;s form without these, so it won&rsquo;t start one.</p>
+      <p className="mt-3 text-sm">
+        <span className="font-semibold text-ink">Preferred locations</span>{' '}
+        <a href={setupHref} className="font-medium text-accent underline underline-offset-4 hover:text-accent-hover">
+          Add your preferred locations
+        </a>
+      </p>
+    </div>
+  )
+}
+
 function AutoApplyExtensionPromo() {
   return (
     <div className="mb-3 flex items-start gap-6 border border-border bg-surface p-[18px]">
@@ -1761,7 +1906,7 @@ function AutoApplyExtensionPromo() {
   )
 }
 
-export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, appliedHref, resumeHistoryHref, jobs, selectedJob: initialSelectedJob, resumePreview }: AutoApplyJobsViewProps) {
+export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, appliedHref, resumeHistoryHref, jobs, selectedJob: initialSelectedJob, resumePreview, preferredLocations }: AutoApplyJobsViewProps) {
   const [selectedJob, setSelectedJob] = useState<AutoApplyJob | undefined>(initialSelectedJob)
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<JobFilters>(DEFAULT_FILTERS)
@@ -1791,7 +1936,10 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
                   <a href={appliedHref} className="min-h-11 border-b-2 border-transparent px-1 pb-2 text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Applied</a>
                 </nav>
               </div>
-              <div className="flex gap-6 pt-5">
+              <div className="pt-5">
+                <ProfileIncompleteBanner preferredLocations={preferredLocations} setupHref={setupHref} />
+              </div>
+              <div className="flex gap-6">
                 <div className="min-w-0 flex-1">
                   <div className="mb-3 flex gap-2">
                     <label className="relative block flex-1">
@@ -1834,7 +1982,7 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
                   </div>
                 </div>
                 {selectedJob ? (
-                  <JobPreview job={selectedJob} onClose={() => setSelectedJob(undefined)} applied={selectedJob.status === 'applied'} resumePreview={resumePreview} />
+                  <JobPreview job={selectedJob} onClose={() => setSelectedJob(undefined)} applied={selectedJob.status === 'applied'} resumePreview={resumePreview} preferredLocations={preferredLocations} setupHref={setupHref} />
                 ) : null}
               </div>
             </div>
@@ -2115,6 +2263,7 @@ export function AutoApplyAppliedView({ homeHref, setupHref, agentHref, jobsHref,
                     onClose={() => setSelectedJob(undefined)}
                     applied
                     resumePreview={resumePreview}
+                    setupHref={setupHref}
                   />
                 ) : null}
               </div>
