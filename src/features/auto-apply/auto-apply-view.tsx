@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
-import { AlertTriangle, ArrowLeft, ArrowUpLeft, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ExternalLink, FileText, Filter, Globe, LinkIcon, PenLine, Play, RefreshCw, Search, Send, Settings, X, Zap, Trash2, Download, Mail } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, ArrowUpLeft, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, CircleHelp, ExternalLink, FileText, Filter, Globe, LinkIcon, PenLine, Play, RefreshCw, Search, Send, Settings, X, Zap, Trash2, Download, Mail } from 'lucide-react'
 import { SiGooglechrome, SiGoogleplay } from 'react-icons/si'
 
 import type { AutoApplyApplication, AutoApplyApplicationDetails, AutoApplyJob, AutoApplyOutcome, AutoApplySetup } from '@/contracts/auto-apply.draft'
@@ -24,9 +24,6 @@ import { COUNTRIES } from '@/data/countries'
 import {
   Checkbox,
   cn,
-  Collapsible,
-  CollapsiblePanel,
-  CollapsibleTrigger,
   Dialog,
   DialogClose,
   DialogDescription,
@@ -1456,8 +1453,32 @@ function ApplicationQuestionCard({ question, answer }: { readonly question: stri
   )
 }
 
+function ApplicationQuestionsSection({ questions }: { readonly questions: readonly AutoApplyApplicationQuestion[] }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <section className="rounded-lg border border-border">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex w-full items-center justify-between px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-inset"
+      >
+        <h3 className="text-sm font-bold text-ink">Application Questions</h3>
+        <ChevronUp aria-hidden="true" className={cn('size-4 shrink-0 text-ink-muted transition-transform', !open && 'rotate-180')} />
+      </button>
+      {open ? (
+        <div className="grid gap-3 border-t border-border px-4 pb-4 pt-3">
+          {questions.map((qa) => (
+            <ApplicationQuestionCard key={qa.question} question={qa.question} answer={qa.answer} />
+          ))}
+        </div>
+      ) : null}
+    </section>
+  )
+}
+
 function ApplicationDetailsSection({ details }: { readonly details: AutoApplyApplicationDetails }) {
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
 
   const fields = [
     { label: 'First Name', value: details.firstName },
@@ -1619,16 +1640,22 @@ function JobPreview({
             {applied && job.events && job.events.length > 0 ? (
               <section className="grid gap-2">
                 {job.appliedDateHeading ? <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{job.appliedDateHeading}</h3> : null}
-                <ul className="grid gap-2">
-                  {job.events.map((event) => (
-                    <li key={event.label} className="flex items-center justify-between gap-3 text-sm">
-                      <span className="flex items-center gap-2 text-ink">
-                        <CheckCircle2 aria-hidden="true" className="size-4 shrink-0 text-positive" />
-                        {event.label}
-                      </span>
-                      <span className="shrink-0 text-ink-muted">{event.time}</span>
-                    </li>
-                  ))}
+                <ul className="grid">
+                  {job.events.map((event, idx) => {
+                    const isLast = idx === job.events!.length - 1
+                    return (
+                      <li key={event.label} className={cn('relative flex gap-3', !isLast && 'pb-5')}>
+                        {!isLast ? <span aria-hidden="true" className="absolute start-[9px] top-5 bottom-0 w-0.5 bg-border" /> : null}
+                        <span aria-hidden="true" className="relative z-10 grid size-5 shrink-0 place-items-center rounded-full bg-positive">
+                          <Check aria-hidden="true" className="size-3 text-surface" strokeWidth={3} />
+                        </span>
+                        <span className="flex flex-1 items-center justify-between gap-3 text-sm">
+                          <span className="text-ink">{event.label}</span>
+                          <span className="shrink-0 text-ink-muted">{event.time}</span>
+                        </span>
+                      </li>
+                    )
+                  })}
                 </ul>
               </section>
             ) : null}
@@ -1651,18 +1678,11 @@ function JobPreview({
               </section>
             ) : null}
 
-            {applied && job.applicationQuestions && job.applicationQuestions.length > 0 ? (
-              <section className="grid gap-2">
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Application Questions</h3>
-                <div className="grid gap-3">
-                  {job.applicationQuestions.map((qa) => (
-                    <ApplicationQuestionCard key={qa.question} question={qa.question} answer={qa.answer} />
-                  ))}
-                </div>
-              </section>
-            ) : null}
-
             {applied && job.applicationDetails ? <ApplicationDetailsSection details={job.applicationDetails} /> : null}
+
+            {applied && job.applicationQuestions && job.applicationQuestions.length > 0 ? (
+              <ApplicationQuestionsSection questions={job.applicationQuestions} />
+            ) : null}
 
             {!applied ? (
               <section className="grid gap-2">
