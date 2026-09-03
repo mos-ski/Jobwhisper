@@ -427,7 +427,7 @@ export const DataTable = forwardRef<HTMLElement, DataTableProps<{ readonly id: s
                 <button
                   type="button"
                   onClick={action.onClick}
-                  className="inline-flex min-h-10 items-center justify-center gap-3 rounded-lg bg-accent px-4 py-2 text-base font-semibold leading-6 text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  className="inline-flex min-h-10 shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-lg bg-accent px-4 py-2 text-base font-semibold leading-6 text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                 >
                   <span className="shrink-0 [&>svg]:size-5">{action.icon ?? <Plus aria-hidden="true" />}</span>
                   {action.label}
@@ -435,7 +435,7 @@ export const DataTable = forwardRef<HTMLElement, DataTableProps<{ readonly id: s
               ) : (
                 <a
                   href={action.href}
-                  className="inline-flex min-h-10 items-center justify-center gap-3 rounded-lg bg-accent px-4 py-2 text-base font-semibold leading-6 text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  className="inline-flex min-h-10 shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-lg bg-accent px-4 py-2 text-base font-semibold leading-6 text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                 >
                   <span className="shrink-0 [&>svg]:size-5">{action.icon ?? <Plus aria-hidden="true" />}</span>
                   {action.label}

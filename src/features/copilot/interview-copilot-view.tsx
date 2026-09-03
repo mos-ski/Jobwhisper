@@ -2027,7 +2027,7 @@ export function CopilotHistoryView({ homeHref, createHref, reportHref, rows }: C
             <h1 className="text-xl font-medium leading-5 text-ink">Past Copilot Sessions</h1>
             <a
               href={`${createHref}?mode=${activeMode}`}
-              className="inline-flex min-h-10 items-center justify-center gap-3 rounded-lg bg-accent px-4 py-2 text-base font-semibold leading-6 text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              className="inline-flex min-h-10 shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-lg bg-accent px-4 py-2 text-base font-semibold leading-6 text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
             >
               <Plus aria-hidden="true" className="size-5 shrink-0" />
               {copilotModeMeta[activeMode].createCta}
