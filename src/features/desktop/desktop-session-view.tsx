@@ -343,7 +343,7 @@ export function DesktopSessionView() {
           <div className="flex min-h-[57px] items-center justify-between border-b border-[#1e2d45] px-4 py-3">
             <span className="inline-flex items-center gap-2 text-sm font-semibold leading-5">
               Live Response
-              <span className="size-2 rounded-full bg-[#ef4444]" />
+              <span className="size-2 animate-pulse rounded-full bg-[#ef4444]" />
             </span>
           </div>
           <CopilotTranscriptPanel

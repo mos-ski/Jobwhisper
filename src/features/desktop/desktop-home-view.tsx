@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 
 import { cn } from '@/ui'
@@ -44,15 +45,20 @@ export function DesktopHomeView() {
         <p className="text-2xl font-semibold leading-tight text-white">Welcome, what would you like to do today?</p>
 
         <div className="mt-[29px] flex flex-wrap gap-[9px]">
-          {DESKTOP_HOME_CARDS.map((card) => {
+          {DESKTOP_HOME_CARDS.map((card, index) => {
             const clickable = Boolean(card.href)
 
             return (
-              <button
+              <motion.button
                 key={card.id}
                 type="button"
                 disabled={!clickable}
                 onClick={clickable ? () => navigate(card.href!) : undefined}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, delay: index * 0.06, ease: [0.4, 0, 0.2, 1] }}
+                whileHover={clickable ? { y: -2 } : undefined}
+                whileTap={clickable ? { scale: 0.98 } : undefined}
                 className={cn(
                   'flex w-[250px] flex-col items-start gap-3 rounded-[9px] border-[0.75px] border-[#eaecf0] bg-white px-[18px] py-3 text-left transition-colors',
                   clickable ? 'cursor-pointer hover:bg-[#f8fafc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus' : 'cursor-default',
@@ -71,7 +77,7 @@ export function DesktopHomeView() {
                   </span>
                   <p className="text-xs font-normal leading-[18px] tracking-[-0.24px] text-[rgba(26,26,26,0.7)]">{card.description}</p>
                 </div>
-              </button>
+              </motion.button>
             )
           })}
         </div>

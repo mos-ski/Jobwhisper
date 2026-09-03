@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
+import { motion } from 'framer-motion'
 import { GripHorizontal } from 'lucide-react'
 
 import { cn } from '@/ui'
@@ -91,8 +92,11 @@ export function DesktopShell({ children }: DesktopShellProps) {
     <div className="fixed inset-0 overflow-hidden bg-canvas">
       <div aria-hidden="true" className="pointer-events-none absolute -left-40 -top-40 size-[560px] rounded-full bg-accent-subtle blur-3xl" />
       <div aria-hidden="true" className="pointer-events-none absolute -bottom-48 -right-32 size-[620px] rounded-full bg-accent-muted blur-3xl" />
-      <div
+      <motion.div
         ref={setFrameEl}
+        initial={{ opacity: 0, scale: 0.96, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         className="absolute flex flex-col overflow-hidden rounded-xl shadow-2xl ring-1 ring-black/5"
         style={{ left: frame.x, top: frame.y, width: frame.width, height: frame.height }}
       >
@@ -117,7 +121,7 @@ export function DesktopShell({ children }: DesktopShellProps) {
         >
           <GripHorizontal aria-hidden="true" className="size-3.5 rotate-45" />
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }
