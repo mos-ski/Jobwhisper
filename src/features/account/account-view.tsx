@@ -1,8 +1,9 @@
-import { AlertTriangle, Apple, Check, ChevronDown, Copy, ExternalLink, EyeOff, Gift, Monitor, Moon, Play, Sun, Upload } from 'lucide-react'
+import { AlertTriangle, Apple, Check, ChevronDown, Clock, Copy, ExternalLink, EyeOff, Gift, Mail, Monitor, Moon, Play, Sun, Upload } from 'lucide-react'
 import { SiGooglechrome } from 'react-icons/si'
 import { useEffect, useState, type ReactNode } from 'react'
 
 import type { BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
+import type { MarketplaceItem } from '@/contracts/marketplace.draft'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
 import { AppShell } from '@/features/dashboard/app-nav'
 import { centsToCredits, creditsToCents, formatCredits } from '@/lib/credits'
@@ -64,6 +65,15 @@ export type DownloadsViewProps = {
 export type TutorialsViewProps = {
   readonly homeHref: string
   readonly tutorials: readonly TutorialItem[]
+}
+
+export type MarketplaceViewProps = {
+  readonly homeHref: string
+  readonly items: readonly MarketplaceItem[]
+}
+
+export type SupportViewProps = {
+  readonly homeHref: string
 }
 
 export type BillingWallet = {
@@ -206,6 +216,91 @@ export function TutorialsView({ homeHref, tutorials }: TutorialsViewProps) {
             {tutorials.map((item) => (
               <TutorialCard key={item.id} item={item} />
             ))}
+          </div>
+        </TitledPanel>
+      </ContentShell>
+    </AppWorkspace>
+  )
+}
+
+function MarketplaceCard({ item }: { readonly item: MarketplaceItem }) {
+  const [purchased, setPurchased] = useState(false)
+
+  return (
+    <div className="flex flex-col gap-3 border border-border bg-surface p-[18px]">
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-ink">{item.name}</p>
+        <p className="mt-1 text-sm text-ink-muted">{item.description}</p>
+      </div>
+      <div className="mt-auto flex items-center justify-between gap-3 pt-2">
+        <span className="text-base font-semibold text-ink">${item.priceDollars}</span>
+        <Button variant={purchased ? 'secondary' : 'primary'} disabled={purchased} onClick={() => setPurchased(true)}>
+          {purchased ? (
+            <span className="inline-flex items-center gap-1.5">
+              <Check aria-hidden="true" className="size-4" />
+              Purchased
+            </span>
+          ) : (
+            `Buy for $${item.priceDollars}`
+          )}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+export function MarketplaceView({ homeHref, items }: MarketplaceViewProps) {
+  return (
+    <AppWorkspace>
+      <ShellBar homeHref={homeHref} current="Marketplace" closeHref={homeHref} closeLabel="Close marketplace" />
+      <ContentShell>
+        <TitledPanel title="Marketplace">
+          <p className="-mt-2 mb-2 text-sm text-ink-muted">One-time resources to help you land the job faster — no subscription or credits required.</p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {items.map((item) => (
+              <MarketplaceCard key={item.id} item={item} />
+            ))}
+          </div>
+        </TitledPanel>
+      </ContentShell>
+    </AppWorkspace>
+  )
+}
+
+export function SupportView({ homeHref }: SupportViewProps) {
+  return (
+    <AppWorkspace>
+      <ShellBar homeHref={homeHref} current="Support" closeHref={homeHref} closeLabel="Close support" />
+      <ContentShell>
+        <TitledPanel title="Support">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="flex items-start gap-4 border border-border bg-surface p-[18px]">
+              <Mail aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-ink-muted" />
+              <div>
+                <p className="text-sm font-semibold text-ink">Email us</p>
+                <p className="mt-1 text-sm text-ink-muted">Send us a note and we'll get back to you as soon as we can.</p>
+                <a href="mailto:support@jobwhisper.org" className="mt-2 inline-block text-sm font-semibold text-accent-text underline underline-offset-4 hover:text-accent">
+                  support@jobwhisper.org
+                </a>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 border border-border bg-surface p-[18px]">
+              <Clock aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-ink-muted" />
+              <div>
+                <p className="text-sm font-semibold text-ink">Support hours</p>
+                <p className="mt-1 text-sm text-ink-muted">Monday – Friday, 9AM – 6PM CST</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 border border-border bg-surface p-[18px] sm:col-span-2">
+              <Play aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-ink-muted" />
+              <div>
+                <p className="text-sm font-semibold text-ink">Tutorial videos</p>
+                <p className="mt-1 text-sm text-ink-muted">Walkthroughs for every feature, from your first resume to your first live interview.</p>
+                <a href="/v3/tutorials" className="mt-2 inline-block text-sm font-semibold text-accent-text underline underline-offset-4 hover:text-accent">
+                  Browse tutorials
+                </a>
+              </div>
+            </div>
           </div>
         </TitledPanel>
       </ContentShell>

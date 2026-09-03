@@ -33,6 +33,8 @@ import { DocumentsAddPage } from './pages/documents-add-page'
 import { DocumentsManualPage } from './pages/documents-manual-page'
 import { DocumentsPage } from './pages/documents-page'
 import { DownloadsPage } from './pages/downloads-page'
+import { MarketplacePage } from './pages/marketplace-page'
+import { SupportPage } from './pages/support-page'
 import { TutorialsPage } from './pages/tutorials-page'
 import { InterviewCompletePage } from './pages/interview-complete-page'
 import { InterviewConfigurePage } from './pages/interview-configure-page'
@@ -101,12 +103,20 @@ export function WebRoutes() {
     return <DocumentsPage />
   }
 
+  if (routePath === '/marketplace') {
+    return <MarketplacePage />
+  }
+
   if (routePath === '/downloads') {
     return <DownloadsPage />
   }
 
   if (routePath === '/tutorials') {
     return <TutorialsPage />
+  }
+
+  if (routePath === '/support') {
+    return <SupportPage />
   }
 
   if (routePath === '/billing') {
