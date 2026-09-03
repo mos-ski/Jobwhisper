@@ -206,23 +206,26 @@ export function TutorialsView({ homeHref, tutorials }: TutorialsViewProps) {
 
 function MarketplaceCard({ item, inCart, onToggleCart }: { readonly item: MarketplaceItem; readonly inCart: boolean; readonly onToggleCart: () => void }) {
   return (
-    <div className="flex flex-col gap-3 border border-border bg-surface p-[18px]">
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-ink">{item.name}</p>
-        <p className="mt-1 text-sm text-ink-muted">{item.description}</p>
-      </div>
-      <div className="mt-auto flex items-center justify-between gap-3 pt-2">
-        <span className="text-base font-semibold text-ink">${item.priceDollars}</span>
-        <Button variant={inCart ? 'secondary' : 'primary'} onClick={onToggleCart}>
-          {inCart ? (
-            <span className="inline-flex items-center gap-1.5">
-              <Check aria-hidden="true" className="size-4" />
-              In Cart
-            </span>
-          ) : (
-            'Add to Cart'
-          )}
-        </Button>
+    <div className="flex gap-3 border border-border bg-surface p-[18px]">
+      <img src="/v3-assets/figma/marketplace-pdf-icon.svg" alt="" className="h-[70.9px] w-[66px] shrink-0" />
+      <div className="flex min-w-0 flex-1 flex-col gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-ink">{item.name}</p>
+          <p className="mt-1 text-sm text-ink-muted">{item.description}</p>
+        </div>
+        <div className="mt-auto flex items-center justify-between gap-3">
+          <span className="text-base font-semibold text-ink">${item.priceDollars}</span>
+          <Button variant={inCart ? 'secondary' : 'primary'} onClick={onToggleCart}>
+            {inCart ? (
+              <span className="inline-flex items-center gap-1.5">
+                <Check aria-hidden="true" className="size-4" />
+                In Cart
+              </span>
+            ) : (
+              'Add to Cart'
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   )
