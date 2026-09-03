@@ -138,7 +138,7 @@ export function DownloadsView({ homeHref, downloads }: DownloadsViewProps) {
                   <img src={item.imageSrc} alt="" className="size-full object-cover" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold text-ink">{item.title}</p>
+                  <p className="font-gowun text-sm font-bold text-ink">{item.title}</p>
                   <p className="mt-1 text-sm text-ink-muted">{item.support}</p>
                   <a
                     href={item.href}
@@ -210,7 +210,7 @@ function MarketplaceCard({ item, inCart, onToggleCart }: { readonly item: Market
       <img src="/v3-assets/figma/marketplace-pdf-icon.svg" alt="" className="h-[70.9px] w-[66px] shrink-0" />
       <div className="flex min-w-0 flex-1 flex-col gap-3">
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-ink">{item.name}</p>
+          <p className="font-gowun text-sm font-semibold text-ink">{item.name}</p>
           <p className="mt-1 text-sm text-ink-muted">{item.description}</p>
         </div>
         <div className="mt-auto flex items-center justify-between gap-3">
@@ -723,7 +723,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   <img src="/v3-assets/figma/plan-row-interview.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-[14.4px] font-semibold leading-[21.6px] text-ink">{currentPlan?.name.charAt(0)}{currentPlan?.name.slice(1).toLowerCase()} plan</p>
+                      <p className="font-gowun text-[14.4px] font-semibold leading-[21.6px] text-ink">{currentPlan?.name.charAt(0)}{currentPlan?.name.slice(1).toLowerCase()} plan</p>
                       <span className="rounded-pill bg-accent-subtle px-[9px] py-[1.8px] text-[10.8px] font-medium text-accent-text">Active</span>
                     </div>
                     <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">{currentPlan?.price} per month &middot; Renews {wallet.resetDateLabel}</p>
@@ -746,7 +746,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   <img src="/v3-assets/figma/plan-row-jobs.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-[14.4px] font-semibold leading-[21.6px] text-ink">Prepaid credits</p>
+                      <p className="font-gowun text-[14.4px] font-semibold leading-[21.6px] text-ink">Prepaid credits</p>
                       {findJobsTotalCredits > 0 ? <span className="rounded-pill bg-accent-subtle px-[9px] py-[1.8px] text-[10.8px] font-medium text-accent-text">Active</span> : null}
                     </div>
                     <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">
@@ -770,7 +770,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                 >
                   <img src="/v3-assets/figma/plan-row-dfy.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-[14.4px] font-semibold leading-[21.6px] text-ink">Real Human Job Application</p>
+                    <p className="font-gowun text-[14.4px] font-semibold leading-[21.6px] text-ink">Real Human Job Application</p>
                     <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">A real success manager applies to matched jobs on your behalf</p>
                   </div>
                   <a

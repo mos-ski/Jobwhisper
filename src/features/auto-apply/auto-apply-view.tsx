@@ -1347,7 +1347,7 @@ function JobList({
               </span>
               <span className="min-w-0 flex-1">
                 <span className="flex flex-wrap items-center gap-2">
-                  <span className="font-semibold text-ink">{job.title}</span>
+                  <span className="font-gowun font-semibold text-ink">{job.title}</span>
                   <span className="rounded px-2 py-0.5 text-[10px] font-bold text-positive bg-positive-surface">{job.matchPercent}% MATCH</span>
                 </span>
                 <span className="mt-1 block text-xs text-ink-muted">

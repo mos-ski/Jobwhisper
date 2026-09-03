@@ -466,7 +466,7 @@ function ActionCard({ action, onLockedClick }: { readonly action: DashboardActio
       </span>
       <div className="grid gap-1.5">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="text-sm font-medium leading-[18px] tracking-[-0.28px] text-ink transition-colors duration-200 group-hover:text-accent group-focus-visible:text-accent motion-reduce:transition-none">
+          <h2 className="font-gowun text-sm font-medium leading-[18px] tracking-[-0.28px] text-ink transition-colors duration-200 group-hover:text-accent group-focus-visible:text-accent motion-reduce:transition-none">
             {action.title}
             {action.linkStyle === 'arrow' ? <span aria-hidden="true"> →</span> : null}
             {action.linkStyle === 'external' ? <ArrowUpRight aria-hidden="true" className="ms-1 inline size-3.5 align-[-1px]" /> : null}
