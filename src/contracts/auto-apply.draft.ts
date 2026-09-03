@@ -108,6 +108,7 @@ export type AutoApplyJob = {
   readonly events?: readonly AutoApplyApplicationEvent[];
   readonly activityLog?: readonly string[];
   readonly applicationQuestions?: readonly AutoApplyApplicationQuestion[];
+  readonly applicationDetails?: AutoApplyApplicationDetails;
   readonly creditsRemaining: number;
   readonly creditsTotal: number;
 };
@@ -120,6 +121,22 @@ export type AutoApplyApplicationEvent = {
 export type AutoApplyApplicationQuestion = {
   readonly question: string;
   readonly answer: string;
+};
+
+export type AutoApplyApplicationDetails = {
+  readonly firstName: string;
+  readonly lastName: string;
+  readonly phone: string;
+  readonly address: string;
+  readonly city: string;
+  readonly zip: string;
+  readonly linkedInUrl: string;
+  readonly dateAvailable: string;
+  readonly desiredPay: string;
+  readonly websiteOrPortfolio?: string;
+  readonly country: string;
+  readonly stateProvince: string;
+  readonly resumeFileName: string;
 };
 
 export type AutoApplyApplication = {

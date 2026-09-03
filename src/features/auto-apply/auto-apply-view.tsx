@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
 import { AlertTriangle, ArrowLeft, ArrowUpLeft, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ExternalLink, FileText, Filter, Globe, LinkIcon, PenLine, Play, RefreshCw, Search, Send, Settings, X, Zap, Trash2, Download, Mail } from 'lucide-react'
 import { SiGooglechrome, SiGoogleplay } from 'react-icons/si'
 
-import type { AutoApplyApplication, AutoApplyJob, AutoApplyOutcome, AutoApplySetup } from '@/contracts/auto-apply.draft'
+import type { AutoApplyApplication, AutoApplyApplicationDetails, AutoApplyJob, AutoApplyOutcome, AutoApplySetup } from '@/contracts/auto-apply.draft'
 import {
   DEFAULT_AUTO_APPLY_SETUP,
   EMPLOYMENT_TYPES,
@@ -1456,6 +1456,58 @@ function ApplicationQuestionCard({ question, answer }: { readonly question: stri
   )
 }
 
+function ApplicationDetailsSection({ details }: { readonly details: AutoApplyApplicationDetails }) {
+  const [open, setOpen] = useState(true)
+
+  const fields = [
+    { label: 'First Name', value: details.firstName },
+    { label: 'Last Name', value: details.lastName },
+    { label: 'Phone', value: details.phone },
+    { label: 'Address', value: details.address },
+    { label: 'City', value: details.city },
+    { label: 'ZIP', value: details.zip },
+    { label: 'LinkedIn URL', value: details.linkedInUrl },
+    { label: 'Date Available', value: details.dateAvailable },
+    { label: 'Desired Pay', value: details.desiredPay },
+    ...(details.websiteOrPortfolio ? [{ label: 'Website, Blog or Portfolio', value: details.websiteOrPortfolio }] : [{ label: 'Website, Blog or Portfolio', value: 'Not answered' }]),
+    { label: 'Country', value: details.country },
+    { label: 'State / Province', value: details.stateProvince },
+  ]
+
+  return (
+    <section className="rounded-lg border border-border">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex w-full items-center justify-between px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-inset"
+      >
+        <h3 className="text-sm font-bold text-ink">Application Details</h3>
+        <ChevronUp aria-hidden="true" className={cn('size-4 shrink-0 text-ink-muted transition-transform', !open && 'rotate-180')} />
+      </button>
+      {open ? (
+        <div className="grid gap-3 border-t border-border px-4 pb-4 pt-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Personal Info</p>
+          <div className="grid gap-2">
+            {fields.map((field) => (
+              <div key={field.label} className="rounded-lg border border-border bg-surface px-4 py-3">
+                <p className="text-xs text-ink-muted">{field.label}</p>
+                <p className="mt-0.5 text-sm text-ink">{field.value}</p>
+              </div>
+            ))}
+          </div>
+          <div className="rounded-lg border border-border bg-surface px-4 py-3">
+            <p className="text-xs text-ink-muted">Upload your resume</p>
+            <p className="mt-0.5 flex items-center gap-2 text-sm text-ink">
+              <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
+              {details.resumeFileName}
+            </p>
+          </div>
+        </div>
+      ) : null}
+    </section>
+  )
+}
+
 function JobPreview({
   job,
   onClose,
@@ -1610,13 +1662,22 @@ function JobPreview({
               </section>
             ) : null}
 
+            {applied && job.applicationDetails ? <ApplicationDetailsSection details={job.applicationDetails} /> : null}
+
             {!applied ? (
               <section className="grid gap-2">
                 <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Resume We&rsquo;ll Submit</h3>
-                <span className="flex min-w-0 items-center gap-2 text-sm text-ink">
-                  <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
-                  <span className="truncate">{job.resumeFileName}</span>
-                </span>
+                <div className="flex items-center justify-between gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setResumePreviewOpen(true)}
+                    className="flex min-w-0 items-center gap-2 rounded-lg text-sm text-ink underline underline-offset-4 transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  >
+                    <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
+                    <span className="truncate">{job.resumeFileName}</span>
+                  </button>
+                  <span className="shrink-0 rounded-full bg-positive-surface px-2.5 py-0.5 text-xs font-bold text-positive">ATS {job.matchPercent}</span>
+                </div>
               </section>
             ) : null}
 
