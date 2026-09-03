@@ -31,6 +31,10 @@ import {
 const REFERRAL_BONUS_CREDITS = 1000
 const REFERRAL_LINK = 'https://app.jobwhisper.ai/auth/signup?code=Adedamolaiosmk'
 
+// Matches the example date in the Figma spec (node 770:7288) — standalone credits don't yet
+// track a real per-purchase expiry date anywhere in the app.
+const FIND_JOBS_CREDITS_VALID_LABEL = 'Oct 12, 2026'
+
 const TOPUP_MINIMUM_DOLLARS = 10
 // Matches lib/credits.ts's CENTS_PER_CREDIT so a top-up lands on the same credit scale
 // already shown by the wallet card above (formatCredits), not PRICING.md §3's per-feature
@@ -518,17 +522,18 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
             <div className="grid gap-[12px]">
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Ace Your Interview</p>
-                <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-border p-[18px]">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold text-ink">{currentPlan?.name.charAt(0)}{currentPlan?.name.slice(1).toLowerCase()} plan</p>
-                      <span className="rounded-pill bg-accent-subtle px-2.5 py-0.5 text-xs font-medium text-accent-text">Active</span>
+                <div className="flex items-start gap-[24px] rounded-panel border border-border bg-surface p-[18px]">
+                  <img src="/v3-assets/figma/plan-row-interview.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-[14.4px] font-semibold leading-[21.6px] text-ink">{currentPlan?.name.charAt(0)}{currentPlan?.name.slice(1).toLowerCase()} plan</p>
+                      <span className="rounded-pill bg-accent-subtle px-[9px] py-[1.8px] text-[10.8px] font-medium text-accent-text">Active</span>
                     </div>
-                    <p className="mt-1 text-sm text-ink-muted">{currentPlan?.price} per month &middot; renews {wallet.resetDateLabel}</p>
+                    <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">{currentPlan?.price} per month &middot; Renews {wallet.resetDateLabel}</p>
                   </div>
                   <a
                     href="/v3/billing/plans"
-                    className="inline-flex min-h-10 items-center justify-center rounded-lg border border-input px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                    className="inline-flex min-h-[36px] shrink-0 items-center justify-center rounded-[7.2px] border border-input px-[14.4px] text-[11.7px] font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                   >
                     View plans
                   </a>
@@ -537,19 +542,20 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
 
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Find Jobs Yourself</p>
-                <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-border p-[18px]">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold text-ink">Prepaid credits</p>
-                      {findJobsTotalCredits > 0 ? <span className="rounded-pill bg-accent-subtle px-2.5 py-0.5 text-xs font-medium text-accent-text">Active</span> : null}
+                <div className="flex items-start gap-[24px] rounded-panel border border-border bg-surface p-[18px]">
+                  <img src="/v3-assets/figma/plan-row-jobs.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-[14.4px] font-semibold leading-[21.6px] text-ink">Prepaid credits</p>
+                      {findJobsTotalCredits > 0 ? <span className="rounded-pill bg-accent-subtle px-[9px] py-[1.8px] text-[10.8px] font-medium text-accent-text">Active</span> : null}
                     </div>
-                    <p className="mt-1 text-sm text-ink-muted">
-                      {findJobsTotalCredits > 0 ? `${findJobsTotalCredits} total credits · valid 12 months from purchase` : 'Auto Apply + Resume Builder, no subscription required'}
+                    <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">
+                      {findJobsTotalCredits > 0 ? `${findJobsTotalCredits} Total Credits · Valid till ${FIND_JOBS_CREDITS_VALID_LABEL}` : 'Auto Apply + Resume Builder, no subscription required'}
                     </p>
                   </div>
                   <a
                     href="/v3/billing/credits"
-                    className="inline-flex min-h-10 items-center justify-center rounded-lg border border-input px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                    className="inline-flex min-h-[36px] shrink-0 items-center justify-center rounded-[7.2px] border border-input px-[14.4px] text-[11.7px] font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                   >
                     Buy credits
                   </a>
@@ -558,14 +564,15 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
 
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Done For You</p>
-                <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-border p-[18px]">
-                  <div>
-                    <p className="font-semibold text-ink">Done for you</p>
-                    <p className="mt-1 text-sm text-ink-muted">A real success manager applies to matched jobs on your behalf</p>
+                <div className="flex items-start gap-[24px] rounded-panel border border-border bg-surface p-[18px]">
+                  <img src="/v3-assets/figma/plan-row-dfy.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[14.4px] font-semibold leading-[21.6px] text-ink">Real Human Job Application</p>
+                    <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">A real success manager applies to matched jobs on your behalf</p>
                   </div>
                   <a
                     href="/v3/billing/done-for-you"
-                    className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-lg border border-input px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                    className="inline-flex min-h-[36px] shrink-0 items-center justify-center rounded-[7.2px] border border-input px-[14.4px] text-[11.7px] font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                   >
                     Sign up
                   </a>
