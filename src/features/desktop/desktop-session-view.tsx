@@ -4,7 +4,7 @@ import { ArrowLeft, Settings } from 'lucide-react'
 
 import { CopilotTranscriptPanel } from '@/features/copilot/interview-copilot-view'
 import { copilotInterviewTranscript, copilotLiveSession } from '@/mocks/copilot'
-import { Button, Dialog, DialogClose, DialogPopup, DialogTitle, ThemeSwitch } from '@/ui'
+import { Button, Checkbox, Dialog, DialogClose, DialogPopup, DialogTitle, ThemeSwitch } from '@/ui'
 
 function formatElapsed(seconds: number): string {
   const mm = String(Math.floor(seconds / 60)).padStart(2, '0')
@@ -17,6 +17,7 @@ export function DesktopSessionView() {
   const [seconds, setSeconds] = useState(0)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [activityLabel, setActivityLabel] = useState(copilotLiveSession.activityLabel)
+  const [meetingDetect, setMeetingDetect] = useState(false)
 
   useEffect(() => {
     const id = window.setInterval(() => setSeconds((prev) => prev + 1), 1000)
@@ -89,6 +90,16 @@ export function DesktopSessionView() {
             <div className="flex items-center justify-between">
               <span className="text-sm text-ink">Microphone</span>
               <span className="text-xs text-ink-muted">System Default</span>
+            </div>
+            <div className="border-t border-border pt-4">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Window</p>
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm text-ink">Meeting Detect</p>
+                  <p className="text-xs text-ink-muted">Notify me when a meeting app is active</p>
+                </div>
+                <Checkbox checked={meetingDetect} onCheckedChange={(checked) => setMeetingDetect(Boolean(checked))} aria-label="Toggle Meeting Detect" />
+              </div>
             </div>
             <Button variant="secondary" onClick={() => navigate('/desktop')}>
               Sign out

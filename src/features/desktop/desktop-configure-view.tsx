@@ -1,10 +1,11 @@
 import { useState, type ChangeEvent, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, ChevronDown, FileText, Plus, X, Zap } from 'lucide-react'
+import { ArrowLeft, ChevronDown, FileText, Plus, Sparkles, X, Zap } from 'lucide-react'
 
+import type { CopilotModelTier } from '@/contracts/copilot.draft'
+import { KnowledgeBasePickerDialog } from '@/features/documents/knowledge-base-picker-dialog'
 import { copilotSetup } from '@/mocks/copilot'
 import { contextDocumentRows } from '@/mocks/documents'
-import { Checkbox, Dialog, DialogClose, DialogPopup, DialogTitle } from '@/ui'
 
 const AI_SUGGESTION =
   'Focus on the last two years of product launches — probe for measurable impact, cross-functional negotiation, and how they handled a launch that slipped.'
@@ -37,23 +38,41 @@ function DarkSelect({ value, onChange, options }: { readonly value: string; read
   )
 }
 
+function DarkCheckboxRow({ checked, onChange, label, hint }: { readonly checked: boolean; readonly onChange: (checked: boolean) => void; readonly label: string; readonly hint: string }) {
+  return (
+    <label className="flex cursor-pointer items-start gap-2.5">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(event) => onChange(event.target.checked)}
+        className="mt-0.5 size-4 shrink-0 rounded border-white/30 bg-white/10 text-[#0052ff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+      />
+      <span>
+        <span className="block text-sm font-medium text-white">{label}</span>
+        <span className="block text-xs text-white/60">{hint}</span>
+      </span>
+    </label>
+  )
+}
+
 export function DesktopConfigureView() {
   const navigate = useNavigate()
-  const [targetRole, setTargetRole] = useState(copilotSetup.targetRole)
-  const [companyName, setCompanyName] = useState(copilotSetup.companyName)
+  const [targetRole, setTargetRole] = useState('')
+  const [companyName, setCompanyName] = useState('')
   const [interviewType, setInterviewType] = useState('Introductory')
   const [difficulty, setDifficulty] = useState('Medium')
   const [additionalContext, setAdditionalContext] = useState(copilotSetup.additionalContext)
   const [selectedDocIds, setSelectedDocIds] = useState<ReadonlySet<string>>(new Set())
   const [pickerOpen, setPickerOpen] = useState(false)
+  const [documents, setDocuments] = useState(contextDocumentRows)
+  const [modelTier, setModelTier] = useState<CopilotModelTier>(copilotSetup.modelTier)
+  const [responseLanguage, setResponseLanguage] = useState(copilotSetup.responseLanguage)
+  const [autoAnswer, setAutoAnswer] = useState(copilotSetup.autoAnswer)
+  const [saveTranscript, setSaveTranscript] = useState(copilotSetup.saveTranscript)
 
-  function toggleDoc(id: string) {
-    setSelectedDocIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
+  function handleFillFromResume() {
+    setTargetRole(copilotSetup.targetRole)
+    setCompanyName(copilotSetup.companyName)
   }
 
   return (
@@ -103,6 +122,15 @@ export function DesktopConfigureView() {
             </DarkField>
           </div>
 
+          <button
+            type="button"
+            onClick={handleFillFromResume}
+            className="inline-flex items-center gap-1.5 self-start text-sm font-semibold text-[#0052ff]"
+          >
+            <Sparkles aria-hidden="true" className="size-3.5" />
+            Fill fields from resume
+          </button>
+
           <div className="grid gap-2">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-white">
@@ -119,7 +147,7 @@ export function DesktopConfigureView() {
               className="flex flex-wrap items-center justify-center gap-2 rounded-lg border border-dashed border-white/16 bg-white/[0.01] px-3 py-3.5 text-xs text-white/50"
             >
               {selectedDocIds.size > 0 ? (
-                contextDocumentRows
+                documents
                   .filter((doc) => selectedDocIds.has(doc.id))
                   .map((doc) => (
                     <span key={doc.id} className="inline-flex items-center gap-1.5 rounded-pill border border-white/16 bg-white/10 px-3 py-1 text-xs text-white">
@@ -153,6 +181,21 @@ export function DesktopConfigureView() {
               <span className="text-[#0052ff]">AI Suggestion</span>
             </button>
           </div>
+
+          <div className="flex gap-6">
+            <DarkField label="Model">
+              <DarkSelect value={modelTier === 'balanced' ? 'Balanced' : 'Precision'} onChange={(value) => setModelTier(value === 'Balanced' ? 'balanced' : 'precision')} options={['Balanced', 'Precision']} />
+            </DarkField>
+            <DarkField label="Response language">
+              <DarkSelect value={responseLanguage} onChange={setResponseLanguage} options={['English', 'Spanish', 'French', 'German', 'Portuguese', 'Mandarin Chinese']} />
+            </DarkField>
+          </div>
+
+          <div className="grid gap-3 border-t border-white/15 pt-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-white/50">Behavior</p>
+            <DarkCheckboxRow checked={autoAnswer} onChange={setAutoAnswer} label="Auto Answer (Beta)" hint="Copilot answers live-interviewer questions automatically." />
+            <DarkCheckboxRow checked={saveTranscript} onChange={setSaveTranscript} label="Save Transcript" hint="Keep a written transcript of this session in your history." />
+          </div>
         </div>
 
         <div className="flex items-center justify-between border-t border-white/15 px-6 py-4">
@@ -170,29 +213,16 @@ export function DesktopConfigureView() {
         </div>
       </div>
 
-      <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
-        <DialogPopup aria-label="Add documents from Knowledge Base" className="sm:max-w-md">
-          <DialogClose />
-          <DialogTitle>Add from Knowledge Base</DialogTitle>
-          <p className="mt-1 text-sm text-ink-muted">Select the documents you want Jobwhisper to use as context for this session.</p>
-          <div className="mt-4 grid max-h-72 gap-1 overflow-y-auto">
-            {contextDocumentRows.map((doc) => (
-              <label key={doc.id} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 hover:bg-surface-subtle">
-                <Checkbox checked={selectedDocIds.has(doc.id)} onCheckedChange={() => toggleDoc(doc.id)} aria-label={doc.name} />
-                <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
-                <span className="min-w-0 flex-1 truncate text-sm text-ink">{doc.name}</span>
-              </label>
-            ))}
-          </div>
-          <button
-            type="button"
-            onClick={() => setPickerOpen(false)}
-            className="mt-4 flex min-h-11 w-full items-center justify-center rounded-lg bg-accent text-sm font-semibold text-on-accent"
-          >
-            Done
-          </button>
-        </DialogPopup>
-      </Dialog>
+      <KnowledgeBasePickerDialog
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        documents={documents}
+        selectedIds={selectedDocIds}
+        onConfirm={setSelectedDocIds}
+        onAddDocument={(doc) => setDocuments((prev) => [...prev, doc])}
+        description="Select the documents you want Jobwhisper to use as context for this session."
+        listMaxHeightClassName="max-h-72"
+      />
     </div>
   )
 }
