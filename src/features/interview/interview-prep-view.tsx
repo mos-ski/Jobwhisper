@@ -12,12 +12,14 @@ import {
   PhoneOff,
   Play,
   Settings,
+  Sparkles,
   Video,
   VideoOff,
   Volume2,
   X,
 } from 'lucide-react'
 
+import type { CopilotModelTier } from '@/contracts/copilot.draft'
 import type {
   InterviewHistoryRow,
   InterviewLiveSession,
@@ -31,8 +33,9 @@ import type { ContextDocumentRow } from '@/contracts/documents.draft'
 import type { ResumeHistoryRow } from '@/contracts/resume.draft'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
 import { AppShell } from '@/features/dashboard/app-nav'
+import { KnowledgeBasePickerDialog } from '@/features/documents/knowledge-base-picker-dialog'
 import { centsToCredits, creditsToCents } from '@/lib/credits'
-import { AiSuggestionAction, Avatar, Badge, Button, Checkbox, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, UploadedFileDialog } from '@/ui'
+import { AiSuggestionAction, Avatar, Badge, Checkbox, cn, DataTable, Dialog, DialogPopup, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, UploadedFileDialog } from '@/ui'
 import { useCameraStream } from '@/hooks/useCameraStream'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 import { useTypewriter } from '@/hooks/useTypewriter'
@@ -205,10 +208,16 @@ const INTERVIEW_AI_SUGGESTION =
 
 export function InterviewConfigureView({ homeHref, uploadHref, voiceHref, session, knowledgeBaseDocuments = [] }: InterviewConfigureViewProps) {
   const [additionalContext, setAdditionalContext] = useState(session.additionalContext)
+  const [targetRole, setTargetRole] = useState('')
+  const [companyName, setCompanyName] = useState('')
   const [selectedDocIds, setSelectedDocIds] = useState<ReadonlySet<string>>(new Set())
   const [pickerOpen, setPickerOpen] = useState(false)
-  const [draftDocIds, setDraftDocIds] = useState<ReadonlySet<string>>(new Set())
-  const selectedDocuments = knowledgeBaseDocuments.filter((doc) => selectedDocIds.has(doc.id))
+  const [documents, setDocuments] = useState(knowledgeBaseDocuments)
+  const [modelTier, setModelTier] = useState<CopilotModelTier>(session.modelTier)
+  const [responseLanguage, setResponseLanguage] = useState(session.responseLanguage)
+  const [autoAnswer, setAutoAnswer] = useState(false)
+  const [saveTranscript, setSaveTranscript] = useState(session.saveTranscript)
+  const selectedDocuments = documents.filter((doc) => selectedDocIds.has(doc.id))
   const { type, isTyping } = useTypewriter()
 
   function handleAiSuggestion() {
@@ -216,18 +225,9 @@ export function InterviewConfigureView({ homeHref, uploadHref, voiceHref, sessio
     type(INTERVIEW_AI_SUGGESTION, (partial) => setAdditionalContext(base + partial))
   }
 
-  function openDocumentPicker() {
-    setDraftDocIds(selectedDocIds)
-    setPickerOpen(true)
-  }
-
-  function toggleDraftDoc(id: string) {
-    setDraftDocIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
+  function handleFillFromResume() {
+    setTargetRole(session.targetRole)
+    setCompanyName(session.companyName)
   }
 
   return (
@@ -265,10 +265,18 @@ export function InterviewConfigureView({ homeHref, uploadHref, voiceHref, sessio
                   { label: 'Hard', value: 'hard' },
                 ]}
               />
-              <FormField id="target-role" label="Target Role" placeholder="e.g. Senior Software Engineer" />
-              <FormField id="interview-company" label="Company Name" placeholder="e.g. Google, Meta" />
+              <FormField id="target-role" label="Target Role" placeholder="e.g. Senior Software Engineer" value={targetRole} onChange={(event) => setTargetRole(event.target.value)} />
+              <FormField id="interview-company" label="Company Name" placeholder="e.g. Google, Meta" value={companyName} onChange={(event) => setCompanyName(event.target.value)} />
+              <button
+                type="button"
+                onClick={handleFillFromResume}
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-text hover:text-accent sm:col-span-full"
+              >
+                <Sparkles aria-hidden="true" className="size-4" />
+                Fill fields from resume
+              </button>
           </div>
-          <DocumentDropAction onTrigger={openDocumentPicker} hint="Add from Knowledge Base">
+          <DocumentDropAction onTrigger={() => setPickerOpen(true)} hint="Add from Knowledge Base">
             {selectedDocuments.length > 0 ? (
               <span className="flex flex-wrap justify-center gap-2">
                 {selectedDocuments.map((doc) => (
@@ -288,41 +296,56 @@ export function InterviewConfigureView({ homeHref, uploadHref, voiceHref, sessio
             className={cn(isTyping && 'ring-2 ring-accent shadow-[0_0_0_4px_var(--lf-accent-subtle)] transition-shadow duration-normal')}
           />
           <AiSuggestionAction onClick={handleAiSuggestion} disabled={isTyping} />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <FormSelectField
+              id="interview-model-tier"
+              label="Model"
+              value={modelTier}
+              onValueChange={(value) => setModelTier(value as CopilotModelTier)}
+              options={[
+                { label: 'Balanced', value: 'balanced' },
+                { label: 'Precision', value: 'precision' },
+              ]}
+            />
+            <FormSelectField
+              id="interview-response-language"
+              label="Response language"
+              value={responseLanguage}
+              onValueChange={setResponseLanguage}
+              options={[
+                { label: 'English', value: 'English' },
+                { label: 'Spanish', value: 'Spanish' },
+                { label: 'French', value: 'French' },
+                { label: 'German', value: 'German' },
+                { label: 'Portuguese', value: 'Portuguese' },
+                { label: 'Mandarin Chinese', value: 'Mandarin Chinese' },
+              ]}
+            />
+          </div>
+          <div className="grid gap-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Behavior</p>
+            <div>
+              <Checkbox checked={autoAnswer} onCheckedChange={(checked) => setAutoAnswer(Boolean(checked))} label="Auto Answer (Beta)" />
+              <p className="ms-6 mt-0.5 text-xs text-ink-muted">Skip attempting each question yourself — reveal the AI's model answer immediately instead.</p>
+            </div>
+            <div>
+              <Checkbox checked={saveTranscript} onCheckedChange={(checked) => setSaveTranscript(Boolean(checked))} label="Save Transcript" />
+              <p className="ms-6 mt-0.5 text-xs text-ink-muted">Keep a written transcript of this session in your history.</p>
+            </div>
+          </div>
         </FormPanel>
       </section>
 
-      <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
-        <DialogPopup aria-label="Add documents from Knowledge Base">
-          <DialogClose />
-          <DialogTitle>Add from Knowledge Base</DialogTitle>
-          <p className="mt-1 text-sm text-ink-muted">Select the documents you want the interviewer to use as context for this session.</p>
-          <div className="mt-4 grid max-h-80 gap-1 overflow-y-auto">
-            {knowledgeBaseDocuments.length === 0 ? (
-              <p className="py-6 text-center text-sm text-ink-muted">No documents in your Knowledge Base yet.</p>
-            ) : (
-              knowledgeBaseDocuments.map((doc) => (
-                <label key={doc.id} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 hover:bg-surface-subtle">
-                  <Checkbox checked={draftDocIds.has(doc.id)} onCheckedChange={() => toggleDraftDoc(doc.id)} aria-label={doc.name} />
-                  <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{doc.name}</span>
-                  <span className="shrink-0 text-xs text-ink-muted">{doc.sizeOrUrl}</span>
-                </label>
-              ))
-            )}
-          </div>
-          <div className="mt-6 flex justify-end gap-3">
-            <Button variant="ghost" onClick={() => setPickerOpen(false)}>Cancel</Button>
-            <Button
-              onClick={() => {
-                setSelectedDocIds(draftDocIds)
-                setPickerOpen(false)
-              }}
-            >
-              Add Selected
-            </Button>
-          </div>
-        </DialogPopup>
-      </Dialog>
+      <KnowledgeBasePickerDialog
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        documents={documents}
+        selectedIds={selectedDocIds}
+        onConfirm={setSelectedDocIds}
+        onAddDocument={(doc) => setDocuments((prev) => [...prev, doc])}
+        description="Select the documents you want the interviewer to use as context for this session."
+        listMaxHeightClassName="max-h-80"
+      />
     </Workspace>
   )
 }
