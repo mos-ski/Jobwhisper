@@ -20,6 +20,9 @@ import {
   SelectField,
   ShellBar,
   Switch,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@/ui'
 
 const TOPUP_MINIMUM_DOLLARS = 10
@@ -370,8 +373,8 @@ type CreditBalanceCardProps = {
   readonly title: string
   readonly rateLabel: string
   readonly balanceCredits: number
-  /** When given, shows a progress bar + "N% left" against this total (e.g. Plan 1's monthly allowance). Omitted for prepaid, non-resetting balances like Auto Apply/Resume Builder, which have no total to compare against. */
-  readonly totalCredits?: number
+  /** Total ever purchased — the denominator for "N% left". Grows alongside balanceCredits on each purchase, so a fresh balance always reads 100% left. */
+  readonly totalCredits: number
   readonly centsPerCredit: number
   readonly minimumDollars: number
   readonly presetDollars: readonly number[]
@@ -382,7 +385,7 @@ type CreditBalanceCardProps = {
 function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, centsPerCredit, minimumDollars, presetDollars, onPurchase, reloadHint }: CreditBalanceCardProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [autoReload, setAutoReload] = useState(false)
-  const percentLeft = totalCredits ? Math.max(0, Math.min(100, Math.round((balanceCredits / totalCredits) * 100))) : undefined
+  const percentLeft = totalCredits > 0 ? Math.max(0, Math.min(100, Math.round((balanceCredits / totalCredits) * 100))) : 100
 
   return (
     <section>
@@ -393,19 +396,13 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
       <div className="mt-3 rounded-panel border border-border bg-surface">
         <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
           <div className="min-w-0 flex-1">
-            {percentLeft !== undefined ? (
-              <>
-                <p className="text-sm text-ink-muted">{balanceCredits} credits left</p>
-                <div className="mt-2 flex items-center gap-3">
-                  <div className="h-2 max-w-64 flex-1 overflow-hidden rounded-pill bg-surface-subtle">
-                    <div className={cn('h-full rounded-pill', percentLeft > 20 ? 'bg-accent' : 'bg-danger')} style={{ inlineSize: `${percentLeft}%` }} />
-                  </div>
-                  <span className="shrink-0 text-sm font-semibold text-ink">{percentLeft}% left</span>
-                </div>
-              </>
-            ) : (
-              <p className="text-2xl font-black text-ink">{balanceCredits} credits</p>
-            )}
+            <p className="text-sm font-semibold text-ink">{balanceCredits} credits</p>
+            <div className="mt-2 flex items-center gap-3">
+              <div className="h-2 max-w-64 flex-1 overflow-hidden rounded-pill bg-surface-subtle">
+                <div className={cn('h-full rounded-pill', percentLeft > 20 ? 'bg-accent' : 'bg-danger')} style={{ inlineSize: `${percentLeft}%` }} />
+              </div>
+              <span className="shrink-0 text-sm text-ink">{percentLeft}% left</span>
+            </div>
           </div>
           <Button onClick={() => setDialogOpen(true)} className="shrink-0">Buy credits</Button>
         </div>
@@ -456,7 +453,7 @@ function DoneForYouSignUp() {
         onClick={() => setDialogOpen(true)}
         className="shrink-0 border-input text-ink"
       >
-        Sign Up
+        Sign up
       </Button>
       <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setSent(false) }}>
         <DialogPopup aria-label="Get Done-For-You">
@@ -509,7 +506,9 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
   const [remainingCents, setRemainingCents] = useState(wallet.remainingCents)
   const [totalCents, setTotalCents] = useState(wallet.totalCents)
   const [autoApplyBalance, setAutoApplyBalance] = useState(0)
+  const [autoApplyTotalCredits, setAutoApplyTotalCredits] = useState(0)
   const [resumeBuilderBalance, setResumeBuilderBalance] = useState(0)
+  const [resumeBuilderTotalCredits, setResumeBuilderTotalCredits] = useState(0)
 
   const autoApplyPurchase = standalonePurchases.find((purchase) => purchase.id === 'auto-apply')
   const resumeBuilderPurchase = standalonePurchases.find((purchase) => purchase.id === 'resume-builder')
@@ -531,10 +530,10 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
           </div>
 
           <TitledPanel title="Your Plan">
-            <div className="grid gap-5">
+            <div className="grid gap-[12px]">
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Ace Your Interview</p>
-                <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-border p-4 sm:p-5">
+                <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-border p-[18px]">
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="font-semibold text-ink">{currentPlan?.name.charAt(0)}{currentPlan?.name.slice(1).toLowerCase()} plan</p>
@@ -553,7 +552,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
 
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Find Jobs Yourself</p>
-                <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-border p-4 sm:p-5">
+                <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-border p-[18px]">
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="font-semibold text-ink">Prepaid credits</p>
@@ -567,14 +566,14 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                     href="#add-ons"
                     className="inline-flex min-h-10 items-center justify-center rounded-lg border border-input px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                   >
-                    Buy Credits
+                    Buy credits
                   </a>
                 </div>
               </div>
 
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Done For You</p>
-                <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-border p-4 sm:p-5">
+                <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-border p-[18px]">
                   <div>
                     <p className="font-semibold text-ink">Done for you</p>
                     <p className="mt-1 text-sm text-ink-muted">A real success manager applies to matched jobs on your behalf</p>
@@ -588,7 +587,18 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
           <div id="add-ons">
           <TitledPanel
             title="Credits &amp; Balances"
-            action={<a href="/v3/billing/usage" className="text-sm font-semibold text-accent-text underline underline-offset-4 hover:text-accent">View usage details</a>}
+            action={
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <a href="/v3/billing/usage" className="text-sm font-semibold text-accent-text underline underline-offset-4 hover:text-accent">
+                      View usage details
+                    </a>
+                  }
+                />
+                <TooltipContent>See a breakdown of how your credits were used</TooltipContent>
+              </Tooltip>
+            }
           >
             <div className="grid gap-6">
               <CreditBalanceCard
@@ -611,11 +621,15 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   title="Auto Apply Credits"
                   rateLabel={autoApplyPurchase.rateLabel}
                   balanceCredits={autoApplyBalance}
+                  totalCredits={autoApplyTotalCredits}
                   centsPerCredit={autoApplyPurchase.centsPerCredit}
                   minimumDollars={autoApplyPurchase.minimumDollars}
                   presetDollars={autoApplyPurchase.presetDollars}
                   reloadHint="Buy more automatically when your balance runs low."
-                  onPurchase={(credits) => setAutoApplyBalance((prev) => prev + credits)}
+                  onPurchase={(credits) => {
+                    setAutoApplyBalance((prev) => prev + credits)
+                    setAutoApplyTotalCredits((prev) => prev + credits)
+                  }}
                 />
               ) : null}
               {resumeBuilderPurchase ? (
@@ -623,11 +637,15 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   title="Resume Builder Credits"
                   rateLabel={resumeBuilderPurchase.rateLabel}
                   balanceCredits={resumeBuilderBalance}
+                  totalCredits={resumeBuilderTotalCredits}
                   centsPerCredit={resumeBuilderPurchase.centsPerCredit}
                   minimumDollars={resumeBuilderPurchase.minimumDollars}
                   presetDollars={resumeBuilderPurchase.presetDollars}
                   reloadHint="Buy more automatically when your balance runs low."
-                  onPurchase={(credits) => setResumeBuilderBalance((prev) => prev + credits)}
+                  onPurchase={(credits) => {
+                    setResumeBuilderBalance((prev) => prev + credits)
+                    setResumeBuilderTotalCredits((prev) => prev + credits)
+                  }}
                 />
               ) : null}
             </div>
