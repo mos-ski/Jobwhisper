@@ -81,3 +81,44 @@ Each module is its own brainstorm → plan → build cycle, in the order above:
 6. Systems
 
 A bare shell with no module content isn't independently reviewable, so Foundation ships together with Dashboard/Analytics as the first cycle.
+
+## Phase 2 — Analytics, content operations, support (added 2026-09-04)
+
+An audit of the six shipped modules found real gaps: no customer support surface, no way to manage the marketplace/download/tutorial/FAQ catalogs (Configuration only holds marketplace *price bounds*, not the items), no deep analytics beyond the Dashboard's company-wide KPIs, no dedicated Done-For-You applicant pipeline, and no referral program visibility. Rather than eight new top-level nav entries, this phase consolidates them into three new modules plus two extensions to existing ones, following the same "each module is its own contract → mock → view → page" convention as Phase 1.
+
+### 7. Analytics (new top-level module)
+
+Deeper, more analytical than the Dashboard's KPI tiles — this is where the team goes to understand *who* users are and *how* they move through the funnel, not just today's revenue number.
+
+- **Survey distribution** — response breakdowns for the onboarding survey questions already configured in `AdminConfigurationView` (`AdminOnboardingSurveyConfig`/`AdminSurveyQuestion`) — e.g. for a single-select question, a bar of option → response count/percent.
+- **Demographics** — desired-role distribution (reuses the same role taxonomy as `AutoApplySetup.desiredRole`/`AdminProductSessionRow.targetRole`), experience-level distribution, geography if available. Age only if the signup flow actually collects it — do not invent a field; check `AutoApplySetup`/`SettingsProfile` first and note in the module's own design doc if it's out of scope.
+- **Interview scores** — score distribution across Interview Prep/Copilot sessions (histogram-style: score bucket → session count), trend over time.
+- **Acquisition & conversion funnels** — top-of-funnel entry sources (reuses `AdminProductRow`-style channel data where it exists) through signup → first session → subscribe, each stage's drop-off, and time-to-convert (signup timestamp → subscribe timestamp, as a distribution not just an average).
+- **Referral stats** — invites sent, signups attributed, conversion-to-paid rate, credits paid out. (Reward *rules* live in Configuration, per below — this is performance, not configuration.)
+
+This module's own brainstorm → plan cycle happens inside its build (per the Sequencing note above), but the shape of what it covers is fixed by this list — an implementing agent should not need to ask the user what "analytics" means.
+
+### 8. Content (new top-level module)
+
+Catalog management for everything currently hardcoded or admin-invisible on the candidate side: Marketplace items, Download Apps entries, Tutorials, and FAQ. One module, four tabs (mirrors the Systems module's `team`/`audit`/`notifications` tab pattern) rather than four separate nav entries, since all four are the same shape of problem: a list of content items with title/description/metadata and basic CRUD.
+
+- **Marketplace tab** — the catalog behind `MarketplaceView`/`MarketplaceItem` (`src/features/account/account-view.tsx`, `src/mocks/account.ts`): list, add, edit (title, description, price, PDF asset), remove. Respects the price-bound guardrail already in `AdminMarketplacePricingConfig` (Configuration) rather than duplicating it.
+- **Downloads tab** — the catalog behind `DownloadsView`/`DownloadItem` (same files): platform, version, file/URL, support text.
+- **Tutorials tab** — the catalog behind `TutorialsView`/`TutorialItem`: title, video/link, tone/category.
+- **FAQ tab** — question/answer pairs shown in the candidate-side FAQ panel (`FormPanel`'s FAQ usage / `account-view.tsx`'s "Frequently Asked Questions" panel) — currently hardcoded copy, not sourced from any contract; this tab makes it data-driven for the first time.
+
+### 9. Support (new top-level module)
+
+A real customer ticket queue — today "Support" only exists as an internal admin-team *role* (Systems → Team), not an inbox. Ticket list (search/filter by status, priority, assignee), ticket detail (message thread, status changes, assignee, linked account), reply/resolve actions, matching the `DataTable` + detail-page pattern used by every other module.
+
+### Extension: Done-For-You applicant queue (Products module)
+
+The Products module's Done-For-You detail page currently reuses the generic `AdminProductSessionRow` shape (user, target role/company, started, duration) — the same shape used for every product's session log. This extension adds the operational fields a real applicant pipeline needs: assigned success manager, pipeline status (queued → in progress → completed), package purchased (`AdminDoneForYouPackageId`), and jobs-submitted count. Touches `admin-products-view.tsx` and `admin-products.draft.ts` only — additive to the existing Done-For-You detail page, not a new route.
+
+### Extension: Referral program configuration (Configuration module)
+
+A new section alongside the existing plans/coupons/trial/survey config: reward amount per successful referral, referral cap per account, reward expiry window. Configuration *rules* only — referral *performance* (conversion rate, credits paid out) lives in the new Analytics module above, not duplicated here. Touches `admin-configuration-view.tsx` and `admin-configuration.draft.ts` only.
+
+### Sequencing (Phase 2)
+
+Each of the five pieces above (Analytics, Content, Support, DFY applicant queue, Referral configuration) is independently buildable — none shares a route or a contract file with another — so they're built in parallel rather than the strict sequence Phase 1 used. Shared integration points (the `AdminModuleId` union, the `AdminShell` nav array, and `routes.tsx`) are wired up centrally after each piece is verified, not by the piece's own implementer, to avoid five parallel edits to the same three files.
