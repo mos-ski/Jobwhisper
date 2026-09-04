@@ -2,6 +2,7 @@ import { useLocation } from 'react-router-dom'
 
 import { AdminAccountDetailPage } from './pages/admin-account-detail-page'
 import { AdminAccountsPage } from './pages/admin-accounts-page'
+import { AdminActivityPage } from './pages/admin-activity-page'
 import { AdminAnalyticsPage } from './pages/admin-analytics-page'
 import { AdminConfigurationPage } from './pages/admin-configuration-page'
 import { AdminContentPage } from './pages/admin-content-page'
@@ -81,6 +82,10 @@ export function WebRoutes() {
 
   if (routePath.startsWith('/admin/accounts/')) {
     return <AdminAccountDetailPage accountId={routePath.replace('/admin/accounts/', '')} />
+  }
+
+  if (routePath === '/admin/activity') {
+    return <AdminActivityPage />
   }
 
   if (routePath === '/admin/configuration') {

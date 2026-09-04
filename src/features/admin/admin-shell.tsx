@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import {
+  Activity,
   BarChart3,
   Bell,
   Boxes,
@@ -36,6 +37,7 @@ import {
 
 const moduleIcons: Record<AdminModuleId, ReactNode> = {
   dashboard: <LayoutDashboard />,
+  activity: <Activity />,
   accounts: <Users />,
   transactions: <CreditCard />,
   products: <Boxes />,
@@ -131,7 +133,7 @@ function AdminNotificationBell({ notifications }: { readonly notifications: read
       <PopoverContent className="w-[min(22rem,calc(100vw-2rem))] p-0">
         <div className="flex items-baseline justify-between gap-3 border-b border-border px-4 py-3">
           <h2 className="font-gowun text-base font-bold text-ink">Notifications</h2>
-          <a href="/admin/systems" className="text-xs text-accent-text underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+          <a href="/admin/activity" className="text-xs text-accent-text underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
             View all
           </a>
         </div>

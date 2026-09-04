@@ -24,6 +24,7 @@ export const adminSession: Session = {
 
 export const adminNavItems: readonly AdminNavItem[] = [
   { id: 'dashboard', label: 'Dashboard', href: '/admin', matchPrefix: '/admin' },
+  { id: 'activity', label: 'Activity', href: '/admin/activity', matchPrefix: '/admin/activity' },
   { id: 'accounts', label: 'Accounts', href: '/admin/accounts', matchPrefix: '/admin/accounts' },
   { id: 'transactions', label: 'Transactions', href: '/admin/transactions', matchPrefix: '/admin/transactions', badgeCount: 7 },
   { id: 'products', label: 'Products', href: '/admin/products', matchPrefix: '/admin/products' },

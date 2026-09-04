@@ -115,3 +115,9 @@ Five further draft contracts back the admin modules. All money is integer cents 
 Production should replace these with backend-owned account, billing/ledger, product-analytics, configuration, and audit contracts. Two conventions worth keeping: precomputed relative-time integers (`daysAgo`, `daysUntilEvidenceDue`) alongside display strings, so no view parses dates; and presentation metadata for permission ids, so raw strings like `admin:credits:manage` are never shown to a person.
 
 Roles and permissions throughout reuse `src/contracts/identity.ts` unchanged — no new identity fields were needed.
+
+## Admin Activity Feed Draft Contract
+
+`src/contracts/admin-activity.draft.ts` defines `AdminActivityEvent` and `AdminActivityFeed` for a platform-wide live feed (new signups, logins, and payments/refunds/payouts), reachable at `/admin/activity` and linked from the shell's notification popover ("View all"). This is distinct from `admin-systems.draft.ts`'s audit entries, which log *admin* actions, not end-user activity.
+
+Two fields are invented with no existing precedent: `kind: 'login'` events have no backing data anywhere else in the app (no session/login timestamp exists on `AdminAccountRow` or elsewhere), and `timeAgo` is a plain display string like every other admin date field, not a raw timestamp — so a real implementation sorting/filtering by actual recency would need a backend-owned timestamp field this draft doesn't have. `amountCents` is optional and only set for `payment`/`refund`/`payout` events, mirroring `AdminTransactionRow`'s integer-cents convention.
