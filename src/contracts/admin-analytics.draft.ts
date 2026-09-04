@@ -100,6 +100,17 @@ export type AdminReferralStats = {
   readonly totalReferralRevenue: number
 }
 
+/** Credits actually consumed against what a plan grants, by plan — the gap is where subscription margin comes from. */
+export type AdminPlanUtilizationRow = {
+  readonly planId: string
+  readonly planLabel: string
+  readonly subscriberCount: number
+  readonly grantedCreditsPerSubscriber: number
+  readonly averageUsedCreditsPerSubscriber: number
+  readonly utilizationPercent: number
+  readonly priceCents: number
+}
+
 /* ---------- Top-level bundle ---------- */
 
 export type AdminAnalyticsSurveyDistributions = {
@@ -127,4 +138,9 @@ export type AdminAnalyticsFunnels = {
 export type AdminAnalyticsReferrals = {
   readonly dateRangeLabel: string
   readonly stats: AdminReferralStats
+}
+
+export type AdminAnalyticsUsage = {
+  readonly dateRangeLabel: string
+  readonly rows: readonly AdminPlanUtilizationRow[]
 }

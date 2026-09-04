@@ -4,6 +4,7 @@ import type {
   AdminAnalyticsReferrals,
   AdminAnalyticsScores,
   AdminAnalyticsSurveyDistributions,
+  AdminAnalyticsUsage,
 } from '@/contracts/admin-analytics.draft'
 
 export const adminAnalyticsSurveyDistributions: AdminAnalyticsSurveyDistributions = {
@@ -170,4 +171,13 @@ export const adminAnalyticsReferrals: AdminAnalyticsReferrals = {
     creditsPaidOut: 89_200,
     totalReferralRevenue: 74_400_000,
   },
+}
+
+export const adminAnalyticsUsage: AdminAnalyticsUsage = {
+  dateRangeLabel: 'Aug 5 – Sep 3, 2026',
+  rows: [
+    { planId: 'starter', planLabel: 'Starter', subscriberCount: 1_809, grantedCreditsPerSubscriber: 500, averageUsedCreditsPerSubscriber: 381, utilizationPercent: 76, priceCents: 4_700 },
+    { planId: 'pro', planLabel: 'Pro', subscriberCount: 2_648, grantedCreditsPerSubscriber: 1_000, averageUsedCreditsPerSubscriber: 647, utilizationPercent: 65, priceCents: 9_900 },
+    { planId: 'premium', planLabel: 'Premium', subscriberCount: 671, grantedCreditsPerSubscriber: 4_000, averageUsedCreditsPerSubscriber: 2_212, utilizationPercent: 55, priceCents: 19_700 },
+  ],
 }

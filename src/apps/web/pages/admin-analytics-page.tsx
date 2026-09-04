@@ -7,6 +7,7 @@ import {
   adminAnalyticsReferrals,
   adminAnalyticsScores,
   adminAnalyticsSurveyDistributions,
+  adminAnalyticsUsage,
 } from '@/mocks/admin-analytics'
 import { adminDateRanges, adminNavItems, adminNotifications, adminSearchResults, adminSession } from '@/mocks/admin'
 
@@ -27,6 +28,7 @@ export function AdminAnalyticsPage() {
       scores={adminAnalyticsScores}
       funnels={adminAnalyticsFunnels}
       referrals={adminAnalyticsReferrals}
+      usage={adminAnalyticsUsage}
       isLoading={params.get('state') === 'loading'}
     />
   )

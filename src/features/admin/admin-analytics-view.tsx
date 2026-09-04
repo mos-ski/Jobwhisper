@@ -7,6 +7,7 @@ import type {
   AdminAnalyticsReferrals,
   AdminAnalyticsScores,
   AdminAnalyticsSurveyDistributions,
+  AdminAnalyticsUsage,
   AdminDemographicDistribution,
   AdminFunnelStage,
   AdminSurveyDistribution,
@@ -22,7 +23,7 @@ const countFormatter = new Intl.NumberFormat('en-US')
 
 /* ---------- Tab types ---------- */
 
-type AdminAnalyticsTab = 'survey' | 'demographics' | 'scores' | 'funnels' | 'referrals'
+type AdminAnalyticsTab = 'survey' | 'demographics' | 'scores' | 'funnels' | 'referrals' | 'usage'
 
 const TABS: readonly { readonly id: AdminAnalyticsTab; readonly label: string }[] = [
   { id: 'survey', label: 'Survey' },
@@ -30,6 +31,7 @@ const TABS: readonly { readonly id: AdminAnalyticsTab; readonly label: string }[
   { id: 'scores', label: 'Interview scores' },
   { id: 'funnels', label: 'Funnels' },
   { id: 'referrals', label: 'Referrals' },
+  { id: 'usage', label: 'Usage & margin' },
 ]
 
 /* ---------- Shared categorical palette ---------- */
@@ -426,6 +428,73 @@ function ReferralStatCard({ label, value, caption }: {
   )
 }
 
+/* ---------- Usage & margin section ---------- */
+
+function UsageSection({ usage }: { readonly usage: AdminAnalyticsUsage }) {
+  const totalGranted = usage.rows.reduce((sum, row) => sum + row.grantedCreditsPerSubscriber * row.subscriberCount, 0)
+  const totalUsed = usage.rows.reduce((sum, row) => sum + row.averageUsedCreditsPerSubscriber * row.subscriberCount, 0)
+  const overallUtilization = totalGranted > 0 ? Math.round((totalUsed / totalGranted) * 100) : 0
+
+  return (
+    <div className="grid gap-4">
+      <div className="grid gap-4 sm:grid-cols-3">
+        <ReferralStatCard
+          label="Platform-wide utilization"
+          value={`${overallUtilization}%`}
+          caption="Credits actually used vs. granted, weighted by subscriber count"
+        />
+        <ReferralStatCard
+          label="Unused credits, monthly"
+          value={countFormatter.format(totalGranted - totalUsed)}
+          caption="Granted but never spent — the source of subscription margin"
+        />
+        <ReferralStatCard
+          label="Unused value, monthly"
+          value={formatUsdWhole((totalGranted - totalUsed) * 10)}
+          caption="At $0.10 per credit, what that unused allowance would cost to actually deliver"
+        />
+      </div>
+
+      <section className="bg-surface shadow-panel" aria-label="Credit utilization by plan">
+        <div className="border-b border-border p-4 sm:px-5">
+          <h3 className="font-gowun text-base font-bold text-ink">Credit utilization by plan</h3>
+          <p className="mt-1 text-xs text-ink-muted">The gap between granted and used is margin — a subscriber pays for the full allowance whether they use it or not.</p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[42rem] text-start text-sm">
+            <thead className="border-b border-border">
+              <tr>
+                <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Plan</th>
+                <th scope="col" className="px-4 py-2.5 text-end text-xs font-semibold uppercase tracking-wide text-ink-muted">Subscribers</th>
+                <th scope="col" className="px-4 py-2.5 text-end text-xs font-semibold uppercase tracking-wide text-ink-muted">Granted/mo</th>
+                <th scope="col" className="px-4 py-2.5 text-end text-xs font-semibold uppercase tracking-wide text-ink-muted">Avg used</th>
+                <th scope="col" className="px-4 py-2.5 text-ink-muted"><span className="sr-only">Utilization</span></th>
+                <th scope="col" className="px-4 py-2.5 text-end text-xs font-semibold uppercase tracking-wide text-ink-muted">Utilization</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {usage.rows.map((row) => (
+                <tr key={row.planId}>
+                  <td className="px-4 py-3 font-semibold text-ink">{row.planLabel}</td>
+                  <td className="px-4 py-3 text-end tabular-nums text-ink">{countFormatter.format(row.subscriberCount)}</td>
+                  <td className="px-4 py-3 text-end tabular-nums text-ink-muted">{countFormatter.format(row.grantedCreditsPerSubscriber)}</td>
+                  <td className="px-4 py-3 text-end tabular-nums text-ink">{countFormatter.format(row.averageUsedCreditsPerSubscriber)}</td>
+                  <td className="px-4 py-3">
+                    <div className="h-2 w-24 overflow-hidden rounded-pill bg-surface-subtle">
+                      <div className="h-full rounded-pill bg-accent" style={{ inlineSize: `${row.utilizationPercent}%` }} />
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-end font-semibold tabular-nums text-ink">{row.utilizationPercent}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  )
+}
+
 /* ---------- Skeleton ---------- */
 
 function AnalyticsSkeleton() {
@@ -451,6 +520,7 @@ export type AdminAnalyticsViewProps = {
   readonly scores: AdminAnalyticsScores
   readonly funnels: AdminAnalyticsFunnels
   readonly referrals: AdminAnalyticsReferrals
+  readonly usage: AdminAnalyticsUsage
   readonly isLoading?: boolean
   readonly errorMessage?: string
   readonly onRetry?: () => void
@@ -467,6 +537,7 @@ export function AdminAnalyticsView({
   scores,
   funnels,
   referrals,
+  usage,
   isLoading = false,
   errorMessage,
   onRetry,
@@ -618,6 +689,8 @@ export function AdminAnalyticsView({
               />
             </div>
           )}
+
+          {tab === 'usage' && <UsageSection usage={usage} />}
         </div>
       )}
     </AdminShell>
