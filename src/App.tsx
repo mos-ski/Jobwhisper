@@ -30,6 +30,7 @@ export default function App() {
           <Route path="/emails" element={<EmailsIndexPage />} />
           <Route path="/emails/:slug" element={<EmailPreviewPage />} />
           <Route path="/v3/*" element={<Suspense fallback={null}><WebRoutes /></Suspense>} />
+          <Route path="/admin/*" element={<Suspense fallback={null}><WebRoutes /></Suspense>} />
           <Route path="/desktop/*" element={<DesktopApp />} />
           <Route path="*" element={<Navigate to="/v3" replace />} />
         </Routes>

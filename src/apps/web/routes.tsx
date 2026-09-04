@@ -1,5 +1,14 @@
 import { useLocation } from 'react-router-dom'
 
+import { AdminAccountDetailPage } from './pages/admin-account-detail-page'
+import { AdminAccountsPage } from './pages/admin-accounts-page'
+import { AdminConfigurationPage } from './pages/admin-configuration-page'
+import { AdminDashboardPage } from './pages/admin-dashboard-page'
+import { AdminProductDetailPage } from './pages/admin-product-detail-page'
+import { AdminProductsPage } from './pages/admin-products-page'
+import { AdminSystemsPage } from './pages/admin-systems-page'
+import { AdminTransactionDetailPage } from './pages/admin-transaction-detail-page'
+import { AdminTransactionsPage } from './pages/admin-transactions-page'
 import { AuthCreateAccountPage } from './pages/auth-create-account-page'
 import { AuthForgotPasswordPage } from './pages/auth-forgot-password-page'
 import { AuthPlanPage } from './pages/auth-plan-page'
@@ -57,6 +66,42 @@ import { ExtensionPage } from './pages/extension-page'
 export function WebRoutes() {
   const { pathname } = useLocation()
   const routePath = pathname.startsWith('/v3') ? pathname.slice(3) || '/' : pathname
+
+  if (routePath === '/admin') {
+    return <AdminDashboardPage />
+  }
+
+  if (routePath === '/admin/accounts') {
+    return <AdminAccountsPage />
+  }
+
+  if (routePath.startsWith('/admin/accounts/')) {
+    return <AdminAccountDetailPage accountId={routePath.replace('/admin/accounts/', '')} />
+  }
+
+  if (routePath === '/admin/configuration') {
+    return <AdminConfigurationPage />
+  }
+
+  if (routePath === '/admin/products') {
+    return <AdminProductsPage />
+  }
+
+  if (routePath.startsWith('/admin/products/')) {
+    return <AdminProductDetailPage productId={routePath.replace('/admin/products/', '')} />
+  }
+
+  if (routePath === '/admin/systems') {
+    return <AdminSystemsPage />
+  }
+
+  if (routePath === '/admin/transactions') {
+    return <AdminTransactionsPage />
+  }
+
+  if (routePath.startsWith('/admin/transactions/')) {
+    return <AdminTransactionDetailPage transactionId={routePath.replace('/admin/transactions/', '')} />
+  }
 
   if (routePath === '/auth/sign-in') {
     return <AuthSignInPage />

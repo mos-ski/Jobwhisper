@@ -343,6 +343,109 @@ const desktopRoutes = [
   },
 ] as const
 
+const adminRoutes = [
+  {
+    href: '/admin',
+    label: 'Admin dashboard',
+    description: 'KPI tiles, revenue/credits trend, needs-attention alerts, revenue by product, subscribers by plan.',
+  },
+  {
+    href: '/admin?state=loading',
+    label: 'Admin dashboard (loading)',
+    description: 'Skeleton state for the admin dashboard while metrics load.',
+  },
+  {
+    href: '/admin/accounts',
+    label: 'Admin accounts',
+    description: 'User table with summary tiles, status/plan filters, search, pagination, and row actions.',
+  },
+  {
+    href: '/admin/accounts?state=empty',
+    label: 'Admin accounts (empty)',
+    description: 'No-results state with a clear-filters action.',
+  },
+  {
+    href: '/admin/accounts/acc_darnell_smith',
+    label: 'Admin account detail',
+    description: 'Subscription, credit balance and history, usage by product, activity, and per-account audit log.',
+  },
+  {
+    href: '/admin/accounts/acc_darnell_smith?state=suspended',
+    label: 'Admin account (suspended)',
+    description: 'Suspended treatment with the action swapped to Reinstate.',
+  },
+  {
+    href: '/admin/accounts/acc_darnell_smith?impersonating=true',
+    label: 'Admin account (impersonating)',
+    description: 'Mocked read-only "log in as user" state with the sticky impersonation banner.',
+  },
+  {
+    href: '/admin/products',
+    label: 'Admin products',
+    description: 'Every product with tier gating, usage, revenue, health, and an availability switch behind a blast-radius confirm.',
+  },
+  {
+    href: '/admin/products/coding-copilot',
+    label: 'Admin product detail (degraded)',
+    description: 'Per-product stats, usage trend, grouped recent errors, and the filterable session log.',
+  },
+  {
+    href: '/admin/transactions',
+    label: 'Admin transactions',
+    description: 'Ledger with volume tiles, failed-renewal banner, status filter, search, and pagination.',
+  },
+  {
+    href: '/admin/transactions?tab=disputes',
+    label: 'Admin disputes queue',
+    description: 'Dispute cards with evidence deadlines, overdue escalation, and submit/accept confirmations.',
+  },
+  {
+    href: '/admin/transactions?tab=refunds',
+    label: 'Admin refunds queue',
+    description: 'Pending refund requests with approve, and deny gated on a written reason.',
+  },
+  {
+    href: '/admin/transactions/txn_7T3XQP',
+    label: 'Admin transaction detail',
+    description: 'Invoice line items, tax, totals, customer block, and the payment event timeline.',
+  },
+  {
+    href: '/admin/systems?tab=team',
+    label: 'Admin systems: team',
+    description: 'Admin/support roster with human-labelled permissions, invite dialog, and a self-revoke guard.',
+  },
+  {
+    href: '/admin/systems?tab=audit',
+    label: 'Admin systems: audit log',
+    description: 'Platform-wide log with actor/action/result/date filters, denied entries, and before-after expansion.',
+  },
+  {
+    href: '/admin/systems?tab=notifications',
+    label: 'Admin systems: notifications',
+    description: 'Per-channel notification rules with thresholds, plus the feed behind the shell bell.',
+  },
+  {
+    href: '/admin/systems?state=restricted',
+    label: 'Admin systems (restricted)',
+    description: 'Permission-denied treatment for an admin without the manage-users permission.',
+  },
+  {
+    href: '/admin/configuration',
+    label: 'Admin configuration: pricing',
+    description: 'Editable plan cards, credit economics, DFY packages, and the unsubscribed allowance, behind a review-changes gate.',
+  },
+  {
+    href: '/admin/configuration?tab=coupons',
+    label: 'Admin configuration: coupons',
+    description: 'Promo code table with create dialog, validation, and deactivate confirmation.',
+  },
+  {
+    href: '/admin/configuration?tab=trials',
+    label: 'Admin configuration: trials',
+    description: 'Trial settings plus the onboarding survey editor with keyboard-operable reordering.',
+  },
+] as const
+
 export function RouteIndexPage() {
   return (
     <main className="min-h-screen bg-canvas px-6 py-10 text-ink">
@@ -416,6 +519,23 @@ export function RouteIndexPage() {
           <h2 className="text-2xl font-semibold">Web app: Dashboard</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {appRoutes.map((route) => (
+              <a
+                key={route.href}
+                href={route.href}
+                aria-label={route.label}
+                className="rounded-panel border border-border bg-surface p-5 shadow-panel transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                <span className="text-lg font-semibold text-ink">{route.label}</span>
+                <span className="mt-2 block text-sm leading-6 text-ink-muted">{route.description}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-10">
+          <h2 className="text-2xl font-semibold">Admin app</h2>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {adminRoutes.map((route) => (
               <a
                 key={route.href}
                 href={route.href}

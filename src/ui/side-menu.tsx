@@ -9,6 +9,8 @@ export type SideMenuItem = {
   readonly icon: ReactNode
   readonly active?: boolean
   readonly dividerBefore?: boolean
+  /** Count pill shown after the label — e.g. items awaiting action in that section. Hidden when 0. */
+  readonly badgeCount?: number
 }
 
 export type SideMenuProps = {
@@ -53,6 +55,17 @@ export const SideMenu = forwardRef<HTMLElement, SideMenuProps>(
                   {item.icon}
                 </span>
                 <span className={cn('min-w-0 flex-1 truncate text-sm', collapsed && 'sr-only')}>{item.label}</span>
+                {item.badgeCount ? (
+                  <span
+                    className={cn(
+                      'shrink-0 rounded-pill bg-danger px-1.5 text-[11px] font-bold leading-5 text-on-danger',
+                      collapsed && 'sr-only',
+                    )}
+                  >
+                    {item.badgeCount}
+                    <span className="sr-only"> awaiting action</span>
+                  </span>
+                ) : null}
               </a>
             </div>
           ))}

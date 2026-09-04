@@ -115,6 +115,8 @@ export type CopilotLiveViewProps = {
   readonly transcriptBank?: readonly CopilotTranscriptTurn[]
   readonly codingBank?: readonly CopilotCodingTurn[]
   readonly demoMode?: boolean
+  /** Interview Copilot credit top-ups require an active Ace Your Interview plan. See PRICING.md §1, §4. */
+  readonly hasActivePlan?: boolean
   readonly initialAutoAnswer?: boolean
 }
 
@@ -1634,7 +1636,7 @@ const TOPUP_CENTS_PER_CREDIT = 40
 // of $0.40 — $25 would be 62.5 credits, so presets stick to $10/$20/$50.
 const TOPUP_PRESET_DOLLARS = [10, 20, 50]
 
-export function CopilotLiveView({ completeHref, session, isLoading = false, transcriptBank = [], codingBank = [], demoMode = false, initialAutoAnswer = false }: CopilotLiveViewProps) {
+export function CopilotLiveView({ completeHref, session, isLoading = false, transcriptBank = [], codingBank = [], demoMode = false, hasActivePlan = true, initialAutoAnswer = false }: CopilotLiveViewProps) {
   const [assistantMessages, setAssistantMessages] = useState<readonly AiAssistantMessage[]>([])
   const [draft, setDraft] = useState('')
   const assistantScrollRef = useRef<HTMLDivElement>(null)
@@ -1672,13 +1674,13 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
         const next = Math.max(0, prev - perTickCents)
         if (next <= 0 && prev > 0) {
           setSessionPaused(true)
-          setTopUpOpen(true)
+          if (hasActivePlan) setTopUpOpen(true)
         }
         return next
       })
     }, 1000)
     return () => window.clearInterval(id)
-  }, [isLoading, sessionPaused])
+  }, [isLoading, sessionPaused, hasActivePlan])
 
   const lowBalance = !demoMode && balanceCents > 0 && balanceCents <= COPILOT_START_BALANCE_CENTS * 0.2
 
@@ -1743,17 +1745,29 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
         {lowBalance && !sessionPaused ? (
           <div role="status" className="fixed inset-x-4 top-20 z-20 flex items-center justify-between gap-3 rounded-lg bg-warning-surface px-4 py-2.5 text-sm text-warning shadow-panel">
             <span>Running low on balance</span>
-            <button type="button" onClick={(event) => { event.stopPropagation(); setTopUpOpen(true) }} className="shrink-0 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-              Add funds
-            </button>
+            {hasActivePlan ? (
+              <button type="button" onClick={(event) => { event.stopPropagation(); setTopUpOpen(true) }} className="shrink-0 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                Add funds
+              </button>
+            ) : (
+              <a href="/v3/billing/plans" onClick={(event) => event.stopPropagation()} className="shrink-0 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                View plans
+              </a>
+            )}
           </div>
         ) : null}
         {sessionPaused ? (
           <div role="status" className="fixed inset-x-4 top-20 z-20 flex items-center justify-between gap-3 rounded-lg bg-danger px-4 py-2.5 text-sm font-semibold text-on-danger shadow-panel">
             <span>Session paused</span>
-            <button type="button" onClick={(event) => { event.stopPropagation(); setTopUpOpen(true) }} className="shrink-0 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-              Add funds
-            </button>
+            {hasActivePlan ? (
+              <button type="button" onClick={(event) => { event.stopPropagation(); setTopUpOpen(true) }} className="shrink-0 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                Add funds
+              </button>
+            ) : (
+              <a href="/v3/billing/plans" onClick={(event) => event.stopPropagation()} className="shrink-0 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                View plans
+              </a>
+            )}
           </div>
         ) : null}
 
@@ -1887,17 +1901,29 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
       {lowBalance && !sessionPaused ? (
         <div role="status" className="flex shrink-0 items-center justify-between gap-3 border-b border-warning bg-warning-surface px-5 py-2 text-sm text-warning">
           <span>Running low on balance.</span>
-          <button type="button" onClick={() => setTopUpOpen(true)} className="shrink-0 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-            Add funds
-          </button>
+          {hasActivePlan ? (
+            <button type="button" onClick={() => setTopUpOpen(true)} className="shrink-0 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+              Add funds
+            </button>
+          ) : (
+            <a href="/v3/billing/plans" className="shrink-0 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+              View plans
+            </a>
+          )}
         </div>
       ) : null}
       {sessionPaused ? (
         <div role="status" className="flex shrink-0 items-center justify-between gap-3 border-b border-danger bg-danger px-5 py-2 text-sm font-semibold text-on-danger">
           <span>Session paused, you&apos;re out of balance.</span>
-          <button type="button" onClick={() => setTopUpOpen(true)} className="shrink-0 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-            Add funds to continue
-          </button>
+          {hasActivePlan ? (
+            <button type="button" onClick={() => setTopUpOpen(true)} className="shrink-0 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+              Add funds to continue
+            </button>
+          ) : (
+            <a href="/v3/billing/plans" className="shrink-0 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+              View plans
+            </a>
+          )}
         </div>
       ) : null}
       <section
