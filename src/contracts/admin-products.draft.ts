@@ -128,6 +128,36 @@ export type AdminDoneForYouApplicant = {
   readonly jobsSubmittedCount: number
 }
 
+/**
+ * A pre-fulfillment stage distinct from `AdminDoneForYouApplicant`: a lead has paid and
+ * agreed to the service terms, but hasn't had an onboarding call yet, so no success manager
+ * or job-submission tracking applies. `promoted`/`handling-manually` leads drop out of the
+ * default (unreviewed) Leads view but keep their record for the status filter.
+ */
+export type AdminDoneForYouLeadStatus = 'new' | 'call-scheduled' | 'promoted' | 'handling-manually'
+
+export type AdminDoneForYouLead = {
+  readonly id: string
+  readonly userName: string
+  readonly userEmail: string
+  readonly userPhone: string
+  readonly packageId: 'dfy-small' | 'dfy-large'
+  readonly amountPaidCents: number
+  readonly signedUpLabel: string
+  readonly status: AdminDoneForYouLeadStatus
+  /** Reused from the candidate's Auto-Apply profile rather than re-collected at DFY signup. */
+  readonly targetRoles: readonly string[]
+  readonly experienceLevel: string
+  readonly locations: readonly string[]
+  readonly resumeFileName: string
+  /** Answers collected during the DFY signup agreement step. */
+  readonly excludedCompanies: string
+  readonly shareSalaryExpectations: boolean
+  readonly contactPreference: 'email' | 'phone' | 'either'
+  readonly contactNote: string
+  readonly agreedToTermsLabel: string
+}
+
 export type AdminProductSessionRow = {
   readonly id: string
   readonly userName: string
@@ -166,6 +196,7 @@ export type AdminProductDetail = {
   readonly stats: readonly AdminProductDetailStat[]
   readonly trend: readonly AdminProductTrendPoint[]
   readonly sessions: readonly AdminProductSessionRow[]
+  readonly doneForYouLeads?: readonly AdminDoneForYouLead[]
   readonly doneForYouApplicants?: readonly AdminDoneForYouApplicant[]
   readonly errorGroups: readonly AdminProductErrorGroup[]
   readonly blastRadiusUsers: number

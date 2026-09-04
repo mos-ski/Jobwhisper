@@ -16,7 +16,7 @@ export function AutoApplyJobsPage({ selectedJobId }: { readonly selectedJobId?: 
       jobs={autoApplyJobs}
       selectedJob={selectedJob}
       resumePreview={resumeDocument}
-      preferredLocations={autoApplySetup.locations}
+      profile={{ country: autoApplySetup.country, desiredRole: autoApplySetup.desiredRole, locations: autoApplySetup.locations }}
     />
   )
 }

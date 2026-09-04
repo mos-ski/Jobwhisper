@@ -3,12 +3,16 @@ import {
   Activity,
   AlertTriangle,
   ArrowLeft,
+  CalendarPlus,
   CircleSlash,
+  Download,
   RefreshCw,
   TriangleAlert,
 } from 'lucide-react'
 
 import type {
+  AdminDoneForYouLead,
+  AdminDoneForYouLeadStatus,
   AdminDoneForYouPipelineStatus,
   AdminProductDetail,
   AdminProductErrorGroup,
@@ -108,6 +112,53 @@ const PACKAGE_LABELS: Record<string, string> = {
 }
 
 const SUCCESS_MANAGERS = ['Daniel Okoye', 'Priya Raghunathan', 'Rachel Adeyemi']
+
+const leadStatusMeta: Record<AdminDoneForYouLeadStatus, { readonly label: string; readonly variant: BadgeVariant }> = {
+  'new': { label: 'New', variant: 'neutral' },
+  'call-scheduled': { label: 'Call scheduled', variant: 'accent' },
+  'promoted': { label: 'Promoted', variant: 'positive' },
+  'handling-manually': { label: 'Handling manually', variant: 'info' },
+}
+
+const contactPreferenceLabels: Record<AdminDoneForYouLead['contactPreference'], string> = {
+  email: 'Email',
+  phone: 'Phone',
+  either: 'Either',
+}
+
+function googleCalendarUrl(lead: AdminDoneForYouLead): string {
+  const text = encodeURIComponent(`Done-For-You onboarding call — ${lead.userName}`)
+  const details = encodeURIComponent(
+    [
+      `Package: ${PACKAGE_LABELS[lead.packageId] ?? lead.packageId}`,
+      `Email: ${lead.userEmail}`,
+      `Phone: ${lead.userPhone}`,
+      `Contact preference: ${contactPreferenceLabels[lead.contactPreference]}${lead.contactNote ? ` (${lead.contactNote})` : ''}`,
+    ].join('\n'),
+  )
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${details}`
+}
+
+function downloadLeadPacket(lead: AdminDoneForYouLead) {
+  const lines = [
+    `Name: ${lead.userName}`,
+    `Email: ${lead.userEmail}`,
+    `Phone: ${lead.userPhone}`,
+    `Package: ${PACKAGE_LABELS[lead.packageId] ?? lead.packageId}`,
+    `Target roles: ${lead.targetRoles.join(', ')}`,
+    `Experience level: ${lead.experienceLevel}`,
+    `Locations: ${lead.locations.join(', ')}`,
+    `Resume file: ${lead.resumeFileName}`,
+    `Excluded companies: ${lead.excludedCompanies || 'None specified'}`,
+  ]
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `${lead.userName.replace(/\s+/g, '-')}-dfy-packet.txt`
+  link.click()
+  URL.revokeObjectURL(url)
+}
 
 function StatusBadge({ status }: { readonly status: AdminProductStatus }) {
   const meta = statusMeta[status]
@@ -451,6 +502,8 @@ export function AdminProductDetailView({
   const [showTrendTable, setShowTrendTable] = useState(false)
   const [applicantManagerOverrides, setApplicantManagerOverrides] = useState<Readonly<Record<string, string>>>({})
   const [applicantStatusOverrides, setApplicantStatusOverrides] = useState<Readonly<Record<string, AdminDoneForYouPipelineStatus>>>({})
+  const [leadStatusOverrides, setLeadStatusOverrides] = useState<Readonly<Record<string, AdminDoneForYouLeadStatus>>>({})
+  const [showResolvedLeads, setShowResolvedLeads] = useState(false)
 
   const filteredSessions = useMemo(() => {
     if (!product) return []
@@ -667,6 +720,134 @@ export function AdminProductDetailView({
                 />
               )}
             </section>
+
+            {product.id === 'done-for-you' && product.doneForYouLeads ? (
+              <section aria-label="Leads" className="grid gap-3">
+                <h2 className="font-gowun text-lg font-bold text-ink">Leads</h2>
+                <p className="text-sm text-ink-muted">
+                  Signed up and paid, waiting on an onboarding call before a success manager is assigned.
+                </p>
+                {(() => {
+                  const leadsWithStatus = product.doneForYouLeads!.map((lead) => ({
+                    lead,
+                    status: leadStatusOverrides[lead.id] ?? lead.status,
+                  }))
+                  const visibleLeads = showResolvedLeads
+                    ? leadsWithStatus
+                    : leadsWithStatus.filter(({ status }) => status === 'new' || status === 'call-scheduled')
+
+                  return (
+                    <>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <label className="flex items-center gap-2 text-sm text-ink-muted">
+                          <Switch checked={showResolvedLeads} onCheckedChange={setShowResolvedLeads} />
+                          Show promoted / handled manually
+                        </label>
+                        <p className="ms-auto text-sm text-ink-muted">{visibleLeads.length} of {leadsWithStatus.length} leads</p>
+                      </div>
+
+                      {visibleLeads.length === 0 ? (
+                        <EmptyState title="No leads need review" description="Every lead has either been promoted to the pipeline or is being handled manually." />
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-start text-sm">
+                            <thead>
+                              <tr className="border-b border-border">
+                                <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Lead</th>
+                                <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Target</th>
+                                <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Package</th>
+                                <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Contact</th>
+                                <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Signed up</th>
+                                <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Status</th>
+                                <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {visibleLeads.map(({ lead, status }) => {
+                                const statusMeta = leadStatusMeta[status]
+                                const isResolved = status === 'promoted' || status === 'handling-manually'
+                                return (
+                                  <tr key={lead.id} className="border-b border-border last:border-b-0">
+                                    <td className="px-4 py-3">
+                                      <span className="flex items-center gap-2">
+                                        <Avatar name={lead.userName} size="xs" />
+                                        <span className="min-w-0">
+                                          <span className="block truncate font-medium text-ink">{lead.userName}</span>
+                                          <span className="block truncate text-xs text-ink-muted">{lead.userEmail}</span>
+                                        </span>
+                                      </span>
+                                    </td>
+                                    <td className="px-4 py-3">
+                                      <span className="block min-w-0">
+                                        <span className="block truncate text-ink">{lead.targetRoles.join(', ')}</span>
+                                        <span className="block truncate text-xs text-ink-muted">{lead.experienceLevel} · {lead.locations.join(', ')}</span>
+                                      </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-ink-muted">{PACKAGE_LABELS[lead.packageId] ?? lead.packageId}</td>
+                                    <td className="px-4 py-3">
+                                      <span className="block min-w-0">
+                                        <span className="block text-ink">{contactPreferenceLabels[lead.contactPreference]}</span>
+                                        {lead.contactNote ? <span className="block truncate text-xs text-ink-muted">{lead.contactNote}</span> : null}
+                                      </span>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap text-ink-muted">{lead.signedUpLabel}</td>
+                                    <td className="px-4 py-3">
+                                      <Badge variant={statusMeta.variant} size="sm">{statusMeta.label}</Badge>
+                                    </td>
+                                    <td className="px-4 py-3">
+                                      <div className="flex flex-wrap gap-1.5">
+                                        {!isResolved ? (
+                                          <a
+                                            href={googleCalendarUrl(lead)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            onClick={() => setLeadStatusOverrides((prev) => ({ ...prev, [lead.id]: 'call-scheduled' }))}
+                                            className="inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-input px-2.5 text-xs font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                                          >
+                                            <CalendarPlus aria-hidden="true" className="size-3.5" />
+                                            Schedule call
+                                          </a>
+                                        ) : null}
+                                        {!isResolved ? (
+                                          <button
+                                            type="button"
+                                            onClick={() => setLeadStatusOverrides((prev) => ({ ...prev, [lead.id]: 'promoted' }))}
+                                            className="inline-flex min-h-8 items-center rounded-lg border border-input px-2.5 text-xs font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                                          >
+                                            Promote
+                                          </button>
+                                        ) : null}
+                                        {!isResolved ? (
+                                          <button
+                                            type="button"
+                                            onClick={() => setLeadStatusOverrides((prev) => ({ ...prev, [lead.id]: 'handling-manually' }))}
+                                            className="inline-flex min-h-8 items-center rounded-lg border border-input px-2.5 text-xs font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                                          >
+                                            Handle manually
+                                          </button>
+                                        ) : null}
+                                        <button
+                                          type="button"
+                                          onClick={() => downloadLeadPacket(lead)}
+                                          className="inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-input px-2.5 text-xs font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                                        >
+                                          <Download aria-hidden="true" className="size-3.5" />
+                                          Packet
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                )
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </>
+                  )
+                })()}
+              </section>
+            ) : null}
 
             {product.id === 'done-for-you' && product.doneForYouApplicants ? (
               <section aria-label="Applicant pipeline" className="grid gap-3">

@@ -1,13 +1,19 @@
 import { useState } from 'react'
-import { Check } from 'lucide-react'
 
+import type { AutoApplyProfileSnapshot } from '@/features/auto-apply/auto-apply-view'
 import { AppShell } from '@/features/dashboard/app-nav'
 import { Button, ShellBar, Tooltip, TooltipContent, TooltipTrigger } from '@/ui'
+
+import { DfySignupDialog, type DfySignupLead, type DfySignupPackage } from './dfy-signup-dialog'
 
 export type DoneForYouViewProps = {
   readonly homeHref: string
   readonly backHref: string
   readonly usageHref: string
+  readonly setupHref: string
+  readonly profile: AutoApplyProfileSnapshot
+  readonly savedCard: { readonly label: string; readonly expiryLabel: string }
+  readonly onSignupComplete?: (lead: DfySignupLead) => void
 }
 
 const DFY_PACKAGES = [
@@ -78,8 +84,8 @@ function PackageDetailsTable() {
   )
 }
 
-export function DoneForYouView({ homeHref, backHref, usageHref }: DoneForYouViewProps) {
-  const [sentId, setSentId] = useState<string | null>(null)
+export function DoneForYouView({ homeHref, backHref, usageHref, setupHref, profile, savedCard, onSignupComplete }: DoneForYouViewProps) {
+  const [signupPackage, setSignupPackage] = useState<DfySignupPackage | null>(null)
 
   return (
     <AppShell>
@@ -121,20 +127,13 @@ export function DoneForYouView({ homeHref, backHref, usageHref }: DoneForYouView
                 <p className="mt-1 text-sm text-ink-muted">{pkg.access}</p>
 
                 <div className="mt-5">
-                  {sentId === pkg.id ? (
-                    <p className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-positive/20 bg-positive-surface text-sm font-semibold text-positive">
-                      <Check aria-hidden="true" className="size-4" />
-                      Request sent
-                    </p>
-                  ) : (
-                    <Button
-                      variant={pkg.recommended ? 'primary' : 'secondary'}
-                      className="w-full"
-                      onClick={() => setSentId(pkg.id)}
-                    >
-                      Get Started
-                    </Button>
-                  )}
+                  <Button
+                    variant={pkg.recommended ? 'primary' : 'secondary'}
+                    className="w-full"
+                    onClick={() => setSignupPackage({ id: pkg.id, jobsLabel: pkg.jobs, priceLabel: `$${pkg.price}` })}
+                  >
+                    Get Started
+                  </Button>
                 </div>
               </article>
             ))}
@@ -142,6 +141,20 @@ export function DoneForYouView({ homeHref, backHref, usageHref }: DoneForYouView
         </article>
         <PackageDetailsTable />
       </section>
+
+      {signupPackage ? (
+        <DfySignupDialog
+          open
+          onOpenChange={(open) => {
+            if (!open) setSignupPackage(null)
+          }}
+          pkg={signupPackage}
+          profile={profile}
+          setupHref={setupHref}
+          savedCard={savedCard}
+          onComplete={(lead) => onSignupComplete?.(lead)}
+        />
+      ) : null}
     </AppShell>
   )
 }

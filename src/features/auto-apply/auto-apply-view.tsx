@@ -87,7 +87,7 @@ export type AutoApplyJobsViewProps = {
   readonly jobs: readonly AutoApplyJob[]
   readonly selectedJob?: AutoApplyJob
   readonly resumePreview: ResumeDocument
-  readonly preferredLocations: readonly string[]
+  readonly profile: AutoApplyProfileSnapshot
 }
 
 export type AutoApplyAppliedViewProps = {
@@ -1534,14 +1534,14 @@ function JobPreview({
   onClose,
   applied = false,
   resumePreview,
-  preferredLocations = [],
+  profile = { country: '', desiredRole: [], locations: [] },
   setupHref,
 }: {
   readonly job: AutoApplyJob
   readonly onClose: () => void
   readonly applied?: boolean
   readonly resumePreview: ResumeDocument
-  readonly preferredLocations?: readonly string[]
+  readonly profile?: AutoApplyProfileSnapshot
   readonly setupHref: string
 }) {
   const [resumePreviewOpen, setResumePreviewOpen] = useState(false)
@@ -1750,7 +1750,7 @@ function JobPreview({
             ) : null}
           </div>
 
-          {!applied && job.status !== 'posting-closed' ? <ProfileIncompleteBanner preferredLocations={preferredLocations} setupHref={setupHref} /> : null}
+          {!applied && job.status !== 'posting-closed' ? <ProfileIncompleteBanner profile={profile} setupHref={setupHref} /> : null}
 
           <div className="mt-6 grid gap-2 border-t border-border pt-5">
             {applied || job.status === 'posting-closed' ? (
@@ -1996,19 +1996,45 @@ function applyJobFilters(jobs: readonly AutoApplyJob[], search: string, filters:
   })
 }
 
-function ProfileIncompleteBanner({ preferredLocations, setupHref }: { readonly preferredLocations: readonly string[]; readonly setupHref: string }) {
-  if (preferredLocations.length > 0) return null
+/** The fields Auto-Apply and Done-For-You both need before either can act on a candidate's behalf. */
+export type AutoApplyProfileSnapshot = {
+  readonly country: string
+  readonly desiredRole: readonly string[]
+  readonly locations: readonly string[]
+}
+
+export function getMissingProfileFields(profile: AutoApplyProfileSnapshot): readonly { readonly label: string; readonly linkLabel: string }[] {
+  const missing: { label: string; linkLabel: string }[] = []
+  if (!profile.country) missing.push({ label: 'Country', linkLabel: 'Add your country' })
+  if (profile.desiredRole.length === 0) missing.push({ label: 'Target roles', linkLabel: 'Add your target roles' })
+  if (profile.locations.length === 0) missing.push({ label: 'Preferred locations', linkLabel: 'Add your preferred locations' })
+  return missing
+}
+
+export function ProfileIncompleteBanner({ profile, setupHref, description }: {
+  readonly profile: AutoApplyProfileSnapshot
+  readonly setupHref: string
+  readonly description?: string
+}) {
+  const missing = getMissingProfileFields(profile)
+  if (missing.length === 0) return null
 
   return (
     <div className="mb-3 border border-warning/30 bg-warning-surface p-[18px]">
       <p className="text-xs font-bold uppercase tracking-wide text-warning">Finish your profile to apply</p>
-      <p className="mt-1 text-sm text-ink">Auto-Apply cannot complete an employer&rsquo;s form without these, so it won&rsquo;t start one.</p>
-      <p className="mt-3 text-sm">
-        <span className="font-semibold text-ink">Preferred locations</span>{' '}
-        <a href={setupHref} className="font-medium text-accent underline underline-offset-4 hover:text-accent-hover">
-          Add your preferred locations
-        </a>
+      <p className="mt-1 text-sm text-ink">
+        {description ?? 'Auto-Apply cannot complete an employer’s form without these, so it won’t start one.'}
       </p>
+      <div className="mt-3 grid gap-2">
+        {missing.map((field) => (
+          <p key={field.label} className="text-sm">
+            <span className="font-semibold text-ink">{field.label}</span>{' '}
+            <a href={setupHref} className="font-medium text-accent underline underline-offset-4 hover:text-accent-hover">
+              {field.linkLabel}
+            </a>
+          </p>
+        ))}
+      </div>
     </div>
   )
 }
@@ -2030,7 +2056,7 @@ function AutoApplyExtensionPromo() {
   )
 }
 
-export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, appliedHref, resumeHistoryHref, jobs, selectedJob: initialSelectedJob, resumePreview, preferredLocations }: AutoApplyJobsViewProps) {
+export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, appliedHref, resumeHistoryHref, jobs, selectedJob: initialSelectedJob, resumePreview, profile }: AutoApplyJobsViewProps) {
   const [selectedJob, setSelectedJob] = useState<AutoApplyJob | undefined>(initialSelectedJob)
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<JobFilters>(DEFAULT_FILTERS)
@@ -2061,7 +2087,7 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
                 </nav>
               </div>
               <div className="pt-5">
-                <ProfileIncompleteBanner preferredLocations={preferredLocations} setupHref={setupHref} />
+                <ProfileIncompleteBanner profile={profile} setupHref={setupHref} />
               </div>
               <div className="flex gap-6">
                 <div className="min-w-0 flex-1">
@@ -2106,7 +2132,7 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
                   </div>
                 </div>
                 {selectedJob ? (
-                  <JobPreview job={selectedJob} onClose={() => setSelectedJob(undefined)} applied={selectedJob.status === 'applied'} resumePreview={resumePreview} preferredLocations={preferredLocations} setupHref={setupHref} />
+                  <JobPreview job={selectedJob} onClose={() => setSelectedJob(undefined)} applied={selectedJob.status === 'applied'} resumePreview={resumePreview} profile={profile} setupHref={setupHref} />
                 ) : null}
               </div>
             </div>
