@@ -132,7 +132,7 @@ function ErrorPanel({ message, onRetry }: { readonly message: string; readonly o
   return (
     <div
       role="alert"
-      className="rounded-panel border border-danger bg-danger-surface p-6 text-center shadow-control"
+      className="bg-danger-surface p-6 text-center shadow-panel"
     >
       <AlertTriangle aria-hidden="true" className="mx-auto size-6 text-danger" />
       <p className="mt-3 text-sm font-semibold text-ink">Could not load accounts</p>
@@ -385,7 +385,7 @@ export function AdminAccountsListView({
 
         <section aria-label="Account totals" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {isLoading ? (
-            Array.from({ length: 4 }, (_, index) => <Skeleton key={index} className="h-24 rounded-panel" />)
+            Array.from({ length: 4 }, (_, index) => <Skeleton key={index} className="h-24" />)
           ) : (
             <>
               <StatCard label="Total accounts" value={countFormatter.format(summary.totalAccounts)} icon={<Users />} />
@@ -407,7 +407,7 @@ export function AdminAccountsListView({
         {errorMessage ? (
           <ErrorPanel message={errorMessage} onRetry={onRetry} />
         ) : isFirstRun && !isLoading ? (
-          <section className="rounded-panel border border-border bg-surface shadow-control">
+          <section className="bg-surface shadow-panel">
             <EmptyState
               icon={<Users />}
               title="No accounts yet"
@@ -420,7 +420,7 @@ export function AdminAccountsListView({
             />
           </section>
         ) : (
-          <section aria-label="All accounts" className="rounded-panel border border-border bg-surface shadow-control">
+          <section aria-label="All accounts" className="bg-surface shadow-panel">
             <div className="flex flex-wrap items-end gap-3 border-b border-border p-4">
               <div className="min-w-[10rem] flex-1 sm:max-w-[14rem]">
                 <SelectField
@@ -597,7 +597,7 @@ function Panel({ title, description, children, action }: {
   readonly action?: ReactNode
 }) {
   return (
-    <section className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5">
+    <section className="bg-surface p-4 shadow-panel sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="font-gowun text-lg font-bold text-ink">{title}</h2>
@@ -613,13 +613,13 @@ function Panel({ title, description, children, action }: {
 function DetailSkeleton() {
   return (
     <div className="grid gap-6 p-4 sm:p-6">
-      <Skeleton className="h-24 rounded-panel" />
+      <Skeleton className="h-24" />
       <div className="grid gap-4 lg:grid-cols-3">
-        <Skeleton className="h-56 rounded-panel" />
-        <Skeleton className="h-56 rounded-panel" />
-        <Skeleton className="h-56 rounded-panel" />
+        <Skeleton className="h-56" />
+        <Skeleton className="h-56" />
+        <Skeleton className="h-56" />
       </div>
-      <Skeleton className="h-96 rounded-panel" />
+      <Skeleton className="h-96" />
     </div>
   )
 }
@@ -788,7 +788,7 @@ export function AdminAccountDetailView({
           {errorMessage ? (
             <ErrorPanel message={errorMessage} onRetry={onRetry} />
           ) : (
-            <section className="rounded-panel border border-border bg-surface shadow-control">
+            <section className="bg-surface shadow-panel">
               <EmptyState
                 icon={<Users />}
                 title="Account not found"
@@ -796,7 +796,7 @@ export function AdminAccountDetailView({
                 action={
                   <a
                     href={accountsHref}
-                    className="inline-flex min-h-9 items-center justify-center rounded-md border border-input px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                    className="inline-flex min-h-9 items-center justify-center rounded-lg border border-input px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                   >
                     Back to all accounts
                   </a>
@@ -907,7 +907,7 @@ export function AdminAccountDetailView({
         </p>
 
         {isSuspended ? (
-          <div role="status" className="rounded-panel border border-danger bg-danger-surface p-4">
+          <div role="status" className="bg-danger-surface p-4">
             <p className="flex items-start gap-2 text-sm font-bold text-danger">
               <Ban aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
               This account is suspended{account.suspendedOn ? ` since ${account.suspendedOn}` : ''}.
@@ -1000,7 +1000,7 @@ export function AdminAccountDetailView({
           </Panel>
         </div>
 
-        <section className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5" aria-label="Account records">
+        <section className="bg-surface p-4 shadow-panel sm:p-5" aria-label="Account records">
           <Tabs value={tab} onValueChange={(value) => onTabChange(value as AdminAccountDetailTab)}>
             <TabsList>
               <TabsTrigger value="credits" className="min-h-11">Credit history</TabsTrigger>

@@ -123,7 +123,7 @@ function StatTile({ label, value, caption, deltaPercent, deltaDirection, higherI
   readonly higherIsBetter: boolean
 }) {
   return (
-    <article className="rounded-panel border border-border bg-surface p-4 shadow-control">
+    <article className="bg-surface p-4 shadow-panel">
       <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{label}</h3>
       <p className="mt-2 font-gowun text-3xl font-bold leading-9 text-ink">{value}</p>
       <DeltaLine deltaPercent={deltaPercent} deltaDirection={deltaDirection} higherIsBetter={higherIsBetter} />
@@ -150,7 +150,7 @@ function TrendChart({ points, metric, showTable, onToggleTable }: {
         {points.map((point, index) => (
           <div key={point.label} className="group relative flex h-full flex-1 items-end">
             <div
-              className="w-full rounded-t-sm bg-accent transition-colors duration-normal ease-default group-hover:bg-accent-hover motion-reduce:transition-none"
+              className="w-full bg-accent transition-colors duration-normal ease-default group-hover:bg-accent-hover motion-reduce:transition-none"
               style={{ height: `${Math.max(2, (values[index] / max) * 100)}%` }}
             />
             <span className="pointer-events-none absolute inset-x-0 bottom-full z-dropdown mb-1 hidden justify-center group-hover:flex">
@@ -252,12 +252,12 @@ export function AdminProductsView({
         {isLoading ? (
           <>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              {Array.from({ length: 4 }, (_, index) => <Skeleton key={index} className="h-32 rounded-panel" />)}
+              {Array.from({ length: 4 }, (_, index) => <Skeleton key={index} className="h-32" />)}
             </div>
-            <Skeleton className="h-96 rounded-panel" />
+            <Skeleton className="h-96" />
           </>
         ) : errorMessage ? (
-          <div role="alert" className="rounded-panel border border-danger bg-danger-surface p-6 text-center shadow-control">
+          <div role="alert" className="bg-danger-surface p-6 text-center shadow-panel">
             <AlertTriangle aria-hidden="true" className="mx-auto size-6 text-danger" />
             <p className="mt-3 text-sm font-semibold text-ink">Could not load products</p>
             <p className="mx-auto mt-1 max-w-md text-sm leading-6 text-ink-muted">{errorMessage}</p>
@@ -311,7 +311,7 @@ export function AdminProductsView({
                   const enabled = isEnabled(row)
                   const effectiveStatus: AdminProductStatus = enabled ? row.status : 'disabled'
                   return (
-                    <li key={row.id} className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5">
+                    <li key={row.id} className="bg-surface p-4 shadow-panel sm:p-5">
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
@@ -376,7 +376,7 @@ export function AdminProductsView({
             This immediately hides {pendingDisable?.name} for {pendingDisable?.blastRadiusLabel}. Sessions already running are not interrupted, but no one can start a new one until it is re-enabled.
           </DialogDescription>
           <div className="mt-5 flex flex-wrap justify-end gap-2">
-            <DialogClose className="static inline-flex min-h-9 items-center rounded-md border border-input px-4 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+            <DialogClose className="static inline-flex min-h-9 items-center rounded-lg border border-input px-4 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
               Keep it live
             </DialogClose>
             <Button
@@ -500,14 +500,14 @@ export function AdminProductDetailView({
 
         {isLoading ? (
           <>
-            <Skeleton className="h-20 rounded-panel" />
+            <Skeleton className="h-20" />
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {Array.from({ length: 6 }, (_, index) => <Skeleton key={index} className="h-32 rounded-panel" />)}
+              {Array.from({ length: 6 }, (_, index) => <Skeleton key={index} className="h-32" />)}
             </div>
-            <Skeleton className="h-80 rounded-panel" />
+            <Skeleton className="h-80" />
           </>
         ) : errorMessage ? (
-          <div role="alert" className="rounded-panel border border-danger bg-danger-surface p-6 text-center shadow-control">
+          <div role="alert" className="bg-danger-surface p-6 text-center shadow-panel">
             <AlertTriangle aria-hidden="true" className="mx-auto size-6 text-danger" />
             <p className="mt-3 text-sm font-semibold text-ink">Could not load this product</p>
             <p className="mx-auto mt-1 max-w-md text-sm leading-6 text-ink-muted">{errorMessage}</p>
@@ -518,7 +518,7 @@ export function AdminProductDetailView({
             title="Product not found"
             description="This product id does not match anything on the platform."
             action={
-              <a href={productsHref} className="inline-flex min-h-9 items-center justify-center rounded-md border border-input px-4 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+              <a href={productsHref} className="inline-flex min-h-9 items-center justify-center rounded-lg border border-input px-4 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                 Back to all products
               </a>
             }
@@ -554,7 +554,7 @@ export function AdminProductDetailView({
               ))}
             </div>
 
-            <section className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5" aria-label="Usage over time">
+            <section className="bg-surface p-4 shadow-panel sm:p-5" aria-label="Usage over time">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="font-gowun text-lg font-bold text-ink">{trendMetric === 'sessions' ? 'Sessions' : 'Credits consumed'} over time</h2>
                 <div className="flex gap-1 rounded-md border border-border p-1" role="group" aria-label="Trend metric">
@@ -583,7 +583,7 @@ export function AdminProductDetailView({
             </section>
 
             {product.errorGroups.length > 0 ? (
-              <section className="rounded-panel border border-border bg-surface shadow-control" aria-label="Recent errors">
+              <section className="bg-surface shadow-panel" aria-label="Recent errors">
                 <h2 className="border-b border-border p-4 font-gowun text-lg font-bold text-ink sm:px-5">Recent errors</h2>
                 <ul>
                   {product.errorGroups.map((group) => (

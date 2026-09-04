@@ -139,7 +139,7 @@ function SummaryTiles({ summary }: { readonly summary: AdminTransactionsSummary 
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {tiles.map((tile) => (
-        <article key={tile.label} className="rounded-panel border border-border bg-surface p-4 shadow-control">
+        <article key={tile.label} className="bg-surface p-4 shadow-panel">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{tile.label}</h3>
           <p className="mt-2 font-gowun text-3xl font-bold leading-9 text-ink">{tile.value}</p>
           <p className="mt-1 text-xs text-ink-muted">{tile.caption}</p>
@@ -308,7 +308,7 @@ export function AdminTransactionsView({
           const overdue = row.daysUntilEvidenceDue < 0
           const urgent = !resolved && row.daysUntilEvidenceDue <= 3
           return (
-            <li key={row.id} className="rounded-panel border border-border bg-surface p-4 shadow-control">
+            <li key={row.id} className="bg-surface p-4 shadow-panel">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -353,7 +353,7 @@ export function AdminTransactionsView({
           const resolved = resolvedRefunds[row.id]
           const partial = row.amountCents < row.originalAmountCents
           return (
-            <li key={row.id} className="rounded-panel border border-border bg-surface p-4 shadow-control">
+            <li key={row.id} className="bg-surface p-4 shadow-panel">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -395,9 +395,9 @@ export function AdminTransactionsView({
         {isLoading ? (
           <>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              {Array.from({ length: 4 }, (_, index) => <Skeleton key={index} className="h-28 rounded-panel" />)}
+              {Array.from({ length: 4 }, (_, index) => <Skeleton key={index} className="h-28" />)}
             </div>
-            <Skeleton className="h-96 rounded-panel" />
+            <Skeleton className="h-96" />
           </>
         ) : errorMessage ? (
           <EmptyState
@@ -410,7 +410,7 @@ export function AdminTransactionsView({
             <SummaryTiles summary={summary} />
 
             {summary.failedRenewalCount > 0 ? (
-              <div role="status" className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-warning bg-warning-surface px-4 py-3 text-sm text-warning">
+              <div role="status" className="flex flex-wrap items-center justify-between gap-3 bg-warning-surface px-4 py-3 text-sm text-warning">
                 <span className="inline-flex items-center gap-2 font-semibold">
                   <AlertTriangle aria-hidden="true" className="size-4" />
                   {summary.failedRenewalCount} failed renewals worth {formatUsd(summary.failedRenewalCents)} in the last 48 hours
@@ -487,7 +487,7 @@ export function AdminTransactionsView({
               : `Evidence for ${disputeAction ? formatUsd(disputeAction.row.amountCents) : ''} against ${disputeAction?.row.customerName} will be sent to the card network. You cannot edit it after submitting.`}
           </DialogDescription>
           <div className="mt-5 flex flex-wrap justify-end gap-2">
-            <DialogClose className="static inline-flex min-h-9 items-center rounded-md border border-input px-4 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+            <DialogClose className="static inline-flex min-h-9 items-center rounded-lg border border-input px-4 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
               Cancel
             </DialogClose>
             <Button
@@ -521,7 +521,7 @@ export function AdminTransactionsView({
                 value={denyReason}
                 onChange={(event) => setDenyReason(event.target.value)}
                 rows={3}
-                className="mt-1.5 w-full rounded-md border border-input bg-canvas p-3 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                className="mt-1.5 w-full rounded-lg border border-input bg-canvas p-3 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                 placeholder="e.g. Session was fully used and falls outside the 7-day window."
               />
               <p aria-live="polite" className="mt-1 text-xs text-ink-muted">
@@ -530,7 +530,7 @@ export function AdminTransactionsView({
             </div>
           ) : null}
           <div className="mt-5 flex flex-wrap justify-end gap-2">
-            <DialogClose className="static inline-flex min-h-9 items-center rounded-md border border-input px-4 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+            <DialogClose className="static inline-flex min-h-9 items-center rounded-lg border border-input px-4 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
               Cancel
             </DialogClose>
             <Button
@@ -588,8 +588,8 @@ export function AdminTransactionDetailView({
 
         {isLoading ? (
           <>
-            <Skeleton className="h-24 rounded-panel" />
-            <Skeleton className="h-80 rounded-panel" />
+            <Skeleton className="h-24" />
+            <Skeleton className="h-80" />
           </>
         ) : errorMessage ? (
           <EmptyState title="Could not load this transaction" description={errorMessage} action={onRetry ? <Button onClick={onRetry}>Try again</Button> : undefined} />
@@ -625,7 +625,7 @@ export function AdminTransactionDetailView({
             </div>
 
             {transaction.dispute ? (
-              <div role="status" className="rounded-panel border border-danger bg-danger-surface p-4">
+              <div role="status" className="bg-danger-surface p-4">
                 <p className="inline-flex items-center gap-2 text-sm font-bold text-danger">
                   <Scale aria-hidden="true" className="size-4" />
                   Disputed, {disputeReasonLabels[transaction.dispute.reason]}
@@ -638,7 +638,7 @@ export function AdminTransactionDetailView({
             ) : null}
 
             {transaction.failureReason ? (
-              <div role="status" className="rounded-panel border border-warning bg-warning-surface p-4 text-sm font-semibold text-warning">
+              <div role="status" className="bg-warning-surface p-4 text-sm font-semibold text-warning">
                 <span className="inline-flex items-center gap-2">
                   <AlertTriangle aria-hidden="true" className="size-4" />
                   {transaction.failureReason}
@@ -647,7 +647,7 @@ export function AdminTransactionDetailView({
             ) : null}
 
             <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-              <section className="rounded-panel border border-border bg-surface shadow-control" aria-label="Invoice line items">
+              <section className="bg-surface shadow-panel" aria-label="Invoice line items">
                 <h2 className="border-b border-border p-4 font-gowun text-lg font-bold text-ink sm:px-5">Line items</h2>
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[34rem] text-sm">
@@ -699,7 +699,7 @@ export function AdminTransactionDetailView({
               </section>
 
               <div className="grid gap-4">
-                <section className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5" aria-label="Customer">
+                <section className="bg-surface p-4 shadow-panel sm:p-5" aria-label="Customer">
                   <h2 className="font-gowun text-lg font-bold text-ink">Customer</h2>
                   <a href={transaction.customer.accountHref} className="mt-2 block font-semibold text-accent-text underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                     {transaction.customer.name}
@@ -715,7 +715,7 @@ export function AdminTransactionDetailView({
                   </address>
                 </section>
 
-                <section className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5" aria-label="Event timeline">
+                <section className="bg-surface p-4 shadow-panel sm:p-5" aria-label="Event timeline">
                   <h2 className="font-gowun text-lg font-bold text-ink">Timeline</h2>
                   <ol className="mt-3 grid gap-3">
                     {transaction.events.map((event) => {
@@ -749,7 +749,7 @@ export function AdminTransactionDetailView({
             This returns {transaction ? formatUsd(transaction.totalCents) : ''} to {transaction?.customer.name} on {transaction?.method.label}. Refunds cannot be reversed.
           </DialogDescription>
           <div className="mt-5 flex flex-wrap justify-end gap-2">
-            <DialogClose className="static inline-flex min-h-9 items-center rounded-md border border-input px-4 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+            <DialogClose className="static inline-flex min-h-9 items-center rounded-lg border border-input px-4 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
               Cancel
             </DialogClose>
             <Button variant="danger" onClick={() => { setRefunded(true); setRefundOpen(false) }}>

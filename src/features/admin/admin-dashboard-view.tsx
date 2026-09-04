@@ -47,7 +47,7 @@ function KpiTile({ kpi, emphasis = false }: { readonly kpi: AdminKpi; readonly e
   const sign = kpi.deltaDirection === 'up' ? '+' : '−'
 
   return (
-    <article className="rounded-panel border border-border bg-surface p-4 shadow-control">
+    <article className="bg-surface p-4 shadow-panel">
       <div className="flex items-start justify-between gap-2">
         <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{kpi.label}</h3>
         {kpi.realtime ? (
@@ -92,7 +92,7 @@ function TrendChart({ points, metric, showTable, onToggleTable }: {
           return (
             <div key={point.label} className="group relative flex h-full flex-1 items-end" style={{ minWidth: `${barWidth}%` }}>
               <div
-                className="w-full rounded-t-sm bg-accent transition-colors duration-normal ease-default group-hover:bg-accent-hover motion-reduce:transition-none"
+                className="w-full bg-accent transition-colors duration-normal ease-default group-hover:bg-accent-hover motion-reduce:transition-none"
                 style={{ height: `${heightPercent}%` }}
               />
               <span className="pointer-events-none absolute inset-x-0 bottom-full z-dropdown mb-1 hidden justify-center group-hover:flex">
@@ -172,7 +172,7 @@ function AlertRow({ alert }: { readonly alert: AdminAlert }) {
         </div>
         <a
           href={alert.href}
-          className="inline-flex min-h-9 shrink-0 items-center rounded-md border border-input px-3 text-sm font-semibold text-ink transition-colors hover:border-ink hover:bg-ink hover:text-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          className="inline-flex min-h-9 shrink-0 items-center rounded-lg border border-input px-3 text-sm font-semibold text-ink transition-colors hover:border-ink hover:bg-ink hover:text-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
         >
           {alert.actionLabel}
         </a>
@@ -212,13 +212,13 @@ function DashboardSkeleton() {
       <Skeleton className="h-9 w-64" />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {Array.from({ length: 6 }, (_, index) => (
-          <Skeleton key={index} className="h-32 rounded-panel" />
+          <Skeleton key={index} className="h-32" />
         ))}
       </div>
-      <Skeleton className="h-80 rounded-panel" />
+      <Skeleton className="h-80" />
       <div className="grid gap-4 lg:grid-cols-2">
-        <Skeleton className="h-64 rounded-panel" />
-        <Skeleton className="h-64 rounded-panel" />
+        <Skeleton className="h-64" />
+        <Skeleton className="h-64" />
       </div>
     </div>
   )
@@ -296,7 +296,7 @@ export function AdminDashboardView({
             </div>
           </section>
 
-          <section className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5" aria-label="Trend over time">
+          <section className="bg-surface p-4 shadow-panel sm:p-5" aria-label="Trend over time">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="font-gowun text-lg font-bold text-ink">
                 {trendMetric === 'revenue' ? 'Revenue' : 'Credits consumed'} over time
@@ -326,7 +326,7 @@ export function AdminDashboardView({
             />
           </section>
 
-          <section className="rounded-panel border border-border bg-surface shadow-control" aria-label="Needs attention">
+          <section className="bg-surface shadow-panel" aria-label="Needs attention">
             <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-border p-4 sm:px-5">
               <h2 className="font-gowun text-lg font-bold text-ink">Needs attention</h2>
               <p className="text-sm text-ink-muted">{alerts.length} open items</p>
@@ -339,7 +339,7 @@ export function AdminDashboardView({
           </section>
 
           <div className="grid gap-4 lg:grid-cols-2">
-            <section className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5" aria-label="Revenue by product">
+            <section className="bg-surface p-4 shadow-panel sm:p-5" aria-label="Revenue by product">
               <h2 className="font-gowun text-lg font-bold text-ink">Revenue by product</h2>
               <p className="mt-1 text-sm text-ink-muted">Share of revenue across the selected range.</p>
               <ul className="mt-2 divide-y divide-border">
@@ -355,7 +355,7 @@ export function AdminDashboardView({
               </ul>
             </section>
 
-            <section className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5" aria-label="Subscribers by plan">
+            <section className="bg-surface p-4 shadow-panel sm:p-5" aria-label="Subscribers by plan">
               <h2 className="font-gowun text-lg font-bold text-ink">Subscribers by plan</h2>
               <p className="mt-1 text-sm text-ink-muted">Ace Your Interview tiers, plus the unsubscribed base.</p>
               <ul className="mt-2 divide-y divide-border">

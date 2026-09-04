@@ -76,7 +76,7 @@ function AdminSearch({ results }: { readonly results: readonly AdminSearchResult
         onChange={(event) => setQuery(event.target.value)}
         aria-label="Search users, transactions, and invoices"
         placeholder="Search users, transactions, invoices…"
-        className="h-9 w-full rounded-md border border-input bg-canvas ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+        className="h-9 w-full rounded-lg border border-input bg-canvas ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
       />
       {trimmed ? (
         <div className="absolute inset-x-0 top-full z-shell mt-2 overflow-hidden rounded-md border border-border bg-surface shadow-popover">

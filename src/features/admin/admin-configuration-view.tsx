@@ -238,7 +238,7 @@ function SectionPanel({
   readonly action?: ReactNode
 }) {
   return (
-    <section aria-labelledby={id} className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5">
+    <section aria-labelledby={id} className="bg-surface p-4 shadow-panel sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 id={id} className="font-gowun text-lg font-bold text-ink">
@@ -352,7 +352,7 @@ function ConfigActionBar({
   const dirty = changeCount > 0
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-border bg-surface-subtle p-3 sm:p-4">
+    <div className="flex flex-wrap items-center justify-between gap-3 bg-surface-subtle p-3 sm:p-4">
       <p aria-live="polite" className="min-w-0 text-sm leading-6 text-ink">
         {dirty ? (
           <>
@@ -766,7 +766,7 @@ function PricingTab({
               <section
                 key={plan.id}
                 aria-labelledby={`${plan.id}-heading`}
-                className="grid content-start gap-4 rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5"
+                className="grid content-start gap-4 bg-surface p-4 shadow-panel sm:p-5"
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
                   <h3 id={`${plan.id}-heading`} className="font-gowun text-lg font-bold text-ink">
@@ -1485,7 +1485,7 @@ function CouponsTab({
       {statusMessage ? (
         <p
           role="status"
-          className="flex items-start gap-2 rounded-panel border border-positive/30 bg-positive-surface p-3 text-sm font-semibold leading-6 text-positive"
+          className="flex items-start gap-2 border border-positive/30 bg-positive-surface p-3 text-sm font-semibold leading-6 text-positive"
         >
           <Check aria-hidden="true" className="mt-1 size-4 shrink-0" />
           <span>{statusMessage}</span>
@@ -1493,7 +1493,7 @@ function CouponsTab({
       ) : null}
 
       {allCoupons.length === 0 ? (
-        <div className="rounded-panel border border-border bg-surface shadow-control">
+        <div className="bg-surface shadow-panel">
           <EmptyState
             icon={<TicketPercent aria-hidden="true" />}
             title="No coupons yet"
@@ -1531,7 +1531,7 @@ function CouponsTab({
             })}
           </div>
 
-          <div className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5">
+          <div className="bg-surface p-4 shadow-panel sm:p-5">
             <DataTable
               bare
               selectable={false}
@@ -2385,14 +2385,14 @@ function ConfigurationSkeleton() {
     <div className="grid gap-6 p-4 sm:p-6">
       <Skeleton className="h-9 w-64" />
       <Skeleton className="h-10 w-full max-w-md" />
-      <Skeleton className="h-16 rounded-panel" />
+      <Skeleton className="h-16" />
       <div className="grid gap-4 xl:grid-cols-3">
         {Array.from({ length: 3 }, (_, index) => (
-          <Skeleton key={index} className="h-[28rem] rounded-panel" />
+          <Skeleton key={index} className="h-[28rem]" />
         ))}
       </div>
-      <Skeleton className="h-48 rounded-panel" />
-      <Skeleton className="h-64 rounded-panel" />
+      <Skeleton className="h-48" />
+      <Skeleton className="h-64" />
     </div>
   )
 }

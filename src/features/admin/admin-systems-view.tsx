@@ -197,7 +197,7 @@ export function AdminSystemsView({
         type="button"
         onClick={() => setPendingRevoke(row)}
         disabled={!canManageAdmins}
-        className="inline-flex min-h-9 items-center gap-1.5 rounded-md px-3 text-sm font-semibold text-danger hover:bg-danger-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-40"
+        className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-danger hover:bg-danger-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-40"
       >
         <UserX aria-hidden="true" className="size-4" />
         Revoke
@@ -265,7 +265,7 @@ export function AdminSystemsView({
           </Button>
         </div>
         {!canManageAdmins ? (
-          <p role="status" className="inline-flex items-center gap-2 rounded-panel border border-border bg-surface-subtle px-4 py-3 text-sm text-ink-muted">
+          <p role="status" className="inline-flex items-center gap-2 bg-surface-subtle px-4 py-3 text-sm text-ink-muted">
             <Info aria-hidden="true" className="size-4 shrink-0" />
             You can view the team but not change it. Inviting or revoking an admin needs the “Manage users” permission.
           </p>
@@ -327,7 +327,7 @@ export function AdminSystemsView({
               value={auditFilters.query}
               onChange={(event) => onAuditFiltersChange({ query: event.target.value })}
             />
-            <ul className="overflow-hidden rounded-panel border border-border bg-surface shadow-control">
+            <ul className="overflow-hidden bg-surface shadow-panel">
               {visibleAudit.map((entry) => {
                 const expanded = expandedAuditId === entry.id
                 const detailRows = entry.changes ?? entry.affectedRecord
@@ -358,7 +358,7 @@ export function AdminSystemsView({
                           type="button"
                           onClick={() => setExpandedAuditId(expanded ? null : entry.id)}
                           aria-expanded={expanded}
-                          className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border border-input px-3 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                          className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-lg border border-input px-3 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                         >
                           {expanded ? 'Hide' : entry.changes ? 'What changed' : 'Record'}
                           <ChevronDown aria-hidden="true" className={cn('size-4 transition-transform duration-normal ease-default motion-reduce:transition-none', expanded && 'rotate-180')} />
@@ -413,7 +413,7 @@ export function AdminSystemsView({
       <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div className="grid gap-4">
           {silencedCount > 0 ? (
-            <p role="status" className="inline-flex items-start gap-2 rounded-panel border border-warning bg-warning-surface px-4 py-3 text-sm font-semibold text-warning">
+            <p role="status" className="inline-flex items-start gap-2 bg-warning-surface px-4 py-3 text-sm font-semibold text-warning">
               <BellOff aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
               {silencedCount} notification {silencedCount === 1 ? 'type is' : 'types are'} fully silenced, no one will be told when they happen.
             </p>
@@ -422,7 +422,7 @@ export function AdminSystemsView({
           {groups.map((group) => {
             const settings = notificationSettings.filter((setting) => setting.group === group)
             return (
-              <section key={group} className="rounded-panel border border-border bg-surface shadow-control" aria-label={settings[0]?.groupLabel ?? group}>
+              <section key={group} className="bg-surface shadow-panel" aria-label={settings[0]?.groupLabel ?? group}>
                 <h2 className="border-b border-border p-4 font-gowun text-lg font-bold text-ink sm:px-5">{settings[0]?.groupLabel ?? group}</h2>
                 <ul>
                   {settings.map((setting) => {
@@ -461,7 +461,7 @@ export function AdminSystemsView({
           })}
         </div>
 
-        <section className="rounded-panel border border-border bg-surface shadow-control" aria-label="Recent notifications">
+        <section className="bg-surface shadow-panel" aria-label="Recent notifications">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border p-4 sm:px-5">
             <h2 className="font-gowun text-lg font-bold text-ink">Recent</h2>
             <button
@@ -543,11 +543,11 @@ export function AdminSystemsView({
 
         {isLoading ? (
           <>
-            <Skeleton className="h-12 rounded-panel" />
-            <Skeleton className="h-96 rounded-panel" />
+            <Skeleton className="h-12" />
+            <Skeleton className="h-96" />
           </>
         ) : errorMessage ? (
-          <div role="alert" className="rounded-panel border border-danger bg-danger-surface p-6 text-center shadow-control">
+          <div role="alert" className="bg-danger-surface p-6 text-center shadow-panel">
             <AlertTriangle aria-hidden="true" className="mx-auto size-6 text-danger" />
             <p className="mt-3 text-sm font-semibold text-ink">Could not load systems data</p>
             <p className="mx-auto mt-1 max-w-md text-sm leading-6 text-ink-muted">{errorMessage}</p>
@@ -570,7 +570,7 @@ export function AdminSystemsView({
             </ul>
           ) : null}
           <div className="mt-5 flex flex-wrap justify-end gap-2">
-            <DialogClose className="static inline-flex min-h-9 items-center rounded-md border border-input px-4 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+            <DialogClose className="static inline-flex min-h-9 items-center rounded-lg border border-input px-4 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
               Cancel
             </DialogClose>
             <Button
@@ -639,7 +639,7 @@ export function AdminSystemsView({
             </fieldset>
           </div>
           <div className="mt-5 flex flex-wrap justify-end gap-2">
-            <DialogClose className="static inline-flex min-h-9 items-center rounded-md border border-input px-4 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+            <DialogClose className="static inline-flex min-h-9 items-center rounded-lg border border-input px-4 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
               Cancel
             </DialogClose>
             <Button
