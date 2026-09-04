@@ -38,27 +38,33 @@ const STEPPER: readonly { readonly step: Step; readonly label: string }[] = [
   { step: 'payment', label: 'Payment' },
 ]
 
-function StepIndicator({ step }: { readonly step: Step }) {
+function StepIndicator({ step, guaranteeLabel }: { readonly step: Step; readonly guaranteeLabel: string }) {
   const activeIndex = STEPPER.findIndex((entry) => entry.step === step)
   if (activeIndex === -1) return null
 
   return (
-    <ol className="mb-4 flex items-center gap-2" aria-label="Signup progress">
-      {STEPPER.map((entry, index) => (
-        <li key={entry.step} className="flex flex-1 items-center gap-2">
-          <span
-            className={cn(
-              'grid size-6 shrink-0 place-items-center rounded-full text-xs font-semibold',
-              index < activeIndex ? 'bg-positive-surface text-positive' : index === activeIndex ? 'bg-accent text-on-accent' : 'bg-surface-subtle text-ink-muted',
-            )}
-          >
-            {index < activeIndex ? <Check aria-hidden="true" className="size-3.5" /> : index + 1}
-          </span>
-          <span className={cn('text-xs font-medium', index === activeIndex ? 'text-ink' : 'text-ink-muted')}>{entry.label}</span>
-          {index < STEPPER.length - 1 ? <span aria-hidden="true" className="h-px flex-1 bg-border" /> : null}
-        </li>
-      ))}
-    </ol>
+    <div className="mb-4 grid gap-2.5">
+      <p className="inline-flex w-fit items-center gap-1.5 bg-positive-surface px-2.5 py-1 text-xs font-semibold text-positive">
+        <Check aria-hidden="true" className="size-3.5" />
+        We guarantee: {guaranteeLabel}
+      </p>
+      <ol className="flex items-center gap-2" aria-label="Signup progress">
+        {STEPPER.map((entry, index) => (
+          <li key={entry.step} className="flex flex-1 items-center gap-2">
+            <span
+              className={cn(
+                'grid size-6 shrink-0 place-items-center rounded-full text-xs font-semibold',
+                index < activeIndex ? 'bg-positive-surface text-positive' : index === activeIndex ? 'bg-accent text-on-accent' : 'bg-surface-subtle text-ink-muted',
+              )}
+            >
+              {index < activeIndex ? <Check aria-hidden="true" className="size-3.5" /> : index + 1}
+            </span>
+            <span className={cn('text-xs font-medium', index === activeIndex ? 'text-ink' : 'text-ink-muted')}>{entry.label}</span>
+            {index < STEPPER.length - 1 ? <span aria-hidden="true" className="h-px flex-1 bg-border" /> : null}
+          </li>
+        ))}
+      </ol>
+    </div>
   )
 }
 
@@ -153,7 +159,7 @@ export function DfySignupDialog({ open, onOpenChange, pkg, profile, setupHref, s
 
         {step === 'questions' ? (
           <>
-            <StepIndicator step={step} />
+            <StepIndicator step={step} guaranteeLabel={pkg.guaranteeLabel} />
             <DialogTitle className="font-gowun">A few questions</DialogTitle>
             <DialogDescription>{pkg.guaranteeLabel} · {pkg.priceLabel}. We already have your target roles and locations from Auto-Apply setup.</DialogDescription>
 
@@ -200,7 +206,7 @@ export function DfySignupDialog({ open, onOpenChange, pkg, profile, setupHref, s
 
         {step === 'terms' ? (
           <>
-            <StepIndicator step={step} />
+            <StepIndicator step={step} guaranteeLabel={pkg.guaranteeLabel} />
             <DialogTitle className="font-gowun">Service agreement</DialogTitle>
             <DialogDescription>Read and accept before we set up your onboarding call.</DialogDescription>
 
@@ -223,7 +229,7 @@ export function DfySignupDialog({ open, onOpenChange, pkg, profile, setupHref, s
 
         {step === 'payment' ? (
           <>
-            <StepIndicator step={step} />
+            <StepIndicator step={step} guaranteeLabel={pkg.guaranteeLabel} />
             <DialogTitle className="font-gowun">Payment</DialogTitle>
             <DialogDescription>{pkg.guaranteeLabel} · {pkg.priceLabel}</DialogDescription>
 

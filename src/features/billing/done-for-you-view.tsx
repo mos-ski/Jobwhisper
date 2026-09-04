@@ -2,14 +2,13 @@ import { useState } from 'react'
 
 import type { AutoApplyProfileSnapshot } from '@/features/auto-apply/auto-apply-view'
 import { AppShell } from '@/features/dashboard/app-nav'
-import { Button, ShellBar, Tooltip, TooltipContent, TooltipTrigger } from '@/ui'
+import { Button, ShellBar } from '@/ui'
 
 import { DfySignupDialog, type DfySignupLead, type DfySignupPackage } from './dfy-signup-dialog'
 
 export type DoneForYouViewProps = {
   readonly homeHref: string
   readonly backHref: string
-  readonly usageHref: string
   readonly setupHref: string
   readonly profile: AutoApplyProfileSnapshot
   readonly savedCard: { readonly label: string; readonly expiryLabel: string }
@@ -79,7 +78,7 @@ function PackageDetailsTable() {
   )
 }
 
-export function DoneForYouView({ homeHref, backHref, usageHref, setupHref, profile, savedCard, onSignupComplete }: DoneForYouViewProps) {
+export function DoneForYouView({ homeHref, backHref, setupHref, profile, savedCard, onSignupComplete }: DoneForYouViewProps) {
   const [signupPackage, setSignupPackage] = useState<DfySignupPackage | null>(null)
 
   return (
@@ -95,16 +94,6 @@ export function DoneForYouView({ homeHref, backHref, usageHref, setupHref, profi
         <article className="w-full min-w-0 bg-surface shadow-panel">
           <div className="flex min-h-[5rem] flex-wrap items-center justify-between gap-3 border-b border-border px-4 sm:px-6 lg:px-8">
             <h1 className="font-gowun text-lg font-bold leading-5 text-ink sm:text-xl">Done-For-You</h1>
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <a href={usageHref} className="text-sm font-semibold text-accent-text underline underline-offset-4 hover:text-accent">
-                    View usage details
-                  </a>
-                }
-              />
-              <TooltipContent>See a breakdown of how your credits were used</TooltipContent>
-            </Tooltip>
           </div>
           <div className="grid gap-5 p-4 sm:p-6 lg:p-8 md:grid-cols-2">
             {DFY_PACKAGES.map((pkg, index) => (
@@ -113,8 +102,7 @@ export function DoneForYouView({ homeHref, backHref, usageHref, setupHref, profi
                 style={{ animationDelay: `${index * 70}ms`, animationFillMode: 'backwards' }}
                 className="flex animate-ease-in-bottom flex-col rounded-panel border border-border p-6 transition-all duration-normal ease-default hover:-translate-y-0.5 hover:shadow-control"
               >
-                <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">One-time offer, not a subscription</p>
-                <p className="mt-4 flex items-baseline gap-1.5">
+                <p className="flex items-baseline gap-1.5">
                   <span className="font-gowun text-3xl font-bold text-ink">${pkg.price}</span>
                   <span className="text-sm text-ink-muted">one time</span>
                 </p>

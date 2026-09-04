@@ -1,7 +1,7 @@
-import { AlertTriangle, Check, ChevronDown, Clock, Copy, ExternalLink, EyeOff, Gift, Mail, Moon, Play, ShoppingCart, Sun, Trash2, Upload } from 'lucide-react'
+import { AlertTriangle, Check, ChevronDown, Clock, Copy, ExternalLink, EyeOff, Gift, Mail, Moon, Play, Search, ShoppingCart, Sun, Trash2, Upload } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 
-import type { BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
+import type { AccountFaqEntry, BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
 import type { MarketplaceItem } from '@/contracts/marketplace.draft'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
 import { AppShell } from '@/features/dashboard/app-nav'
@@ -88,6 +88,7 @@ export type BillingViewProps = {
   readonly standalonePurchases: readonly BillingStandalonePurchase[]
   readonly usageRows: readonly CreditUsageRow[]
   readonly wallet: BillingWallet
+  readonly faqs: readonly AccountFaqEntry[]
 }
 
 export type CreditHistoryViewProps = {
@@ -492,31 +493,56 @@ function CancelSubscriptionDialog({ renewalLabel }: { readonly renewalLabel: str
   )
 }
 
-const billingFaqs: readonly { readonly question: string; readonly answer: string }[] = [
-  { question: 'How does usage-based pricing work?', answer: 'Each feature is metered by what it actually costs to run, per message for Resume Builder, per successful application for Auto-Apply, per minute for live Interview Prep and Copilot sessions. See the rate table above for exact pricing. Jobwhisper only charges for successful actions, so a failed Auto-Apply submission never costs anything.' },
-  { question: 'Does unused balance roll over to next month?', answer: 'Your plan’s monthly included usage resets on your renewal date and does not carry forward. Any balance you’ve added yourself through a top-up is different, that stays on your account until you spend it.' },
-  { question: 'What’s the difference between monthly and annual billing?', answer: 'Annual billing charges you once a year at a 20% discount off the monthly rate. Monthly billing charges the full rate every month. You can switch between them at any time using the toggle above the plan cards.' },
-  { question: 'Can I change plans at any time?', answer: 'Yes. Upgrades take effect immediately and unlock the new plan’s features right away. Downgrades take effect at the start of your next billing cycle, so you keep your current plan’s benefits until then.' },
-  { question: 'How do I cancel my subscription?', answer: 'Use the Cancel Subscription button above. You’ll keep full access until your current billing period ends, after which your account moves to the Free plan. You can renew at any time before then.' },
-  { question: 'What happens to my data if I cancel?', answer: 'Your saved resumes, cover letters, application history, and interview reports stay in your account. You just lose access to paid features like Auto-Apply and Copilot sessions until you resubscribe.' },
-  { question: 'Is the first-time offer available more than once?', answer: 'No. The $40 first-time Pro offer is available once per account, shown when you sign up. After your first month, your plan renews at the regular $99/month price.' },
-  { question: 'What payment methods do you accept?', answer: 'We accept all major debit and credit cards. Payments are processed securely and your card details are never stored on Jobwhisper’s servers.' },
-  { question: 'Do you offer refunds?', answer: 'We don’t offer refunds for partial billing periods, but you can cancel at any time to stop future charges, you’ll keep access through the end of the period you already paid for.' },
-  { question: 'Can I add more balance without upgrading my plan?', answer: 'Yes. Use Buy credits on any balance above to top up mid-cycle ($5–$10 minimum depending on the feature), it stays on your account until you spend it, on top of what your plan already includes.' },
-  { question: 'Do Resume Builder and Auto Apply require a subscription?', answer: 'No. Both are sold separately from Starter, Pro, and Premium, buy credits once in the Pay-as-you-go section below and spend them at your own pace. They work the same whether or not you have an active plan.' },
-]
+function BillingFaqSection({ faqs }: { readonly faqs: readonly AccountFaqEntry[] }) {
+  const [query, setQuery] = useState('')
+  const trimmed = query.trim().toLowerCase()
 
-function BillingFaqSection() {
+  const filtered = trimmed
+    ? faqs.filter((faq) => `${faq.question} ${faq.answer}`.toLowerCase().includes(trimmed))
+    : faqs
+
+  const categories = Array.from(new Set(filtered.map((faq) => faq.category)))
+
   return (
     <TitledPanel title="Frequently Asked Questions">
-      <Accordion className="border-t border-border">
-        {billingFaqs.map((faq, index) => (
-          <AccordionItem key={faq.question} value={String(index)}>
-            <AccordionTrigger>{faq.question}</AccordionTrigger>
-            <AccordionPanel>{faq.answer}</AccordionPanel>
-          </AccordionItem>
-        ))}
-      </Accordion>
+      <div className="border-t border-border p-4">
+        <div className="relative max-w-md">
+          <Search aria-hidden="true" className="pointer-events-none absolute inset-y-0 start-3 my-auto size-4 text-ink-muted" />
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            aria-label="Search frequently asked questions"
+            placeholder="Search FAQs…"
+            className="h-9 w-full rounded-lg border border-input bg-canvas ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          />
+        </div>
+        {trimmed ? (
+          <p className="mt-2 text-xs text-ink-muted">
+            {filtered.length} {filtered.length === 1 ? 'result' : 'results'} for “{query.trim()}”
+          </p>
+        ) : null}
+      </div>
+
+      {filtered.length === 0 ? (
+        <p className="border-t border-border px-4 py-6 text-sm text-ink-muted">No questions match “{query.trim()}”. Try a different search, or contact Support from the account menu.</p>
+      ) : (
+        categories.map((category) => (
+          <div key={category} className="border-t border-border">
+            <h3 className="px-4 pt-4 text-xs font-semibold uppercase tracking-wide text-ink-muted">{category}</h3>
+            <Accordion>
+              {filtered
+                .filter((faq) => faq.category === category)
+                .map((faq) => (
+                  <AccordionItem key={faq.question} value={faq.question}>
+                    <AccordionTrigger>{faq.question}</AccordionTrigger>
+                    <AccordionPanel>{faq.answer}</AccordionPanel>
+                  </AccordionItem>
+                ))}
+            </Accordion>
+          </div>
+        ))
+      )}
     </TitledPanel>
   )
 }
@@ -679,7 +705,7 @@ function BillingReferralPrompt({ referralsHref }: { readonly referralsHref: stri
   )
 }
 
-export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet }: BillingViewProps) {
+export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet, faqs }: BillingViewProps) {
   const currentPlan = plans.find((plan) => plan.current) ?? plans[0]
   // Interview Copilot credits are a subscription benefit — only purchasable with an active plan. Resume
   // Builder and Auto Apply are standalone and always purchasable. See PRICING.md §1, §4.
@@ -770,8 +796,8 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                 >
                   <img src="/v3-assets/figma/plan-row-dfy.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
                   <div className="min-w-0 flex-1">
-                    <p className="font-gowun text-[14.4px] font-semibold leading-[21.6px] text-ink">Real Human Job Application</p>
-                    <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">A real success manager applies to matched jobs on your behalf</p>
+                    <p className="font-gowun text-[14.4px] font-semibold leading-[21.6px] text-ink">10–20 Interviews Guaranteed</p>
+                    <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">A career specialist applies on your behalf until your interviews are guaranteed. Pay once, access to this service until it's fulfilled.</p>
                   </div>
                   <a
                     href="/v3/billing/done-for-you"
@@ -879,7 +905,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
             </div>
           </TitledPanel>
 
-          <BillingFaqSection />
+          <BillingFaqSection faqs={faqs} />
         </div>
       </ContentShell>
     </AppWorkspace>

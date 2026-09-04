@@ -1,4 +1,4 @@
-import type { BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
+import type { AccountFaqEntry, BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
 
 export const downloadItems: readonly DownloadItem[] = [
   {
@@ -144,7 +144,7 @@ export const billingStandalonePurchases: readonly BillingStandalonePurchase[] = 
 export const creditUsageRows: readonly CreditUsageRow[] = [
   { feature: 'Resume Builder', trigger: 'One prompt sent to the AI', deducted: '1 credit / prompt ($0.10)' },
   { feature: 'Auto Apply (self-serve)', trigger: 'One successful job application', deducted: '1 credit / application ($1)' },
-  { feature: 'Auto Apply (done-for-you)', trigger: 'One successful job application, human-applied', deducted: '10 credits / application ($10)' },
+  { feature: 'Done-For-You', trigger: 'Package purchase, not per application', deducted: '10 or 20 interviews guaranteed ($497 / $997, one-time)' },
   { feature: 'Interview Prep', trigger: 'Metered per minute of the live session', deducted: '1 credit / min ($0.10)' },
   { feature: 'Interview Copilot', trigger: 'Metered per minute of the live session', deducted: '1 credit / min ($0.10)' },
   { feature: 'Coding Copilot', trigger: 'Metered per minute of the live session', deducted: '1 credit / min ($0.10)' },
@@ -246,4 +246,140 @@ export const tutorialItems: readonly TutorialItem[] = [
   { id: 'auto-apply', title: 'Auto Apply', href: 'https://jobwhisper.ai/tutorials/auto-apply', kind: 'video', tone: 'positive' },
   { id: 'resume-builder', title: 'Resume Builder', href: 'https://jobwhisper.ai/tutorials/resume-builder', kind: 'video', tone: 'accent-secondary' },
   { id: 'interview-prep', title: 'Interview Prep', href: 'https://jobwhisper.ai/tutorials/interview-prep', kind: 'video', tone: 'danger' },
+]
+
+export const accountFaqs: readonly AccountFaqEntry[] = [
+  // Getting started
+  { category: 'Getting started', question: 'What is Jobwhisper?', answer: 'Jobwhisper is a job-search platform covering interview prep and live in-interview help, automated and done-for-you job applications, resume building, and a marketplace of career content — all in one account.' },
+  { category: 'Getting started', question: 'Do I need a subscription to use Jobwhisper?', answer: 'No. Every account gets a free tier with 50 minutes a month of Interview Prep and web Copilot, no card required. Auto Apply, Resume Builder, and Done-For-You are all bought separately and work with or without a subscription.' },
+  { category: 'Getting started', question: 'How do I create an account?', answer: 'Sign up with your email or a Google account from the homepage. You land on the free tier immediately, no payment needed to start.' },
+  { category: 'Getting started', question: 'What can I do on the free tier?', answer: '50 minutes a month of Interview Prep and Interview Copilot (web), reset on a rolling 30-day cycle from when you last used it. Desktop Copilot, Coding Copilot, and Meeting Copilot are Pro/Premium only.' },
+  { category: 'Getting started', question: 'Which product should I start with?', answer: 'If you have an interview coming up, start with Interview Prep to practice, then use Copilot live in the interview. If you need more interviews in your pipeline, start with Auto Apply or Done-For-You.' },
+  { category: 'Getting started', question: 'Is there a mobile app?', answer: 'Jobwhisper works in any mobile browser. Interview Copilot desktop is a downloadable app for Mac and Windows; there is no separate phone app for it today.' },
+  { category: 'Getting started', question: 'Can I use Jobwhisper on more than one device?', answer: 'Yes, your account and credit balance follow you across devices. Interview Copilot desktop needs to be installed separately on each computer you use it from.' },
+  { category: 'Getting started', question: 'What if I get stuck or something breaks mid-session?', answer: 'Use Support from the account menu to open a ticket. If a paid session fails to start or drops early, contact Support, credits are only charged for successful sessions and applications in the first place.' },
+  { category: 'Getting started', question: 'Do you have a demo or product tour?', answer: 'Yes, the Tutorial section under your account has short videos for Interview Copilot, Auto Apply, Resume Builder, and Interview Prep, plus a written Getting Started guide.' },
+
+  // Ace Your Interview — plans
+  { category: 'Plans & subscription', question: 'What is Ace Your Interview?', answer: 'Ace Your Interview is Jobwhisper’s subscription: Interview Prep and Interview Copilot, with Coding Copilot and Meeting Copilot on Pro and Premium. It’s the only recurring subscription Jobwhisper sells.' },
+  { category: 'Plans & subscription', question: 'What are the plan tiers and prices?', answer: 'Starter is $47/month with about 500 minutes of Copilot. Pro is $99/month with about 1,000 minutes, plus the desktop app, Coding Copilot, and Meeting Copilot. Premium is $197/month with about 4,000 minutes, same features as Pro.' },
+  { category: 'Plans & subscription', question: 'What’s the difference between Pro and Premium?', answer: 'Nothing feature-wise, both include the desktop app, Coding Copilot, and Meeting Copilot. Premium’s difference is volume, about four times Pro’s monthly minutes for people running a heavier search.' },
+  { category: 'Plans & subscription', question: 'What does Starter not include?', answer: 'Starter has Interview Prep and web Copilot only, no desktop app, Coding Copilot, or Meeting Copilot. Upgrade to Pro for those.' },
+  { category: 'Plans & subscription', question: 'Is there a free trial of Pro or Premium?', answer: 'First-time subscribers get a $40 first month of Pro, renewing at $99/month after that. It’s available once per account.' },
+  { category: 'Plans & subscription', question: 'Can I change plans at any time?', answer: 'Yes. Upgrades apply immediately and unlock the new plan’s features right away. Downgrades take effect at the start of your next billing cycle, so you keep current benefits until then.' },
+  { category: 'Plans & subscription', question: 'How do I cancel my subscription?', answer: 'Use Cancel Subscription on the Billing page. You keep full access until your current billing period ends, then your account moves to the free tier. You can resubscribe any time.' },
+  { category: 'Plans & subscription', question: 'What happens to my data if I cancel?', answer: 'Your resumes, cover letters, application history, and interview reports all stay in your account. You lose access to paid features like Auto Apply credits and Copilot sessions until you resubscribe or top up.' },
+  { category: 'Plans & subscription', question: 'Monthly or annual billing, what’s the difference?', answer: 'Annual billing charges once a year at roughly 20% off the monthly rate. Monthly billing charges the full rate every month. Switch between them any time from the plan cards.' },
+  { category: 'Plans & subscription', question: 'Do unused monthly minutes roll over?', answer: 'No, your plan’s included monthly usage resets on your renewal date. A top-up balance you’ve bought yourself is different, that stays on your account until spent.' },
+  { category: 'Plans & subscription', question: 'What happens if I run out of minutes mid-session?', answer: 'You can buy a top-up on the spot, $10 minimum, at the same $0.10-per-minute rate as your plan. It’s added to your balance immediately so the session doesn’t have to stop.' },
+  { category: 'Plans & subscription', question: 'How many documents can I store in my Knowledge Base per tier?', answer: 'Starter can store 3 documents, Pro 5, Premium 10. This is a flat storage cap, not something metered against your credits.' },
+  { category: 'Plans & subscription', question: 'Can I switch between monthly and annual mid-cycle?', answer: 'Yes, switch any time from your plan settings. The change is prorated against what you’ve already paid for the current period.' },
+
+  // Interview Prep
+  { category: 'Interview Prep', question: 'What is Interview Prep?', answer: 'A practice tool that generates interview questions from your resume and a target job description, then scores your recorded answers with feedback on content, delivery, and structure.' },
+  { category: 'Interview Prep', question: 'How is Interview Prep billed?', answer: '$0.10 per credit, one credit per minute of the live practice session, the same rate as Interview Copilot. It draws from your plan’s monthly minutes or your top-up balance.' },
+  { category: 'Interview Prep', question: 'Can I choose the type of interview I practice?', answer: 'Yes, pick the round type (behavioural, technical, case, etc.), difficulty, and the target role and company so the questions match what you’ll actually face.' },
+  { category: 'Interview Prep', question: 'Does Interview Prep record my session?', answer: 'Yes, so the scoring engine can review your answers and so you can watch it back yourself. Recordings stay in your account under your interview history.' },
+  { category: 'Interview Prep', question: 'What does the score report include?', answer: 'A breakdown by scoring dimension (structure, clarity, relevance, and more), a written transcript, and specific suggestions tied to your actual answers, not generic tips.' },
+  { category: 'Interview Prep', question: 'Can I redo a practice round?', answer: 'Yes, start a new session any time. Each session is metered separately, retakes cost credits the same as the first attempt.' },
+  { category: 'Interview Prep', question: 'Does Interview Prep work without a resume?', answer: 'You get better, more targeted questions with a resume and job description uploaded, but you can start a generic practice session without one.' },
+  { category: 'Interview Prep', question: 'Is Interview Prep available on mobile?', answer: 'Yes, through your mobile browser. There’s no dedicated mobile app, but the full flow works on a phone or tablet.' },
+
+  // Interview Copilot
+  { category: 'Interview Copilot', question: 'What is Interview Copilot?', answer: 'Live, in-interview support. It listens during a real interview call and surfaces answer suggestions and talking points in real time, in a browser tab or the desktop app.' },
+  { category: 'Interview Copilot', question: 'What’s the difference between web and desktop Copilot?', answer: 'Web Copilot runs in a browser tab beside your video call, available on every tier. Desktop Copilot is an always-on-top window that reads system audio directly, available on Pro and Premium.' },
+  { category: 'Interview Copilot', question: 'Can the interviewer tell I’m using Copilot?', answer: 'Copilot is a private on-screen aid only you see, it doesn’t appear in screen shares or recordings on video platforms. Use it according to the policies of whoever you’re interviewing with.' },
+  { category: 'Interview Copilot', question: 'What is Coding Copilot?', answer: 'Live help through a shared coding screen during technical interview rounds, available on Pro and Premium, billed at the same $0.10-per-minute rate as the other Copilot modes.' },
+  { category: 'Interview Copilot', question: 'What is Meeting Copilot?', answer: 'The same live-assist experience, built for non-interview meetings like recruiter screens or hiring-manager conversations, Pro and Premium only.' },
+  { category: 'Interview Copilot', question: 'Which video platforms does Copilot work with?', answer: 'Zoom, Google Meet, and Microsoft Teams are all supported for both web and desktop Copilot.' },
+  { category: 'Interview Copilot', question: 'Does Copilot need my camera or microphone access?', answer: 'It needs microphone access to hear the conversation. Desktop Copilot reads system audio; it doesn’t need your camera at all.' },
+  { category: 'Interview Copilot', question: 'How is Copilot billed?', answer: '$0.10 per credit, one credit per minute of the live session, the same rate across web, desktop, Coding, and Meeting Copilot.' },
+  { category: 'Interview Copilot', question: 'Can I use Copilot on my phone?', answer: 'Web Copilot works in a mobile browser tab. Desktop Copilot is Mac/Windows only.' },
+  { category: 'Interview Copilot', question: 'What happens if my internet drops during a Copilot session?', answer: 'Copilot reconnects automatically when your connection returns. You’re only billed for minutes actually used, not for the disconnected gap.' },
+
+  // Find Your Job — Auto Apply
+  { category: 'Find Your Job (Auto Apply)', question: 'What is Auto Apply?', answer: 'An AI agent that scouts open roles, filters them against your preferences, tailors your resume, and submits applications on your behalf, end to end, with no monthly subscription required.' },
+  { category: 'Find Your Job (Auto Apply)', question: 'How is Auto Apply billed?', answer: 'Prepaid credits, $10 minimum purchase, $1 per successful application. You’re only charged when an application actually goes through, a failed or rejected submission never bills you.' },
+  { category: 'Find Your Job (Auto Apply)', question: 'Do Auto Apply credits expire?', answer: 'Yes, 12 months from the date of purchase. Spend them at your own pace within that window.' },
+  { category: 'Find Your Job (Auto Apply)', question: 'Can I choose which jobs Auto Apply applies to?', answer: 'Yes. Pick “Auto apply for me” for fully hands-off applying, or “I’ll select my jobs myself” to curate the target list while the AI still handles the actual submission. Both cost the same.' },
+  { category: 'Find Your Job (Auto Apply)', question: 'Does Auto Apply require a subscription?', answer: 'No, it’s sold entirely standalone from Starter, Pro, and Premium. Buy credits once and use them regardless of your subscription status.' },
+  { category: 'Find Your Job (Auto Apply)', question: 'Does Auto Apply tailor my resume for each job?', answer: 'Yes, resume tailoring for the specific role is included in the $1-per-application price, it’s not billed as a separate Resume Builder charge.' },
+  { category: 'Find Your Job (Auto Apply)', question: 'What job boards does Auto Apply search?', answer: 'Auto Apply scouts postings across major job boards and company career pages matching your target roles, locations, and preferences.' },
+  { category: 'Find Your Job (Auto Apply)', question: 'Can I see which jobs Auto Apply applied to?', answer: 'Yes, every application shows up in your Applied tab with the job, company, date, resume version used, and current status.' },
+  { category: 'Find Your Job (Auto Apply)', question: 'What if Auto Apply applies to a job I don’t want?', answer: 'You can exclude specific companies and refine your target roles and locations in Auto Apply setup at any time, future applications respect the update.' },
+  { category: 'Find Your Job (Auto Apply)', question: 'What counts as a “successful” application for billing?', answer: 'A submission that actually goes through to the employer. Postings that close before submission or technical failures on the employer’s end don’t count and aren’t billed.' },
+  { category: 'Find Your Job (Auto Apply)', question: 'Can I pause Auto Apply?', answer: 'Yes, pause it any time from Auto Apply setup. Your remaining credit balance stays exactly where it is until you resume.' },
+  { category: 'Find Your Job (Auto Apply)', question: 'Is there a minimum number of applications I have to buy?', answer: 'The purchase minimum is $10, which covers 10 successful applications at the standard rate. Buy more at any time as you use your balance down.' },
+
+  // Resume Builder
+  { category: 'Resume Builder', question: 'What is Resume Builder?', answer: 'A prompt-based tool to build, fix, and tailor a resume, generate a version targeted to a specific job description, fix formatting, or rewrite weak bullet points.' },
+  { category: 'Resume Builder', question: 'How is Resume Builder billed?', answer: 'Prepaid credits, $5 minimum purchase, $0.10 per prompt sent to the AI. Standalone from any subscription.' },
+  { category: 'Resume Builder', question: 'Is resume tailoring inside Auto Apply a separate charge?', answer: 'No. Resume tailoring that happens automatically as part of an Auto Apply application is bundled into that $1-per-application price. Resume Builder billing only applies when you open the tool yourself.' },
+  { category: 'Resume Builder', question: 'What file formats can I export my resume in?', answer: 'PDF and DOCX are both supported for every resume you build or tailor.' },
+  { category: 'Resume Builder', question: 'Can I keep multiple resume versions?', answer: 'Yes, every version you generate is saved to your Resume history, so you can keep separate tailored versions for different roles.' },
+  { category: 'Resume Builder', question: 'Does Resume Builder check ATS compatibility?', answer: 'Yes, ATS Scoring checks your resume against applicant-tracking-system parsing rules, and it’s free, 0 credits, click Score Resume any time.' },
+  { category: 'Resume Builder', question: 'Can I upload an existing resume instead of starting from scratch?', answer: 'Yes, upload a PDF or DOCX and Resume Builder works from that as the starting point for edits or tailoring.' },
+  { category: 'Resume Builder', question: 'Do Resume Builder credits expire?', answer: 'Yes, 12 months from purchase, same as Auto Apply credits.' },
+
+  // Done-For-You
+  { category: 'Done-For-You', question: 'What is Done-For-You?', answer: 'A white-glove package where a real success manager applies to jobs on your behalf until you land a guaranteed number of interviews, resume tailoring and job scouting included.' },
+  { category: 'Done-For-You', question: 'What are the Done-For-You packages and prices?', answer: 'The small package is $497, one-time, guaranteeing 10 interviews. The large package is $997, one-time, guaranteeing 20 interviews. Both include a success manager and Jobwhisper product access until the guarantee is fulfilled.' },
+  { category: 'Done-For-You', question: 'Is Done-For-You a subscription?', answer: 'No, it’s a one-time purchase, not a recurring charge. You pay once for the package and the guarantee.' },
+  { category: 'Done-For-You', question: 'What exactly is guaranteed?', answer: 'Interviews landed through applications your success manager submits on your behalf, not just applications sent. We keep applying until the guaranteed count is reached.' },
+  { category: 'Done-For-You', question: 'How long does Jobwhisper access last with a Done-For-You package?', answer: 'Access continues for as long as it takes to deliver your guarantee, it’s not capped to a fixed number of months.' },
+  { category: 'Done-For-You', question: 'What if a job posting closes before I hear back?', answer: 'A posting closing, or you not being selected, doesn’t count against your guarantee, your success manager keeps applying until the guaranteed interview count is actually reached.' },
+  { category: 'Done-For-You', question: 'How soon will a success manager contact me after I sign up?', answer: 'Within 2 business days, to schedule your onboarding call and confirm your target roles, locations, and any companies to exclude.' },
+  { category: 'Done-For-You', question: 'Do I need to complete my profile before signing up for Done-For-You?', answer: 'Yes, your success manager needs a complete Auto Apply profile (target roles, locations, resume) before they can start submitting on your behalf, signup will prompt you to finish it first if it’s incomplete.' },
+  { category: 'Done-For-You', question: 'Can I update my target roles after signing up?', answer: 'Yes, any time in Auto Apply setup, your success manager always works from whatever is current there.' },
+  { category: 'Done-For-You', question: 'What’s the Done-For-You refund policy?', answer: 'Full refund if no applications have been submitted yet. After that, refunds are prorated against the interviews already delivered.' },
+  { category: 'Done-For-You', question: 'Can I exclude specific companies from Done-For-You applications?', answer: 'Yes, tell us during signup, for example your current employer or a company you’re under NDA with, and your success manager will skip them.' },
+  { category: 'Done-For-You', question: 'What’s the difference between the small and large packages?', answer: 'The interview guarantee, 10 versus 20, and the price, $497 versus $997. Everything else, the success manager, tailoring, and until-fulfilled access, is the same.' },
+
+  // Marketplace
+  { category: 'Marketplace', question: 'What is the Marketplace?', answer: 'A catalog of one-time career content, swipe files, resume templates, scripts, and checklists, priced between $9 and $29 each with no subscription attached.' },
+  { category: 'Marketplace', question: 'What kinds of items are in the Marketplace?', answer: 'Interview answer swipe files, resume templates, cover letter templates, salary negotiation scripts, a LinkedIn optimization checklist, a behavioural story bank, follow-up email templates, and a 30-day job search plan, among others.' },
+  { category: 'Marketplace', question: 'Are Marketplace purchases one-time or recurring?', answer: 'One-time. You buy an item once and it’s yours, no subscription or recurring charge involved.' },
+  { category: 'Marketplace', question: 'How do I access a Marketplace item after buying it?', answer: 'It shows up immediately in your account, most items are downloadable PDFs you can access any time from your purchase history.' },
+  { category: 'Marketplace', question: 'Can I get a refund on a Marketplace item?', answer: 'Digital content purchases are generally final once delivered. Contact Support if something is broken or not as described.' },
+  { category: 'Marketplace', question: 'Do Marketplace purchases use my credit balance?', answer: 'No, Marketplace items are charged directly to your payment method, they don’t draw on your Auto Apply, Resume Builder, or Copilot credits.' },
+
+  // Referrals
+  { category: 'Referrals', question: 'How does the referral program work?', answer: 'Share your referral link, when someone signs up through it and subscribes to a paid plan, you earn 1,000 free credits added to your balance.' },
+  { category: 'Referrals', question: 'Where do I find my referral link?', answer: 'On your account page under the referral card, use Copy referral link to grab it, or View referrals to see who you’ve invited.' },
+  { category: 'Referrals', question: 'When do I get my referral credits?', answer: 'As soon as your referral’s subscription payment goes through, not just when they sign up for a free account.' },
+  { category: 'Referrals', question: 'Is there a limit to how many people I can refer?', answer: 'No cap on the number of referrals, every one that converts to a paid subscriber earns you another 1,000 credits.' },
+  { category: 'Referrals', question: 'Do referral credits expire?', answer: 'Referral credits behave like your other purchased credits and don’t expire on the same rolling reset as your plan’s monthly allowance.' },
+  { category: 'Referrals', question: 'Can I refer myself with a second account?', answer: 'No, referral rewards are for bringing in new, separate users, not for self-referral or duplicate accounts.' },
+
+  // Credits & billing
+  { category: 'Credits & billing', question: 'How does usage-based pricing work?', answer: 'Each feature is metered by what it actually costs to run: per prompt for Resume Builder, per successful application for Auto Apply, per minute for live Interview Prep and Copilot sessions. Jobwhisper only charges for successful actions.' },
+  { category: 'Credits & billing', question: 'What is a credit worth?', answer: 'One credit equals one metered unit, one minute of Copilot or Prep, or one prompt in Resume Builder, always. The dollar value of a credit is $0.10 for those features; Auto Apply is billed directly per successful application instead.' },
+  { category: 'Credits & billing', question: 'Can I add more balance without upgrading my plan?', answer: 'Yes, use Buy credits on any balance to top up mid-cycle, $10 minimum for Copilot/Prep top-ups, it stacks on top of what your plan already includes.' },
+  { category: 'Credits & billing', question: 'What payment methods do you accept?', answer: 'All major debit and credit cards. Payments are processed securely and your card details are never stored on Jobwhisper’s servers.' },
+  { category: 'Credits & billing', question: 'Do you offer refunds on subscriptions?', answer: 'No refunds for partial billing periods, but you can cancel any time to stop future charges, you keep access through the end of the period you already paid for.' },
+  { category: 'Credits & billing', question: 'Is the $40 first-time Pro offer available more than once?', answer: 'No, it’s available once per account, shown at signup. After the first month your plan renews at the regular $99/month price.' },
+  { category: 'Credits & billing', question: 'How do I see a history of my credit usage?', answer: 'Your Credit history table on the Billing page lists every charge and top-up with the feature, description, date, and running balance.' },
+  { category: 'Credits & billing', question: 'What happens if a charge fails?', answer: 'You’ll get a notification and a chance to update your payment method. Paid features pause until the balance is resolved, your data and history are never affected.' },
+  { category: 'Credits & billing', question: 'Can I get an invoice or receipt for my payments?', answer: 'Yes, every charge generates a receipt available from your billing history, useful for expense reports or reimbursement.' },
+  { category: 'Credits & billing', question: 'Do Auto Apply and Resume Builder require a subscription?', answer: 'No. Both are sold separately from Starter, Pro, and Premium, buy credits once in the pay-as-you-go section and spend them at your own pace, whether or not you have an active plan.' },
+
+  // Account, privacy & security
+  { category: 'Account & privacy', question: 'How do I update my email or password?', answer: 'From Account Settings, update your email or password there, you may be asked to re-verify your email after a change.' },
+  { category: 'Account & privacy', question: 'Is my resume and interview data private?', answer: 'Yes, your resumes, applications, and interview recordings are private to your account and are not shared with employers or third parties beyond what Auto Apply submits on your behalf during an application.' },
+  { category: 'Account & privacy', question: 'Can I delete my account?', answer: 'Yes, from Account Settings. Deleting your account removes your data and cancels any active subscription; this can’t be undone.' },
+  { category: 'Account & privacy', question: 'Does Jobwhisper sell my data?', answer: 'No, your personal data is used to run the product for you, it isn’t sold to third parties.' },
+  { category: 'Account & privacy', question: 'Can I export my data?', answer: 'Yes, contact Support to request an export of your resumes, application history, and interview reports.' },
+  { category: 'Account & privacy', question: 'How do I switch between light and dark mode?', answer: 'Use the theme toggle in Account Settings, your preference is saved to your account and follows you across devices.' },
+  { category: 'Account & privacy', question: 'Can I have more than one Jobwhisper account?', answer: 'Accounts are meant to be one per person. Multiple accounts to work around referral or trial limits may be restricted.' },
+  { category: 'Account & privacy', question: 'What happens to my saved payment method if I cancel?', answer: 'Your card stays on file for future purchases (like credit top-ups or Marketplace items) unless you remove it from Account Settings, even after cancelling a subscription.' },
+  { category: 'Account & privacy', question: 'Who can see my interview recordings?', answer: 'Only you. Interview Prep and Copilot recordings are stored in your account for your own review and are not viewed by anyone else unless you contact Support for help.' },
+  { category: 'Account & privacy', question: 'How do I contact Support?', answer: 'Use the Support option from the account menu to open a ticket, an agent will follow up by email or in-app.' },
+
+  // Knowledge Base & documents
+  { category: 'Knowledge Base', question: 'What is the Knowledge Base?', answer: 'A place to store resumes, job descriptions, and other context documents that Copilot, Prep, and Resume Builder pull from when generating answers or tailored content.' },
+  { category: 'Knowledge Base', question: 'How many documents can I store?', answer: 'A flat cap by tier: Starter 3, Pro 5, Premium 10. This is a storage limit, not something metered against your credits.' },
+  { category: 'Knowledge Base', question: 'What file types can I upload to the Knowledge Base?', answer: 'PDF and DOCX are supported for resumes and job descriptions, plus plain text for quick notes or context.' },
+  { category: 'Knowledge Base', question: 'Does uploading a document cost credits?', answer: 'No, uploading and storing documents is free. Credits are only charged when a feature actively uses that context during a live session or generation.' },
+  { category: 'Knowledge Base', question: 'What happens if I hit my document limit?', answer: 'Remove an existing document to make room, or upgrade your plan for a higher limit, Premium allows up to 10 stored documents.' },
+  { category: 'Knowledge Base', question: 'Can Auto Apply use my Knowledge Base documents?', answer: 'Yes, Auto Apply draws on your stored resume and any relevant context when tailoring applications on your behalf.' },
 ]

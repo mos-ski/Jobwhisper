@@ -95,3 +95,9 @@ export type CreditHistoryRow = {
   readonly amount: number
   readonly balanceAfter: number
 }
+
+export type AccountFaqEntry = {
+  readonly category: string
+  readonly question: string
+  readonly answer: string
+}
