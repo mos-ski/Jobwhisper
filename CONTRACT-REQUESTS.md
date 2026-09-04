@@ -101,3 +101,17 @@ Production should replace these with backend-owned auto-apply profile, job disco
 Production should replace these with backend-owned analytics/aggregation, notification, and search contracts. All money is integer cents and all dates are display strings in this UI slice; backend contracts should expose ISO timestamps plus formatted presentation values if needed. `AdminKpi.value` is polymorphic by `format` (cents, count, or percent) — a backend contract may prefer separate typed fields per metric instead.
 
 The signed-in admin reuses `src/contracts/identity.ts` unchanged: `role: 'admin'` plus the existing `admin:view` / `admin:users:manage` / `admin:credits:manage` / `admin:services:manage` permissions. No new identity fields were needed.
+
+## Admin Module Draft Contracts
+
+Five further draft contracts back the admin modules. All money is integer cents and all dates are pre-formatted display strings, so views never parse or localize a date.
+
+- `src/contracts/admin-accounts.draft.ts` — `AdminAccountRow`/`AdminAccountDetail`, credit-history entries, activity events, per-product usage, and a per-account audit entry.
+- `src/contracts/admin-transactions.draft.ts` — ledger rows, disputes (with `daysUntilEvidenceDue` precomputed so the view can escalate without date math), refund requests, and invoice detail with line items and an event timeline.
+- `src/contracts/admin-products.draft.ts` — per-SKU rows with tier gating and a `blastRadiusLabel` spelled out for the disable confirmation, plus detail stats, trend points, session-log rows, and grouped errors.
+- `src/contracts/admin-configuration.draft.ts` — plan/pricing config, credit economics, coupons, trial settings, and the onboarding survey.
+- `src/contracts/admin-systems.draft.ts` — team members, a permission catalog giving each `Permission` a human label, audit entries with before/after field changes and `daysAgo` precomputed for range filtering, and notification settings.
+
+Production should replace these with backend-owned account, billing/ledger, product-analytics, configuration, and audit contracts. Two conventions worth keeping: precomputed relative-time integers (`daysAgo`, `daysUntilEvidenceDue`) alongside display strings, so no view parses dates; and presentation metadata for permission ids, so raw strings like `admin:credits:manage` are never shown to a person.
+
+Roles and permissions throughout reuse `src/contracts/identity.ts` unchanged — no new identity fields were needed.
