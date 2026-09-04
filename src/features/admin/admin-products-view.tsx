@@ -4,6 +4,7 @@ import {
   AlertTriangle,
   ArrowLeft,
   CalendarPlus,
+  CheckCircle2,
   CircleSlash,
   Download,
   LayoutGrid,
@@ -470,6 +471,7 @@ type DfyRow = {
   readonly lead: AdminDoneForYouLead
   readonly stage: AdminDoneForYouStage
   readonly manager?: string
+  readonly fulfilledAt?: string
 }
 
 function DfyCard({ row, onSelect, onDragStart, onDragEnd, dragging }: {
@@ -498,6 +500,7 @@ function DfyCard({ row, onSelect, onDragStart, onDragEnd, dragging }: {
           <span className="block truncate text-sm font-semibold text-ink">{lead.userName}</span>
           <span className="block truncate text-xs text-ink-muted">{lead.userEmail}</span>
         </span>
+        {row.fulfilledAt ? <Badge variant="positive" size="sm">Fulfilled</Badge> : null}
       </span>
       <span className="mt-2 block truncate text-xs text-ink-muted">{lead.targetRoles.join(', ')}</span>
       <span className="mt-2 flex min-w-0 items-center justify-between gap-2">
@@ -611,6 +614,12 @@ function DfyList({ rows, onSelect }: { readonly rows: readonly DfyRow[]; readonl
       ) : <span className="text-ink-muted">—</span>,
     },
     { key: 'signedUp', label: 'Signed up', sortValue: ({ lead }) => lead.signedUpLabel, render: ({ lead }) => <span className="whitespace-nowrap text-ink-muted">{lead.signedUpLabel}</span> },
+    {
+      key: 'fulfilled',
+      label: 'Fulfilled',
+      sortValue: ({ fulfilledAt }) => (fulfilledAt ? 1 : 0),
+      render: ({ fulfilledAt }) => fulfilledAt ? <Badge variant="positive" size="sm">Fulfilled</Badge> : <span className="text-ink-muted">—</span>,
+    },
   ]
 
   return (
@@ -627,11 +636,12 @@ function DfyList({ rows, onSelect }: { readonly rows: readonly DfyRow[]; readonl
   )
 }
 
-function DfyDetailPanel({ row, onClose, onStageChange, onManagerChange }: {
+function DfyDetailPanel({ row, onClose, onStageChange, onManagerChange, onMarkFulfilled }: {
   readonly row: DfyRow | undefined
   readonly onClose: () => void
   readonly onStageChange: (stage: AdminDoneForYouStage) => void
   readonly onManagerChange: (manager: string) => void
+  readonly onMarkFulfilled: () => void
 }) {
   return (
     <Dialog open={row !== undefined} onOpenChange={(open) => { if (!open) onClose() }}>
@@ -652,6 +662,15 @@ function DfyDetailPanel({ row, onClose, onStageChange, onManagerChange }: {
             </div>
 
             <div className="grid gap-5 overflow-y-auto p-4">
+              {row.fulfilledAt ? (
+                <div className="flex items-start gap-2 bg-positive-surface p-3">
+                  <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-positive" />
+                  <p className="text-sm text-positive">
+                    <span className="font-semibold">Guarantee fulfilled</span> · {row.fulfilledAt}. Jobwhisper product access is paused — it was only granted until fulfillment.
+                  </p>
+                </div>
+              ) : null}
+
               <SelectField
                 id="dfy-detail-stage"
                 label="Stage"
@@ -712,6 +731,16 @@ function DfyDetailPanel({ row, onClose, onStageChange, onManagerChange }: {
               ) : null}
 
               <div className="grid gap-2 border-t border-border pt-4">
+                {!row.fulfilledAt ? (
+                  <button
+                    type="button"
+                    onClick={onMarkFulfilled}
+                    className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg bg-positive px-3 text-sm font-semibold text-on-accent hover:bg-positive/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  >
+                    <CheckCircle2 aria-hidden="true" className="size-4" />
+                    Mark as fulfilled
+                  </button>
+                ) : null}
                 <a
                   href={googleCalendarUrl(row.lead)}
                   target="_blank"
@@ -742,6 +771,7 @@ function DfyDetailPanel({ row, onClose, onStageChange, onManagerChange }: {
 function DoneForYouPipeline({ leads }: { readonly leads: readonly AdminDoneForYouLead[] }) {
   const [stageOverrides, setStageOverrides] = useState<Readonly<Record<string, AdminDoneForYouStage>>>({})
   const [managerOverrides, setManagerOverrides] = useState<Readonly<Record<string, string>>>({})
+  const [fulfilledOverrides, setFulfilledOverrides] = useState<Readonly<Record<string, string>>>({})
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban')
   const [query, setQuery] = useState('')
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null)
@@ -752,6 +782,7 @@ function DoneForYouPipeline({ leads }: { readonly leads: readonly AdminDoneForYo
       lead,
       stage: stageOverrides[lead.id] ?? lead.stage,
       manager: managerOverrides[lead.id] ?? lead.assignedSuccessManager,
+      fulfilledAt: fulfilledOverrides[lead.id] ?? lead.fulfilledAt,
     }))
     .filter((row) => `${row.lead.userName} ${row.lead.userEmail}`.toLowerCase().includes(query.trim().toLowerCase()))
 
@@ -818,6 +849,7 @@ function DoneForYouPipeline({ leads }: { readonly leads: readonly AdminDoneForYo
         onClose={() => setSelectedLeadId(null)}
         onStageChange={(stage) => selected && setStageOverrides((prev) => ({ ...prev, [selected.lead.id]: stage }))}
         onManagerChange={(manager) => selected && setManagerOverrides((prev) => ({ ...prev, [selected.lead.id]: manager }))}
+        onMarkFulfilled={() => selected && setFulfilledOverrides((prev) => ({ ...prev, [selected.lead.id]: 'Just now' }))}
       />
     </section>
   )

@@ -160,6 +160,8 @@ export type AdminDoneForYouLead = {
   readonly assignedSuccessManager?: string
   /** Every job applied to on this client's behalf. The applications-submitted count is this array's length, not a separately tracked number. */
   readonly applicationLog: readonly AdminDoneForYouApplicationLogEntry[]
+  /** Set when the interview guarantee has been delivered — Jobwhisper product access pauses once fulfilled, since it was only granted "until fulfillment." Unset while still in progress. */
+  readonly fulfilledAt?: string
 }
 
 export type AdminProductSessionRow = {

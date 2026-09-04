@@ -161,10 +161,13 @@ function DfyClientsTab({ clients, accountHref }: { readonly clients: readonly Ad
   const [query, setQuery] = useState('')
   const [logDialogLeadId, setLogDialogLeadId] = useState<string | null>(null)
   const [logOverrides, setLogOverrides] = useState<Readonly<Record<string, readonly AdminDoneForYouApplicationLogEntry[]>>>({})
+  const [fulfilledOverrides, setFulfilledOverrides] = useState<Readonly<Record<string, string>>>({})
 
-  const effectiveClients = clients.map((lead) =>
-    logOverrides[lead.id] ? { ...lead, applicationLog: [...lead.applicationLog, ...logOverrides[lead.id]] } : lead,
-  )
+  const effectiveClients = clients.map((lead) => ({
+    ...lead,
+    applicationLog: logOverrides[lead.id] ? [...lead.applicationLog, ...logOverrides[lead.id]] : lead.applicationLog,
+    fulfilledAt: fulfilledOverrides[lead.id] ?? lead.fulfilledAt,
+  }))
 
   const rows = effectiveClients
     .map((lead) => ({ id: lead.id, lead }))
@@ -208,6 +211,12 @@ function DfyClientsTab({ clients, accountHref }: { readonly clients: readonly Ad
       render: ({ lead }) => <span className="tabular-nums text-ink">{lead.applicationLog.length}</span>,
     },
     {
+      key: 'fulfilled',
+      label: 'Fulfilled',
+      sortValue: ({ lead }) => (lead.fulfilledAt ? 1 : 0),
+      render: ({ lead }) => lead.fulfilledAt ? <Badge variant="positive" size="sm">Fulfilled</Badge> : <span className="text-ink-muted">—</span>,
+    },
+    {
       key: 'actions',
       label: 'Actions',
       className: 'w-16',
@@ -249,6 +258,11 @@ function DfyClientsTab({ clients, accountHref }: { readonly clients: readonly Ad
                 <MenuItem icon={<NotebookPen />} onClick={() => setLogDialogLeadId(lead.id)}>
                   Log application
                 </MenuItem>
+                {!lead.fulfilledAt ? (
+                  <MenuItem icon={<CheckCircle2 />} onClick={() => setFulfilledOverrides((prev) => ({ ...prev, [lead.id]: 'Just now' }))}>
+                    Mark as fulfilled
+                  </MenuItem>
+                ) : null}
                 <MenuItem icon={<Download />} onClick={() => downloadLeadPacket(lead)}>
                   Download packet
                 </MenuItem>
