@@ -28,7 +28,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/vsl" element={<VslLandingPage />} />
-          <Route path="/branding-guide" element={<BrandingGuidePage />} />
+          <Route path="/brand-guide" element={<BrandingGuidePage />} />
           <Route path="/emails" element={<EmailsIndexPage />} />
           <Route path="/emails/:slug" element={<EmailPreviewPage />} />
           <Route path="/v3/*" element={<Suspense fallback={null}><WebRoutes /></Suspense>} />
