@@ -26,7 +26,7 @@ export const StatCard = forwardRef<HTMLDivElement, StatCardProps>(
           {icon ? <span className="text-ink-muted [&>svg]:size-4">{icon}</span> : null}
         </div>
         <div className="mt-1 flex items-baseline gap-2">
-          <p className="text-2xl font-bold text-ink">{value}</p>
+          <p className="font-gowun text-2xl font-bold text-ink">{value}</p>
           {delta ? (
             <span className={cn('text-xs font-semibold', delta.direction === 'up' ? 'text-positive' : 'text-danger')}>
               {delta.direction === 'up' ? '+' : '-'}{Math.abs(delta.value)}%

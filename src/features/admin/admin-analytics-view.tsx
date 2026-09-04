@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AlertTriangle, RefreshCw } from 'lucide-react'
+import { AlertTriangle, ArrowDown, RefreshCw } from 'lucide-react'
 
 import type {
   AdminAnalyticsDemographics,
@@ -32,29 +32,99 @@ const TABS: readonly { readonly id: AdminAnalyticsTab; readonly label: string }[
   { id: 'referrals', label: 'Referrals' },
 ]
 
-/* ---------- Shared bar chart ---------- */
+/* ---------- Shared categorical palette ---------- */
 
-function DistributionBar({ label, count, percent, maxPercent }: {
+const CATEGORY_COLORS = [
+  { dot: 'bg-accent', bar: 'bg-accent', var: 'var(--lf-accent)' },
+  { dot: 'bg-accent-secondary', bar: 'bg-accent-secondary', var: 'var(--lf-accent-secondary)' },
+  { dot: 'bg-positive', bar: 'bg-positive', var: 'var(--lf-positive)' },
+  { dot: 'bg-accent-tertiary', bar: 'bg-accent-tertiary', var: 'var(--lf-accent-tertiary)' },
+  { dot: 'bg-warning', bar: 'bg-warning', var: 'var(--lf-warning)' },
+  { dot: 'bg-danger', bar: 'bg-danger', var: 'var(--lf-danger)' },
+  { dot: 'bg-ink-muted', bar: 'bg-ink-muted', var: 'var(--lf-ink-muted)' },
+] as const
+
+function categoryColor(index: number) {
+  return CATEGORY_COLORS[index % CATEGORY_COLORS.length]
+}
+
+/* ---------- Donut chart (part-of-whole, single-select) ---------- */
+
+function DonutChart({ buckets, size = 152, strokeWidth = 26 }: {
+  readonly buckets: readonly { readonly label: string; readonly count: number; readonly percent: number }[]
+  readonly size?: number
+  readonly strokeWidth?: number
+}) {
+  const total = buckets.reduce((sum, bucket) => sum + bucket.count, 0)
+  const radius = (size - strokeWidth) / 2
+  const circumference = 2 * Math.PI * radius
+  const center = size / 2
+  let accumulated = 0
+
+  return (
+    <div className="flex flex-wrap items-center gap-6">
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90 shrink-0" aria-hidden="true">
+        <circle cx={center} cy={center} r={radius} fill="none" stroke="var(--lf-surface-subtle)" strokeWidth={strokeWidth} />
+        {total > 0
+          ? buckets.map((bucket, index) => {
+              const dashLength = circumference * (bucket.count / total)
+              const dashOffset = circumference * (1 - accumulated / total)
+              accumulated += bucket.count
+              return (
+                <circle
+                  key={bucket.label}
+                  cx={center}
+                  cy={center}
+                  r={radius}
+                  fill="none"
+                  stroke={categoryColor(index).var}
+                  strokeWidth={strokeWidth}
+                  strokeDasharray={`${dashLength} ${circumference - dashLength}`}
+                  strokeDashoffset={dashOffset}
+                />
+              )
+            })
+          : null}
+      </svg>
+      <ul className="grid min-w-0 flex-1 gap-2" aria-label="Response breakdown">
+        {buckets.map((bucket, index) => (
+          <li key={bucket.label} className="flex items-center gap-2 text-sm">
+            <span aria-hidden="true" className={cn('size-2.5 shrink-0 rounded-full', categoryColor(index).dot)} />
+            <span className="min-w-0 flex-1 truncate text-ink">{bucket.label}</span>
+            <span className="shrink-0 font-medium text-ink">{countFormatter.format(bucket.count)}</span>
+            <span className="w-9 shrink-0 text-end text-xs text-ink-muted">{bucket.percent}%</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+/* ---------- Color-coded horizontal bar chart (multi-select / many categories) ---------- */
+
+function CategoryBar({ label, count, percent, maxPercent, colorIndex }: {
   readonly label: string
   readonly count: number
   readonly percent: number
   readonly maxPercent: number
+  readonly colorIndex: number
 }) {
   const widthPercent = maxPercent > 0 ? Math.max(2, (percent / maxPercent) * 100) : 2
+  const color = categoryColor(colorIndex)
   return (
     <li className="py-3">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-        <p className="text-sm font-semibold text-ink">{label}</p>
+        <p className="flex items-center gap-2 text-sm font-semibold text-ink">
+          <span aria-hidden="true" className={cn('size-2.5 shrink-0 rounded-full', color.dot)} />
+          {label}
+        </p>
         <p className="text-sm text-ink">
           {countFormatter.format(count)}
           <span className="ms-2 text-xs text-ink-muted">{percent}%</span>
         </p>
       </div>
-      <div className="mt-2 flex items-center gap-3">
-        <div className="h-2 flex-1 overflow-hidden rounded-pill bg-surface-subtle">
-          <div className="h-full rounded-pill bg-accent" style={{ inlineSize: `${widthPercent}%` }} />
-        </div>
-        <span className="w-10 shrink-0 text-end text-xs font-medium text-ink-muted">{percent}%</span>
+      <div className="mt-2 h-2.5 overflow-hidden rounded-pill bg-surface-subtle">
+        <div className={cn('h-full rounded-pill', color.bar)} style={{ inlineSize: `${widthPercent}%` }} />
       </div>
     </li>
   )
@@ -82,6 +152,7 @@ function SurveySection({ distribution }: { readonly distribution: AdminSurveyDis
   }
 
   const maxPercent = Math.max(...distribution.buckets.map((b) => b.percent))
+  const isSingleSelect = distribution.type === 'single-select'
 
   return (
     <section className="bg-surface shadow-panel" aria-label={`Survey: ${distribution.prompt}`}>
@@ -92,17 +163,24 @@ function SurveySection({ distribution }: { readonly distribution: AdminSurveyDis
           {countFormatter.format(distribution.totalResponses)} responses
         </p>
       </div>
-      <ul className="divide-y divide-border px-4 sm:px-5">
-        {distribution.buckets.map((bucket) => (
-          <DistributionBar
-            key={bucket.optionId}
-            label={bucket.label}
-            count={bucket.count}
-            percent={bucket.percent}
-            maxPercent={maxPercent}
-          />
-        ))}
-      </ul>
+      {isSingleSelect ? (
+        <div className="p-4 sm:px-5">
+          <DonutChart buckets={distribution.buckets} />
+        </div>
+      ) : (
+        <ul className="divide-y divide-border px-4 sm:px-5">
+          {distribution.buckets.map((bucket, index) => (
+            <CategoryBar
+              key={bucket.optionId}
+              label={bucket.label}
+              count={bucket.count}
+              percent={bucket.percent}
+              maxPercent={maxPercent}
+              colorIndex={index}
+            />
+          ))}
+        </ul>
+      )}
     </section>
   )
 }
@@ -121,13 +199,14 @@ function DemographicSection({ distribution }: { readonly distribution: AdminDemo
         </p>
       </div>
       <ul className="divide-y divide-border px-4 sm:px-5">
-        {distribution.buckets.map((bucket) => (
-          <DistributionBar
+        {distribution.buckets.map((bucket, index) => (
+          <CategoryBar
             key={bucket.label}
             label={bucket.label}
             count={bucket.count}
             percent={bucket.percent}
             maxPercent={maxPercent}
+            colorIndex={index}
           />
         ))}
       </ul>
@@ -179,57 +258,111 @@ function ScoreDistributionSection({ scores }: { readonly scores: AdminAnalyticsS
         <p className="mt-1 text-xs text-ink-muted">
           Average score by day across the selected range
         </p>
-        <div className="mt-3 flex h-40 items-end gap-[2px]" role="img" aria-label="Bar chart of daily average interview score">
-          {scoreTrend.points.map((point) => {
-            const heightPercent = Math.max(2, (point.averageScore / 100) * 100)
-            return (
-              <div key={point.label} className="group relative flex h-full flex-1 items-end">
-                <div
-                  className="w-full bg-accent transition-colors duration-normal ease-default group-hover:bg-accent-hover motion-reduce:transition-none"
-                  style={{ height: `${heightPercent}%` }}
-                />
-                <span className="pointer-events-none absolute inset-x-0 bottom-full z-dropdown mb-1 hidden justify-center group-hover:flex">
-                  <span className="whitespace-nowrap rounded-soft border border-border bg-surface px-2 py-1 text-[11px] font-medium text-ink shadow-popover">
-                    {point.label}: {point.averageScore} avg ({point.sessionCount} sessions)
-                  </span>
-                </span>
-              </div>
-            )
-          })}
-        </div>
-        <div className="mt-2 flex items-center justify-between gap-3 text-[11px] text-ink-muted">
-          <span>{scoreTrend.points[0]?.label}</span>
-          <span>{scoreTrend.points[scoreTrend.points.length - 1]?.label}</span>
+        <div className="mt-3">
+          <LineAreaChart
+            points={scoreTrend.points.map((point) => ({
+              label: point.label,
+              value: point.averageScore,
+              detail: `${point.averageScore} avg (${point.sessionCount} sessions)`,
+            }))}
+            yMax={100}
+            valueLabel="daily average interview score"
+          />
         </div>
       </section>
     </div>
   )
 }
 
+/* ---------- Line + area chart (time series) ---------- */
+
+function LineAreaChart({ points, yMax, valueLabel }: {
+  readonly points: readonly { readonly label: string; readonly value: number; readonly detail: string }[]
+  readonly yMax: number
+  readonly valueLabel: string
+}) {
+  if (points.length === 0) return null
+  const width = 480
+  const height = 160
+  const padding = { top: 12, right: 8, bottom: 22, left: 8 }
+  const innerW = width - padding.left - padding.right
+  const innerH = height - padding.top - padding.bottom
+
+  const coords = points.map((point, index) => ({
+    x: padding.left + (points.length === 1 ? 0 : (index / (points.length - 1)) * innerW),
+    y: padding.top + innerH - (yMax > 0 ? (point.value / yMax) * innerH : 0),
+    point,
+  }))
+
+  const pathD = coords.map((c, index) => `${index === 0 ? 'M' : 'L'} ${c.x.toFixed(1)} ${c.y.toFixed(1)}`).join(' ')
+  const baselineY = padding.top + innerH
+  const areaD = `${pathD} L ${coords[coords.length - 1]!.x.toFixed(1)} ${baselineY} L ${coords[0]!.x.toFixed(1)} ${baselineY} Z`
+
+  return (
+    <svg
+      width="100%"
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      preserveAspectRatio="none"
+      className="w-full"
+      role="img"
+      aria-label={`Line chart of ${valueLabel} across the selected range`}
+    >
+      <defs>
+        <linearGradient id="analytics-area-fill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--lf-accent)" stopOpacity={0.22} />
+          <stop offset="100%" stopColor="var(--lf-accent)" stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <path d={areaD} fill="url(#analytics-area-fill)" />
+      <path d={pathD} fill="none" stroke="var(--lf-accent)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+      {coords.map(({ x, y, point }) => (
+        <circle key={point.label} cx={x} cy={y} r={2.5} fill="var(--lf-accent)" vectorEffect="non-scaling-stroke">
+          <title>{point.label}: {point.detail}</title>
+        </circle>
+      ))}
+      <text x={coords[0]!.x} y={height - 4} textAnchor="start" className="fill-ink-muted" fontSize={10}>
+        {points[0]!.label}
+      </text>
+      <text x={coords[coords.length - 1]!.x} y={height - 4} textAnchor="end" className="fill-ink-muted" fontSize={10}>
+        {points[points.length - 1]!.label}
+      </text>
+    </svg>
+  )
+}
+
 /* ---------- Funnels section ---------- */
 
-function FunnelStageBar({ stage }: { readonly stage: AdminFunnelStage }) {
-  const widthPercent = Math.max(2, stage.percentOfTop)
+function FunnelChart({ stages }: { readonly stages: readonly AdminFunnelStage[] }) {
+  const maxCount = stages[0]?.count ?? 1
   return (
-    <li className="py-3">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-        <p className="text-sm font-semibold text-ink">{stage.label}</p>
-        <p className="text-sm text-ink">
-          {countFormatter.format(stage.count)}
-          <span className="ms-2 text-xs text-ink-muted">{stage.percentOfTop}% of top</span>
-        </p>
-      </div>
-      <div className="mt-2 flex items-center gap-3">
-        <div className="h-2 flex-1 overflow-hidden rounded-pill bg-surface-subtle">
-          <div className="h-full rounded-pill bg-accent" style={{ inlineSize: `${widthPercent}%` }} />
-        </div>
-        {stage.dropOffPercent > 0 ? (
-          <span className="w-14 shrink-0 text-end text-xs font-semibold text-danger">−{stage.dropOffPercent}%</span>
-        ) : (
-          <span className="w-14 shrink-0 text-end text-xs text-ink-muted" />
-        )}
-      </div>
-    </li>
+    <ol className="grid gap-1.5">
+      {stages.map((stage, index) => {
+        const widthPercent = maxCount > 0 ? Math.max(14, (stage.count / maxCount) * 100) : 14
+        return (
+          <li key={stage.id}>
+            {index > 0 && stage.dropOffPercent > 0 ? (
+              <p className="flex items-center justify-center gap-1 py-1 text-xs font-semibold text-danger">
+                <ArrowDown aria-hidden="true" className="size-3" />
+                {stage.dropOffPercent}% drop-off
+              </p>
+            ) : null}
+            <div className="flex items-center gap-3">
+              <span className="w-40 shrink-0 truncate text-end text-sm text-ink-muted">{stage.label}</span>
+              <div className="flex flex-1 justify-center">
+                <div
+                  className="flex h-11 items-center justify-center rounded-soft bg-accent px-3 transition-all duration-normal ease-default"
+                  style={{ inlineSize: `${widthPercent}%` }}
+                >
+                  <span className="truncate text-sm font-semibold text-on-accent">{countFormatter.format(stage.count)}</span>
+                </div>
+              </div>
+              <span className="w-16 shrink-0 text-sm text-ink-muted">{stage.percentOfTop}%</span>
+            </div>
+          </li>
+        )
+      })}
+    </ol>
   )
 }
 
@@ -441,11 +574,9 @@ export function AdminAnalyticsView({
                     {countFormatter.format(funnels.funnel.totalTopOfFunnel)} top-of-funnel visitors in range
                   </p>
                 </div>
-                <ul className="divide-y divide-border px-4 sm:px-5">
-                  {funnels.funnel.stages.map((stage) => (
-                    <FunnelStageBar key={stage.id} stage={stage} />
-                  ))}
-                </ul>
+                <div className="p-4 sm:px-5">
+                  <FunnelChart stages={funnels.funnel.stages} />
+                </div>
               </section>
               <TimeToConvertSection
                 buckets={funnels.timeToConvert.buckets}
