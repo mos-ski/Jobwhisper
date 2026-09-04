@@ -16,7 +16,6 @@ import {
   RefreshCw,
   ShieldCheck,
   UserPlus,
-  UserX,
   Users,
 } from 'lucide-react'
 
@@ -201,18 +200,27 @@ function DfyClientsTab({ clients, accountHref }: { readonly clients: readonly Ad
         </span>
       ),
     },
-    { key: 'signedUp', label: 'Signed up', sortValue: ({ lead }) => lead.signedUpLabel, render: ({ lead }) => <span className="whitespace-nowrap text-ink-muted">{lead.signedUpLabel}</span> },
+    // The narrow columns carry fixed widths so the auto layout stops splitting the row evenly
+    // and leaves Contact (the one cell with a wrapping note under it) the remaining space.
     {
       key: 'applications',
       label: 'Applications',
-      className: 'text-end',
+      className: 'w-28 text-end',
       headerClassName: 'text-end',
       sortValue: ({ lead }) => lead.applicationLog.length,
       render: ({ lead }) => <span className="tabular-nums text-ink">{lead.applicationLog.length}</span>,
     },
     {
+      key: 'signedUp',
+      label: 'Signed up',
+      className: 'w-28',
+      sortValue: ({ lead }) => lead.signedUpLabel,
+      render: ({ lead }) => <span className="whitespace-nowrap text-ink-muted">{lead.signedUpLabel}</span>,
+    },
+    {
       key: 'fulfilled',
       label: 'Fulfilled',
+      className: 'w-24',
       sortValue: ({ lead }) => (lead.fulfilledAt ? 1 : 0),
       render: ({ lead }) => lead.fulfilledAt ? <Badge variant="positive" size="sm">Fulfilled</Badge> : <span className="text-ink-muted">—</span>,
     },
@@ -258,14 +266,22 @@ function DfyClientsTab({ clients, accountHref }: { readonly clients: readonly Ad
                 <MenuItem icon={<NotebookPen />} onClick={() => setLogDialogLeadId(lead.id)}>
                   Log application
                 </MenuItem>
-                {!lead.fulfilledAt ? (
-                  <MenuItem icon={<CheckCircle2 />} onClick={() => setFulfilledOverrides((prev) => ({ ...prev, [lead.id]: 'Just now' }))}>
-                    Mark as fulfilled
-                  </MenuItem>
-                ) : null}
                 <MenuItem icon={<Download />} onClick={() => downloadLeadPacket(lead)}>
                   Download packet
                 </MenuItem>
+                {/* The one action that ends the engagement sits last and reads as a button, not another list row. */}
+                {!lead.fulfilledAt ? (
+                  <>
+                    <MenuSeparator />
+                    <MenuItem
+                      icon={<CheckCircle2 />}
+                      className="mx-1 mb-0.5 justify-center rounded-md bg-positive font-semibold text-on-accent data-[highlighted]:bg-positive/90"
+                      onClick={() => setFulfilledOverrides((prev) => ({ ...prev, [lead.id]: 'Just now' }))}
+                    >
+                      Mark as fulfilled
+                    </MenuItem>
+                  </>
+                ) : null}
               </MenuContent>
             </Menu>
           </span>
@@ -281,10 +297,10 @@ function DfyClientsTab({ clients, accountHref }: { readonly clients: readonly Ad
   return (
     <div className="grid gap-6">
       <section aria-label="DFY client totals" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Total DFY clients" value={countFormatter.format(clients.length)} icon={<Users />} />
-        <StatCard label="New" value={countFormatter.format(newCount)} icon={<UserPlus />} />
-        <StatCard label="In fulfillment" value={countFormatter.format(fulfillmentCount)} icon={<CalendarPlus />} />
-        <StatCard label="Completed" value={countFormatter.format(completedCount)} icon={<CheckCircle2 />} />
+        <StatCard label="Total DFY clients" value={countFormatter.format(clients.length)} />
+        <StatCard label="New" value={countFormatter.format(newCount)} />
+        <StatCard label="In fulfillment" value={countFormatter.format(fulfillmentCount)} />
+        <StatCard label="Completed" value={countFormatter.format(completedCount)} />
       </section>
 
       {clients.length === 0 ? (
@@ -662,14 +678,10 @@ export function AdminAccountsListView({
             Array.from({ length: 4 }, (_, index) => <Skeleton key={index} className="h-24" />)
           ) : (
             <>
-              <StatCard label="Total accounts" value={countFormatter.format(summary.totalAccounts)} icon={<Users />} />
-              <StatCard
-                label="Active subscribers"
-                value={countFormatter.format(summary.activeSubscribers)}
-                icon={<ShieldCheck />}
-              />
-              <StatCard label="Suspended" value={countFormatter.format(summary.suspended)} icon={<UserX />} />
-              <StatCard label="New this week" value={countFormatter.format(summary.newThisWeek)} icon={<UserPlus />} />
+              <StatCard label="Total accounts" value={countFormatter.format(summary.totalAccounts)} />
+              <StatCard label="Active subscribers" value={countFormatter.format(summary.activeSubscribers)} />
+              <StatCard label="Suspended" value={countFormatter.format(summary.suspended)} />
+              <StatCard label="New this week" value={countFormatter.format(summary.newThisWeek)} />
             </>
           )}
         </section>
