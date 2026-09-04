@@ -90,6 +90,10 @@ export type AdminProductDetailStatId =
   | 'credits'
   | 'completion-rate'
   | 'error-rate'
+  | 'dfy-leads'
+  | 'dfy-clients'
+  | 'dfy-applications'
+  | 'dfy-revenue'
 
 export type AdminProductDetailStat = {
   readonly id: AdminProductDetailStatId
@@ -112,29 +116,13 @@ export type AdminProductTrendPoint = {
 
 export type AdminProductSessionOutcome = 'completed' | 'abandoned' | 'failed'
 
-export type AdminDoneForYouPipelineStatus = 'queued' | 'in-progress' | 'completed'
-
-export type AdminDoneForYouApplicant = {
-  readonly id: string
-  readonly userName: string
-  readonly userEmail: string
-  readonly plan: AdminProductTierId
-  readonly targetRole: string
-  readonly targetCompany: string
-  readonly startedLabel: string
-  readonly assignedSuccessManager: string
-  readonly pipelineStatus: AdminDoneForYouPipelineStatus
-  readonly packageId: 'dfy-small' | 'dfy-large'
-  readonly jobsSubmittedCount: number
-}
-
 /**
- * A pre-fulfillment stage distinct from `AdminDoneForYouApplicant`: a lead has paid and
- * agreed to the service terms, but hasn't had an onboarding call yet, so no success manager
- * or job-submission tracking applies. `promoted`/`handling-manually` leads drop out of the
- * default (unreviewed) Leads view but keep their record for the status filter.
+ * One pipeline, six stages, from signup through fulfillment. `new`/`call-scheduled` are
+ * pre-fulfillment (paid, not yet assigned a success manager); `queued`/`in-progress`/`completed`
+ * are active fulfillment; `handling-manually` is an off-ramp at any point where the success
+ * manager works the client outside the platform instead.
  */
-export type AdminDoneForYouLeadStatus = 'new' | 'call-scheduled' | 'promoted' | 'handling-manually'
+export type AdminDoneForYouStage = 'new' | 'call-scheduled' | 'queued' | 'in-progress' | 'completed' | 'handling-manually'
 
 export type AdminDoneForYouLead = {
   readonly id: string
@@ -144,7 +132,7 @@ export type AdminDoneForYouLead = {
   readonly packageId: 'dfy-small' | 'dfy-large'
   readonly amountPaidCents: number
   readonly signedUpLabel: string
-  readonly status: AdminDoneForYouLeadStatus
+  readonly stage: AdminDoneForYouStage
   /** Reused from the candidate's Auto-Apply profile rather than re-collected at DFY signup. */
   readonly targetRoles: readonly string[]
   readonly experienceLevel: string
@@ -156,6 +144,10 @@ export type AdminDoneForYouLead = {
   readonly contactPreference: 'email' | 'phone' | 'either'
   readonly contactNote: string
   readonly agreedToTermsLabel: string
+  /** Set once a success manager is assigned — from `queued` onward. */
+  readonly assignedSuccessManager?: string
+  /** Set once a success manager is assigned — from `queued` onward. */
+  readonly jobsSubmittedCount?: number
 }
 
 export type AdminProductSessionRow = {
@@ -197,7 +189,6 @@ export type AdminProductDetail = {
   readonly trend: readonly AdminProductTrendPoint[]
   readonly sessions: readonly AdminProductSessionRow[]
   readonly doneForYouLeads?: readonly AdminDoneForYouLead[]
-  readonly doneForYouApplicants?: readonly AdminDoneForYouApplicant[]
   readonly errorGroups: readonly AdminProductErrorGroup[]
   readonly blastRadiusUsers: number
   readonly blastRadiusLabel: string

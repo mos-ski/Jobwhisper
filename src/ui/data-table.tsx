@@ -233,7 +233,7 @@ export const DataTable = forwardRef<HTMLElement, DataTableProps<{ readonly id: s
                   ) : null}
                   {columns.map((column) => {
                     const isSortable = column.sortable !== false
-                    const isSorted = sortColumn === column.key
+                    const isSorted = effectiveSortColumn === column.key
                     return (
                       <th
                         key={column.key}
@@ -243,13 +243,13 @@ export const DataTable = forwardRef<HTMLElement, DataTableProps<{ readonly id: s
                           column.headerClassName,
                           column.className,
                         )}
-                        onClick={isSortable ? () => onSort?.(column.key) : undefined}
+                        onClick={isSortable ? () => handleSort(column.key) : undefined}
                       >
                         <span className="inline-flex items-center gap-1">
                           {column.label}
                           {isSortable ? (
                             isSorted ? (
-                              sortDirection === 'asc' ? (
+                              effectiveSortDirection === 'asc' ? (
                                 <ChevronUp aria-hidden="true" className="size-3 text-accent-text" />
                               ) : (
                                 <ChevronDown aria-hidden="true" className="size-3 text-accent-text" />

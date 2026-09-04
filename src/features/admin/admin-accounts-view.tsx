@@ -4,7 +4,10 @@ import {
   AlertTriangle,
   ArrowLeft,
   Ban,
+  CalendarPlus,
+  CheckCircle2,
   Coins,
+  Download,
   Eye,
   LogIn,
   MoreHorizontal,
@@ -28,6 +31,7 @@ import type {
   AdminCreditEntry,
   AdminCreditEntryKind,
 } from '@/contracts/admin-accounts.draft'
+import type { AdminDoneForYouLead } from '@/contracts/admin-products.draft'
 import type { AdminNavItem, AdminNotification, AdminPlanId, AdminSearchResult } from '@/contracts/admin.draft'
 import type { UserIdentity } from '@/contracts/identity'
 import {
@@ -62,10 +66,137 @@ import {
 } from '@/ui'
 
 import { AdminShell } from './admin-shell'
+import { contactPreferenceLabels, downloadLeadPacket, googleCalendarUrl, PACKAGE_LABELS, stageMeta } from './admin-products-view'
 
 const PAGE_SIZE = 8
 
+export type AdminAccountsListTab = 'subscribers' | 'dfy-clients'
+
 const countFormatter = new Intl.NumberFormat('en-US')
+
+function DfyClientsTab({ clients }: { readonly clients: readonly AdminDoneForYouLead[] }) {
+  const [query, setQuery] = useState('')
+
+  const rows = clients
+    .map((lead) => ({ id: lead.id, lead }))
+    .filter(({ lead }) => `${lead.userName} ${lead.userEmail}`.toLowerCase().includes(query.trim().toLowerCase()))
+
+  const columns: readonly DataTableColumn<{ readonly id: string; readonly lead: AdminDoneForYouLead }>[] = [
+    {
+      key: 'client',
+      label: 'Client',
+      sortValue: ({ lead }) => lead.userName,
+      render: ({ lead }) => (
+        <span className="flex items-center gap-2">
+          <Avatar name={lead.userName} size="sm" />
+          <span className="min-w-0">
+            <span className="block truncate font-semibold text-ink">{lead.userName}</span>
+            <span className="block truncate text-xs text-ink-muted">{lead.userEmail}</span>
+          </span>
+        </span>
+      ),
+    },
+    { key: 'package', label: 'Package', render: ({ lead }) => <span className="text-ink-muted">{PACKAGE_LABELS[lead.packageId] ?? lead.packageId}</span> },
+    {
+      key: 'contact',
+      label: 'Contact',
+      render: ({ lead }) => (
+        <span className="block min-w-0">
+          <span className="block text-ink">{contactPreferenceLabels[lead.contactPreference]}</span>
+          {lead.contactNote ? <span className="block truncate text-xs text-ink-muted">{lead.contactNote}</span> : null}
+        </span>
+      ),
+    },
+    { key: 'signedUp', label: 'Signed up', sortValue: ({ lead }) => lead.signedUpLabel, render: ({ lead }) => <span className="whitespace-nowrap text-ink-muted">{lead.signedUpLabel}</span> },
+    {
+      key: 'stage',
+      label: 'Stage',
+      sortValue: ({ lead }) => lead.stage,
+      render: ({ lead }) => {
+        const meta = stageMeta[lead.stage]
+        return <Badge variant={meta.variant} size="sm">{meta.label}</Badge>
+      },
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      className: 'w-16',
+      headerClassName: 'text-end',
+      sortable: false,
+      hideInMobileDetail: true,
+      render: ({ lead }) => {
+        const canScheduleCall = lead.stage === 'new' || lead.stage === 'call-scheduled'
+        return (
+          <span className="flex justify-end" onClick={(event) => event.stopPropagation()}>
+            <Menu>
+              <MenuTrigger
+                aria-label={`Actions for ${lead.userName}`}
+                className="grid size-11 place-items-center rounded-soft text-ink-muted transition-colors hover:bg-surface-subtle hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                <MoreHorizontal aria-hidden="true" className="size-4" />
+              </MenuTrigger>
+              <MenuContent>
+                {canScheduleCall ? (
+                  <MenuItem icon={<CalendarPlus />}>
+                    <a
+                      href={googleCalendarUrl(lead)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 rounded-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                    >
+                      Schedule call
+                    </a>
+                  </MenuItem>
+                ) : null}
+                <MenuItem icon={<Download />} onClick={() => downloadLeadPacket(lead)}>
+                  Download packet
+                </MenuItem>
+              </MenuContent>
+            </Menu>
+          </span>
+        )
+      },
+    },
+  ]
+
+  const newCount = clients.filter((lead) => lead.stage === 'new').length
+  const fulfillmentCount = clients.filter((lead) => lead.stage === 'queued' || lead.stage === 'in-progress').length
+  const completedCount = clients.filter((lead) => lead.stage === 'completed').length
+
+  return (
+    <div className="grid gap-6">
+      <section aria-label="DFY client totals" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard label="Total DFY clients" value={countFormatter.format(clients.length)} icon={<Users />} />
+        <StatCard label="New" value={countFormatter.format(newCount)} icon={<UserPlus />} />
+        <StatCard label="In fulfillment" value={countFormatter.format(fulfillmentCount)} icon={<CalendarPlus />} />
+        <StatCard label="Completed" value={countFormatter.format(completedCount)} icon={<CheckCircle2 />} />
+      </section>
+
+      {clients.length === 0 ? (
+        <section className="bg-surface shadow-panel">
+          <EmptyState title="No DFY clients yet" description="Everyone who signs up and pays for Done-For-You shows up here." />
+        </section>
+      ) : (
+        <section aria-label="DFY clients" className="bg-surface shadow-panel">
+          <DataTable
+            bare
+            selectable={false}
+            className="p-4"
+            columns={columns}
+            rows={rows}
+            itemLabel={({ lead }) => lead.userName}
+            filterRow={() => true}
+            searchValue={query}
+            onSearchChange={setQuery}
+            searchLabel="Search DFY clients by name or email"
+            searchPlaceholder="Search name or email"
+            minTableWidthClassName="min-w-[56rem]"
+          />
+        </section>
+      )}
+    </div>
+  )
+}
 
 const planBadgeVariants: Record<AdminPlanId, BadgeVariant> = {
   starter: 'neutral',
@@ -153,6 +284,10 @@ export type AdminAccountsListViewProps = {
   readonly searchResults: readonly AdminSearchResult[]
   readonly accounts: readonly AdminAccountRow[]
   readonly summary: AdminAccountsSummary
+  /** Mirrored to the `tab` query param. */
+  readonly tab: AdminAccountsListTab
+  readonly onTabChange: (tab: AdminAccountsListTab) => void
+  readonly dfyClients: readonly AdminDoneForYouLead[]
   /** Search term, mirrored to the `q` query param. */
   readonly q: string
   readonly onQChange: (value: string) => void
@@ -182,6 +317,9 @@ export function AdminAccountsListView({
   searchResults,
   accounts,
   summary,
+  tab,
+  onTabChange,
+  dfyClients,
   q,
   onQChange,
   status,
@@ -387,6 +525,14 @@ export function AdminAccountsListView({
           </p>
         </div>
 
+        <Tabs value={tab} onValueChange={(value) => { if (value === 'subscribers' || value === 'dfy-clients') onTabChange(value) }}>
+          <TabsList aria-label="Account sections">
+            <TabsTrigger value="subscribers">Subscribers</TabsTrigger>
+            <TabsTrigger value="dfy-clients">DFY Clients</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="subscribers">
+            <div className="grid gap-6">
         <section aria-label="Account totals" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {isLoading ? (
             Array.from({ length: 4 }, (_, index) => <Skeleton key={index} className="h-24" />)
@@ -516,6 +662,13 @@ export function AdminAccountsListView({
             />
           </section>
         )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="dfy-clients">
+            <DfyClientsTab clients={dfyClients} />
+          </TabsContent>
+        </Tabs>
       </div>
 
       <Dialog

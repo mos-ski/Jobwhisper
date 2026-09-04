@@ -6,14 +6,20 @@ import {
   CalendarPlus,
   CircleSlash,
   Download,
+  LayoutGrid,
+  List,
+  Mail,
+  MapPin,
+  Phone,
   RefreshCw,
+  Search,
   TriangleAlert,
+  X,
 } from 'lucide-react'
 
 import type {
   AdminDoneForYouLead,
-  AdminDoneForYouLeadStatus,
-  AdminDoneForYouPipelineStatus,
+  AdminDoneForYouStage,
   AdminProductDetail,
   AdminProductErrorGroup,
   AdminProductHealthState,
@@ -100,33 +106,31 @@ const errorSeverityLabels: Record<AdminProductErrorGroup['severity'], string> = 
   info: 'For info',
 }
 
-const pipelineStatusMeta: Record<AdminDoneForYouPipelineStatus, { readonly label: string; readonly variant: BadgeVariant }> = {
-  'queued': { label: 'Queued', variant: 'neutral' },
-  'in-progress': { label: 'In progress', variant: 'accent' },
-  'completed': { label: 'Completed', variant: 'positive' },
-}
-
-const PACKAGE_LABELS: Record<string, string> = {
+export const PACKAGE_LABELS: Record<string, string> = {
   'dfy-small': '50 jobs · $497',
   'dfy-large': '100 jobs · $997',
 }
 
 const SUCCESS_MANAGERS = ['Daniel Okoye', 'Priya Raghunathan', 'Rachel Adeyemi']
 
-const leadStatusMeta: Record<AdminDoneForYouLeadStatus, { readonly label: string; readonly variant: BadgeVariant }> = {
+export const STAGE_ORDER: readonly AdminDoneForYouStage[] = ['new', 'call-scheduled', 'queued', 'in-progress', 'completed', 'handling-manually']
+
+export const stageMeta: Record<AdminDoneForYouStage, { readonly label: string; readonly variant: BadgeVariant }> = {
   'new': { label: 'New', variant: 'neutral' },
   'call-scheduled': { label: 'Call scheduled', variant: 'accent' },
-  'promoted': { label: 'Promoted', variant: 'positive' },
+  'queued': { label: 'Queued', variant: 'neutral' },
+  'in-progress': { label: 'In progress', variant: 'accent' },
+  'completed': { label: 'Completed', variant: 'positive' },
   'handling-manually': { label: 'Handling manually', variant: 'info' },
 }
 
-const contactPreferenceLabels: Record<AdminDoneForYouLead['contactPreference'], string> = {
+export const contactPreferenceLabels: Record<AdminDoneForYouLead['contactPreference'], string> = {
   email: 'Email',
   phone: 'Phone',
   either: 'Either',
 }
 
-function googleCalendarUrl(lead: AdminDoneForYouLead): string {
+export function googleCalendarUrl(lead: AdminDoneForYouLead): string {
   const text = encodeURIComponent(`Done-For-You onboarding call — ${lead.userName}`)
   const details = encodeURIComponent(
     [
@@ -139,7 +143,7 @@ function googleCalendarUrl(lead: AdminDoneForYouLead): string {
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${details}`
 }
 
-function downloadLeadPacket(lead: AdminDoneForYouLead) {
+export function downloadLeadPacket(lead: AdminDoneForYouLead) {
   const lines = [
     `Name: ${lead.userName}`,
     `Email: ${lead.userEmail}`,
@@ -461,6 +465,318 @@ export function AdminProductsView({
   )
 }
 
+/* ---------- Done-For-You pipeline: Kanban/List switcher + side-panel detail ---------- */
+
+type DfyRow = {
+  readonly id: string
+  readonly lead: AdminDoneForYouLead
+  readonly stage: AdminDoneForYouStage
+  readonly manager?: string
+}
+
+function DfyCard({ row, onSelect }: { readonly row: DfyRow; readonly onSelect: () => void }) {
+  const { lead, stage } = row
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className="w-full rounded-lg border border-border bg-surface p-3 text-start shadow-control transition-colors hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+    >
+      <span className="flex items-center gap-2">
+        <Avatar name={lead.userName} size="xs" />
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-semibold text-ink">{lead.userName}</span>
+          <span className="block truncate text-xs text-ink-muted">{lead.userEmail}</span>
+        </span>
+      </span>
+      <span className="mt-2 block truncate text-xs text-ink-muted">{lead.targetRoles.join(', ')}</span>
+      <span className="mt-2 flex items-center justify-between gap-2">
+        <span className="text-xs font-medium text-ink-muted">{PACKAGE_LABELS[lead.packageId] ?? lead.packageId}</span>
+        {stage === 'in-progress' || stage === 'completed' ? (
+          <span className="text-xs font-semibold tabular-nums text-ink">{lead.jobsSubmittedCount ?? 0} jobs</span>
+        ) : null}
+      </span>
+    </button>
+  )
+}
+
+function DfyKanban({ rows, onSelect }: { readonly rows: readonly DfyRow[]; readonly onSelect: (id: string) => void }) {
+  return (
+    <div className="overflow-x-auto p-4">
+      <div className="flex min-w-max gap-4">
+        {STAGE_ORDER.map((stage) => {
+          const columnRows = rows.filter((row) => row.stage === stage)
+          return (
+            <div key={stage} className="grid w-64 shrink-0 gap-3">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-ink">{stageMeta[stage].label}</h3>
+                <Badge variant={stageMeta[stage].variant} size="sm">{columnRows.length}</Badge>
+              </div>
+              <div className="grid gap-2">
+                {columnRows.length === 0 ? (
+                  <p className="rounded-lg border border-dashed border-border p-3 text-center text-xs text-ink-muted">No one here</p>
+                ) : (
+                  columnRows.map((row) => <DfyCard key={row.lead.id} row={row} onSelect={() => onSelect(row.lead.id)} />)
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function DfyList({ rows, onSelect }: { readonly rows: readonly DfyRow[]; readonly onSelect: (id: string) => void }) {
+  const columns: readonly DataTableColumn<DfyRow>[] = [
+    {
+      key: 'client',
+      label: 'Client',
+      sortValue: ({ lead }) => lead.userName,
+      render: ({ lead }) => (
+        <span className="flex items-center gap-2">
+          <Avatar name={lead.userName} size="xs" />
+          <span className="min-w-0">
+            <span className="block truncate font-medium text-ink">{lead.userName}</span>
+            <span className="block truncate text-xs text-ink-muted">{lead.userEmail}</span>
+          </span>
+        </span>
+      ),
+    },
+    { key: 'target', label: 'Target', render: ({ lead }) => <span className="block truncate text-ink">{lead.targetRoles.join(', ')}</span> },
+    { key: 'package', label: 'Package', render: ({ lead }) => <span className="text-ink-muted">{PACKAGE_LABELS[lead.packageId] ?? lead.packageId}</span> },
+    {
+      key: 'jobsSubmitted',
+      label: 'Jobs submitted',
+      sortValue: ({ lead }) => lead.jobsSubmittedCount ?? -1,
+      render: ({ lead }) => <span className="tabular-nums text-ink">{lead.jobsSubmittedCount ?? '—'}</span>,
+    },
+    {
+      key: 'stage',
+      label: 'Stage',
+      sortValue: ({ stage }) => stage,
+      render: ({ stage }) => <Badge variant={stageMeta[stage].variant} size="sm">{stageMeta[stage].label}</Badge>,
+    },
+    {
+      key: 'manager',
+      label: 'Success manager',
+      sortValue: ({ manager }) => manager ?? 'zzz',
+      render: ({ manager }) => manager ? (
+        <span className="flex items-center gap-1.5">
+          <Avatar name={manager} size="xs" />
+          <span className="truncate">{manager}</span>
+        </span>
+      ) : <span className="text-ink-muted">—</span>,
+    },
+    { key: 'signedUp', label: 'Signed up', sortValue: ({ lead }) => lead.signedUpLabel, render: ({ lead }) => <span className="whitespace-nowrap text-ink-muted">{lead.signedUpLabel}</span> },
+  ]
+
+  return (
+    <DataTable
+      bare
+      selectable={false}
+      className="p-4"
+      columns={columns}
+      rows={rows}
+      itemLabel={({ lead }) => lead.userName}
+      onRowClick={(row) => onSelect(row.lead.id)}
+      minTableWidthClassName="min-w-[64rem]"
+    />
+  )
+}
+
+function DfyDetailPanel({ row, onClose, onStageChange, onManagerChange }: {
+  readonly row: DfyRow | undefined
+  readonly onClose: () => void
+  readonly onStageChange: (stage: AdminDoneForYouStage) => void
+  readonly onManagerChange: (manager: string) => void
+}) {
+  return (
+    <Dialog open={row !== undefined} onOpenChange={(open) => { if (!open) onClose() }}>
+      <DialogPopup placement="end" aria-label={row ? `${row.lead.userName} details` : 'Client details'} className="p-0">
+        {row ? (
+          <div className="grid h-full grid-rows-[auto_1fr]">
+            <div className="flex items-start justify-between gap-3 border-b border-border p-4">
+              <span className="flex min-w-0 items-center gap-2.5">
+                <Avatar name={row.lead.userName} size="md" />
+                <span className="min-w-0">
+                  <DialogTitle className="truncate font-gowun text-base font-bold text-ink">{row.lead.userName}</DialogTitle>
+                  <span className="block truncate text-xs text-ink-muted">{row.lead.userEmail}</span>
+                </span>
+              </span>
+              <DialogClose aria-label="Close" className="static grid size-9 shrink-0 place-items-center rounded-soft text-ink-muted hover:bg-surface-subtle hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                <X aria-hidden="true" className="size-4" />
+              </DialogClose>
+            </div>
+
+            <div className="grid gap-5 overflow-y-auto p-4">
+              <SelectField
+                id="dfy-detail-stage"
+                label="Stage"
+                value={row.stage}
+                onValueChange={(value) => onStageChange(value as AdminDoneForYouStage)}
+                options={STAGE_ORDER.map((stage) => ({ value: stage, label: stageMeta[stage].label }))}
+              />
+
+              {row.stage !== 'new' && row.stage !== 'call-scheduled' ? (
+                <SelectField
+                  id="dfy-detail-manager"
+                  label="Success manager"
+                  value={row.manager ?? SUCCESS_MANAGERS[0]}
+                  onValueChange={(value) => onManagerChange(value)}
+                  options={SUCCESS_MANAGERS.map((manager) => ({ value: manager, label: manager }))}
+                />
+              ) : null}
+
+              <div className="grid gap-2 text-sm">
+                <p className="flex items-center gap-2 text-ink"><Phone aria-hidden="true" className="size-3.5 shrink-0 text-ink-muted" />{row.lead.userPhone}</p>
+                <p className="flex items-center gap-2 text-ink"><Mail aria-hidden="true" className="size-3.5 shrink-0 text-ink-muted" />{contactPreferenceLabels[row.lead.contactPreference]}{row.lead.contactNote ? ` · ${row.lead.contactNote}` : ''}</p>
+                <p className="flex items-center gap-2 text-ink"><MapPin aria-hidden="true" className="size-3.5 shrink-0 text-ink-muted" />{row.lead.locations.join(', ')}</p>
+              </div>
+
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Package</h3>
+                <p className="mt-1 text-sm text-ink">{PACKAGE_LABELS[row.lead.packageId] ?? row.lead.packageId} · {formatUsdWhole(row.lead.amountPaidCents)} paid</p>
+                <p className="text-xs text-ink-muted">Signed up {row.lead.signedUpLabel} · Agreed to terms {row.lead.agreedToTermsLabel}</p>
+              </div>
+
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Target roles</h3>
+                <p className="mt-1 text-sm text-ink">{row.lead.targetRoles.join(', ')}</p>
+                <p className="text-xs text-ink-muted">{row.lead.experienceLevel}</p>
+              </div>
+
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Resume on file</h3>
+                <p className="mt-1 truncate text-sm text-ink">{row.lead.resumeFileName}</p>
+              </div>
+
+              {row.lead.excludedCompanies ? (
+                <div>
+                  <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Excluded companies</h3>
+                  <p className="mt-1 text-sm text-ink">{row.lead.excludedCompanies}</p>
+                </div>
+              ) : null}
+
+              <p className="text-sm text-ink">
+                {row.lead.shareSalaryExpectations ? 'Can share salary range with employers.' : 'Should not share salary range without checking first.'}
+              </p>
+
+              {(row.lead.jobsSubmittedCount ?? 0) > 0 || row.stage === 'in-progress' || row.stage === 'completed' ? (
+                <div>
+                  <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Jobs submitted</h3>
+                  <p className="mt-1 text-sm font-semibold tabular-nums text-ink">{row.lead.jobsSubmittedCount ?? 0}</p>
+                </div>
+              ) : null}
+
+              <div className="grid gap-2 border-t border-border pt-4">
+                <a
+                  href={googleCalendarUrl(row.lead)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => onStageChange('call-scheduled')}
+                  className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border border-input px-3 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                >
+                  <CalendarPlus aria-hidden="true" className="size-4" />
+                  Schedule call
+                </a>
+                <button
+                  type="button"
+                  onClick={() => downloadLeadPacket(row.lead)}
+                  className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border border-input px-3 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                >
+                  <Download aria-hidden="true" className="size-4" />
+                  Download packet
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </DialogPopup>
+    </Dialog>
+  )
+}
+
+function DoneForYouPipeline({ leads }: { readonly leads: readonly AdminDoneForYouLead[] }) {
+  const [stageOverrides, setStageOverrides] = useState<Readonly<Record<string, AdminDoneForYouStage>>>({})
+  const [managerOverrides, setManagerOverrides] = useState<Readonly<Record<string, string>>>({})
+  const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban')
+  const [query, setQuery] = useState('')
+  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null)
+
+  const rows: readonly DfyRow[] = leads
+    .map((lead) => ({
+      id: lead.id,
+      lead,
+      stage: stageOverrides[lead.id] ?? lead.stage,
+      manager: managerOverrides[lead.id] ?? lead.assignedSuccessManager,
+    }))
+    .filter((row) => `${row.lead.userName} ${row.lead.userEmail}`.toLowerCase().includes(query.trim().toLowerCase()))
+
+  const selected = rows.find((row) => row.lead.id === selectedLeadId)
+
+  return (
+    <section aria-label="Done-For-You pipeline" className="bg-surface shadow-panel">
+      <div className="flex flex-wrap items-center gap-3 border-b border-border p-4">
+        <div>
+          <h2 className="font-gowun text-lg font-bold text-ink">Pipeline</h2>
+          <p className="text-sm text-ink-muted">Every client, from signup through fulfillment.</p>
+        </div>
+        <div className="ms-auto flex flex-wrap items-center gap-3">
+          <div className="relative min-w-0 sm:max-w-[14rem]">
+            <Search aria-hidden="true" className="pointer-events-none absolute inset-y-0 start-3 my-auto size-4 text-ink-muted" />
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              aria-label="Search clients by name or email"
+              placeholder="Search name or email"
+              className="h-9 w-full rounded-lg border border-input bg-canvas ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            />
+          </div>
+          <div className="flex gap-1 rounded-md border border-border p-1" role="group" aria-label="View mode">
+            <button
+              type="button"
+              onClick={() => setViewMode('kanban')}
+              aria-pressed={viewMode === 'kanban'}
+              className={cn('inline-flex min-h-9 items-center gap-1.5 rounded-soft px-3 text-sm font-medium transition-colors duration-normal ease-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus', viewMode === 'kanban' ? 'bg-accent-subtle text-accent-text' : 'text-ink-muted hover:bg-surface-subtle hover:text-ink')}
+            >
+              <LayoutGrid aria-hidden="true" className="size-4" />
+              Kanban
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('list')}
+              aria-pressed={viewMode === 'list'}
+              className={cn('inline-flex min-h-9 items-center gap-1.5 rounded-soft px-3 text-sm font-medium transition-colors duration-normal ease-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus', viewMode === 'list' ? 'bg-accent-subtle text-accent-text' : 'text-ink-muted hover:bg-surface-subtle hover:text-ink')}
+            >
+              <List aria-hidden="true" className="size-4" />
+              List
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {rows.length === 0 ? (
+        <div className="p-4 sm:p-6">
+          <EmptyState title="No matching clients" description="Try a different search term." />
+        </div>
+      ) : viewMode === 'kanban' ? (
+        <DfyKanban rows={rows} onSelect={setSelectedLeadId} />
+      ) : (
+        <DfyList rows={rows} onSelect={setSelectedLeadId} />
+      )}
+
+      <DfyDetailPanel
+        row={selected}
+        onClose={() => setSelectedLeadId(null)}
+        onStageChange={(stage) => selected && setStageOverrides((prev) => ({ ...prev, [selected.lead.id]: stage }))}
+        onManagerChange={(manager) => selected && setManagerOverrides((prev) => ({ ...prev, [selected.lead.id]: manager }))}
+      />
+    </section>
+  )
+}
+
 export type AdminProductDetailViewProps = {
   readonly user: UserIdentity
   readonly navItems: readonly AdminNavItem[]
@@ -500,10 +816,6 @@ export function AdminProductDetailView({
 }: AdminProductDetailViewProps) {
   const [trendMetric, setTrendMetric] = useState<AdminProductTrendMetric>('sessions')
   const [showTrendTable, setShowTrendTable] = useState(false)
-  const [applicantManagerOverrides, setApplicantManagerOverrides] = useState<Readonly<Record<string, string>>>({})
-  const [applicantStatusOverrides, setApplicantStatusOverrides] = useState<Readonly<Record<string, AdminDoneForYouPipelineStatus>>>({})
-  const [leadStatusOverrides, setLeadStatusOverrides] = useState<Readonly<Record<string, AdminDoneForYouLeadStatus>>>({})
-  const [showResolvedLeads, setShowResolvedLeads] = useState(false)
 
   const filteredSessions = useMemo(() => {
     if (!product) return []
@@ -624,6 +936,7 @@ export function AdminProductDetailView({
               ))}
             </div>
 
+            {product.id === 'done-for-you' ? null : (
             <section className="bg-surface p-4 shadow-panel sm:p-5" aria-label="Usage over time">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="font-gowun text-lg font-bold text-ink">{trendMetric === 'sessions' ? 'Sessions' : 'Credits consumed'} over time</h2>
@@ -651,6 +964,7 @@ export function AdminProductDetailView({
                 onToggleTable={() => setShowTrendTable((prev) => !prev)}
               />
             </section>
+            )}
 
             {product.errorGroups.length > 0 ? (
               <section className="bg-surface shadow-panel" aria-label="Recent errors">
@@ -675,6 +989,7 @@ export function AdminProductDetailView({
               </section>
             ) : null}
 
+            {product.id === 'done-for-you' ? null : (
             <section aria-label="Session log" className="grid gap-3">
               <h2 className="font-gowun text-lg font-bold text-ink">Session log</h2>
               <div className="flex flex-wrap items-end gap-3">
@@ -720,244 +1035,10 @@ export function AdminProductDetailView({
                 />
               )}
             </section>
+            )}
 
             {product.id === 'done-for-you' && product.doneForYouLeads ? (
-              <section aria-label="Leads" className="grid gap-3">
-                <h2 className="font-gowun text-lg font-bold text-ink">Leads</h2>
-                <p className="text-sm text-ink-muted">
-                  Signed up and paid, waiting on an onboarding call before a success manager is assigned.
-                </p>
-                {(() => {
-                  const leadsWithStatus = product.doneForYouLeads!.map((lead) => ({
-                    lead,
-                    status: leadStatusOverrides[lead.id] ?? lead.status,
-                  }))
-                  const visibleLeads = showResolvedLeads
-                    ? leadsWithStatus
-                    : leadsWithStatus.filter(({ status }) => status === 'new' || status === 'call-scheduled')
-
-                  return (
-                    <>
-                      <div className="flex flex-wrap items-center gap-3">
-                        <label className="flex items-center gap-2 text-sm text-ink-muted">
-                          <Switch checked={showResolvedLeads} onCheckedChange={setShowResolvedLeads} />
-                          Show promoted / handled manually
-                        </label>
-                        <p className="ms-auto text-sm text-ink-muted">{visibleLeads.length} of {leadsWithStatus.length} leads</p>
-                      </div>
-
-                      {visibleLeads.length === 0 ? (
-                        <EmptyState title="No leads need review" description="Every lead has either been promoted to the pipeline or is being handled manually." />
-                      ) : (
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-start text-sm">
-                            <thead>
-                              <tr className="border-b border-border">
-                                <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Lead</th>
-                                <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Target</th>
-                                <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Package</th>
-                                <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Contact</th>
-                                <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Signed up</th>
-                                <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Status</th>
-                                <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {visibleLeads.map(({ lead, status }) => {
-                                const statusMeta = leadStatusMeta[status]
-                                const isResolved = status === 'promoted' || status === 'handling-manually'
-                                return (
-                                  <tr key={lead.id} className="border-b border-border last:border-b-0">
-                                    <td className="px-4 py-3">
-                                      <span className="flex items-center gap-2">
-                                        <Avatar name={lead.userName} size="xs" />
-                                        <span className="min-w-0">
-                                          <span className="block truncate font-medium text-ink">{lead.userName}</span>
-                                          <span className="block truncate text-xs text-ink-muted">{lead.userEmail}</span>
-                                        </span>
-                                      </span>
-                                    </td>
-                                    <td className="px-4 py-3">
-                                      <span className="block min-w-0">
-                                        <span className="block truncate text-ink">{lead.targetRoles.join(', ')}</span>
-                                        <span className="block truncate text-xs text-ink-muted">{lead.experienceLevel} · {lead.locations.join(', ')}</span>
-                                      </span>
-                                    </td>
-                                    <td className="px-4 py-3 text-ink-muted">{PACKAGE_LABELS[lead.packageId] ?? lead.packageId}</td>
-                                    <td className="px-4 py-3">
-                                      <span className="block min-w-0">
-                                        <span className="block text-ink">{contactPreferenceLabels[lead.contactPreference]}</span>
-                                        {lead.contactNote ? <span className="block truncate text-xs text-ink-muted">{lead.contactNote}</span> : null}
-                                      </span>
-                                    </td>
-                                    <td className="px-4 py-3 whitespace-nowrap text-ink-muted">{lead.signedUpLabel}</td>
-                                    <td className="px-4 py-3">
-                                      <Badge variant={statusMeta.variant} size="sm">{statusMeta.label}</Badge>
-                                    </td>
-                                    <td className="px-4 py-3">
-                                      <div className="flex flex-wrap gap-1.5">
-                                        {!isResolved ? (
-                                          <a
-                                            href={googleCalendarUrl(lead)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            onClick={() => setLeadStatusOverrides((prev) => ({ ...prev, [lead.id]: 'call-scheduled' }))}
-                                            className="inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-input px-2.5 text-xs font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                                          >
-                                            <CalendarPlus aria-hidden="true" className="size-3.5" />
-                                            Schedule call
-                                          </a>
-                                        ) : null}
-                                        {!isResolved ? (
-                                          <button
-                                            type="button"
-                                            onClick={() => setLeadStatusOverrides((prev) => ({ ...prev, [lead.id]: 'promoted' }))}
-                                            className="inline-flex min-h-8 items-center rounded-lg border border-input px-2.5 text-xs font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                                          >
-                                            Promote
-                                          </button>
-                                        ) : null}
-                                        {!isResolved ? (
-                                          <button
-                                            type="button"
-                                            onClick={() => setLeadStatusOverrides((prev) => ({ ...prev, [lead.id]: 'handling-manually' }))}
-                                            className="inline-flex min-h-8 items-center rounded-lg border border-input px-2.5 text-xs font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                                          >
-                                            Handle manually
-                                          </button>
-                                        ) : null}
-                                        <button
-                                          type="button"
-                                          onClick={() => downloadLeadPacket(lead)}
-                                          className="inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-input px-2.5 text-xs font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                                        >
-                                          <Download aria-hidden="true" className="size-3.5" />
-                                          Packet
-                                        </button>
-                                      </div>
-                                    </td>
-                                  </tr>
-                                )
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
-                      )}
-                    </>
-                  )
-                })()}
-              </section>
-            ) : null}
-
-            {product.id === 'done-for-you' && product.doneForYouApplicants ? (
-              <section aria-label="Applicant pipeline" className="grid gap-3">
-                <h2 className="font-gowun text-lg font-bold text-ink">Applicant pipeline</h2>
-                <div className="flex flex-wrap items-end gap-3">
-                  <p className="ms-auto text-sm text-ink-muted">{product.doneForYouApplicants.length} applicants</p>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full text-start text-sm">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Applicant</th>
-                        <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Target</th>
-                        <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Package</th>
-                        <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Jobs submitted</th>
-                        <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Status</th>
-                        <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Success manager</th>
-                        <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Started</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {product.doneForYouApplicants.map((applicant) => {
-                        const effectiveManager = applicantManagerOverrides[applicant.id] ?? applicant.assignedSuccessManager
-                        const effectiveStatus = applicantStatusOverrides[applicant.id] ?? applicant.pipelineStatus
-                        const statusMeta = pipelineStatusMeta[effectiveStatus]
-                        return (
-                          <tr key={applicant.id} className="border-b border-border last:border-b-0">
-                            <td className="px-4 py-3">
-                              <span className="flex items-center gap-2">
-                                <Avatar name={applicant.userName} size="xs" />
-                                <span className="min-w-0">
-                                  <span className="block truncate font-medium text-ink">{applicant.userName}</span>
-                                  <span className="block truncate text-xs text-ink-muted">{applicant.userEmail}</span>
-                                </span>
-                              </span>
-                            </td>
-                            <td className="px-4 py-3">
-                              <span className="block min-w-0">
-                                <span className="block truncate text-ink">{applicant.targetRole}</span>
-                                <span className="block truncate text-xs text-ink-muted">{applicant.targetCompany}</span>
-                              </span>
-                            </td>
-                            <td className="px-4 py-3 text-ink-muted">{PACKAGE_LABELS[applicant.packageId] ?? applicant.packageId}</td>
-                            <td className="px-4 py-3 tabular-nums text-ink">{applicant.jobsSubmittedCount}</td>
-                            <td className="px-4 py-3">
-                              <Badge variant={statusMeta.variant} size="sm">{statusMeta.label}</Badge>
-                            </td>
-                            <td className="px-4 py-3">
-                              <span className="flex items-center gap-1.5">
-                                <Avatar name={effectiveManager} size="xs" />
-                                <span className="truncate">{effectiveManager}</span>
-                              </span>
-                            </td>
-                            <td className="px-4 py-3 whitespace-nowrap text-ink-muted">{applicant.startedLabel}</td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="flex flex-wrap gap-4">
-                  <div className="flex items-center gap-2">
-                    <label htmlFor="dfy-applicant-manager" className="text-xs font-semibold text-ink-muted">Reassign manager for:</label>
-                    <select
-                      id="dfy-applicant-manager"
-                      className="rounded-lg border border-input bg-canvas px-2 py-1.5 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                      defaultValue=""
-                      onChange={(e) => {
-                        const applicantId = e.target.value
-                        if (!applicantId) return
-                        const current = applicantManagerOverrides[applicantId] ?? product.doneForYouApplicants!.find((a) => a.id === applicantId)!.assignedSuccessManager
-                        const idx = SUCCESS_MANAGERS.indexOf(current)
-                        const next = SUCCESS_MANAGERS[(idx + 1) % SUCCESS_MANAGERS.length]
-                        setApplicantManagerOverrides((prev) => ({ ...prev, [applicantId]: next }))
-                        e.target.value = ''
-                      }}
-                    >
-                      <option value="">Select applicant…</option>
-                      {product.doneForYouApplicants.map((a) => (
-                        <option key={a.id} value={a.id}>{a.userName}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <label htmlFor="dfy-applicant-status" className="text-xs font-semibold text-ink-muted">Set status for:</label>
-                    <select
-                      id="dfy-applicant-status"
-                      className="rounded-lg border border-input bg-canvas px-2 py-1.5 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                      defaultValue=""
-                      onChange={(e) => {
-                        const applicantId = e.target.value
-                        if (!applicantId) return
-                        const current = applicantStatusOverrides[applicantId] ?? product.doneForYouApplicants!.find((a) => a.id === applicantId)!.pipelineStatus
-                        const cycle: readonly AdminDoneForYouPipelineStatus[] = ['queued', 'in-progress', 'completed']
-                        const idx = cycle.indexOf(current)
-                        const next = cycle[(idx + 1) % cycle.length]
-                        setApplicantStatusOverrides((prev) => ({ ...prev, [applicantId]: next }))
-                        e.target.value = ''
-                      }}
-                    >
-                      <option value="">Select applicant…</option>
-                      {product.doneForYouApplicants.map((a) => (
-                        <option key={a.id} value={a.id}>{a.userName}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </section>
+              <DoneForYouPipeline leads={product.doneForYouLeads} />
             ) : null}
           </>
         )}
