@@ -960,7 +960,7 @@ export function AdminAccountDetailView({
           </Panel>
 
           <Panel title="Credit balance" description={`Resets ${account.creditsResetsOn}`}>
-            <p className="mt-3 text-3xl font-bold leading-9 text-ink">{countFormatter.format(creditsRemaining)}</p>
+            <p className="mt-3 font-gowun text-3xl font-bold leading-9 text-ink">{countFormatter.format(creditsRemaining)}</p>
             <p className="text-sm text-ink-muted">
               of {countFormatter.format(account.creditsAllowance)} credits this cycle, 1 credit is 1 minute of Copilot
             </p>
