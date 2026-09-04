@@ -17,6 +17,7 @@ export const adminSupportSummary: AdminSupportSummary = {
 export const adminSupportTickets: readonly AdminTicketRow[] = [
   {
     id: 'tkt_58291',
+    kind: 'bug',
     subject: 'Copilot session audio dropped after 3 minutes',
     status: 'open',
     priority: 'high',
@@ -33,6 +34,7 @@ export const adminSupportTickets: readonly AdminTicketRow[] = [
   },
   {
     id: 'tkt_58287',
+    kind: 'billing',
     subject: 'Refund request for failed Copilot session',
     status: 'in-progress',
     priority: 'high',
@@ -49,6 +51,7 @@ export const adminSupportTickets: readonly AdminTicketRow[] = [
   },
   {
     id: 'tkt_58280',
+    kind: 'bug',
     subject: 'Cannot access premium marketplace items',
     status: 'open',
     priority: 'medium',
@@ -65,6 +68,7 @@ export const adminSupportTickets: readonly AdminTicketRow[] = [
   },
   {
     id: 'tkt_58275',
+    kind: 'bug',
     subject: 'Auto Apply submitting to wrong roles',
     status: 'in-progress',
     priority: 'medium',
@@ -81,6 +85,7 @@ export const adminSupportTickets: readonly AdminTicketRow[] = [
   },
   {
     id: 'tkt_58270',
+    kind: 'billing',
     subject: 'Credits not reflected after top-up',
     status: 'waiting',
     priority: 'high',
@@ -97,6 +102,7 @@ export const adminSupportTickets: readonly AdminTicketRow[] = [
   },
   {
     id: 'tkt_58265',
+    kind: 'question',
     subject: 'How do I cancel my subscription?',
     status: 'resolved',
     priority: 'low',

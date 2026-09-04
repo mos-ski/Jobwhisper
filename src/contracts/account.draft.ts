@@ -101,3 +101,35 @@ export type AccountFaqEntry = {
   readonly question: string
   readonly answer: string
 }
+
+/**
+ * Support requests raised from the app. Every one of these becomes a ticket in the admin
+ * Support queue — `kind` is what tells the queue whether it is a bug to triage, a complaint
+ * to escalate, or feedback to file, so it carries across both contracts.
+ */
+export type SupportRequestKind = 'question' | 'bug' | 'complaint' | 'feedback' | 'feature' | 'billing'
+
+export type SupportRequestType = {
+  readonly id: SupportRequestKind
+  readonly label: string
+  readonly description: string
+  /** Shows the 1–5 star field — set on the kinds where a score is the point of the message. */
+  readonly asksForRating?: boolean
+}
+
+export type SupportTicketStatus = 'open' | 'in-progress' | 'waiting' | 'resolved' | 'closed'
+
+/** One of the user's own tickets, as they see it — the same ticket the admin queue works from. */
+export type SupportTicketSummary = {
+  readonly id: string
+  /** Short human reference quoted in emails, e.g. "JW-4821". */
+  readonly reference: string
+  readonly kind: SupportRequestKind
+  readonly subject: string
+  readonly status: SupportTicketStatus
+  readonly createdAtLabel: string
+  readonly lastUpdateLabel: string
+  readonly lastMessagePreview: string
+  /** True when the last word was ours and the user still owes a reply. */
+  readonly awaitingReply: boolean
+}

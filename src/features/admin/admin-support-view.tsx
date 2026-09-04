@@ -19,6 +19,7 @@ import type {
   AdminTicketStatus,
   AdminTicketStatusFilter,
 } from '@/contracts/admin-support.draft'
+import type { SupportRequestKind } from '@/contracts/account.draft'
 import type { AdminModuleId, AdminNavItem, AdminNotification, AdminSearchResult } from '@/contracts/admin.draft'
 import type { UserIdentity } from '@/contracts/identity'
 import {
@@ -42,6 +43,16 @@ import {
 import { AdminShell } from './admin-shell'
 
 const PAGE_SIZE = 10
+
+/** Mirrors the labels the user picked from on the app's support page. */
+const SUPPORT_KIND_LABELS: Record<SupportRequestKind, string> = {
+  question: 'Question',
+  bug: 'Bug',
+  complaint: 'Complaint',
+  feedback: 'Feedback',
+  feature: 'Feature request',
+  billing: 'Billing',
+}
 
 const statusLabels: Record<AdminTicketStatus, string> = {
   open: 'Open',
@@ -194,7 +205,11 @@ export function AdminSupportView({
           <a href={ticketHref(row.id)} className="block truncate font-medium text-ink underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
             {row.subject}
           </a>
-          <span className="block truncate text-xs text-ink-muted">{row.lastMessagePreview}</span>
+          <span className="block truncate text-xs text-ink-muted">
+            {/* What the user picked when raising it in the app — tickets that arrived by email have no kind. */}
+            {row.kind ? <span className="font-semibold text-ink-muted">{SUPPORT_KIND_LABELS[row.kind]} · </span> : null}
+            {row.lastMessagePreview}
+          </span>
         </span>
       ),
     },

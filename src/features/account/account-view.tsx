@@ -1,8 +1,9 @@
-import { AlertTriangle, Check, ChevronDown, Clock, Copy, ExternalLink, EyeOff, Gift, Mail, Moon, Play, Search, ShoppingCart, Sun, Trash2, Upload } from 'lucide-react'
+import { AlertTriangle, Bug, Check, ChevronDown, Clock, Copy, CreditCard, ExternalLink, EyeOff, Flag, Gift, Lightbulb, Mail, MessageCircle, Moon, Play, Search, ShoppingCart, Star, Sun, Trash2, Upload } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 
-import type { AccountFaqEntry, BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
+import type { AccountFaqEntry, BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, SupportRequestKind, SupportRequestType, SupportTicketStatus, SupportTicketSummary, TutorialItem } from '@/contracts/account.draft'
 import type { MarketplaceItem } from '@/contracts/marketplace.draft'
+import type { BadgeVariant } from '@/ui'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
 import { AppShell } from '@/features/dashboard/app-nav'
 import { centsToCredits, creditsToCents, formatCredits } from '@/lib/credits'
@@ -11,6 +12,7 @@ import {
   AccordionItem,
   AccordionPanel,
   AccordionTrigger,
+  Badge,
   Button,
   cn,
   Collapsible,
@@ -23,6 +25,8 @@ import {
   DialogPopup,
   DialogTitle,
   DialogTrigger,
+  FormField,
+  FormTextArea,
   SelectField,
   ShellBar,
   Switch,
@@ -77,6 +81,8 @@ export type MarketplaceViewProps = {
 
 export type SupportViewProps = {
   readonly homeHref: string
+  readonly requestTypes: readonly SupportRequestType[]
+  readonly tickets: readonly SupportTicketSummary[]
 }
 
 export type BillingWallet = {
@@ -351,13 +357,224 @@ export function MarketplaceView({ homeHref, items }: MarketplaceViewProps) {
   )
 }
 
-export function SupportView({ homeHref }: SupportViewProps) {
+const supportStatusMeta: Record<SupportTicketStatus, { readonly label: string; readonly variant: BadgeVariant }> = {
+  open: { label: 'Open', variant: 'accent' },
+  'in-progress': { label: 'In progress', variant: 'info' },
+  waiting: { label: 'Needs your reply', variant: 'warning' },
+  resolved: { label: 'Resolved', variant: 'positive' },
+  closed: { label: 'Closed', variant: 'neutral' },
+}
+
+function StarRating({ value, onChange }: { readonly value: number; readonly onChange: (value: number) => void }) {
+  return (
+    <fieldset className="grid gap-1.5">
+      <legend className="text-sm font-medium leading-5 text-ink">How would you rate us?</legend>
+      <div className="flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((score) => (
+          <button
+            key={score}
+            type="button"
+            onClick={() => onChange(score)}
+            aria-label={`${score} out of 5`}
+            aria-pressed={value === score}
+            className="grid size-11 place-items-center rounded-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          >
+            <Star
+              aria-hidden="true"
+              className={cn('size-6 transition-colors', score <= value ? 'fill-warning text-warning' : 'text-ink-muted')}
+            />
+          </button>
+        ))}
+        <span className="ms-2 text-sm text-ink-muted">{value > 0 ? `${value} of 5` : 'Not rated yet'}</span>
+      </div>
+    </fieldset>
+  )
+}
+
+/**
+ * The request form. Submitting is mocked — it files the ticket locally and hands back a
+ * reference, which is what a real submission to the admin Support queue would return.
+ */
+const supportKindIcons: Record<SupportRequestKind, ReactNode> = {
+  question: <MessageCircle />,
+  bug: <Bug />,
+  complaint: <Flag />,
+  feedback: <Star />,
+  feature: <Lightbulb />,
+  billing: <CreditCard />,
+}
+
+/** A support CTA — same card shape as the contact cards below it, with a button instead of a link. */
+function SupportActionCard({ type, onOpen }: { readonly type: SupportRequestType; readonly onOpen: () => void }) {
+  return (
+    <div className="flex items-start gap-4 border border-border bg-surface p-[18px]">
+      <span aria-hidden="true" className="mt-0.5 shrink-0 text-ink-muted [&>svg]:size-5">{supportKindIcons[type.id]}</span>
+      <div>
+        <p className="text-sm font-semibold text-ink">{type.label}</p>
+        <p className="mt-1 text-sm text-ink-muted">{type.description}</p>
+        <button
+          type="button"
+          onClick={onOpen}
+          className="mt-2 inline-block rounded-soft text-sm font-semibold text-accent-text underline underline-offset-4 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+        >
+          {type.id === 'feedback' ? 'Rate us' : type.label}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * The request form, in a modal. Submitting is mocked — it files the ticket locally and hands
+ * back a reference, which is what a real submission to the admin Support queue would return.
+ */
+function SupportRequestDialog({ type, requestTypes, onClose, onFiled }: {
+  readonly type: SupportRequestType | null
+  readonly requestTypes: readonly SupportRequestType[]
+  readonly onClose: () => void
+  readonly onFiled: (ticket: SupportTicketSummary) => void
+}) {
+  const [kind, setKind] = useState<SupportRequestKind>(type?.id ?? 'question')
+  const [subject, setSubject] = useState('')
+  const [message, setMessage] = useState('')
+  const [rating, setRating] = useState(0)
+  const [filedReference, setFiledReference] = useState<string | null>(null)
+
+  const activeType = requestTypes.find((entry) => entry.id === kind) ?? type
+  const canSubmit = subject.trim().length > 0 && message.trim().length > 0
+
+  function submit() {
+    if (!canSubmit) return
+    // A real reference comes back from the server; this stands in for it.
+    const reference = `JW-${Math.floor(4800 + Math.random() * 200)}`
+    onFiled({
+      id: `ticket-${reference}`,
+      reference,
+      kind,
+      subject: subject.trim(),
+      status: 'open',
+      createdAtLabel: 'Just now',
+      lastUpdateLabel: 'Just now',
+      lastMessagePreview: message.trim(),
+      awaitingReply: false,
+    })
+    setFiledReference(reference)
+  }
+
+  return (
+    <Dialog
+      open={type !== null}
+      onOpenChange={(open) => {
+        if (!open) onClose()
+      }}
+    >
+      <DialogPopup aria-labelledby="support-request-title">
+        <DialogClose aria-label="Close" />
+        {filedReference ? (
+          <>
+            <DialogTitle id="support-request-title" className="font-gowun">Request {filedReference} sent</DialogTitle>
+            <DialogDescription>
+              It is in our support queue now, and you will get an email as soon as someone picks it up. You can follow it
+              under &ldquo;Your requests&rdquo;.
+            </DialogDescription>
+            <Button className="mt-6 w-full" onClick={onClose}>Done</Button>
+          </>
+        ) : (
+          <>
+            <DialogTitle id="support-request-title" className="font-gowun">{activeType?.label}</DialogTitle>
+            <DialogDescription>{activeType?.description}</DialogDescription>
+            <form
+              className="mt-6 grid gap-4"
+              onSubmit={(event) => {
+                event.preventDefault()
+                submit()
+              }}
+            >
+              <SelectField
+                id="support-kind"
+                label="Request type"
+                value={kind}
+                onValueChange={(value) => setKind(value as SupportRequestKind)}
+                options={requestTypes.map((entry) => ({ value: entry.id, label: entry.label }))}
+              />
+
+              {activeType?.asksForRating ? <StarRating value={rating} onChange={setRating} /> : null}
+
+              <FormField
+                id="support-subject"
+                label="Subject"
+                value={subject}
+                onChange={(event) => setSubject(event.target.value)}
+                placeholder="One line on what happened"
+              />
+
+              <FormTextArea
+                id="support-message"
+                label="Tell us more"
+                rows={5}
+                value={message}
+                onChange={(event) => setMessage(event.target.value)}
+                placeholder={
+                  kind === 'bug'
+                    ? 'What you were doing, what you expected, and what happened instead. Include the browser or app if you can.'
+                    : 'As much detail as you can give us.'
+                }
+              />
+
+              <p className="text-xs text-ink-muted">Typical first reply is within one business day.</p>
+              <div className="flex flex-wrap justify-end gap-3">
+                <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
+                <Button type="submit" disabled={!canSubmit}>Send request</Button>
+              </div>
+            </form>
+          </>
+        )}
+      </DialogPopup>
+    </Dialog>
+  )
+}
+
+function SupportTicketRow({ ticket, typeLabel }: { readonly ticket: SupportTicketSummary; readonly typeLabel: string }) {
+  const meta = supportStatusMeta[ticket.status]
+  return (
+    <li className="border border-border bg-surface p-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{ticket.reference}</span>
+            <Badge variant={meta.variant} size="sm">{meta.label}</Badge>
+            <span className="text-xs text-ink-muted">{typeLabel}</span>
+          </div>
+          <p className="mt-1 text-sm font-semibold text-ink">{ticket.subject}</p>
+          <p className="mt-1 text-sm leading-6 text-ink-muted">{ticket.lastMessagePreview}</p>
+        </div>
+        <p className="shrink-0 text-xs text-ink-muted">Updated {ticket.lastUpdateLabel}</p>
+      </div>
+      {ticket.awaitingReply ? (
+        <p className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-warning">
+          <AlertTriangle aria-hidden="true" className="size-3.5" />
+          Waiting on your reply
+        </p>
+      ) : null}
+    </li>
+  )
+}
+
+export function SupportView({ homeHref, requestTypes, tickets }: SupportViewProps) {
+  const [openType, setOpenType] = useState<SupportRequestType | null>(null)
+  const [filedTickets, setFiledTickets] = useState<readonly SupportTicketSummary[]>([])
+  const allTickets = [...filedTickets, ...tickets]
+  const typeLabel = (kind: SupportRequestKind) => requestTypes.find((type) => type.id === kind)?.label ?? kind
+
   return (
     <AppWorkspace>
       <ShellBar homeHref={homeHref} current="Support" closeHref={homeHref} closeLabel="Close support" />
       <ContentShell>
         <TitledPanel title="Support">
           <div className="grid gap-4 sm:grid-cols-2">
+            {requestTypes.map((type) => (
+              <SupportActionCard key={type.id} type={type} onOpen={() => setOpenType(type)} />
+            ))}
             <div className="flex items-start gap-4 border border-border bg-surface p-[18px]">
               <Mail aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-ink-muted" />
               <div>
@@ -387,11 +604,31 @@ export function SupportView({ homeHref }: SupportViewProps) {
             </div>
           </div>
         </TitledPanel>
+
+        <TitledPanel title="Your requests">
+          {allTickets.length === 0 ? (
+            <p className="text-sm text-ink-muted">Nothing open right now. Anything you send us will show up here.</p>
+          ) : (
+            <ul className="grid gap-3">
+              {allTickets.map((ticket) => (
+                <SupportTicketRow key={ticket.id} ticket={ticket} typeLabel={typeLabel(ticket.kind)} />
+              ))}
+            </ul>
+          )}
+        </TitledPanel>
       </ContentShell>
+
+      <SupportRequestDialog
+        // Remounted per CTA so the form opens on the type that was clicked, with empty fields.
+        key={openType?.id ?? 'none'}
+        type={openType}
+        requestTypes={requestTypes}
+        onClose={() => setOpenType(null)}
+        onFiled={(ticket) => setFiledTickets((prev) => [ticket, ...prev])}
+      />
     </AppWorkspace>
   )
 }
-
 const cancellationReasons: readonly { readonly label: string; readonly value: string }[] = [
   { label: 'Select a reason', value: '' },
   { label: 'Too expensive', value: 'too-expensive' },

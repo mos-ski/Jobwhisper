@@ -1,4 +1,4 @@
-import type { AccountFaqEntry, BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
+import type { AccountFaqEntry, BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, SupportRequestType, SupportTicketSummary, TutorialItem } from '@/contracts/account.draft'
 
 export const downloadItems: readonly DownloadItem[] = [
   {
@@ -382,4 +382,49 @@ export const accountFaqs: readonly AccountFaqEntry[] = [
   { category: 'Knowledge Base', question: 'Does uploading a document cost credits?', answer: 'No, uploading and storing documents is free. Credits are only charged when a feature actively uses that context during a live session or generation.' },
   { category: 'Knowledge Base', question: 'What happens if I hit my document limit?', answer: 'Remove an existing document to make room, or upgrade your plan for a higher limit, Premium allows up to 10 stored documents.' },
   { category: 'Knowledge Base', question: 'Can Auto Apply use my Knowledge Base documents?', answer: 'Yes, Auto Apply draws on your stored resume and any relevant context when tailoring applications on your behalf.' },
+]
+
+export const supportRequestTypes: readonly SupportRequestType[] = [
+  { id: 'question', label: 'Ask a question', description: 'Something is unclear and you want a human answer.' },
+  { id: 'bug', label: 'Report a bug', description: 'Something is broken, frozen, or giving the wrong result.' },
+  { id: 'complaint', label: 'Make a complaint', description: 'Something went wrong and you want it looked into properly.' },
+  { id: 'feedback', label: 'Give feedback', description: 'Tell us how it is going and rate your experience.', asksForRating: true },
+  { id: 'feature', label: 'Request a feature', description: 'Something you wish Jobwhisper did.' },
+  { id: 'billing', label: 'Billing or refund', description: 'A charge, a credit balance, or a refund request.' },
+]
+
+export const supportTickets: readonly SupportTicketSummary[] = [
+  {
+    id: 'ticket-4712',
+    reference: 'JW-4712',
+    kind: 'bug',
+    subject: 'Copilot stopped transcribing halfway through a Zoom call',
+    status: 'in-progress',
+    createdAtLabel: 'Sep 2, 2026',
+    lastUpdateLabel: 'Yesterday',
+    lastMessagePreview: "We've reproduced this on Zoom 6.1 and a fix is going out this week. Sorry for the interruption.",
+    awaitingReply: false,
+  },
+  {
+    id: 'ticket-4655',
+    reference: 'JW-4655',
+    kind: 'billing',
+    subject: 'Charged twice for the same Auto Apply top-up',
+    status: 'waiting',
+    createdAtLabel: 'Aug 28, 2026',
+    lastUpdateLabel: '3 days ago',
+    lastMessagePreview: 'Could you confirm the last four digits of the card used? We can refund the duplicate straight away.',
+    awaitingReply: true,
+  },
+  {
+    id: 'ticket-4390',
+    reference: 'JW-4390',
+    kind: 'feedback',
+    subject: 'Interview Prep scoring felt harsh on behavioural answers',
+    status: 'resolved',
+    createdAtLabel: 'Aug 14, 2026',
+    lastUpdateLabel: 'Aug 19, 2026',
+    lastMessagePreview: 'Thanks for the detail here — we retuned the behavioural rubric off the back of this.',
+    awaitingReply: false,
+  },
 ]

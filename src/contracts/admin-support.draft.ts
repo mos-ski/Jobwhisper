@@ -3,6 +3,8 @@
  * Dates are pre-formatted display strings so views never parse or localize a date.
  */
 
+import type { SupportRequestKind } from './account.draft'
+
 export type AdminTicketStatus = 'open' | 'in-progress' | 'waiting' | 'resolved' | 'closed'
 
 export type AdminTicketStatusFilter = AdminTicketStatus | 'all'
@@ -16,6 +18,14 @@ export type AdminTicketAssigneeFilter = string | 'all' | 'unassigned'
 export type AdminTicketRow = {
   readonly id: string
   readonly subject: string
+  /**
+   * What the user picked when they raised it in the app — see `SupportRequestKind` in
+   * `account.draft.ts`. Tells the queue whether this is a bug to triage, a complaint to
+   * escalate, or feedback to file. Unset on tickets that arrived by email.
+   */
+  readonly kind?: SupportRequestKind
+  /** 1–5, only on the kinds that ask for a score. */
+  readonly rating?: number
   readonly status: AdminTicketStatus
   readonly priority: AdminTicketPriority
   readonly accountName: string
