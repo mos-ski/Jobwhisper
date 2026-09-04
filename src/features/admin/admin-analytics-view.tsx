@@ -34,14 +34,17 @@ const TABS: readonly { readonly id: AdminAnalyticsTab; readonly label: string }[
 
 /* ---------- Shared categorical palette ---------- */
 
+// Shades of the brand blue (--lf-accent), darkest to lightest, mixed via color-mix
+// so the ramp stays tied to one token instead of introducing new hardcoded hues.
 const CATEGORY_COLORS = [
-  { dot: 'bg-accent', bar: 'bg-accent', var: 'var(--lf-accent)' },
-  { dot: 'bg-accent-secondary', bar: 'bg-accent-secondary', var: 'var(--lf-accent-secondary)' },
-  { dot: 'bg-positive', bar: 'bg-positive', var: 'var(--lf-positive)' },
-  { dot: 'bg-accent-tertiary', bar: 'bg-accent-tertiary', var: 'var(--lf-accent-tertiary)' },
-  { dot: 'bg-warning', bar: 'bg-warning', var: 'var(--lf-warning)' },
-  { dot: 'bg-danger', bar: 'bg-danger', var: 'var(--lf-danger)' },
-  { dot: 'bg-ink-muted', bar: 'bg-ink-muted', var: 'var(--lf-ink-muted)' },
+  'color-mix(in srgb, var(--lf-accent) 70%, black)',
+  'color-mix(in srgb, var(--lf-accent) 85%, black)',
+  'var(--lf-accent)',
+  'color-mix(in srgb, var(--lf-accent) 88%, white)',
+  'color-mix(in srgb, var(--lf-accent) 74%, white)',
+  'color-mix(in srgb, var(--lf-accent) 60%, white)',
+  'color-mix(in srgb, var(--lf-accent) 46%, white)',
+  'color-mix(in srgb, var(--lf-accent) 32%, white)',
 ] as const
 
 function categoryColor(index: number) {
@@ -77,7 +80,7 @@ function DonutChart({ buckets, size = 152, strokeWidth = 26 }: {
                   cy={center}
                   r={radius}
                   fill="none"
-                  stroke={categoryColor(index).var}
+                  stroke={categoryColor(index)}
                   strokeWidth={strokeWidth}
                   strokeDasharray={`${dashLength} ${circumference - dashLength}`}
                   strokeDashoffset={dashOffset}
@@ -89,7 +92,7 @@ function DonutChart({ buckets, size = 152, strokeWidth = 26 }: {
       <ul className="grid min-w-0 flex-1 gap-2" aria-label="Response breakdown">
         {buckets.map((bucket, index) => (
           <li key={bucket.label} className="flex items-center gap-2 text-sm">
-            <span aria-hidden="true" className={cn('size-2.5 shrink-0 rounded-full', categoryColor(index).dot)} />
+            <span aria-hidden="true" className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: categoryColor(index) }} />
             <span className="min-w-0 flex-1 truncate text-ink">{bucket.label}</span>
             <span className="shrink-0 font-medium text-ink">{countFormatter.format(bucket.count)}</span>
             <span className="w-9 shrink-0 text-end text-xs text-ink-muted">{bucket.percent}%</span>
@@ -115,7 +118,7 @@ function CategoryBar({ label, count, percent, maxPercent, colorIndex }: {
     <li className="py-3">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <p className="flex items-center gap-2 text-sm font-semibold text-ink">
-          <span aria-hidden="true" className={cn('size-2.5 shrink-0 rounded-full', color.dot)} />
+          <span aria-hidden="true" className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
           {label}
         </p>
         <p className="text-sm text-ink">
@@ -124,7 +127,7 @@ function CategoryBar({ label, count, percent, maxPercent, colorIndex }: {
         </p>
       </div>
       <div className="mt-2 h-2.5 overflow-hidden rounded-pill bg-surface-subtle">
-        <div className={cn('h-full rounded-pill', color.bar)} style={{ inlineSize: `${widthPercent}%` }} />
+        <div className="h-full rounded-pill" style={{ inlineSize: `${widthPercent}%`, backgroundColor: color }} />
       </div>
     </li>
   )
