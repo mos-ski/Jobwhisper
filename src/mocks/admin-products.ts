@@ -321,6 +321,7 @@ export const adminProductsDense: readonly AdminProductRow[] = adminProducts.map(
 export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
   {
     id: 'dfy_lead_001',
+    accountId: 'acct_grace_abernathy',
     userName: 'Grace Abernathy',
     userEmail: 'grace.abernathy@example.com',
     userPhone: '+1 (720) 555-0148',
@@ -337,9 +338,11 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     contactPreference: 'email',
     contactNote: 'Weekday afternoons, MT',
     agreedToTermsLabel: 'Sep 4, 2026 · 9:12 AM',
+    applicationLog: [],
   },
   {
     id: 'dfy_lead_002',
+    accountId: 'acct_jonas_lindberg',
     userName: 'Jonas Lindberg',
     userEmail: 'jonas.lindberg@example.com',
     userPhone: '+46 70 555 0113',
@@ -356,9 +359,11 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     contactPreference: 'either',
     contactNote: '',
     agreedToTermsLabel: 'Sep 3, 2026 · 2:40 PM',
+    applicationLog: [],
   },
   {
     id: 'dfy_lead_003',
+    accountId: 'acct_zainab_al_rashid',
     userName: 'Zainab Al-Rashid',
     userEmail: 'zainab.alrashid@example.com',
     userPhone: '+971 50 555 0177',
@@ -375,9 +380,11 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     contactPreference: 'phone',
     contactNote: 'Call scheduled Sep 5, 2pm GST',
     agreedToTermsLabel: 'Sep 3, 2026 · 11:05 AM',
+    applicationLog: [],
   },
   {
     id: 'dfy_lead_004',
+    accountId: 'acct_nikhil_ramanathan',
     userName: 'Nikhil Ramanathan',
     userEmail: 'nikhil.ramanathan@example.com',
     userPhone: '+91 98 5550 1142',
@@ -394,9 +401,11 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     contactPreference: 'email',
     contactNote: 'Best reached after 7pm IST',
     agreedToTermsLabel: 'Sep 2, 2026 · 6:22 PM',
+    applicationLog: [],
   },
   {
     id: 'dfy_lead_005',
+    accountId: 'acct_olga_vasilenko',
     userName: 'Olga Vasilenko',
     userEmail: 'olga.vasilenko@example.com',
     userPhone: '+380 44 555 0199',
@@ -414,10 +423,11 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     contactNote: '',
     agreedToTermsLabel: 'Aug 31, 2026 · 10:15 AM',
     assignedSuccessManager: 'Rachel Adeyemi',
-    jobsSubmittedCount: 0,
+    applicationLog: [],
   },
   {
     id: 'dfy_lead_006',
+    accountId: 'acct_gregory_whitfield',
     userName: 'Gregory Whitfield',
     userEmail: 'gregory.whitfield@example.com',
     userPhone: '+44 161 555 0134',
@@ -434,9 +444,11 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     contactPreference: 'phone',
     contactNote: 'Prefers LinkedIn outreach handled manually, not through the platform',
     agreedToTermsLabel: 'Aug 30, 2026 · 4:50 PM',
+    applicationLog: [],
   },
   {
     id: 'dfy_lead_007',
+    accountId: 'acct_darnell_smith',
     userName: 'Darnell Smith',
     userEmail: 'darnell.smith@example.com',
     userPhone: '+1 (404) 555-0176',
@@ -454,10 +466,15 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     contactNote: '',
     agreedToTermsLabel: 'Aug 30, 2026 · 11:20 AM',
     assignedSuccessManager: 'Daniel Okoye',
-    jobsSubmittedCount: 34,
+    applicationLog: [
+      { id: 'dfy_log_001', jobTitle: 'Senior Product Manager', companyName: 'Stripe', link: 'https://stripe.com/jobs/listing/senior-product-manager/6034812', appliedLabel: 'Sep 1, 2026', loggedBy: 'Daniel Okoye' },
+      { id: 'dfy_log_002', jobTitle: 'Product Manager, Platform', companyName: 'Shopify', link: 'https://www.shopify.com/careers/product-manager-platform-7729', appliedLabel: 'Sep 2, 2026', loggedBy: 'Daniel Okoye' },
+      { id: 'dfy_log_003', jobTitle: 'Senior PM, Payments', companyName: 'Block', link: 'https://block.xyz/careers/senior-pm-payments-4471', appliedLabel: 'Sep 3, 2026', loggedBy: 'Daniel Okoye' },
+    ],
   },
   {
     id: 'dfy_lead_008',
+    accountId: 'acct_priyanka_venkataraman',
     userName: 'Priyanka Venkataraman-Krishnamurthy',
     userEmail: 'priyanka.venkataraman.krishnamurthy@postgraduate-careers.example.edu',
     userPhone: '+1 (415) 555-0122',
@@ -475,10 +492,14 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     contactNote: '',
     agreedToTermsLabel: 'Aug 27, 2026 · 3:05 PM',
     assignedSuccessManager: 'Priya Raghunathan',
-    jobsSubmittedCount: 61,
+    applicationLog: [
+      { id: 'dfy_log_004', jobTitle: 'Staff Frontend Engineer', companyName: 'Figma', link: 'https://www.figma.com/careers/roles/staff-frontend-engineer-5521', appliedLabel: 'Aug 28, 2026', loggedBy: 'Priya Raghunathan' },
+      { id: 'dfy_log_005', jobTitle: 'Staff Engineer, Web Platform', companyName: 'Notion', link: 'https://www.notion.so/careers/staff-engineer-web-platform-3390', appliedLabel: 'Aug 29, 2026', loggedBy: 'Priya Raghunathan' },
+    ],
   },
   {
     id: 'dfy_lead_009',
+    accountId: 'acct_marcus_bell',
     userName: 'Marcus Bell',
     userEmail: 'marcus.bell@example.com',
     userPhone: '+1 (678) 555-0190',
@@ -496,10 +517,11 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     contactNote: '',
     agreedToTermsLabel: 'Aug 24, 2026 · 9:40 AM',
     assignedSuccessManager: 'Rachel Adeyemi',
-    jobsSubmittedCount: 50,
+    applicationLog: [],
   },
   {
     id: 'dfy_lead_010',
+    accountId: 'acct_sofia_marchetti',
     userName: 'Sofia Marchetti',
     userEmail: 'sofia.marchetti@example.com',
     userPhone: '+39 06 555 0163',
@@ -517,10 +539,11 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     contactNote: '',
     agreedToTermsLabel: 'Sep 3, 2026 · 4:15 PM',
     assignedSuccessManager: 'Daniel Okoye',
-    jobsSubmittedCount: 0,
+    applicationLog: [],
   },
   {
     id: 'dfy_lead_011',
+    accountId: 'acct_hannah_kirsch',
     userName: 'Hannah Kirsch',
     userEmail: 'hannah.kirsch@example.com',
     userPhone: '+1 (303) 555-0141',
@@ -538,10 +561,11 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     contactNote: '',
     agreedToTermsLabel: 'Aug 19, 2026 · 1:30 PM',
     assignedSuccessManager: 'Priya Raghunathan',
-    jobsSubmittedCount: 97,
+    applicationLog: [],
   },
   {
     id: 'dfy_lead_012',
+    accountId: 'acct_fatima_al_mansouri',
     userName: 'Fatima Al-Mansouri',
     userEmail: 'fatima.almansouri@example.com',
     userPhone: '+971 4 555 0128',
@@ -559,10 +583,11 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     contactNote: '',
     agreedToTermsLabel: 'Sep 1, 2026 · 10:50 AM',
     assignedSuccessManager: 'Rachel Adeyemi',
-    jobsSubmittedCount: 18,
+    applicationLog: [],
   },
   {
     id: 'dfy_lead_013',
+    accountId: 'acct_nkechi_obiora',
     userName: 'Nkechi Obiora',
     userEmail: 'nkechi.obiora@example.com',
     userPhone: '+234 1 555 0187',
@@ -580,10 +605,11 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     contactNote: '',
     agreedToTermsLabel: 'Aug 28, 2026 · 8:15 AM',
     assignedSuccessManager: 'Daniel Okoye',
-    jobsSubmittedCount: 42,
+    applicationLog: [],
   },
   {
     id: 'dfy_lead_014',
+    accountId: 'acct_ryan_delacroix',
     userName: 'Ryan Delacroix',
     userEmail: 'ryan.delacroix@example.com',
     userPhone: '+1 (514) 555-0155',
@@ -601,10 +627,11 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     contactNote: '',
     agreedToTermsLabel: 'Sep 3, 2026 · 5:40 PM',
     assignedSuccessManager: 'Priya Raghunathan',
-    jobsSubmittedCount: 0,
+    applicationLog: [],
   },
   {
     id: 'dfy_lead_015',
+    accountId: 'acct_yuki_tanaka',
     userName: 'Yuki Tanaka',
     userEmail: 'yuki.tanaka@example.com',
     userPhone: '+81 3 5550 1149',
@@ -622,10 +649,15 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     contactNote: '',
     agreedToTermsLabel: 'Aug 14, 2026 · 7:25 AM',
     assignedSuccessManager: 'Rachel Adeyemi',
-    jobsSubmittedCount: 100,
+    applicationLog: [
+      { id: 'dfy_log_006', jobTitle: 'Machine Learning Engineer', companyName: 'Preferred Networks', link: 'https://www.preferred.jp/en/careers/machine-learning-engineer-118', appliedLabel: 'Aug 18, 2026', loggedBy: 'Rachel Adeyemi' },
+      { id: 'dfy_log_007', jobTitle: 'ML Engineer, Search Ranking', companyName: 'Rakuten', link: 'https://global.rakuten.com/corp/careers/ml-engineer-search-ranking-2287', appliedLabel: 'Aug 21, 2026', loggedBy: 'Rachel Adeyemi' },
+      { id: 'dfy_log_008', jobTitle: 'Applied Scientist, ML', companyName: 'LINE', link: 'https://linecorp.com/en/career/position/applied-scientist-ml-905', appliedLabel: 'Aug 25, 2026', loggedBy: 'Rachel Adeyemi' },
+    ],
   },
   {
     id: 'dfy_lead_016',
+    accountId: 'acct_diego_restrepo',
     userName: 'Diego Restrepo',
     userEmail: 'diego.restrepo@example.com',
     userPhone: '+57 1 555 0172',
@@ -643,7 +675,7 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     contactNote: '',
     agreedToTermsLabel: 'Aug 31, 2026 · 2:10 PM',
     assignedSuccessManager: 'Daniel Okoye',
-    jobsSubmittedCount: 0,
+    applicationLog: [],
   },
 ]
 
@@ -1072,7 +1104,7 @@ const DETAIL_CONFIG: Readonly<Record<AdminProductSku, DetailConfig>> = {
 function buildDoneForYouStats(): readonly AdminProductDetailStat[] {
   const leadsCount = adminDoneForYouLeads.filter((lead) => lead.stage === 'new').length
   const clientsCount = adminDoneForYouLeads.filter((lead) => lead.stage === 'call' || lead.stage === 'completed').length
-  const applicationsSubmitted = adminDoneForYouLeads.reduce((sum, lead) => sum + (lead.jobsSubmittedCount ?? 0), 0)
+  const applicationsSubmitted = adminDoneForYouLeads.reduce((sum, lead) => sum + lead.applicationLog.length, 0)
   const revenueCents = adminDoneForYouLeads.reduce((sum, lead) => sum + lead.amountPaidCents, 0)
 
   return [

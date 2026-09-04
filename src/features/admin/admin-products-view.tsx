@@ -503,7 +503,7 @@ function DfyCard({ row, onSelect, onDragStart, onDragEnd, dragging }: {
       <span className="mt-2 flex min-w-0 items-center justify-between gap-2">
         <span className="min-w-0 truncate text-xs font-medium text-ink-muted">{PACKAGE_LABELS[lead.packageId] ?? lead.packageId}</span>
         {stage === 'call' || stage === 'completed' ? (
-          <span className="shrink-0 text-xs font-semibold tabular-nums text-ink">{lead.jobsSubmittedCount ?? 0} jobs</span>
+          <span className="shrink-0 text-xs font-semibold tabular-nums text-ink">{lead.applicationLog.length} jobs</span>
         ) : null}
       </span>
     </button>
@@ -590,8 +590,8 @@ function DfyList({ rows, onSelect }: { readonly rows: readonly DfyRow[]; readonl
     {
       key: 'jobsSubmitted',
       label: 'Jobs submitted',
-      sortValue: ({ lead }) => lead.jobsSubmittedCount ?? -1,
-      render: ({ lead }) => <span className="tabular-nums text-ink">{lead.jobsSubmittedCount ?? '—'}</span>,
+      sortValue: ({ lead }) => lead.applicationLog.length,
+      render: ({ lead }) => <span className="tabular-nums text-ink">{lead.applicationLog.length}</span>,
     },
     {
       key: 'stage',
@@ -704,10 +704,10 @@ function DfyDetailPanel({ row, onClose, onStageChange, onManagerChange }: {
                 {row.lead.shareSalaryExpectations ? 'Can share salary range with employers.' : 'Should not share salary range without checking first.'}
               </p>
 
-              {(row.lead.jobsSubmittedCount ?? 0) > 0 || row.stage === 'call' || row.stage === 'completed' ? (
+              {row.lead.applicationLog.length > 0 || row.stage === 'call' || row.stage === 'completed' ? (
                 <div>
                   <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Jobs submitted</h3>
-                  <p className="mt-1 text-sm font-semibold tabular-nums text-ink">{row.lead.jobsSubmittedCount ?? 0}</p>
+                  <p className="mt-1 text-sm font-semibold tabular-nums text-ink">{row.lead.applicationLog.length}</p>
                 </div>
               ) : null}
 

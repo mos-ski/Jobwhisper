@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useState, type FormEvent, type ReactNode } from 'react'
 import {
   Activity,
   AlertTriangle,
@@ -8,9 +8,11 @@ import {
   CheckCircle2,
   Coins,
   Download,
+  ExternalLink,
   Eye,
   LogIn,
   MoreHorizontal,
+  NotebookPen,
   RefreshCw,
   ShieldCheck,
   UserPlus,
@@ -31,7 +33,7 @@ import type {
   AdminCreditEntry,
   AdminCreditEntryKind,
 } from '@/contracts/admin-accounts.draft'
-import type { AdminDoneForYouLead } from '@/contracts/admin-products.draft'
+import type { AdminDoneForYouApplicationLogEntry, AdminDoneForYouLead } from '@/contracts/admin-products.draft'
 import type { AdminNavItem, AdminNotification, AdminPlanId, AdminSearchResult } from '@/contracts/admin.draft'
 import type { UserIdentity } from '@/contracts/identity'
 import {
@@ -66,7 +68,7 @@ import {
 } from '@/ui'
 
 import { AdminShell } from './admin-shell'
-import { contactPreferenceLabels, downloadLeadPacket, googleCalendarUrl, PACKAGE_LABELS, stageMeta } from './admin-products-view'
+import { contactPreferenceLabels, downloadLeadPacket, googleCalendarUrl, PACKAGE_LABELS } from './admin-products-view'
 
 const PAGE_SIZE = 8
 
@@ -74,12 +76,101 @@ export type AdminAccountsListTab = 'subscribers' | 'dfy-clients'
 
 const countFormatter = new Intl.NumberFormat('en-US')
 
-function DfyClientsTab({ clients }: { readonly clients: readonly AdminDoneForYouLead[] }) {
-  const [query, setQuery] = useState('')
+function LogApplicationDialog({ lead, onClose, onAddEntry }: {
+  readonly lead: AdminDoneForYouLead | null
+  readonly onClose: () => void
+  readonly onAddEntry: (leadId: string, entry: AdminDoneForYouApplicationLogEntry) => void
+}) {
+  const [jobTitle, setJobTitle] = useState('')
+  const [companyName, setCompanyName] = useState('')
+  const [link, setLink] = useState('')
 
-  const rows = clients
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault()
+    if (!lead || !jobTitle.trim() || !companyName.trim() || !link.trim()) return
+    onAddEntry(lead.id, {
+      id: `dfy_log_local_${Date.now()}`,
+      jobTitle: jobTitle.trim(),
+      companyName: companyName.trim(),
+      link: link.trim(),
+      appliedLabel: 'Just now',
+      loggedBy: 'You',
+    })
+    setJobTitle('')
+    setCompanyName('')
+    setLink('')
+  }
+
+  return (
+    <Dialog open={lead !== null} onOpenChange={(open) => { if (!open) onClose() }}>
+      <DialogPopup placement="end" aria-label={lead ? `Application log for ${lead.userName}` : 'Application log'} className="p-0">
+        {lead ? (
+          <div className="grid h-full grid-rows-[auto_1fr_auto]">
+            <div className="flex items-start justify-between gap-3 border-b border-border p-4">
+              <span className="flex min-w-0 items-center gap-2.5">
+                <Avatar name={lead.userName} size="md" />
+                <span className="min-w-0">
+                  <DialogTitle className="truncate font-gowun text-base font-bold text-ink">Application log</DialogTitle>
+                  <DialogDescription className="block truncate text-xs text-ink-muted">{lead.userName} · {lead.applicationLog.length} logged</DialogDescription>
+                </span>
+              </span>
+              <DialogClose aria-label="Close" className="static" />
+            </div>
+
+            <div className="overflow-y-auto p-4">
+              {lead.applicationLog.length === 0 ? (
+                <p className="text-sm text-ink-muted">No applications logged yet. Add the first one below.</p>
+              ) : (
+                <ul className="grid gap-3">
+                  {lead.applicationLog.map((entry) => (
+                    <li key={entry.id} className="border border-border p-3">
+                      <p className="text-sm font-semibold text-ink">{entry.jobTitle}</p>
+                      <p className="text-xs text-ink-muted">{entry.companyName} · {entry.appliedLabel} · logged by {entry.loggedBy}</p>
+                      <a
+                        href={entry.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-accent-text underline underline-offset-4 hover:text-accent"
+                      >
+                        <ExternalLink aria-hidden="true" className="size-3" />
+                        View listing
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <form onSubmit={handleSubmit} className="grid gap-3 border-t border-border p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Log a new application</p>
+              <TextField id="log-job-title" label="Job title" value={jobTitle} onChange={(event) => setJobTitle(event.target.value)} placeholder="e.g. Senior Product Manager" />
+              <TextField id="log-company" label="Company" value={companyName} onChange={(event) => setCompanyName(event.target.value)} placeholder="e.g. Stripe" />
+              <TextField id="log-link" label="Application link" value={link} onChange={(event) => setLink(event.target.value)} placeholder="https://…" />
+              <Button type="submit" disabled={!jobTitle.trim() || !companyName.trim() || !link.trim()}>
+                Log application
+              </Button>
+            </form>
+          </div>
+        ) : null}
+      </DialogPopup>
+    </Dialog>
+  )
+}
+
+function DfyClientsTab({ clients, accountHref }: { readonly clients: readonly AdminDoneForYouLead[]; readonly accountHref: (accountId: string) => string }) {
+  const [query, setQuery] = useState('')
+  const [logDialogLeadId, setLogDialogLeadId] = useState<string | null>(null)
+  const [logOverrides, setLogOverrides] = useState<Readonly<Record<string, readonly AdminDoneForYouApplicationLogEntry[]>>>({})
+
+  const effectiveClients = clients.map((lead) =>
+    logOverrides[lead.id] ? { ...lead, applicationLog: [...lead.applicationLog, ...logOverrides[lead.id]] } : lead,
+  )
+
+  const rows = effectiveClients
     .map((lead) => ({ id: lead.id, lead }))
     .filter(({ lead }) => `${lead.userName} ${lead.userEmail}`.toLowerCase().includes(query.trim().toLowerCase()))
+
+  const dialogLead = logDialogLeadId ? effectiveClients.find((lead) => lead.id === logDialogLeadId) ?? null : null
 
   const columns: readonly DataTableColumn<{ readonly id: string; readonly lead: AdminDoneForYouLead }>[] = [
     {
@@ -109,13 +200,12 @@ function DfyClientsTab({ clients }: { readonly clients: readonly AdminDoneForYou
     },
     { key: 'signedUp', label: 'Signed up', sortValue: ({ lead }) => lead.signedUpLabel, render: ({ lead }) => <span className="whitespace-nowrap text-ink-muted">{lead.signedUpLabel}</span> },
     {
-      key: 'stage',
-      label: 'Stage',
-      sortValue: ({ lead }) => lead.stage,
-      render: ({ lead }) => {
-        const meta = stageMeta[lead.stage]
-        return <Badge variant={meta.variant} size="sm">{meta.label}</Badge>
-      },
+      key: 'applications',
+      label: 'Applications',
+      className: 'text-end',
+      headerClassName: 'text-end',
+      sortValue: ({ lead }) => lead.applicationLog.length,
+      render: ({ lead }) => <span className="tabular-nums text-ink">{lead.applicationLog.length}</span>,
     },
     {
       key: 'actions',
@@ -136,6 +226,14 @@ function DfyClientsTab({ clients }: { readonly clients: readonly AdminDoneForYou
                 <MoreHorizontal aria-hidden="true" className="size-4" />
               </MenuTrigger>
               <MenuContent>
+                <MenuItem icon={<Eye />}>
+                  <a
+                    href={accountHref(lead.accountId)}
+                    className="flex-1 rounded-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  >
+                    View profile
+                  </a>
+                </MenuItem>
                 {canScheduleCall ? (
                   <MenuItem icon={<CalendarPlus />}>
                     <a
@@ -148,6 +246,9 @@ function DfyClientsTab({ clients }: { readonly clients: readonly AdminDoneForYou
                     </a>
                   </MenuItem>
                 ) : null}
+                <MenuItem icon={<NotebookPen />} onClick={() => setLogDialogLeadId(lead.id)}>
+                  Log application
+                </MenuItem>
                 <MenuItem icon={<Download />} onClick={() => downloadLeadPacket(lead)}>
                   Download packet
                 </MenuItem>
@@ -191,9 +292,18 @@ function DfyClientsTab({ clients }: { readonly clients: readonly AdminDoneForYou
             searchLabel="Search DFY clients by name or email"
             searchPlaceholder="Search name or email"
             minTableWidthClassName="min-w-[56rem]"
+            onRowClick={({ lead }) => {
+              window.location.href = accountHref(lead.accountId)
+            }}
           />
         </section>
       )}
+
+      <LogApplicationDialog
+        lead={dialogLead}
+        onClose={() => setLogDialogLeadId(null)}
+        onAddEntry={(leadId, entry) => setLogOverrides((prev) => ({ ...prev, [leadId]: [...(prev[leadId] ?? []), entry] }))}
+      />
     </div>
   )
 }
@@ -666,7 +776,7 @@ export function AdminAccountsListView({
           </TabsContent>
 
           <TabsContent value="dfy-clients">
-            <DfyClientsTab clients={dfyClients} />
+            <DfyClientsTab clients={dfyClients} accountHref={accountHref} />
           </TabsContent>
         </Tabs>
       </div>

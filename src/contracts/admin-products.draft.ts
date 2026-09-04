@@ -123,8 +123,21 @@ export type AdminProductSessionOutcome = 'completed' | 'abandoned' | 'failed'
  */
 export type AdminDoneForYouStage = 'new' | 'call' | 'completed' | 'declined'
 
+/** One job the success manager applied to on the client's behalf, logged with a link as evidence — via the platform or manually/offline. */
+export type AdminDoneForYouApplicationLogEntry = {
+  readonly id: string
+  readonly jobTitle: string
+  readonly companyName: string
+  /** URL to the job posting or the submitted application, so the record is verifiable. */
+  readonly link: string
+  readonly appliedLabel: string
+  readonly loggedBy: string
+}
+
 export type AdminDoneForYouLead = {
   readonly id: string
+  /** The candidate's real account, for linking back to their profile — this is always an existing subscriber. */
+  readonly accountId: string
   readonly userName: string
   readonly userEmail: string
   readonly userPhone: string
@@ -143,10 +156,10 @@ export type AdminDoneForYouLead = {
   readonly contactPreference: 'email' | 'phone' | 'either'
   readonly contactNote: string
   readonly agreedToTermsLabel: string
-  /** Set once a success manager is assigned — from `queued` onward. */
+  /** Set once a success manager is assigned — from `call` onward. */
   readonly assignedSuccessManager?: string
-  /** Set once a success manager is assigned — from `queued` onward. */
-  readonly jobsSubmittedCount?: number
+  /** Every job applied to on this client's behalf. The applications-submitted count is this array's length, not a separately tracked number. */
+  readonly applicationLog: readonly AdminDoneForYouApplicationLogEntry[]
 }
 
 export type AdminProductSessionRow = {
