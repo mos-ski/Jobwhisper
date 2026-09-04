@@ -27,6 +27,13 @@ const colorStyles: Record<string, string> = {
   danger: 'bg-danger',
 }
 
+const trackStyles: Record<string, string> = {
+  accent: 'bg-accent-subtle',
+  positive: 'bg-positive-surface',
+  warning: 'bg-warning-surface',
+  danger: 'bg-danger-surface',
+}
+
 export const ProgressBar = forwardRef<HTMLDivElement, ProgressProps>(
   function ProgressBar(
     {
@@ -61,7 +68,8 @@ export const ProgressBar = forwardRef<HTMLDivElement, ProgressProps>(
           aria-valuemax={max}
           aria-label={label}
           className={cn(
-            'w-full overflow-hidden rounded-full bg-muted',
+            'w-full overflow-hidden rounded-full',
+            trackStyles[color],
             sizeStyles[size],
           )}
         >
