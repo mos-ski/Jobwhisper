@@ -365,7 +365,7 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     packageId: 'dfy-large',
     amountPaidCents: 99_700,
     signedUpLabel: 'Sep 3, 2026',
-    stage: 'call-scheduled',
+    stage: 'call',
     targetRoles: ['Growth Marketing Lead', 'Head of Growth'],
     experienceLevel: 'Lead',
     locations: ['Dubai, UAE', 'Remote'],
@@ -384,7 +384,7 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     packageId: 'dfy-small',
     amountPaidCents: 49_700,
     signedUpLabel: 'Sep 2, 2026',
-    stage: 'call-scheduled',
+    stage: 'call',
     targetRoles: ['Mobile Engineer, iOS'],
     experienceLevel: 'Mid Level',
     locations: ['Bengaluru, India'],
@@ -403,7 +403,7 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     packageId: 'dfy-small',
     amountPaidCents: 49_700,
     signedUpLabel: 'Aug 31, 2026',
-    stage: 'queued',
+    stage: 'call',
     targetRoles: ['Product Designer'],
     experienceLevel: 'Senior',
     locations: ['Warsaw, Poland', 'Remote'],
@@ -424,7 +424,7 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     packageId: 'dfy-large',
     amountPaidCents: 99_700,
     signedUpLabel: 'Aug 30, 2026',
-    stage: 'handling-manually',
+    stage: 'declined',
     targetRoles: ['Engineering Manager'],
     experienceLevel: 'Lead',
     locations: ['Manchester, UK'],
@@ -443,7 +443,7 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     packageId: 'dfy-large',
     amountPaidCents: 99_700,
     signedUpLabel: 'Aug 30, 2026',
-    stage: 'in-progress',
+    stage: 'call',
     targetRoles: ['Senior Product Manager'],
     experienceLevel: 'Senior',
     locations: ['Atlanta, GA', 'Remote'],
@@ -464,7 +464,7 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     packageId: 'dfy-large',
     amountPaidCents: 99_700,
     signedUpLabel: 'Aug 27, 2026',
-    stage: 'in-progress',
+    stage: 'call',
     targetRoles: ['Staff Frontend Engineer'],
     experienceLevel: 'Senior',
     locations: ['San Francisco, CA', 'Remote'],
@@ -506,7 +506,7 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     packageId: 'dfy-small',
     amountPaidCents: 49_700,
     signedUpLabel: 'Sep 3, 2026',
-    stage: 'queued',
+    stage: 'call',
     targetRoles: ['Product Designer'],
     experienceLevel: 'Mid Level',
     locations: ['Rome, Italy', 'Remote'],
@@ -548,7 +548,7 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     packageId: 'dfy-small',
     amountPaidCents: 49_700,
     signedUpLabel: 'Sep 1, 2026',
-    stage: 'in-progress',
+    stage: 'call',
     targetRoles: ['Solutions Architect'],
     experienceLevel: 'Senior',
     locations: ['Dubai, UAE', 'Remote'],
@@ -569,7 +569,7 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     packageId: 'dfy-large',
     amountPaidCents: 99_700,
     signedUpLabel: 'Aug 28, 2026',
-    stage: 'in-progress',
+    stage: 'call',
     targetRoles: ['Security Engineer'],
     experienceLevel: 'Senior',
     locations: ['Lagos, Nigeria', 'Remote'],
@@ -590,7 +590,7 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     packageId: 'dfy-small',
     amountPaidCents: 49_700,
     signedUpLabel: 'Sep 3, 2026',
-    stage: 'queued',
+    stage: 'call',
     targetRoles: ['Growth Marketing Lead'],
     experienceLevel: 'Mid Level',
     locations: ['Montreal, QC', 'Remote'],
@@ -632,7 +632,7 @@ export const adminDoneForYouLeads: readonly AdminDoneForYouLead[] = [
     packageId: 'dfy-small',
     amountPaidCents: 49_700,
     signedUpLabel: 'Aug 31, 2026',
-    stage: 'queued',
+    stage: 'call',
     targetRoles: ['Site Reliability Engineer'],
     experienceLevel: 'Mid Level',
     locations: ['Bogotá, Colombia', 'Remote'],
@@ -1069,11 +1069,9 @@ const DETAIL_CONFIG: Readonly<Record<AdminProductSku, DetailConfig>> = {
   },
 }
 
-const FULFILLMENT_STAGES = new Set(['queued', 'in-progress', 'completed'])
-
 function buildDoneForYouStats(): readonly AdminProductDetailStat[] {
-  const leadsCount = adminDoneForYouLeads.filter((lead) => lead.stage === 'new' || lead.stage === 'call-scheduled').length
-  const clientsCount = adminDoneForYouLeads.filter((lead) => FULFILLMENT_STAGES.has(lead.stage)).length
+  const leadsCount = adminDoneForYouLeads.filter((lead) => lead.stage === 'new').length
+  const clientsCount = adminDoneForYouLeads.filter((lead) => lead.stage === 'call' || lead.stage === 'completed').length
   const applicationsSubmitted = adminDoneForYouLeads.reduce((sum, lead) => sum + (lead.jobsSubmittedCount ?? 0), 0)
   const revenueCents = adminDoneForYouLeads.reduce((sum, lead) => sum + lead.amountPaidCents, 0)
 

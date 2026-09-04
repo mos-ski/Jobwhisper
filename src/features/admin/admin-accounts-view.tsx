@@ -125,7 +125,7 @@ function DfyClientsTab({ clients }: { readonly clients: readonly AdminDoneForYou
       sortable: false,
       hideInMobileDetail: true,
       render: ({ lead }) => {
-        const canScheduleCall = lead.stage === 'new' || lead.stage === 'call-scheduled'
+        const canScheduleCall = lead.stage === 'new' || lead.stage === 'call'
         return (
           <span className="flex justify-end" onClick={(event) => event.stopPropagation()}>
             <Menu>
@@ -160,7 +160,7 @@ function DfyClientsTab({ clients }: { readonly clients: readonly AdminDoneForYou
   ]
 
   const newCount = clients.filter((lead) => lead.stage === 'new').length
-  const fulfillmentCount = clients.filter((lead) => lead.stage === 'queued' || lead.stage === 'in-progress').length
+  const fulfillmentCount = clients.filter((lead) => lead.stage === 'call').length
   const completedCount = clients.filter((lead) => lead.stage === 'completed').length
 
   return (

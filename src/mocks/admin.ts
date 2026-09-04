@@ -10,6 +10,9 @@ import type {
   AdminTrendPoint,
 } from '@/contracts/admin.draft'
 import type { Session } from '@/contracts/identity'
+import { adminDoneForYouLeads } from '@/mocks/admin-products'
+
+const newDfyLeadsCount = adminDoneForYouLeads.filter((lead) => lead.stage === 'new').length
 
 export const adminSession: Session = {
   status: 'authenticated',
@@ -26,7 +29,7 @@ export const adminNavItems: readonly AdminNavItem[] = [
   { id: 'dashboard', label: 'Dashboard', href: '/admin', matchPrefix: '/admin' },
   { id: 'accounts', label: 'Users', href: '/admin/accounts', matchPrefix: '/admin/accounts' },
   { id: 'transactions', label: 'Transactions', href: '/admin/transactions', matchPrefix: '/admin/transactions', badgeCount: 7 },
-  { id: 'products', label: 'Products', href: '/admin/products', matchPrefix: '/admin/products' },
+  { id: 'products', label: 'Products', href: '/admin/products', matchPrefix: '/admin/products', badgeCount: newDfyLeadsCount },
   { id: 'analytics', label: 'Analytics', href: '/admin/analytics', matchPrefix: '/admin/analytics' },
   { id: 'content', label: 'Content', href: '/admin/content', matchPrefix: '/admin/content' },
   { id: 'support', label: 'Support', href: '/admin/support', matchPrefix: '/admin/support', badgeCount: 3 },

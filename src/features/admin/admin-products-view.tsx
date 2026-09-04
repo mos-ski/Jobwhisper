@@ -113,15 +113,13 @@ export const PACKAGE_LABELS: Record<string, string> = {
 
 const SUCCESS_MANAGERS = ['Daniel Okoye', 'Priya Raghunathan', 'Rachel Adeyemi']
 
-export const STAGE_ORDER: readonly AdminDoneForYouStage[] = ['new', 'call-scheduled', 'queued', 'in-progress', 'completed', 'handling-manually']
+export const STAGE_ORDER: readonly AdminDoneForYouStage[] = ['new', 'call', 'completed', 'declined']
 
 export const stageMeta: Record<AdminDoneForYouStage, { readonly label: string; readonly variant: BadgeVariant }> = {
   'new': { label: 'New', variant: 'neutral' },
-  'call-scheduled': { label: 'Call scheduled', variant: 'accent' },
-  'queued': { label: 'Queued', variant: 'neutral' },
-  'in-progress': { label: 'In progress', variant: 'accent' },
+  'call': { label: 'Call', variant: 'accent' },
   'completed': { label: 'Completed', variant: 'positive' },
-  'handling-manually': { label: 'Handling manually', variant: 'info' },
+  'declined': { label: 'Declined', variant: 'danger' },
 }
 
 export const contactPreferenceLabels: Record<AdminDoneForYouLead['contactPreference'], string> = {
@@ -474,15 +472,27 @@ type DfyRow = {
   readonly manager?: string
 }
 
-function DfyCard({ row, onSelect }: { readonly row: DfyRow; readonly onSelect: () => void }) {
+function DfyCard({ row, onSelect, onDragStart, onDragEnd, dragging }: {
+  readonly row: DfyRow
+  readonly onSelect: () => void
+  readonly onDragStart: () => void
+  readonly onDragEnd: () => void
+  readonly dragging: boolean
+}) {
   const { lead, stage } = row
   return (
     <button
       type="button"
+      draggable
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
       onClick={onSelect}
-      className="w-full rounded-lg border border-border bg-surface p-3 text-start shadow-control transition-colors hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+      className={cn(
+        'w-full min-w-0 max-w-full rounded-lg border border-border bg-surface p-3 text-start shadow-control transition-colors hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+        dragging && 'opacity-40',
+      )}
     >
-      <span className="flex items-center gap-2">
+      <span className="flex min-w-0 items-center gap-2">
         <Avatar name={lead.userName} size="xs" />
         <span className="min-w-0 flex-1">
           <span className="block truncate text-sm font-semibold text-ink">{lead.userName}</span>
@@ -490,33 +500,65 @@ function DfyCard({ row, onSelect }: { readonly row: DfyRow; readonly onSelect: (
         </span>
       </span>
       <span className="mt-2 block truncate text-xs text-ink-muted">{lead.targetRoles.join(', ')}</span>
-      <span className="mt-2 flex items-center justify-between gap-2">
-        <span className="text-xs font-medium text-ink-muted">{PACKAGE_LABELS[lead.packageId] ?? lead.packageId}</span>
-        {stage === 'in-progress' || stage === 'completed' ? (
-          <span className="text-xs font-semibold tabular-nums text-ink">{lead.jobsSubmittedCount ?? 0} jobs</span>
+      <span className="mt-2 flex min-w-0 items-center justify-between gap-2">
+        <span className="min-w-0 truncate text-xs font-medium text-ink-muted">{PACKAGE_LABELS[lead.packageId] ?? lead.packageId}</span>
+        {stage === 'call' || stage === 'completed' ? (
+          <span className="shrink-0 text-xs font-semibold tabular-nums text-ink">{lead.jobsSubmittedCount ?? 0} jobs</span>
         ) : null}
       </span>
     </button>
   )
 }
 
-function DfyKanban({ rows, onSelect }: { readonly rows: readonly DfyRow[]; readonly onSelect: (id: string) => void }) {
+function DfyKanban({ rows, onSelect, onStageChange }: {
+  readonly rows: readonly DfyRow[]
+  readonly onSelect: (id: string) => void
+  readonly onStageChange: (id: string, stage: AdminDoneForYouStage) => void
+}) {
+  const [draggingId, setDraggingId] = useState<string | null>(null)
+  const [dragOverStage, setDragOverStage] = useState<AdminDoneForYouStage | null>(null)
+
   return (
     <div className="overflow-x-auto p-4">
-      <div className="flex min-w-max gap-4">
+      <div className="flex min-w-max items-start gap-4">
         {STAGE_ORDER.map((stage) => {
           const columnRows = rows.filter((row) => row.stage === stage)
           return (
-            <div key={stage} className="grid w-64 shrink-0 gap-3">
+            <div
+              key={stage}
+              className="grid w-64 min-w-0 shrink-0 gap-3"
+              onDragOver={(event) => {
+                event.preventDefault()
+                setDragOverStage(stage)
+              }}
+              onDragLeave={() => setDragOverStage((prev) => (prev === stage ? null : prev))}
+              onDrop={(event) => {
+                event.preventDefault()
+                if (draggingId) onStageChange(draggingId, stage)
+                setDragOverStage(null)
+              }}
+            >
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-semibold text-ink">{stageMeta[stage].label}</h3>
                 <Badge variant={stageMeta[stage].variant} size="sm">{columnRows.length}</Badge>
               </div>
-              <div className="grid gap-2">
+              <div className={cn('grid min-h-16 gap-2 rounded-lg p-1 transition-colors', dragOverStage === stage && 'bg-accent-subtle')}>
                 {columnRows.length === 0 ? (
-                  <p className="rounded-lg border border-dashed border-border p-3 text-center text-xs text-ink-muted">No one here</p>
+                  <p className="rounded-lg border border-dashed border-border p-3 text-center text-xs text-ink-muted">Drop here</p>
                 ) : (
-                  columnRows.map((row) => <DfyCard key={row.lead.id} row={row} onSelect={() => onSelect(row.lead.id)} />)
+                  columnRows.map((row) => (
+                    <DfyCard
+                      key={row.lead.id}
+                      row={row}
+                      onSelect={() => onSelect(row.lead.id)}
+                      dragging={draggingId === row.lead.id}
+                      onDragStart={() => setDraggingId(row.lead.id)}
+                      onDragEnd={() => {
+                        setDraggingId(null)
+                        setDragOverStage(null)
+                      }}
+                    />
+                  ))
                 )}
               </div>
             </div>
@@ -618,7 +660,7 @@ function DfyDetailPanel({ row, onClose, onStageChange, onManagerChange }: {
                 options={STAGE_ORDER.map((stage) => ({ value: stage, label: stageMeta[stage].label }))}
               />
 
-              {row.stage !== 'new' && row.stage !== 'call-scheduled' ? (
+              {row.stage === 'call' || row.stage === 'completed' ? (
                 <SelectField
                   id="dfy-detail-manager"
                   label="Success manager"
@@ -662,7 +704,7 @@ function DfyDetailPanel({ row, onClose, onStageChange, onManagerChange }: {
                 {row.lead.shareSalaryExpectations ? 'Can share salary range with employers.' : 'Should not share salary range without checking first.'}
               </p>
 
-              {(row.lead.jobsSubmittedCount ?? 0) > 0 || row.stage === 'in-progress' || row.stage === 'completed' ? (
+              {(row.lead.jobsSubmittedCount ?? 0) > 0 || row.stage === 'call' || row.stage === 'completed' ? (
                 <div>
                   <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Jobs submitted</h3>
                   <p className="mt-1 text-sm font-semibold tabular-nums text-ink">{row.lead.jobsSubmittedCount ?? 0}</p>
@@ -674,7 +716,7 @@ function DfyDetailPanel({ row, onClose, onStageChange, onManagerChange }: {
                   href={googleCalendarUrl(row.lead)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={() => onStageChange('call-scheduled')}
+                  onClick={() => onStageChange('call')}
                   className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border border-input px-3 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                 >
                   <CalendarPlus aria-hidden="true" className="size-4" />
@@ -762,7 +804,11 @@ function DoneForYouPipeline({ leads }: { readonly leads: readonly AdminDoneForYo
           <EmptyState title="No matching clients" description="Try a different search term." />
         </div>
       ) : viewMode === 'kanban' ? (
-        <DfyKanban rows={rows} onSelect={setSelectedLeadId} />
+        <DfyKanban
+          rows={rows}
+          onSelect={setSelectedLeadId}
+          onStageChange={(id, stage) => setStageOverrides((prev) => ({ ...prev, [id]: stage }))}
+        />
       ) : (
         <DfyList rows={rows} onSelect={setSelectedLeadId} />
       )}
@@ -911,6 +957,10 @@ export function AdminProductDetailView({
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="font-gowun text-3xl font-bold leading-tight text-ink">{product.name}</h1>
                 <StatusBadge status={product.status} />
+                {product.doneForYouLeads ? (() => {
+                  const newLeadsCount = product.doneForYouLeads.filter((lead) => lead.stage === 'new').length
+                  return newLeadsCount > 0 ? <Badge variant="danger" size="sm">{newLeadsCount} new lead{newLeadsCount === 1 ? '' : 's'}</Badge> : null
+                })() : null}
               </div>
               <p className="mt-1 text-sm text-ink-muted">{product.summary}</p>
               <p className="mt-1 text-xs text-ink-muted">Included with: {product.tierNote} · {product.rangeLabel}</p>

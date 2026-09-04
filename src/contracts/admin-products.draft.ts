@@ -117,12 +117,11 @@ export type AdminProductTrendPoint = {
 export type AdminProductSessionOutcome = 'completed' | 'abandoned' | 'failed'
 
 /**
- * One pipeline, six stages, from signup through fulfillment. `new`/`call-scheduled` are
- * pre-fulfillment (paid, not yet assigned a success manager); `queued`/`in-progress`/`completed`
- * are active fulfillment; `handling-manually` is an off-ramp at any point where the success
- * manager works the client outside the platform instead.
+ * One pipeline, four stages, from signup through fulfillment: `new` (paid, not yet
+ * contacted), `call` (onboarding call scheduled or done, work underway), `completed`,
+ * `declined` (client or success manager didn't proceed).
  */
-export type AdminDoneForYouStage = 'new' | 'call-scheduled' | 'queued' | 'in-progress' | 'completed' | 'handling-manually'
+export type AdminDoneForYouStage = 'new' | 'call' | 'completed' | 'declined'
 
 export type AdminDoneForYouLead = {
   readonly id: string
