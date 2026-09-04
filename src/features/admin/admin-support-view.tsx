@@ -575,7 +575,9 @@ export function AdminSupportTicketView({
         <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <section className="bg-surface shadow-panel" aria-label="Message thread">
             <h2 className="border-b border-border p-4 font-gowun text-lg font-bold text-ink sm:px-5">Conversation</h2>
-            <div className="max-h-[32rem] overflow-y-auto">
+            {/* Capped only where the thread sits beside the sidebar — on a phone a scroll region
+                inside a scrolling page just traps the gesture, so it flows with the page instead. */}
+            <div className="lg:max-h-[32rem] lg:overflow-y-auto">
               {messages.length === 0 ? (
                 <p className="p-4 text-sm text-ink-muted">No messages yet.</p>
               ) : (
@@ -616,7 +618,7 @@ export function AdminSupportTicketView({
                   placeholder="Type your reply..."
                 />
                 <div className="mt-2 flex justify-end">
-                  <Button onClick={handleSendReply} disabled={!replyText.trim()}>
+                  <Button onClick={handleSendReply} disabled={!replyText.trim()} className="w-full sm:w-auto">
                     <Send aria-hidden="true" className="size-4" />
                     Send reply
                   </Button>
@@ -625,7 +627,9 @@ export function AdminSupportTicketView({
             ) : null}
           </section>
 
-          <div className="grid gap-4">
+          {/* Side by side at tablet width, where a single stacked column leaves half the row empty;
+              back to one column inside the desktop sidebar. */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
             <section className="bg-surface p-4 shadow-panel sm:p-5" aria-label="Linked account">
               <h2 className="font-gowun text-lg font-bold text-ink">Account</h2>
               <a href={ticket.account.accountHref} className="mt-2 block font-semibold text-accent-text underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
@@ -633,13 +637,13 @@ export function AdminSupportTicketView({
               </a>
               <p className="text-sm text-ink-muted">{ticket.account.email}</p>
               <dl className="mt-3 grid gap-1 text-sm">
-                <div className="flex justify-between gap-3">
+                <div className="flex items-start justify-between gap-3">
                   <dt className="text-ink-muted">Plan</dt>
-                  <dd className="text-ink">{ticket.account.planLabel}</dd>
+                  <dd className="min-w-0 break-words text-end text-ink">{ticket.account.planLabel}</dd>
                 </div>
-                <div className="flex justify-between gap-3">
+                <div className="flex items-start justify-between gap-3">
                   <dt className="text-ink-muted">Account id</dt>
-                  <dd className="font-medium text-ink">{ticket.account.id}</dd>
+                  <dd className="min-w-0 break-words text-end font-medium text-ink">{ticket.account.id}</dd>
                 </div>
               </dl>
             </section>
@@ -647,19 +651,19 @@ export function AdminSupportTicketView({
             <section className="bg-surface p-4 shadow-panel sm:p-5" aria-label="Ticket details">
               <h2 className="font-gowun text-lg font-bold text-ink">Details</h2>
               <dl className="mt-3 grid gap-2 text-sm">
-                <div className="flex justify-between gap-3">
+                <div className="flex items-start justify-between gap-3">
                   <dt className="text-ink-muted">Status</dt>
                   <dd><StatusBadge status={status} /></dd>
                 </div>
-                <div className="flex justify-between gap-3">
+                <div className="flex items-start justify-between gap-3">
                   <dt className="text-ink-muted">Priority</dt>
                   <dd><PriorityBadge priority={ticket.priority} /></dd>
                 </div>
-                <div className="flex justify-between gap-3">
+                <div className="flex items-start justify-between gap-3">
                   <dt className="text-ink-muted">Assignee</dt>
-                  <dd className="text-ink">
+                  <dd className="min-w-0 break-words text-end text-ink">
                     {assignee ? (
-                      <span className="flex items-center gap-1.5">
+                      <span className="flex items-center justify-end gap-1.5">
                         <Avatar name={assignee} size="xs" />
                         {assignee}
                       </span>
@@ -668,13 +672,13 @@ export function AdminSupportTicketView({
                     )}
                   </dd>
                 </div>
-                <div className="flex justify-between gap-3">
+                <div className="flex items-start justify-between gap-3">
                   <dt className="text-ink-muted">Messages</dt>
-                  <dd className="text-ink">{ticket.messages.length + localMessages.length}</dd>
+                  <dd className="min-w-0 break-words text-end text-ink">{ticket.messages.length + localMessages.length}</dd>
                 </div>
-                <div className="flex justify-between gap-3 border-t border-border pt-2">
+                <div className="flex items-start justify-between gap-3 border-t border-border pt-2">
                   <dt className="text-ink-muted">Created</dt>
-                  <dd className="text-ink">{ticket.createdAtLabel}</dd>
+                  <dd className="min-w-0 break-words text-end text-ink">{ticket.createdAtLabel}</dd>
                 </div>
               </dl>
               {status !== 'resolved' && status !== 'closed' ? (

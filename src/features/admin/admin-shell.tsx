@@ -78,7 +78,9 @@ function AdminSearch({ results }: { readonly results: readonly AdminSearchResult
     : []
 
   return (
-    <div className="relative min-w-0 flex-1 sm:max-w-md">
+    // Below sm the search drops to its own full-width row — squeezed between the logo and the
+    // bell it was under 90px wide, which is not a usable field.
+    <div className="relative order-last w-full min-w-0 basis-full sm:order-none sm:w-auto sm:flex-1 sm:basis-auto sm:max-w-md">
       <Search aria-hidden="true" className="pointer-events-none absolute inset-y-0 start-3 my-auto size-4 text-ink-muted" />
       <input
         type="search"
@@ -184,7 +186,7 @@ function AdminTopStrip({
   readonly onToggleCollapsed: () => void
 }) {
   return (
-    <header className="sticky top-0 z-shell flex min-h-14 items-center gap-3 border-b border-border bg-surface px-4">
+    <header className="sticky top-0 z-shell flex min-h-14 flex-wrap items-center gap-x-3 gap-y-2 border-b border-border bg-surface px-4 py-2 sm:flex-nowrap sm:py-0">
       <Dialog>
         <DialogTrigger
           aria-label="Open navigation menu"
