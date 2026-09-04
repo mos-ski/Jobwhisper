@@ -354,6 +354,46 @@ const adminRoutes = [
     label: 'Admin dashboard (loading)',
     description: 'Skeleton state for the admin dashboard while metrics load.',
   },
+  {
+    href: '/admin/accounts',
+    label: 'Admin accounts',
+    description: 'User table with summary tiles, status/plan filters, search, pagination, and row actions.',
+  },
+  {
+    href: '/admin/accounts?state=empty',
+    label: 'Admin accounts (empty)',
+    description: 'No-results state with a clear-filters action.',
+  },
+  {
+    href: '/admin/accounts/acc_darnell_smith',
+    label: 'Admin account detail',
+    description: 'Subscription, credit balance and history, usage by product, activity, and per-account audit log.',
+  },
+  {
+    href: '/admin/accounts/acc_darnell_smith?state=suspended',
+    label: 'Admin account (suspended)',
+    description: 'Suspended treatment with the action swapped to Reinstate.',
+  },
+  {
+    href: '/admin/accounts/acc_darnell_smith?impersonating=true',
+    label: 'Admin account (impersonating)',
+    description: 'Mocked read-only "log in as user" state with the sticky impersonation banner.',
+  },
+  {
+    href: '/admin/configuration',
+    label: 'Admin configuration: pricing',
+    description: 'Editable plan cards, credit economics, DFY packages, and the unsubscribed allowance, behind a review-changes gate.',
+  },
+  {
+    href: '/admin/configuration?tab=coupons',
+    label: 'Admin configuration: coupons',
+    description: 'Promo code table with create dialog, validation, and deactivate confirmation.',
+  },
+  {
+    href: '/admin/configuration?tab=trials',
+    label: 'Admin configuration: trials',
+    description: 'Trial settings plus the onboarding survey editor with keyboard-operable reordering.',
+  },
 ] as const
 
 export function RouteIndexPage() {

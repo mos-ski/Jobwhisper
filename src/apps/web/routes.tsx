@@ -1,5 +1,8 @@
 import { useLocation } from 'react-router-dom'
 
+import { AdminAccountDetailPage } from './pages/admin-account-detail-page'
+import { AdminAccountsPage } from './pages/admin-accounts-page'
+import { AdminConfigurationPage } from './pages/admin-configuration-page'
 import { AdminDashboardPage } from './pages/admin-dashboard-page'
 import { AuthCreateAccountPage } from './pages/auth-create-account-page'
 import { AuthForgotPasswordPage } from './pages/auth-forgot-password-page'
@@ -60,6 +63,18 @@ export function WebRoutes() {
 
   if (routePath === '/admin') {
     return <AdminDashboardPage />
+  }
+
+  if (routePath === '/admin/accounts') {
+    return <AdminAccountsPage />
+  }
+
+  if (routePath.startsWith('/admin/accounts/')) {
+    return <AdminAccountDetailPage accountId={routePath.replace('/admin/accounts/', '')} />
+  }
+
+  if (routePath === '/admin/configuration') {
+    return <AdminConfigurationPage />
   }
 
   if (routePath === '/auth/sign-in') {
