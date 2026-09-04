@@ -211,7 +211,7 @@ function AdminTopStrip({
 
       <AdminSearch results={searchResults} />
 
-      <div className="flex shrink-0 items-center gap-1">
+      <div className="ms-auto flex shrink-0 items-center gap-1">
         <AdminNotificationBell notifications={notifications} />
         <span className="flex items-center gap-2 ps-1">
           <Avatar name={user.name} size="sm" />
