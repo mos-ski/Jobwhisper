@@ -380,6 +380,16 @@ const adminRoutes = [
     description: 'Mocked read-only "log in as user" state with the sticky impersonation banner.',
   },
   {
+    href: '/admin/products',
+    label: 'Admin products',
+    description: 'Every product with tier gating, usage, revenue, health, and an availability switch behind a blast-radius confirm.',
+  },
+  {
+    href: '/admin/products/coding-copilot',
+    label: 'Admin product detail (degraded)',
+    description: 'Per-product stats, usage trend, grouped recent errors, and the filterable session log.',
+  },
+  {
     href: '/admin/transactions',
     label: 'Admin transactions',
     description: 'Ledger with volume tiles, failed-renewal banner, status filter, search, and pagination.',

@@ -4,6 +4,8 @@ import { AdminAccountDetailPage } from './pages/admin-account-detail-page'
 import { AdminAccountsPage } from './pages/admin-accounts-page'
 import { AdminConfigurationPage } from './pages/admin-configuration-page'
 import { AdminDashboardPage } from './pages/admin-dashboard-page'
+import { AdminProductDetailPage } from './pages/admin-product-detail-page'
+import { AdminProductsPage } from './pages/admin-products-page'
 import { AdminTransactionDetailPage } from './pages/admin-transaction-detail-page'
 import { AdminTransactionsPage } from './pages/admin-transactions-page'
 import { AuthCreateAccountPage } from './pages/auth-create-account-page'
@@ -77,6 +79,14 @@ export function WebRoutes() {
 
   if (routePath === '/admin/configuration') {
     return <AdminConfigurationPage />
+  }
+
+  if (routePath === '/admin/products') {
+    return <AdminProductsPage />
+  }
+
+  if (routePath.startsWith('/admin/products/')) {
+    return <AdminProductDetailPage productId={routePath.replace('/admin/products/', '')} />
   }
 
   if (routePath === '/admin/transactions') {
