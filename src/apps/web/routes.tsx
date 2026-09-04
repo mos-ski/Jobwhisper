@@ -7,6 +7,7 @@ import { AdminAnalyticsPage } from './pages/admin-analytics-page'
 import { AdminConfigurationPage } from './pages/admin-configuration-page'
 import { AdminContentPage } from './pages/admin-content-page'
 import { AdminDashboardPage } from './pages/admin-dashboard-page'
+import { AdminKpisPage } from './pages/admin-kpis-page'
 import { AdminProductDetailPage } from './pages/admin-product-detail-page'
 import { AdminProductsPage } from './pages/admin-products-page'
 import { AdminSupportPage } from './pages/admin-support-page'
@@ -114,6 +115,10 @@ export function WebRoutes() {
 
   if (routePath === '/admin/analytics') {
     return <AdminAnalyticsPage />
+  }
+
+  if (routePath === '/admin/kpis') {
+    return <AdminKpisPage />
   }
 
   if (routePath === '/admin/content') {

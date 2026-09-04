@@ -8,6 +8,7 @@ import {
   FileText,
   HeadphonesIcon,
   LayoutDashboard,
+  LineChart,
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
@@ -46,6 +47,7 @@ const moduleIcons: Record<AdminModuleId, ReactNode> = {
   analytics: <BarChart3 />,
   content: <FileText />,
   support: <HeadphonesIcon />,
+  kpis: <LineChart />,
 }
 
 export type AdminShellProps = {

@@ -1,4 +1,4 @@
-export type AdminModuleId = 'dashboard' | 'activity' | 'accounts' | 'transactions' | 'products' | 'configuration' | 'systems' | 'analytics' | 'content' | 'support'
+export type AdminModuleId = 'dashboard' | 'activity' | 'accounts' | 'transactions' | 'products' | 'configuration' | 'systems' | 'analytics' | 'content' | 'support' | 'kpis'
 
 export type AdminNavItem = {
   readonly id: AdminModuleId
