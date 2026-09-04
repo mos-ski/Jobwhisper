@@ -390,6 +390,15 @@ export function AdminProductsView({
                               </a>
                             </h2>
                             <StatusBadge status={effectiveStatus} />
+                            {/* Same queue the Products nav badge counts — surfaced on the row that owns it. */}
+                            {row.attentionCount && row.attentionLabel ? (
+                              <a
+                                href={row.detailHref}
+                                className="inline-flex items-center gap-1.5 rounded-pill bg-danger px-2 py-0.5 text-xs font-bold leading-4 text-on-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                              >
+                                {row.attentionCount} {row.attentionLabel}
+                              </a>
+                            ) : null}
                           </div>
                           <p className="mt-1 text-sm leading-6 text-ink-muted">{row.summary}</p>
                           <p className="mt-1 text-xs text-ink-muted">Included with: {row.tierNote}</p>
@@ -523,13 +532,15 @@ function DfyKanban({ rows, onSelect, onStageChange }: {
 
   return (
     <div className="overflow-x-auto p-4">
-      <div className="flex min-w-max items-start gap-4">
+      {/* The board itself is a fixed height so the page never grows with the queue — each column
+          keeps its header pinned and scrolls its own cards, which holds up at 1,000 leads. */}
+      <div className="flex min-w-max items-stretch gap-4">
         {STAGE_ORDER.map((stage) => {
           const columnRows = rows.filter((row) => row.stage === stage)
           return (
             <div
               key={stage}
-              className="grid w-64 min-w-0 shrink-0 gap-3"
+              className="flex h-[min(60vh,34rem)] w-64 min-w-0 shrink-0 flex-col gap-3"
               onDragOver={(event) => {
                 event.preventDefault()
                 setDragOverStage(stage)
@@ -541,11 +552,11 @@ function DfyKanban({ rows, onSelect, onStageChange }: {
                 setDragOverStage(null)
               }}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex shrink-0 items-center gap-2">
                 <h3 className="text-sm font-semibold text-ink">{stageMeta[stage].label}</h3>
                 <Badge variant={stageMeta[stage].variant} size="sm">{columnRows.length}</Badge>
               </div>
-              <div className={cn('grid min-h-16 gap-2 rounded-lg p-1 transition-colors', dragOverStage === stage && 'bg-accent-subtle')}>
+              <div className={cn('grid min-h-0 flex-1 auto-rows-min gap-2 overflow-y-auto rounded-lg p-1 transition-colors', dragOverStage === stage && 'bg-accent-subtle')}>
                 {columnRows.length === 0 ? (
                   <p className="rounded-lg border border-dashed border-border p-3 text-center text-xs text-ink-muted">Drop here</p>
                 ) : (

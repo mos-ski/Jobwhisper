@@ -257,6 +257,10 @@ export const adminProducts: readonly AdminProductRow[] = [
     detailHref: '/admin/products/done-for-you',
     blastRadiusUsers: 214,
     blastRadiusLabel: '214 clients mid-package and the 6 success managers working their queues',
+    // Matches the Products nav badge, which counts `adminDoneForYouLeads` in the 'new' stage.
+    // Kept a literal because that array is declared further down this file.
+    attentionCount: 2,
+    attentionLabel: 'new leads',
   },
   {
     id: 'marketplace',

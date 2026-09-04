@@ -68,6 +68,13 @@ export type AdminProductRow = {
   readonly blastRadiusUsers: number
   /** Spelled-out blast radius for the confirmation dialog, e.g. "3,319 Pro and Premium subscribers". */
   readonly blastRadiusLabel: string
+  /**
+   * Items on this product waiting on an admin — the same count the Products nav badge carries.
+   * Set together with `attentionLabel`; unset on products with nothing queued.
+   */
+  readonly attentionCount?: number
+  /** What the count refers to, e.g. "new leads". */
+  readonly attentionLabel?: string
 }
 
 export type AdminProductSummaryId = 'active-users' | 'sessions' | 'credits' | 'revenue'
