@@ -380,6 +380,26 @@ const adminRoutes = [
     description: 'Mocked read-only "log in as user" state with the sticky impersonation banner.',
   },
   {
+    href: '/admin/transactions',
+    label: 'Admin transactions',
+    description: 'Ledger with volume tiles, failed-renewal banner, status filter, search, and pagination.',
+  },
+  {
+    href: '/admin/transactions?tab=disputes',
+    label: 'Admin disputes queue',
+    description: 'Dispute cards with evidence deadlines, overdue escalation, and submit/accept confirmations.',
+  },
+  {
+    href: '/admin/transactions?tab=refunds',
+    label: 'Admin refunds queue',
+    description: 'Pending refund requests with approve, and deny gated on a written reason.',
+  },
+  {
+    href: '/admin/transactions/txn_7T3XQP',
+    label: 'Admin transaction detail',
+    description: 'Invoice line items, tax, totals, customer block, and the payment event timeline.',
+  },
+  {
     href: '/admin/configuration',
     label: 'Admin configuration: pricing',
     description: 'Editable plan cards, credit economics, DFY packages, and the unsubscribed allowance, behind a review-changes gate.',

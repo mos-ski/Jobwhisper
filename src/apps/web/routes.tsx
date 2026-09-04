@@ -4,6 +4,8 @@ import { AdminAccountDetailPage } from './pages/admin-account-detail-page'
 import { AdminAccountsPage } from './pages/admin-accounts-page'
 import { AdminConfigurationPage } from './pages/admin-configuration-page'
 import { AdminDashboardPage } from './pages/admin-dashboard-page'
+import { AdminTransactionDetailPage } from './pages/admin-transaction-detail-page'
+import { AdminTransactionsPage } from './pages/admin-transactions-page'
 import { AuthCreateAccountPage } from './pages/auth-create-account-page'
 import { AuthForgotPasswordPage } from './pages/auth-forgot-password-page'
 import { AuthPlanPage } from './pages/auth-plan-page'
@@ -75,6 +77,14 @@ export function WebRoutes() {
 
   if (routePath === '/admin/configuration') {
     return <AdminConfigurationPage />
+  }
+
+  if (routePath === '/admin/transactions') {
+    return <AdminTransactionsPage />
+  }
+
+  if (routePath.startsWith('/admin/transactions/')) {
+    return <AdminTransactionDetailPage transactionId={routePath.replace('/admin/transactions/', '')} />
   }
 
   if (routePath === '/auth/sign-in') {

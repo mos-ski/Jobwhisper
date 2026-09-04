@@ -176,7 +176,6 @@ export type AdminAccountsListViewProps = {
   readonly onPageChange: (page: number) => void
   readonly onClearFilters: () => void
   readonly accountHref: (accountId: string) => string
-  readonly onViewAccount?: (account: AdminAccountRow) => void
   readonly onImpersonate?: (account: AdminAccountRow) => void
   readonly onSuspend?: (account: AdminAccountRow) => void
   readonly onReinstate?: (account: AdminAccountRow) => void
@@ -202,7 +201,6 @@ export function AdminAccountsListView({
   onPageChange,
   onClearFilters,
   accountHref,
-  onViewAccount,
   onImpersonate,
   onSuspend,
   onReinstate,
@@ -270,11 +268,13 @@ export function AdminAccountsListView({
           <MoreHorizontal aria-hidden="true" className="size-4" />
         </MenuTrigger>
         <MenuContent>
-          <MenuItem
-            icon={<Eye />}
-            render={<a href={accountHref(row.id)} />}
-          >
-            View account
+          <MenuItem icon={<Eye />}>
+            <a
+              href={accountHref(row.id)}
+              className="flex-1 rounded-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              View account
+            </a>
           </MenuItem>
           <MenuItem icon={<LogIn />} onClick={() => setPendingImpersonation(row)}>
             Log in as user
@@ -803,9 +803,12 @@ export function AdminAccountDetailView({
                 title="Account not found"
                 description="This account id does not exist, or the account was permanently deleted after a data-removal request."
                 action={
-                  <Button variant="secondary" render={<a href={accountsHref} />}>
+                  <a
+                    href={accountsHref}
+                    className="inline-flex min-h-9 items-center justify-center rounded-md border border-input px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  >
                     Back to all accounts
-                  </Button>
+                  </a>
                 }
               />
             </section>
