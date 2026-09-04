@@ -285,6 +285,10 @@ export function AdminSupportView({
         minTableWidthClassName="min-w-[72rem]"
         pagination={{ page: safePage, totalPages, totalItems: filtered.length, pageSize: PAGE_SIZE }}
         onPageChange={onPageChange}
+        selectable={false}
+        onRowClick={(row) => {
+          window.location.href = ticketHref(row.id)
+        }}
       />
     )
   }

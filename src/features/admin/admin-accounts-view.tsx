@@ -360,7 +360,11 @@ export function AdminAccountsListView({
       headerClassName: 'text-end',
       sortable: false,
       hideInMobileDetail: true,
-      render: (row) => <span className="flex justify-end">{rowMenu(row)}</span>,
+      render: (row) => (
+        <span className="flex justify-end" onClick={(event) => event.stopPropagation()}>
+          {rowMenu(row)}
+        </span>
+      ),
     },
   ]
 
@@ -486,6 +490,9 @@ export function AdminAccountsListView({
                 pageSize: PAGE_SIZE,
               }}
               onPageChange={onPageChange}
+              onRowClick={(row) => {
+                window.location.href = accountHref(row.id)
+              }}
               rowActions={(row) => (
                 <>
                   <a
