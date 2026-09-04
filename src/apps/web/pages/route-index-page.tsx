@@ -410,6 +410,26 @@ const adminRoutes = [
     description: 'Invoice line items, tax, totals, customer block, and the payment event timeline.',
   },
   {
+    href: '/admin/systems?tab=team',
+    label: 'Admin systems: team',
+    description: 'Admin/support roster with human-labelled permissions, invite dialog, and a self-revoke guard.',
+  },
+  {
+    href: '/admin/systems?tab=audit',
+    label: 'Admin systems: audit log',
+    description: 'Platform-wide log with actor/action/result/date filters, denied entries, and before-after expansion.',
+  },
+  {
+    href: '/admin/systems?tab=notifications',
+    label: 'Admin systems: notifications',
+    description: 'Per-channel notification rules with thresholds, plus the feed behind the shell bell.',
+  },
+  {
+    href: '/admin/systems?state=restricted',
+    label: 'Admin systems (restricted)',
+    description: 'Permission-denied treatment for an admin without the manage-users permission.',
+  },
+  {
     href: '/admin/configuration',
     label: 'Admin configuration: pricing',
     description: 'Editable plan cards, credit economics, DFY packages, and the unsubscribed allowance, behind a review-changes gate.',
