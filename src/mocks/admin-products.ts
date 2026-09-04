@@ -13,7 +13,7 @@ import type {
 
 export const adminProductRangeLabel = 'Aug 5 – Sep 3, 2026'
 
-/** Distinct accounts that used at least one product in range — the denominator behind every adoption %. */
+/** Distinct accounts that used at least one product in range, the denominator behind every adoption %. */
 const DISTINCT_ACTIVE_ACCOUNTS = 9_214
 
 export const adminProductSummary: readonly AdminProductSummaryStat[] = [
@@ -291,15 +291,15 @@ export const adminProducts: readonly AdminProductRow[] = [
  */
 export const adminProductsDense: readonly AdminProductRow[] = adminProducts.map((product, index) => {
   const denseNames: Record<AdminProductSku, string> = {
-    'interview-prep': 'Interview Prep — behavioral, system design, and case rounds',
-    'interview-copilot-web': 'Interview Copilot (web) — Chrome, Edge, Safari, and Firefox',
-    'interview-copilot-desktop': 'Interview Copilot (desktop app) — Windows, macOS, and Linux builds',
-    'coding-copilot': 'Coding Copilot — CoderPad, HackerRank, CodeSignal, and shared editors',
-    'meeting-copilot': 'Meeting Copilot — Zoom, Google Meet, and Microsoft Teams beta',
-    'auto-apply': 'Auto Apply — AI-run scouting, tailoring, and submission',
-    'resume-builder': 'Resume Builder — build, fix, tailor, and export',
-    'done-for-you': 'Done For You — managed applications with an assigned success manager',
-    marketplace: 'Marketplace — swipe files, negotiation scripts, and resume templates',
+    'interview-prep': 'Interview Prep · behavioral, system design, and case rounds',
+    'interview-copilot-web': 'Interview Copilot (web) · Chrome, Edge, Safari, and Firefox',
+    'interview-copilot-desktop': 'Interview Copilot (desktop app) · Windows, macOS, and Linux builds',
+    'coding-copilot': 'Coding Copilot · CoderPad, HackerRank, CodeSignal, and shared editors',
+    'meeting-copilot': 'Meeting Copilot · Zoom, Google Meet, and Microsoft Teams beta',
+    'auto-apply': 'Auto Apply · AI-run scouting, tailoring, and submission',
+    'resume-builder': 'Resume Builder · build, fix, tailor, and export',
+    'done-for-you': 'Done For You · managed applications with an assigned success manager',
+    marketplace: 'Marketplace · swipe files, negotiation scripts, and resume templates',
   }
 
   return {
@@ -837,7 +837,7 @@ function toDetailRecord(sessionCount?: (product: AdminProductRow) => number): Re
 
 export const adminProductDetails = toDetailRecord()
 
-/** 124 rows per product — the log an admin actually scrolls when a product starts failing. */
+/** 124 rows per product, the log an admin actually scrolls when a product starts failing. */
 export const adminProductDetailsDense = toDetailRecord(() => 124)
 
 export function isAdminProductSku(value: string): value is AdminProductSku {

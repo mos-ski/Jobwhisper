@@ -4,14 +4,11 @@ import {
   AlertTriangle,
   ArrowLeft,
   Ban,
-  CircleCheck,
-  Clock,
   Coins,
   Eye,
   LogIn,
   MoreHorizontal,
   RefreshCw,
-  ScrollText,
   ShieldCheck,
   UserPlus,
   UserX,
@@ -87,23 +84,17 @@ const planShortLabels: Record<AdminPlanId, string> = {
 type StatusMeta = {
   readonly label: string
   readonly variant: BadgeVariant
-  readonly Icon: typeof CircleCheck
 }
 
 const statusMeta: Record<AdminAccountStatus, StatusMeta> = {
-  active: { label: 'Active', variant: 'positive', Icon: CircleCheck },
-  suspended: { label: 'Suspended', variant: 'danger', Icon: Ban },
-  pending: { label: 'Pending', variant: 'warning', Icon: Clock },
+  active: { label: 'Active', variant: 'positive' },
+  suspended: { label: 'Suspended', variant: 'danger' },
+  pending: { label: 'Pending', variant: 'warning' },
 }
 
 function StatusBadge({ status }: { readonly status: AdminAccountStatus }) {
   const meta = statusMeta[status]
-  return (
-    <Badge variant={meta.variant} size="sm" className="gap-1">
-      <meta.Icon aria-hidden="true" className="size-3" />
-      {meta.label}
-    </Badge>
-  )
+  return <Badge variant={meta.variant} size="sm">{meta.label}</Badge>
 }
 
 function PlanBadge({ plan, label }: { readonly plan: AdminPlanId; readonly label: string }) {
@@ -385,7 +376,7 @@ export function AdminAccountsListView({
     >
       <div className="grid gap-6 p-4 sm:p-6">
         <div>
-          <h1 className="text-2xl font-semibold leading-tight text-ink">Accounts</h1>
+          <h1 className="font-gowun text-3xl font-bold leading-tight text-ink">Accounts</h1>
           <p className="mt-1 text-sm text-ink-muted">
             {countFormatter.format(summary.totalAccounts)} accounts on the platform. This table lists the{' '}
             {countFormatter.format(accounts.length)} most recently active.
@@ -609,7 +600,7 @@ function Panel({ title, description, children, action }: {
     <section className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-base font-bold text-ink">{title}</h2>
+          <h2 className="font-gowun text-lg font-bold text-ink">{title}</h2>
           {description ? <p className="mt-1 text-sm text-ink-muted">{description}</p> : null}
         </div>
         {action}
@@ -793,7 +784,7 @@ export function AdminAccountDetailView({
             <ArrowLeft aria-hidden="true" className="size-4" />
             All accounts
           </a>
-          <h1 className="text-2xl font-semibold leading-tight text-ink">Account</h1>
+          <h1 className="font-gowun text-3xl font-bold leading-tight text-ink">Account</h1>
           {errorMessage ? (
             <ErrorPanel message={errorMessage} onRetry={onRetry} />
           ) : (
@@ -1012,24 +1003,9 @@ export function AdminAccountDetailView({
         <section className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5" aria-label="Account records">
           <Tabs value={tab} onValueChange={(value) => onTabChange(value as AdminAccountDetailTab)}>
             <TabsList>
-              <TabsTrigger value="credits" className="min-h-11">
-                <span className="inline-flex items-center gap-1.5">
-                  <Coins aria-hidden="true" className="size-4" />
-                  Credit history
-                </span>
-              </TabsTrigger>
-              <TabsTrigger value="activity" className="min-h-11">
-                <span className="inline-flex items-center gap-1.5">
-                  <Activity aria-hidden="true" className="size-4" />
-                  Activity
-                </span>
-              </TabsTrigger>
-              <TabsTrigger value="audit" className="min-h-11">
-                <span className="inline-flex items-center gap-1.5">
-                  <ScrollText aria-hidden="true" className="size-4" />
-                  Audit log
-                </span>
-              </TabsTrigger>
+              <TabsTrigger value="credits" className="min-h-11">Credit history</TabsTrigger>
+              <TabsTrigger value="activity" className="min-h-11">Activity</TabsTrigger>
+              <TabsTrigger value="audit" className="min-h-11">Audit log</TabsTrigger>
             </TabsList>
 
             <TabsContent value="credits">

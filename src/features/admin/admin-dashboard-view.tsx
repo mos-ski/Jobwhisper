@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { AlertTriangle, ArrowRight, ArrowDownRight, ArrowUpRight, CircleAlert, Info } from 'lucide-react'
 
 import type {
   AdminAlert,
@@ -42,9 +41,10 @@ function formatKpiValue(kpi: AdminKpi): string {
   return countFormatter.format(kpi.value)
 }
 
-function KpiTile({ kpi }: { readonly kpi: AdminKpi }) {
+function KpiTile({ kpi, emphasis = false }: { readonly kpi: AdminKpi; readonly emphasis?: boolean }) {
   const isGoodDelta = kpi.deltaDirection === 'up' ? kpi.higherIsBetter : !kpi.higherIsBetter
-  const DeltaIcon = kpi.deltaDirection === 'up' ? ArrowUpRight : ArrowDownRight
+  // The sign carries the direction, so no arrow glyph is needed to repeat it.
+  const sign = kpi.deltaDirection === 'up' ? '+' : '−'
 
   return (
     <article className="rounded-panel border border-border bg-surface p-4 shadow-control">
@@ -57,11 +57,12 @@ function KpiTile({ kpi }: { readonly kpi: AdminKpi }) {
           </span>
         ) : null}
       </div>
-      <p className="mt-2 text-2xl font-bold leading-8 text-ink">{formatKpiValue(kpi)}</p>
-      <p className={cn('mt-1 inline-flex items-center gap-1 text-xs font-semibold', isGoodDelta ? 'text-positive' : 'text-danger')}>
-        <DeltaIcon aria-hidden="true" className="size-3.5" />
-        {kpi.deltaPercent}%
-        <span className="font-normal text-ink-muted">vs previous period</span>
+      <p className={cn('mt-2 font-gowun font-bold text-ink', emphasis ? 'text-5xl leading-[1.1]' : 'text-3xl leading-9')}>
+        {formatKpiValue(kpi)}
+      </p>
+      <p className={cn('mt-1.5 text-xs font-semibold', isGoodDelta ? 'text-positive' : 'text-danger')}>
+        {sign}{kpi.deltaPercent}%
+        <span className="ms-1 font-normal text-ink-muted">vs previous period</span>
       </p>
       <p className="mt-2 text-xs leading-5 text-ink-muted">{kpi.caption}</p>
     </article>
@@ -145,40 +146,35 @@ function TrendChart({ points, metric, showTable, onToggleTable }: {
   )
 }
 
-const alertIcons: Record<AdminAlertSeverity, typeof CircleAlert> = {
-  critical: CircleAlert,
-  warning: AlertTriangle,
-  info: Info,
+const alertSeverityLabels: Record<AdminAlertSeverity, string> = {
+  critical: 'Critical',
+  warning: 'Warning',
+  info: 'For info',
 }
 
 const alertToneClasses: Record<AdminAlertSeverity, string> = {
-  critical: 'border-danger bg-danger-surface text-danger',
-  warning: 'border-warning bg-warning-surface text-warning',
-  info: 'border-border bg-surface-subtle text-ink-muted',
+  critical: 'text-danger',
+  warning: 'text-warning',
+  info: 'text-ink-muted',
 }
 
 function AlertRow({ alert }: { readonly alert: AdminAlert }) {
-  const Icon = alertIcons[alert.severity]
-
   return (
     <li className="border-b border-border last:border-b-0">
-      <div className="flex flex-wrap items-start gap-3 p-4">
-        <span className={cn('grid size-8 shrink-0 place-items-center rounded-soft border', alertToneClasses[alert.severity])}>
-          <Icon aria-hidden="true" className="size-4" />
-        </span>
+      <div className="flex flex-wrap items-start gap-4 p-4">
+        {/* Severity reads as a word, not as a colored glyph, so it survives both color blindness and a screen reader. */}
+        <p className={cn('w-16 shrink-0 pt-0.5 text-xs font-bold uppercase tracking-wide', alertToneClasses[alert.severity])}>
+          {alertSeverityLabels[alert.severity]}
+        </p>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-ink">
-            <span className="sr-only">{alert.severity}: </span>
-            {alert.title}
-          </p>
+          <p className="font-gowun text-base font-bold text-ink">{alert.title}</p>
           <p className="mt-0.5 text-sm leading-6 text-ink-muted">{alert.detail}</p>
         </div>
         <a
           href={alert.href}
-          className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border border-input px-3 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          className="inline-flex min-h-9 shrink-0 items-center rounded-md border border-input px-3 text-sm font-semibold text-ink transition-colors hover:border-ink hover:bg-ink hover:text-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
         >
           {alert.actionLabel}
-          <ArrowRight aria-hidden="true" className="size-4" />
         </a>
       </div>
     </li>
@@ -245,6 +241,8 @@ export function AdminDashboardView({
   const [trendMetric, setTrendMetric] = useState<AdminTrendMetric>('revenue')
   const [showTrendTable, setShowTrendTable] = useState(false)
   const activeRange = dateRanges.find((range) => range.id === rangeId) ?? dateRanges[0]
+  const headlineKpis = kpis.filter((kpi) => kpi.id === 'mrr' || kpi.id === 'active-subscribers')
+  const supportingKpis = kpis.filter((kpi) => kpi.id !== 'mrr' && kpi.id !== 'active-subscribers')
 
   return (
     <AdminShell
@@ -260,7 +258,7 @@ export function AdminDashboardView({
         <div className="grid gap-6 p-4 sm:p-6">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-semibold leading-tight text-ink">Dashboard</h1>
+              <h1 className="font-gowun text-3xl font-bold leading-tight text-ink">Dashboard</h1>
               <p className="mt-1 text-sm text-ink-muted">
                 Platform performance for {activeRange?.rangeLabel}.
               </p>
@@ -283,9 +281,16 @@ export function AdminDashboardView({
             </div>
           </div>
 
-          <section aria-label="Key performance indicators">
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {kpis.map((kpi) => (
+          <section aria-label="Key performance indicators" className="grid gap-4">
+            {/* Revenue and subscriber count are the two numbers the business is actually run on, so they
+                get their own weight rather than being flattened into one uniform grid with the rest. */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              {headlineKpis.map((kpi) => (
+                <KpiTile key={kpi.id} kpi={kpi} emphasis />
+              ))}
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {supportingKpis.map((kpi) => (
                 <KpiTile key={kpi.id} kpi={kpi} />
               ))}
             </div>
@@ -293,7 +298,7 @@ export function AdminDashboardView({
 
           <section className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5" aria-label="Trend over time">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-base font-bold text-ink">
+              <h2 className="font-gowun text-lg font-bold text-ink">
                 {trendMetric === 'revenue' ? 'Revenue' : 'Credits consumed'} over time
               </h2>
               <div className="flex gap-1 rounded-md border border-border p-1" role="group" aria-label="Trend metric">
@@ -323,7 +328,7 @@ export function AdminDashboardView({
 
           <section className="rounded-panel border border-border bg-surface shadow-control" aria-label="Needs attention">
             <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-border p-4 sm:px-5">
-              <h2 className="text-base font-bold text-ink">Needs attention</h2>
+              <h2 className="font-gowun text-lg font-bold text-ink">Needs attention</h2>
               <p className="text-sm text-ink-muted">{alerts.length} open items</p>
             </div>
             <ul>
@@ -335,7 +340,7 @@ export function AdminDashboardView({
 
           <div className="grid gap-4 lg:grid-cols-2">
             <section className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5" aria-label="Revenue by product">
-              <h2 className="text-base font-bold text-ink">Revenue by product</h2>
+              <h2 className="font-gowun text-lg font-bold text-ink">Revenue by product</h2>
               <p className="mt-1 text-sm text-ink-muted">Share of revenue across the selected range.</p>
               <ul className="mt-2 divide-y divide-border">
                 {productMix.map((row) => (
@@ -351,7 +356,7 @@ export function AdminDashboardView({
             </section>
 
             <section className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5" aria-label="Subscribers by plan">
-              <h2 className="text-base font-bold text-ink">Subscribers by plan</h2>
+              <h2 className="font-gowun text-lg font-bold text-ink">Subscribers by plan</h2>
               <p className="mt-1 text-sm text-ink-muted">Ace Your Interview tiers, plus the unsubscribed base.</p>
               <ul className="mt-2 divide-y divide-border">
                 {planMix.map((row) => (

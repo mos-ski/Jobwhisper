@@ -120,7 +120,7 @@ export const adminTrendPoints: readonly AdminTrendPoint[] = [
   { label: 'Sep 2', revenueCents: 5_140_000, creditsConsumed: 39_120 },
 ]
 
-// Total revenue across the range (~$1.2M), not just subscription MRR — Copilot/Prep exceed
+// Total revenue across the range (~$1.2M), not just subscription MRR. Copilot/Prep exceed
 // subscription MRR by the mid-cycle top-ups those two products also sell (PRICING.md §1).
 export const adminProductMix: readonly AdminProductMixRow[] = [
   { id: 'interview-copilot', label: 'Interview Copilot', revenueCents: 40_800_000, activeUsers: 3_942, sharePercent: 34 },
@@ -143,7 +143,7 @@ export const adminAlerts: readonly AdminAlert[] = [
     id: 'alert-disputes',
     severity: 'critical',
     title: '7 disputes need review',
-    detail: 'Oldest opened 9 days ago — 3 pass their evidence deadline this week.',
+    detail: 'Oldest opened 9 days ago. Three pass their evidence deadline this week.',
     href: '/admin/transactions',
     actionLabel: 'Review disputes',
   },

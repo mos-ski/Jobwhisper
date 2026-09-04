@@ -1,9 +1,7 @@
 import { useMemo, useState } from 'react'
 import {
   AlertTriangle,
-  ArrowDownLeft,
   ArrowLeft,
-  ArrowUpRight,
   Ban,
   CheckCircle2,
   Clock,
@@ -68,14 +66,6 @@ const statusLabels: Record<AdminTransactionStatus, string> = {
   disputed: 'Disputed',
 }
 
-const statusIcons: Record<AdminTransactionStatus, typeof CheckCircle2> = {
-  succeeded: CheckCircle2,
-  pending: Clock,
-  failed: XCircle,
-  refunded: RotateCcw,
-  disputed: Scale,
-}
-
 const statusTones: Record<AdminTransactionStatus, string> = {
   succeeded: 'border-positive text-positive',
   pending: 'border-border text-ink-muted',
@@ -119,12 +109,10 @@ const eventIcons: Record<AdminTransactionEventKind, typeof CheckCircle2> = {
   'evidence-submitted': Scale,
 }
 
-/** Status must never be color-only — every badge pairs its tone with an icon and a word. */
+/** Status is carried by the word itself, so it survives color blindness without needing a glyph too. */
 function StatusBadge({ status }: { readonly status: AdminTransactionStatus }) {
-  const Icon = statusIcons[status]
   return (
-    <span className={cn('inline-flex items-center gap-1.5 rounded-pill border px-2 py-0.5 text-xs font-semibold', statusTones[status])}>
-      <Icon aria-hidden="true" className="size-3.5" />
+    <span className={cn('inline-flex items-center rounded-pill border px-2 py-0.5 text-xs font-semibold', statusTones[status])}>
       {statusLabels[status]}
     </span>
   )
@@ -132,12 +120,11 @@ function StatusBadge({ status }: { readonly status: AdminTransactionStatus }) {
 
 function DirectionAmount({ row }: { readonly row: AdminTransactionRow }) {
   const outgoing = row.direction === 'outgoing'
-  const Icon = outgoing ? ArrowUpRight : ArrowDownLeft
+  // A leading minus is how money out actually reads on a ledger, and it needs no glyph.
   return (
-    <span className={cn('inline-flex items-center justify-end gap-1 tabular-nums font-semibold', outgoing ? 'text-warning' : 'text-ink')}>
-      <Icon aria-hidden="true" className="size-3.5" />
+    <span className={cn('tabular-nums font-semibold', outgoing ? 'text-warning' : 'text-ink')}>
       <span className="sr-only">{outgoing ? 'Money out ' : 'Money in '}</span>
-      {formatUsd(row.amountCents)}
+      {outgoing ? '−' : ''}{formatUsd(row.amountCents)}
     </span>
   )
 }
@@ -154,7 +141,7 @@ function SummaryTiles({ summary }: { readonly summary: AdminTransactionsSummary 
       {tiles.map((tile) => (
         <article key={tile.label} className="rounded-panel border border-border bg-surface p-4 shadow-control">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{tile.label}</h3>
-          <p className="mt-2 text-2xl font-bold leading-8 text-ink">{tile.value}</p>
+          <p className="mt-2 font-gowun text-3xl font-bold leading-9 text-ink">{tile.value}</p>
           <p className="mt-1 text-xs text-ink-muted">{tile.caption}</p>
         </article>
       ))}
@@ -298,7 +285,7 @@ export function AdminTransactionsView({
       <DataTable
         rows={visibleRows}
         columns={columns}
-        itemLabel={(row) => `${row.id} — ${row.customerName}`}
+        itemLabel={(row) => `${row.id}, ${row.customerName}`}
         searchValue={q}
         onSearchChange={onQChange}
         searchLabel="Search transactions by id, customer, or product"
@@ -401,7 +388,7 @@ export function AdminTransactionsView({
     <AdminShell user={user} navItems={navItems} activeModule="transactions" notifications={notifications} searchResults={searchResults}>
       <div className="grid gap-6 p-4 sm:p-6">
         <div>
-          <h1 className="text-2xl font-semibold leading-tight text-ink">Transactions</h1>
+          <h1 className="font-gowun text-3xl font-bold leading-tight text-ink">Transactions</h1>
           <p className="mt-1 text-sm text-ink-muted">Money in and out for {summary.rangeLabel}.</p>
         </div>
 
@@ -616,7 +603,7 @@ export function AdminTransactionDetailView({
           <>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
-                <h1 className="text-2xl font-semibold leading-tight text-ink">{formatUsd(transaction.totalCents)}</h1>
+                <h1 className="font-gowun text-3xl font-bold leading-tight text-ink">{formatUsd(transaction.totalCents)}</h1>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   <StatusBadge status={refunded ? 'refunded' : transaction.status} />
                   <span className="text-sm text-ink-muted">{transaction.id} · {transaction.invoiceNumber} · {transaction.dateLabel}</span>
@@ -641,7 +628,7 @@ export function AdminTransactionDetailView({
               <div role="status" className="rounded-panel border border-danger bg-danger-surface p-4">
                 <p className="inline-flex items-center gap-2 text-sm font-bold text-danger">
                   <Scale aria-hidden="true" className="size-4" />
-                  Disputed — {disputeReasonLabels[transaction.dispute.reason]}
+                  Disputed, {disputeReasonLabels[transaction.dispute.reason]}
                 </p>
                 <p className="mt-1 text-sm leading-6 text-danger">
                   Evidence due {transaction.dispute.evidenceDueLabel}
@@ -661,7 +648,7 @@ export function AdminTransactionDetailView({
 
             <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
               <section className="rounded-panel border border-border bg-surface shadow-control" aria-label="Invoice line items">
-                <h2 className="border-b border-border p-4 text-base font-bold text-ink sm:px-5">Line items</h2>
+                <h2 className="border-b border-border p-4 font-gowun text-lg font-bold text-ink sm:px-5">Line items</h2>
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[34rem] text-sm">
                     <thead>
@@ -713,7 +700,7 @@ export function AdminTransactionDetailView({
 
               <div className="grid gap-4">
                 <section className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5" aria-label="Customer">
-                  <h2 className="text-base font-bold text-ink">Customer</h2>
+                  <h2 className="font-gowun text-lg font-bold text-ink">Customer</h2>
                   <a href={transaction.customer.accountHref} className="mt-2 block font-semibold text-accent-text underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                     {transaction.customer.name}
                   </a>
@@ -729,7 +716,7 @@ export function AdminTransactionDetailView({
                 </section>
 
                 <section className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5" aria-label="Event timeline">
-                  <h2 className="text-base font-bold text-ink">Timeline</h2>
+                  <h2 className="font-gowun text-lg font-bold text-ink">Timeline</h2>
                   <ol className="mt-3 grid gap-3">
                     {transaction.events.map((event) => {
                       const Icon = eventIcons[event.kind]

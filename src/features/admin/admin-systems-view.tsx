@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import {
   AlertTriangle,
   BellOff,
-  CheckCircle2,
   ChevronDown,
   Info,
   Mail,
@@ -81,10 +80,8 @@ const TABS: readonly { readonly id: AdminSystemsTab; readonly label: string }[] 
 
 function ResultBadge({ result }: { readonly result: AdminAuditResult }) {
   const denied = result === 'denied'
-  const Icon = denied ? ShieldAlert : CheckCircle2
   return (
-    <span className={cn('inline-flex items-center gap-1.5 rounded-pill border px-2 py-0.5 text-xs font-semibold', denied ? 'border-danger text-danger' : 'border-positive text-positive')}>
-      <Icon aria-hidden="true" className="size-3.5" />
+    <span className={cn('inline-flex items-center rounded-pill border px-2 py-0.5 text-xs font-semibold', denied ? 'border-danger text-danger' : 'border-positive text-positive')}>
       {denied ? 'Denied' : 'Success'}
     </span>
   )
@@ -155,7 +152,7 @@ export function AdminSystemsView({
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inviteEmail.trim())
   const inviteEmailError = inviteTouched && !emailValid ? 'Enter a valid work email, for example alex@jobwhisper.org.' : undefined
-  const invitePermissionError = inviteTouched && invitePermissions.length === 0 ? 'Pick at least one permission — an invite with none cannot sign in.' : undefined
+  const invitePermissionError = inviteTouched && invitePermissions.length === 0 ? 'Pick at least one permission, an invite with none cannot sign in.' : undefined
 
   function channelsFor(setting: AdminNotificationSetting): Readonly<Record<AdminNotificationChannel, boolean>> {
     return channelOverrides[setting.id] ?? setting.channels
@@ -276,7 +273,7 @@ export function AdminSystemsView({
         <DataTable
           rows={teamMembers}
           columns={teamColumns}
-          itemLabel={(row) => `${row.name} — ${row.email}`}
+          itemLabel={(row) => `${row.name}, ${row.email}`}
           minTableWidthClassName="min-w-[64rem]"
           rowActions={(row) => renderMemberAction(row)}
         />
@@ -418,7 +415,7 @@ export function AdminSystemsView({
           {silencedCount > 0 ? (
             <p role="status" className="inline-flex items-start gap-2 rounded-panel border border-warning bg-warning-surface px-4 py-3 text-sm font-semibold text-warning">
               <BellOff aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-              {silencedCount} notification {silencedCount === 1 ? 'type is' : 'types are'} fully silenced — no one will be told when they happen.
+              {silencedCount} notification {silencedCount === 1 ? 'type is' : 'types are'} fully silenced, no one will be told when they happen.
             </p>
           ) : null}
 
@@ -426,7 +423,7 @@ export function AdminSystemsView({
             const settings = notificationSettings.filter((setting) => setting.group === group)
             return (
               <section key={group} className="rounded-panel border border-border bg-surface shadow-control" aria-label={settings[0]?.groupLabel ?? group}>
-                <h2 className="border-b border-border p-4 text-base font-bold text-ink sm:px-5">{settings[0]?.groupLabel ?? group}</h2>
+                <h2 className="border-b border-border p-4 font-gowun text-lg font-bold text-ink sm:px-5">{settings[0]?.groupLabel ?? group}</h2>
                 <ul>
                   {settings.map((setting) => {
                     const channels = channelsFor(setting)
@@ -466,7 +463,7 @@ export function AdminSystemsView({
 
         <section className="rounded-panel border border-border bg-surface shadow-control" aria-label="Recent notifications">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border p-4 sm:px-5">
-            <h2 className="text-base font-bold text-ink">Recent</h2>
+            <h2 className="font-gowun text-lg font-bold text-ink">Recent</h2>
             <button
               type="button"
               onClick={() => setReadOverrides(notificationFeed.map((item) => item.id))}
@@ -520,7 +517,7 @@ export function AdminSystemsView({
     <AdminShell user={user} navItems={navItems} activeModule="systems" notifications={notifications} searchResults={searchResults}>
       <div className="grid gap-6 p-4 sm:p-6">
         <div>
-          <h1 className="text-2xl font-semibold leading-tight text-ink">Systems</h1>
+          <h1 className="font-gowun text-3xl font-bold leading-tight text-ink">Systems</h1>
           <p className="mt-1 text-sm text-ink-muted">Who can use this console, everything they have done, and what the platform tells you about.</p>
         </div>
 

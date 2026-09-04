@@ -241,7 +241,7 @@ function SectionPanel({
     <section aria-labelledby={id} className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 id={id} className="text-base font-bold text-ink">
+          <h3 id={id} className="font-gowun text-lg font-bold text-ink">
             {title}
           </h3>
           {description ? <p className="mt-1 max-w-prose text-sm leading-6 text-ink-muted">{description}</p> : null}
@@ -769,7 +769,7 @@ function PricingTab({
                 className="grid content-start gap-4 rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5"
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                  <h3 id={`${plan.id}-heading`} className="text-base font-bold text-ink">
+                  <h3 id={`${plan.id}-heading`} className="font-gowun text-lg font-bold text-ink">
                     {plan.name}
                   </h3>
                   <p className="text-xs text-ink-muted">{numberFormatter.format(plan.subscriberCount)} live subscribers</p>
@@ -1824,7 +1824,7 @@ function SurveyPreview({ title, introduction, questions }: {
 }) {
   return (
     <div className="rounded-soft border border-border bg-canvas p-4">
-      <h4 className="text-base font-bold text-ink">{title}</h4>
+      <h4 className="font-gowun text-lg font-bold text-ink">{title}</h4>
       <p className="mt-1 text-sm leading-6 text-ink-muted">{introduction}</p>
       {questions.length === 0 ? (
         <p className="mt-4 rounded-soft border border-dashed border-input p-4 text-sm text-ink-muted">
@@ -2444,7 +2444,7 @@ export function AdminConfigurationView({
       ) : (
         <div className="grid gap-6 p-4 sm:p-6">
           <div>
-            <h1 className="text-2xl font-semibold leading-tight text-ink">Configuration</h1>
+            <h1 className="font-gowun text-3xl font-bold leading-tight text-ink">Configuration</h1>
             <p className="mt-1 max-w-prose text-sm leading-6 text-ink-muted">
               What Jobwhisper charges, what discounts exist, and what a new account is given before it pays. Every change here lands
               on live customers, so nothing saves without a review step.

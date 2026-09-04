@@ -2,13 +2,8 @@ import { useMemo, useState } from 'react'
 import {
   Activity,
   AlertTriangle,
-  ArrowDownRight,
   ArrowLeft,
-  ArrowUpRight,
-  CircleCheck,
   CircleSlash,
-  FlaskConical,
-  Info,
   RefreshCw,
   TriangleAlert,
 } from 'lucide-react'
@@ -61,11 +56,11 @@ function formatStat(value: number, format: AdminProductStatFormat): string {
   return countFormatter.format(value)
 }
 
-const statusMeta: Record<AdminProductStatus, { readonly label: string; readonly variant: BadgeVariant; readonly Icon: typeof CircleCheck }> = {
-  live: { label: 'Live', variant: 'positive', Icon: CircleCheck },
-  beta: { label: 'Beta', variant: 'info', Icon: FlaskConical },
-  degraded: { label: 'Degraded', variant: 'warning', Icon: TriangleAlert },
-  disabled: { label: 'Disabled', variant: 'neutral', Icon: CircleSlash },
+const statusMeta: Record<AdminProductStatus, { readonly label: string; readonly variant: BadgeVariant }> = {
+  live: { label: 'Live', variant: 'positive' },
+  beta: { label: 'Beta', variant: 'info' },
+  degraded: { label: 'Degraded', variant: 'warning' },
+  disabled: { label: 'Disabled', variant: 'neutral' },
 }
 
 const healthTones: Record<AdminProductHealthState, string> = {
@@ -88,19 +83,20 @@ const tierLabels: Record<AdminProductTierId, string> = {
 }
 
 const errorSeverityTones: Record<AdminProductErrorGroup['severity'], string> = {
-  critical: 'border-danger text-danger',
-  warning: 'border-warning text-warning',
-  info: 'border-border text-ink-muted',
+  critical: 'text-danger',
+  warning: 'text-warning',
+  info: 'text-ink-muted',
+}
+
+const errorSeverityLabels: Record<AdminProductErrorGroup['severity'], string> = {
+  critical: 'Critical',
+  warning: 'Warning',
+  info: 'For info',
 }
 
 function StatusBadge({ status }: { readonly status: AdminProductStatus }) {
   const meta = statusMeta[status]
-  return (
-    <Badge variant={meta.variant} size="sm" className="gap-1">
-      <meta.Icon aria-hidden="true" className="size-3" />
-      {meta.label}
-    </Badge>
-  )
+  return <Badge variant={meta.variant} size="sm">{meta.label}</Badge>
 }
 
 function DeltaLine({ deltaPercent, deltaDirection, higherIsBetter }: {
@@ -109,12 +105,11 @@ function DeltaLine({ deltaPercent, deltaDirection, higherIsBetter }: {
   readonly higherIsBetter: boolean
 }) {
   const good = deltaDirection === 'up' ? higherIsBetter : !higherIsBetter
-  const Icon = deltaDirection === 'up' ? ArrowUpRight : ArrowDownRight
+  const sign = deltaDirection === 'up' ? '+' : '−'
   return (
-    <p className={cn('mt-1 inline-flex items-center gap-1 text-xs font-semibold', good ? 'text-positive' : 'text-danger')}>
-      <Icon aria-hidden="true" className="size-3.5" />
-      {deltaPercent}%
-      <span className="font-normal text-ink-muted">vs previous period</span>
+    <p className={cn('mt-1.5 text-xs font-semibold', good ? 'text-positive' : 'text-danger')}>
+      {sign}{deltaPercent}%
+      <span className="ms-1 font-normal text-ink-muted">vs previous period</span>
     </p>
   )
 }
@@ -130,7 +125,7 @@ function StatTile({ label, value, caption, deltaPercent, deltaDirection, higherI
   return (
     <article className="rounded-panel border border-border bg-surface p-4 shadow-control">
       <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{label}</h3>
-      <p className="mt-2 text-2xl font-bold leading-8 text-ink">{value}</p>
+      <p className="mt-2 font-gowun text-3xl font-bold leading-9 text-ink">{value}</p>
       <DeltaLine deltaPercent={deltaPercent} deltaDirection={deltaDirection} higherIsBetter={higherIsBetter} />
       <p className="mt-2 text-xs leading-5 text-ink-muted">{caption}</p>
     </article>
@@ -250,7 +245,7 @@ export function AdminProductsView({
     <AdminShell user={user} navItems={navItems} activeModule="products" notifications={notifications} searchResults={searchResults}>
       <div className="grid gap-6 p-4 sm:p-6">
         <div>
-          <h1 className="text-2xl font-semibold leading-tight text-ink">Products</h1>
+          <h1 className="font-gowun text-3xl font-bold leading-tight text-ink">Products</h1>
           <p className="mt-1 text-sm text-ink-muted">Adoption, usage, and health across every product for {rangeLabel}.</p>
         </div>
 
@@ -320,7 +315,7 @@ export function AdminProductsView({
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
-                            <h2 className="text-base font-bold text-ink">
+                            <h2 className="font-gowun text-lg font-bold text-ink">
                               <a href={row.detailHref} className="rounded-soft underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                                 {row.name}
                               </a>
@@ -532,7 +527,7 @@ export function AdminProductDetailView({
           <>
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-2xl font-semibold leading-tight text-ink">{product.name}</h1>
+                <h1 className="font-gowun text-3xl font-bold leading-tight text-ink">{product.name}</h1>
                 <StatusBadge status={product.status} />
               </div>
               <p className="mt-1 text-sm text-ink-muted">{product.summary}</p>
@@ -561,7 +556,7 @@ export function AdminProductDetailView({
 
             <section className="rounded-panel border border-border bg-surface p-4 shadow-control sm:p-5" aria-label="Usage over time">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <h2 className="text-base font-bold text-ink">{trendMetric === 'sessions' ? 'Sessions' : 'Credits consumed'} over time</h2>
+                <h2 className="font-gowun text-lg font-bold text-ink">{trendMetric === 'sessions' ? 'Sessions' : 'Credits consumed'} over time</h2>
                 <div className="flex gap-1 rounded-md border border-border p-1" role="group" aria-label="Trend metric">
                   {(['sessions', 'credits'] as const).map((metric) => (
                     <button
@@ -589,18 +584,15 @@ export function AdminProductDetailView({
 
             {product.errorGroups.length > 0 ? (
               <section className="rounded-panel border border-border bg-surface shadow-control" aria-label="Recent errors">
-                <h2 className="border-b border-border p-4 text-base font-bold text-ink sm:px-5">Recent errors</h2>
+                <h2 className="border-b border-border p-4 font-gowun text-lg font-bold text-ink sm:px-5">Recent errors</h2>
                 <ul>
                   {product.errorGroups.map((group) => (
-                    <li key={group.id} className="flex flex-wrap items-start gap-3 border-b border-border p-4 last:border-b-0 sm:px-5">
-                      <span className={cn('grid size-8 shrink-0 place-items-center rounded-soft border', errorSeverityTones[group.severity])}>
-                        {group.severity === 'info' ? <Info aria-hidden="true" className="size-4" /> : <AlertTriangle aria-hidden="true" className="size-4" />}
-                      </span>
+                    <li key={group.id} className="flex flex-wrap items-start gap-4 border-b border-border p-4 last:border-b-0 sm:px-5">
+                      <p className={cn('w-16 shrink-0 pt-0.5 text-xs font-bold uppercase tracking-wide', errorSeverityTones[group.severity])}>
+                        {errorSeverityLabels[group.severity]}
+                      </p>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-ink">
-                          <span className="sr-only">{group.severity}: </span>
-                          {group.reason}
-                        </p>
+                        <p className="text-sm font-semibold text-ink">{group.reason}</p>
                         <p className="mt-0.5 text-xs text-ink-muted">Last seen {group.lastSeenLabel}</p>
                       </div>
                       <p className="shrink-0 text-end">
@@ -614,8 +606,8 @@ export function AdminProductDetailView({
             ) : null}
 
             <section aria-label="Session log" className="grid gap-3">
+              <h2 className="font-gowun text-lg font-bold text-ink">Session log</h2>
               <div className="flex flex-wrap items-end gap-3">
-                <h2 className="text-base font-bold text-ink">Session log</h2>
                 <SelectField
                   id="session-outcome-filter"
                   label="Outcome"
@@ -647,7 +639,7 @@ export function AdminProductDetailView({
                 <DataTable
                   rows={visibleSessions}
                   columns={columns}
-                  itemLabel={(row) => `${row.id} — ${row.userName}`}
+                  itemLabel={(row) => `${row.id}, ${row.userName}`}
                   searchValue={q}
                   onSearchChange={onQChange}
                   searchLabel="Search sessions by id, user, role, or company"

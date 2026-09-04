@@ -445,7 +445,7 @@ const featuredAuditSeeds: readonly AuditSeed[] = [
     affectedRecord: [
       { field: 'Account', before: 'Leila Haddad', after: 'Leila Haddad' },
       { field: 'Credit balance', before: '38', after: '288' },
-      { field: 'Reason', before: '—', after: 'Session dropped mid-interview' },
+      { field: 'Reason', before: 'Not set', after: 'Session dropped mid-interview' },
     ],
   },
   {
@@ -853,7 +853,7 @@ export const adminNotificationSettings: readonly AdminNotificationSetting[] = [
   },
 ]
 
-/** A long feed for the dense state — the same events the bell shows, plus the rest of the week. */
+/** A long feed for the dense state, the same events the bell shows, plus the rest of the week. */
 export const adminSystemsDenseNotificationFeed: readonly AdminNotification[] = [
   {
     id: 'notif-dispute',

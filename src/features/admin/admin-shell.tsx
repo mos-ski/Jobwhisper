@@ -124,7 +124,7 @@ function AdminNotificationBell({ notifications }: { readonly notifications: read
       </PopoverTrigger>
       <PopoverContent className="w-[min(22rem,calc(100vw-2rem))] p-0">
         <div className="flex items-baseline justify-between gap-3 border-b border-border px-4 py-3">
-          <h2 className="text-sm font-bold text-ink">Notifications</h2>
+          <h2 className="font-gowun text-base font-bold text-ink">Notifications</h2>
           <a href="/admin/systems" className="text-xs text-accent-text underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
             View all
           </a>
@@ -230,6 +230,7 @@ export function AdminShell({ user, navItems, activeModule, notifications, search
 
   return (
     <AppShell
+      className="font-rethink"
       header={
         <AdminTopStrip
           user={user}
