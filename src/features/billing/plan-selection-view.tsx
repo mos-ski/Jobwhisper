@@ -57,12 +57,12 @@ function PlanCard({
       aria-label={`${plan.name} plan`}
     >
       <div className="flex min-h-8 items-center gap-2 border-b border-border pb-4">
-        <h2 className="text-lg font-semibold text-ink">{plan.name}</h2>
+        <h2 className="font-gowun text-lg font-semibold text-ink">{plan.name}</h2>
         {plan.popular ? <Badge>Popular</Badge> : null}
       </div>
       <div className="flex flex-1 flex-col pt-5">
         <div className="flex flex-wrap items-end gap-1">
-          <span className="text-4xl font-semibold leading-tight text-ink">${displayPrice}</span>
+          <span className="font-gowun text-4xl font-semibold leading-tight text-ink">${displayPrice}</span>
           <span className="pb-2 text-sm font-medium text-ink">per month</span>
         </div>
         {annual ? <p className="mt-1 text-sm text-ink-muted">${displayPrice * 12} billed yearly</p> : null}
@@ -154,7 +154,7 @@ export function PlanSelectionView({
 
         <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pb-12 pt-14 sm:px-6 sm:pt-16">
           <div className="mx-auto flex flex-col items-center gap-3 text-center text-brand-bar-text">
-            <h1 className="text-2xl font-semibold leading-tight">Choose a plan</h1>
+            <h1 className="font-gowun text-2xl font-semibold leading-tight">Choose a plan</h1>
             <div className="flex items-center gap-3 text-sm font-medium">
               <span>Monthly</span>
               <button

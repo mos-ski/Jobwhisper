@@ -8,6 +8,7 @@ export type AutoApplySetup = {
   readonly dob: string;
   readonly country: string;
   readonly city: string;
+  readonly state: string;
   readonly streetAddress: string;
   readonly postalCode: string;
   readonly linkedIn: string;
@@ -47,6 +48,7 @@ export const DEFAULT_AUTO_APPLY_SETUP: AutoApplySetup = {
   dob: '',
   country: 'Nigeria',
   city: '',
+  state: '',
   streetAddress: 'Lagos',
   postalCode: '10001',
   linkedIn: '',
@@ -84,16 +86,29 @@ export type AutoApplyJob = {
   readonly company: string;
   readonly location: string;
   readonly type: string;
+  readonly experienceLevelLabel: string;
+  readonly salaryLabel: string;
+  readonly applicantsLabel: string;
+  readonly highlightTag?: string;
+  readonly perks: readonly string[];
   readonly matchPercent: number;
   readonly source: string;
   readonly dateLabel: string;
-  readonly status: 'applied' | 'new';
+  readonly postedDateLabel: string;
+  readonly status: 'applied' | 'new' | 'queued' | 'applying' | 'posting-closed';
   readonly outcome?: AutoApplyOutcome;
   readonly reviewNote?: string;
   readonly listingUrl: string;
   readonly resumeFileName: string;
+  readonly coverLetterFileName?: string;
   readonly description: string;
   readonly tags: readonly string[];
+  readonly matchBreakdown: readonly { readonly label: string; readonly points: number }[];
+  readonly appliedDateHeading?: string;
+  readonly events?: readonly AutoApplyApplicationEvent[];
+  readonly activityLog?: readonly string[];
+  readonly applicationQuestions?: readonly AutoApplyApplicationQuestion[];
+  readonly applicationDetails?: AutoApplyApplicationDetails;
   readonly creditsRemaining: number;
   readonly creditsTotal: number;
 };
@@ -101,6 +116,27 @@ export type AutoApplyJob = {
 export type AutoApplyApplicationEvent = {
   readonly label: string;
   readonly time: string;
+};
+
+export type AutoApplyApplicationQuestion = {
+  readonly question: string;
+  readonly answer: string;
+};
+
+export type AutoApplyApplicationDetails = {
+  readonly firstName: string;
+  readonly lastName: string;
+  readonly phone: string;
+  readonly address: string;
+  readonly city: string;
+  readonly zip: string;
+  readonly linkedInUrl: string;
+  readonly dateAvailable: string;
+  readonly desiredPay: string;
+  readonly websiteOrPortfolio?: string;
+  readonly country: string;
+  readonly stateProvince: string;
+  readonly resumeFileName: string;
 };
 
 export type AutoApplyApplication = {

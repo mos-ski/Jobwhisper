@@ -27,7 +27,7 @@ export function SignInView({ emailValue, passwordValue, onSubmit, onGoogleSignIn
           </a>
 
           <div className="mx-auto mt-12 flex w-full max-w-md flex-1 flex-col items-center">
-            <h1 className="text-center text-2xl font-semibold leading-tight text-brand-bar-text">Log in to your Jobwhisper account</h1>
+            <h1 className="font-gowun text-center text-2xl font-semibold leading-tight text-brand-bar-text">Log in to your Jobwhisper account</h1>
 
             <form onSubmit={handleSubmit} className="mt-10 grid w-full gap-6 border border-border bg-surface p-8 shadow-panel">
               <GoogleAuthButton onClick={onGoogleSignIn} />

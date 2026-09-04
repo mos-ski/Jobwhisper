@@ -451,7 +451,7 @@ export function RouteIndexPage() {
     <main className="min-h-screen bg-canvas px-6 py-10 text-ink">
       <div className="mx-auto max-w-5xl">
         <p className="text-sm font-semibold uppercase tracking-wide text-accent-text">v3 review surface</p>
-        <h1 className="mt-3 text-4xl font-semibold tracking-normal">Jobwhisper UI Studio</h1>
+        <h1 className="font-gowun mt-3 text-4xl font-semibold tracking-normal">Jobwhisper UI Studio</h1>
         <p className="mt-3 max-w-2xl text-base leading-7 text-ink-muted">
           Portable React screens grouped by production target. Each flow is built as app wiring plus pure feature views.
         </p>

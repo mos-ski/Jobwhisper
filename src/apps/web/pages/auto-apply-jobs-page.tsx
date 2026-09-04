@@ -1,4 +1,4 @@
-import { autoApplyJobs } from '@/mocks/auto-apply'
+import { autoApplyJobs, autoApplySetup } from '@/mocks/auto-apply'
 import { resumeDocument } from '@/mocks/resume'
 import { AutoApplyJobsView } from '@/features/auto-apply/auto-apply-view'
 
@@ -15,8 +15,8 @@ export function AutoApplyJobsPage({ selectedJobId }: { readonly selectedJobId?: 
       resumeHistoryHref="/v3/resume/history"
       jobs={autoApplyJobs}
       selectedJob={selectedJob}
-      isPremiumUser={false}
       resumePreview={resumeDocument}
+      preferredLocations={autoApplySetup.locations}
     />
   )
 }

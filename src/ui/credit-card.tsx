@@ -20,7 +20,7 @@ export function CreditCard({ remainingCents, totalCents, formatAmount, resetDate
   return (
     <section className={cn('rounded-panel border border-border bg-surface p-6 shadow-control', className)}>
       <div className="flex items-start justify-between">
-        <h2 className="font-bold">Usage Balance</h2>
+        <h2 className="font-gowun font-bold">Usage Balance</h2>
         <Tooltip>
           <TooltipTrigger
             render={
@@ -34,8 +34,8 @@ export function CreditCard({ remainingCents, totalCents, formatAmount, resetDate
       </div>
       <p className="text-sm text-ink-muted">Resets on {resetDate}</p>
 
-      <p className="mt-5 text-3xl font-black">
-        {percentage}% <span className="text-base font-medium text-ink-muted">remaining</span>
+      <p className="font-gowun mt-5 text-3xl font-black">
+        {percentage}% <span className="font-sans text-base font-medium text-ink-muted">remaining</span>
       </p>
       <div className="mt-3 h-2 overflow-hidden rounded-pill bg-surface-subtle">
         <div className={cn('h-full rounded-pill transition-all', percentage > 20 ? 'bg-accent' : 'bg-danger')} style={{ inlineSize: `${percentage}%` }} />

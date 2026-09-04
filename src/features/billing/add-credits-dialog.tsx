@@ -95,14 +95,14 @@ export function AddCreditsDialog({
               <Check aria-hidden="true" className="size-6" />
             </span>
             <div>
-              <DialogTitle>{purchasedCredits} credits added</DialogTitle>
+              <DialogTitle className="font-gowun">{purchasedCredits} credits added</DialogTitle>
               <DialogDescription>Your new balance is {balanceBeforePurchase + purchasedCredits} credits.</DialogDescription>
             </div>
             <Button className="w-full" onClick={() => handleOpenChange(false)}>Done</Button>
           </div>
         ) : (
           <>
-            <DialogTitle>{title}</DialogTitle>
+            <DialogTitle className="font-gowun">{title}</DialogTitle>
             <DialogDescription>
               {description} credits are valid 12 months.{' '}
               <a href="/v3/billing/usage" className="font-semibold text-accent-text underline underline-offset-4 hover:text-accent">

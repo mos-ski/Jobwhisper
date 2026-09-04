@@ -28,7 +28,7 @@ function HowItsBoughtTable() {
   return (
     <article className="mt-6 w-full min-w-0 bg-surface shadow-panel">
       <div className="flex min-h-[5rem] flex-col justify-center gap-1 border-b border-border px-4 sm:px-6 lg:px-8">
-        <h2 className="text-base font-semibold text-ink">How it&apos;s bought</h2>
+        <h2 className="font-gowun text-base font-semibold text-ink">How it&apos;s bought</h2>
         <p className="text-sm text-ink-muted">Prepaid credits, purchased upfront. One purchase flow per feature.</p>
       </div>
       <div className="relative p-4 sm:p-6 lg:p-8">
@@ -69,7 +69,7 @@ function PurchaseCard({ purchase, index }: { readonly purchase: BillingStandalon
       style={{ animationDelay: `${index * 70}ms`, animationFillMode: 'backwards' }}
       className="flex animate-ease-in-bottom flex-col rounded-panel border border-border p-6 transition-all duration-normal ease-default hover:-translate-y-0.5 hover:shadow-control"
     >
-      <h2 className="text-base font-bold text-ink">{purchase.name}</h2>
+      <h2 className="font-gowun text-base font-bold text-ink">{purchase.name}</h2>
       <p className="mt-2 text-sm leading-5 text-ink-muted">{purchase.description}</p>
       <p className="mt-4 text-sm font-bold text-ink">{purchase.rateLabel}</p>
 
@@ -118,7 +118,7 @@ export function PayAsYouGoView({ homeHref, backHref, purchases }: PayAsYouGoView
       <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
         <article className="w-full min-w-0 bg-surface shadow-panel">
           <div className="flex min-h-[5rem] flex-wrap items-center justify-between gap-3 border-b border-border px-4 sm:px-6 lg:px-8">
-            <h1 className="text-lg font-medium leading-5 text-ink sm:text-xl">Pay-as-you-go</h1>
+            <h1 className="font-gowun text-lg font-bold leading-5 text-ink sm:text-xl">Pay-as-you-go</h1>
           </div>
           <div className="p-4 sm:p-6 lg:p-8">
             <p className="text-sm text-ink-muted">

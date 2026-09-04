@@ -1,8 +1,8 @@
-import { AlertTriangle, Apple, Check, ChevronDown, Copy, ExternalLink, EyeOff, Gift, Monitor, Moon, Play, Sun, Upload } from 'lucide-react'
-import { SiGooglechrome } from 'react-icons/si'
+import { AlertTriangle, Check, ChevronDown, Clock, Copy, ExternalLink, EyeOff, Gift, Mail, Moon, Play, ShoppingCart, Sun, Trash2, Upload } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 
 import type { BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, TutorialItem } from '@/contracts/account.draft'
+import type { MarketplaceItem } from '@/contracts/marketplace.draft'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
 import { AppShell } from '@/features/dashboard/app-nav'
 import { centsToCredits, creditsToCents, formatCredits } from '@/lib/credits'
@@ -15,6 +15,7 @@ import {
   cn,
   DataTable,
   Dialog,
+  DialogClose,
   DialogDescription,
   DialogPopup,
   DialogTitle,
@@ -66,6 +67,15 @@ export type TutorialsViewProps = {
   readonly tutorials: readonly TutorialItem[]
 }
 
+export type MarketplaceViewProps = {
+  readonly homeHref: string
+  readonly items: readonly MarketplaceItem[]
+}
+
+export type SupportViewProps = {
+  readonly homeHref: string
+}
+
 export type BillingWallet = {
   readonly remainingCents: number
   readonly totalCents: number
@@ -107,24 +117,12 @@ function TitledPanel({ title, action, children }: { readonly title: string; read
   return (
     <article className="w-full min-w-0 bg-surface shadow-panel">
       <div className="flex min-h-[5rem] flex-wrap items-center justify-between gap-3 border-b border-border px-4 sm:px-6 lg:px-8">
-        <h1 className="text-lg font-medium leading-5 text-ink sm:text-xl">{title}</h1>
+        <h1 className="font-gowun text-lg font-bold leading-5 text-ink sm:text-xl">{title}</h1>
         {action}
       </div>
       <div className="p-4 sm:p-6 lg:p-8">{children}</div>
     </article>
   )
-}
-
-function DownloadIcon({ id }: { readonly id: DownloadItem['id'] }) {
-  if (id === 'windows') {
-    return <Monitor aria-hidden="true" className="size-5" />
-  }
-
-  if (id === 'extension') {
-    return <SiGooglechrome aria-hidden="true" className="size-4" />
-  }
-
-  return <Apple aria-hidden="true" className="size-5" />
 }
 
 export function DownloadsView({ homeHref, downloads }: DownloadsViewProps) {
@@ -133,30 +131,23 @@ export function DownloadsView({ homeHref, downloads }: DownloadsViewProps) {
       <ShellBar homeHref={homeHref} current="Download Apps" closeHref={homeHref} closeLabel="Close downloads" />
       <ContentShell>
         <TitledPanel title="Download Apps">
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {downloads.map((item) => (
-              <a
-                key={item.id}
-                href={item.href}
-                className="group flex min-w-0 flex-col gap-3 rounded-panel border border-border p-3 text-ink transition-colors duration-normal ease-default hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-              >
-                <span className="block h-[171px] w-full overflow-hidden rounded-soft bg-accent-subtle">
+              <div key={item.id} className="flex items-start gap-3 border border-border bg-surface p-[18px]">
+                <span className="block h-[87px] w-[100px] shrink-0 overflow-hidden">
                   <img src={item.imageSrc} alt="" className="size-full object-cover" />
                 </span>
-                <span className="flex w-full flex-col gap-3">
-                  <span className="text-base font-medium leading-6">{item.title}</span>
-                  <span className="flex items-center gap-2 whitespace-nowrap text-base leading-none text-ink-muted">
-                    <DownloadIcon id={item.id} />
-                    <span>{item.platform}</span>
-                    <span className="size-1 rounded-pill bg-current opacity-60" aria-hidden="true" />
-                    <span>{item.extension}</span>
-                  </span>
-                  <span className="inline-flex min-h-9 w-full items-center justify-center rounded-soft bg-accent px-3 text-sm font-semibold leading-6 text-on-accent transition-colors duration-normal group-hover:bg-accent-hover">
+                <div className="min-w-0 flex-1">
+                  <p className="font-gowun text-sm font-bold text-ink">{item.title}</p>
+                  <p className="mt-1 text-sm text-ink-muted">{item.support}</p>
+                  <a
+                    href={item.href}
+                    className="mt-2 inline-flex min-h-9 items-center justify-center rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent shadow-control transition-colors duration-normal hover:bg-accent-hover"
+                  >
                     {item.cta}
-                  </span>
-                  <span className="min-h-5 text-sm leading-5 text-ink-muted">{item.support}</span>
-                </span>
-              </a>
+                  </a>
+                </div>
+              </div>
             ))}
           </div>
 
@@ -213,6 +204,190 @@ export function TutorialsView({ homeHref, tutorials }: TutorialsViewProps) {
   )
 }
 
+function MarketplaceCard({ item, inCart, onToggleCart }: { readonly item: MarketplaceItem; readonly inCart: boolean; readonly onToggleCart: () => void }) {
+  return (
+    <div className="flex gap-3 border border-border bg-surface p-[18px]">
+      <img src="/v3-assets/figma/marketplace-pdf-icon.svg" alt="" className="h-[70.9px] w-[66px] shrink-0" />
+      <div className="flex min-w-0 flex-1 flex-col gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="font-gowun text-sm font-semibold text-ink">{item.name}</p>
+          <p className="mt-1 text-sm text-ink-muted">{item.description}</p>
+        </div>
+        <div className="mt-auto flex items-center justify-between gap-3">
+          <span className="text-base font-semibold text-ink">${item.priceDollars}</span>
+          <Button variant={inCart ? 'secondary' : 'primary'} onClick={onToggleCart}>
+            {inCart ? (
+              <span className="inline-flex items-center gap-1.5">
+                <Check aria-hidden="true" className="size-4" />
+                In Cart
+              </span>
+            ) : (
+              'Add to Cart'
+            )}
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function CartDrawer({
+  open,
+  onOpenChange,
+  items,
+  onRemove,
+  onCheckout,
+}: {
+  readonly open: boolean
+  readonly onOpenChange: (open: boolean) => void
+  readonly items: readonly MarketplaceItem[]
+  readonly onRemove: (id: string) => void
+  readonly onCheckout: () => void
+}) {
+  const total = items.reduce((sum, item) => sum + item.priceDollars, 0)
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogPopup placement="end-sheet" aria-label="Shopping cart" className="flex max-h-[85vh] flex-col p-0 lg:max-h-none">
+        <div className="flex shrink-0 items-center justify-between border-b border-border px-5 py-4">
+          <DialogTitle className="font-gowun text-base">Cart</DialogTitle>
+          <DialogClose className="static" />
+        </div>
+        <div className="grid flex-1 gap-4 overflow-y-auto p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+          {items.length === 0 ? (
+            <p className="py-8 text-center text-sm text-ink-muted">Your cart is empty.</p>
+          ) : (
+            items.map((item) => (
+              <div key={item.id} className="flex items-start justify-between gap-3 border-b border-border pb-4 last:border-b-0 last:pb-0">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-ink">{item.name}</p>
+                  <p className="mt-1 text-sm text-ink-muted">${item.priceDollars}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onRemove(item.id)}
+                  className="grid size-8 shrink-0 place-items-center rounded-soft text-ink-muted hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  aria-label={`Remove ${item.name} from cart`}
+                >
+                  <Trash2 aria-hidden="true" className="size-4" />
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+        {items.length > 0 ? (
+          <div className="flex shrink-0 flex-col gap-3 border-t border-border px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <div className="flex items-center justify-between text-sm font-semibold text-ink">
+              <span>Total</span>
+              <span>${total}</span>
+            </div>
+            <Button onClick={onCheckout}>Checkout • ${total}</Button>
+          </div>
+        ) : null}
+      </DialogPopup>
+    </Dialog>
+  )
+}
+
+export function MarketplaceView({ homeHref, items }: MarketplaceViewProps) {
+  const [cartIds, setCartIds] = useState<ReadonlySet<string>>(new Set())
+  const [cartOpen, setCartOpen] = useState(false)
+  const cartItems = items.filter((item) => cartIds.has(item.id))
+
+  function toggleCart(id: string) {
+    setCartIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  function removeFromCart(id: string) {
+    setCartIds((prev) => {
+      const next = new Set(prev)
+      next.delete(id)
+      return next
+    })
+  }
+
+  function checkout() {
+    setCartIds(new Set())
+    setCartOpen(false)
+  }
+
+  return (
+    <AppWorkspace>
+      <ShellBar homeHref={homeHref} current="Marketplace" closeHref={homeHref} closeLabel="Close marketplace" />
+      <ContentShell>
+        <TitledPanel
+          title="Marketplace"
+          action={
+            <button
+              type="button"
+              onClick={() => setCartOpen(true)}
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-text hover:text-accent"
+            >
+              <ShoppingCart aria-hidden="true" className="size-4" />
+              Cart
+              {cartItems.length > 0 ? <span className="rounded-pill bg-accent px-1.5 py-0.5 text-xs font-bold text-on-accent">{cartItems.length}</span> : null}
+            </button>
+          }
+        >
+          <p className="-mt-2 mb-2 text-sm text-ink-muted">One-time resources to help you land the job faster, no subscription or credits required.</p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {items.map((item) => (
+              <MarketplaceCard key={item.id} item={item} inCart={cartIds.has(item.id)} onToggleCart={() => toggleCart(item.id)} />
+            ))}
+          </div>
+        </TitledPanel>
+      </ContentShell>
+      <CartDrawer open={cartOpen} onOpenChange={setCartOpen} items={cartItems} onRemove={removeFromCart} onCheckout={checkout} />
+    </AppWorkspace>
+  )
+}
+
+export function SupportView({ homeHref }: SupportViewProps) {
+  return (
+    <AppWorkspace>
+      <ShellBar homeHref={homeHref} current="Support" closeHref={homeHref} closeLabel="Close support" />
+      <ContentShell>
+        <TitledPanel title="Support">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="flex items-start gap-4 border border-border bg-surface p-[18px]">
+              <Mail aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-ink-muted" />
+              <div>
+                <p className="text-sm font-semibold text-ink">Email us</p>
+                <p className="mt-1 text-sm text-ink-muted">Send us a note and we'll get back to you as soon as we can.</p>
+                <a href="mailto:support@jobwhisper.org" className="mt-2 inline-block text-sm font-semibold text-accent-text underline underline-offset-4 hover:text-accent">
+                  support@jobwhisper.org
+                </a>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 border border-border bg-surface p-[18px]">
+              <Clock aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-ink-muted" />
+              <div>
+                <p className="text-sm font-semibold text-ink">Support hours</p>
+                <p className="mt-1 text-sm text-ink-muted">Monday – Friday, 9AM – 6PM CST</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 border border-border bg-surface p-[18px] sm:col-span-2">
+              <Play aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-ink-muted" />
+              <div>
+                <p className="text-sm font-semibold text-ink">Tutorial videos</p>
+                <p className="mt-1 text-sm text-ink-muted">Walkthroughs for every feature, from your first resume to your first live interview.</p>
+                <a href="/v3/tutorials" className="mt-2 inline-block text-sm font-semibold text-accent-text underline underline-offset-4 hover:text-accent">
+                  Browse tutorials
+                </a>
+              </div>
+            </div>
+          </div>
+        </TitledPanel>
+      </ContentShell>
+    </AppWorkspace>
+  )
+}
+
 const cancellationReasons: readonly { readonly label: string; readonly value: string }[] = [
   { label: 'Select a reason', value: '' },
   { label: 'Too expensive', value: 'too-expensive' },
@@ -250,7 +425,7 @@ function CancelSubscriptionDialog({ renewalLabel }: { readonly renewalLabel: str
       <DialogPopup aria-label="Cancel subscription">
         {step === 'confirmed' ? (
           <>
-            <DialogTitle className="text-danger">Subscription scheduled to cancel</DialogTitle>
+            <DialogTitle className="font-gowun text-danger">Subscription scheduled to cancel</DialogTitle>
             <DialogDescription>
               You&apos;ll keep full access until {renewalLabel}. After that you&apos;ll move to the Free plan. You can renew anytime before then.
             </DialogDescription>
@@ -260,7 +435,7 @@ function CancelSubscriptionDialog({ renewalLabel }: { readonly renewalLabel: str
           <>
             <div className="flex items-center gap-3">
               <AlertTriangle aria-hidden="true" className="size-6 shrink-0 text-danger" />
-              <DialogTitle className="text-danger">Cancel Subscription</DialogTitle>
+              <DialogTitle className="font-gowun text-danger">Cancel Subscription</DialogTitle>
             </div>
             {step === 'warning' ? (
               <>
@@ -411,7 +586,7 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
   return (
     <section>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="text-base font-bold text-ink">{title}</h3>
+        <h3 className="font-gowun text-base font-bold text-ink">{title}</h3>
         <p className="text-sm text-ink-muted">{rateLabel}</p>
       </div>
       <div className="mt-3 border border-border bg-surface">
@@ -528,7 +703,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
       <ContentShell>
         <div className="grid gap-6">
           <div>
-            <h1 className="text-2xl font-semibold leading-tight text-ink">Usage &amp; Billing</h1>
+            <h1 className="font-gowun text-2xl font-semibold leading-tight text-ink">Usage &amp; Billing</h1>
             <p className="mt-1 text-sm text-ink-muted">
               Manage your plan, credit balances, and payment method. For anything else, visit{' '}
               <a href="/v3/settings" className="text-accent-text underline underline-offset-4 hover:text-accent">Settings</a>.
@@ -548,7 +723,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   <img src="/v3-assets/figma/plan-row-interview.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-[14.4px] font-semibold leading-[21.6px] text-ink">{currentPlan?.name.charAt(0)}{currentPlan?.name.slice(1).toLowerCase()} plan</p>
+                      <p className="font-gowun text-[14.4px] font-semibold leading-[21.6px] text-ink">{currentPlan?.name.charAt(0)}{currentPlan?.name.slice(1).toLowerCase()} plan</p>
                       <span className="rounded-pill bg-accent-subtle px-[9px] py-[1.8px] text-[10.8px] font-medium text-accent-text">Active</span>
                     </div>
                     <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">{currentPlan?.price} per month &middot; Renews {wallet.resetDateLabel}</p>
@@ -571,7 +746,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   <img src="/v3-assets/figma/plan-row-jobs.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-[14.4px] font-semibold leading-[21.6px] text-ink">Prepaid credits</p>
+                      <p className="font-gowun text-[14.4px] font-semibold leading-[21.6px] text-ink">Prepaid credits</p>
                       {findJobsTotalCredits > 0 ? <span className="rounded-pill bg-accent-subtle px-[9px] py-[1.8px] text-[10.8px] font-medium text-accent-text">Active</span> : null}
                     </div>
                     <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">
@@ -595,7 +770,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                 >
                   <img src="/v3-assets/figma/plan-row-dfy.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-[14.4px] font-semibold leading-[21.6px] text-ink">Real Human Job Application</p>
+                    <p className="font-gowun text-[14.4px] font-semibold leading-[21.6px] text-ink">Real Human Job Application</p>
                     <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">A real success manager applies to matched jobs on your behalf</p>
                   </div>
                   <a
@@ -749,8 +924,8 @@ function UsageChart({ rows }: { readonly rows: readonly CreditHistoryRow[] }) {
 
   return (
     <TitledPanel title="Usage Details">
-      <p className="text-2xl font-black sm:text-3xl">
-        {formatCredits(totalUsed)} <span className="text-sm font-medium text-ink-muted sm:text-base">used in last {dayRange} days</span>
+      <p className="font-gowun text-2xl font-black sm:text-3xl">
+        {formatCredits(totalUsed)} <span className="font-sans text-sm font-medium text-ink-muted sm:text-base">used in last {dayRange} days</span>
       </p>
       <div className="mt-4 flex flex-wrap gap-3">
         <div className="relative">
@@ -974,7 +1149,7 @@ function AppearanceSettings() {
   return (
     <article className="w-full bg-surface shadow-panel">
       <div className="flex min-h-[5rem] items-center border-b border-border px-8">
-        <h1 className="text-xl font-medium leading-5 text-ink">Appearance</h1>
+        <h1 className="font-gowun text-xl font-bold leading-5 text-ink">Appearance</h1>
       </div>
       <div className="p-8">
         <p className="text-sm text-ink-muted">Choose how Jobwhisper looks on this device.</p>
@@ -1060,7 +1235,7 @@ function ReferralSettings({ referrals, activeTab }: { readonly referrals: readon
           <SettingsTabs activeTab={activeTab} />
         </div>
         <div className="rounded-panel bg-accent-subtle p-8">
-          <h2 className="text-3xl font-bold leading-tight text-ink">Earn {REFERRAL_BONUS_CREDITS.toLocaleString()} credits in free balance</h2>
+          <h2 className="font-gowun text-3xl font-bold leading-tight text-ink">Earn {REFERRAL_BONUS_CREDITS.toLocaleString()} credits in free balance</h2>
           <p className="mt-2 text-sm text-ink-muted">You get {REFERRAL_BONUS_CREDITS.toLocaleString()} credits added to your balance when your referral signs up and subscribes.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {[REFERRAL_LINK, 'Adedamolaiosmk'].map((value, index) => (

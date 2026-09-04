@@ -136,7 +136,7 @@ export const jobwhisperTokens = {
     toast: 70,
   },
   font: {
-    sans: "'Instrument Sans', system-ui, sans-serif",
+    sans: "'Rethink Sans', system-ui, sans-serif",
   },
   fontSize: {
     xs: '0.75rem',

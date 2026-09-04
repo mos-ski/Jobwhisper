@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import type { CopilotMode } from '@/contracts/copilot.draft'
 import { CopilotLiveView } from '@/features/copilot/interview-copilot-view'
 import { billingPlans } from '@/mocks/account'
-import { copilotCodingBank, copilotInterviewTranscript, copilotLiveSession, copilotMeetingTranscript } from '@/mocks/copilot'
+import { copilotCodingBank, copilotInterviewTranscript, copilotLiveSession, copilotMeetingTranscript, copilotSetup } from '@/mocks/copilot'
 
 // Interview Copilot credit top-ups require an active Ace Your Interview plan. See PRICING.md §1, §4.
 const hasActivePlan = billingPlans.some((plan) => plan.current)
@@ -28,6 +28,7 @@ export function CopilotSessionPage() {
       transcriptBank={session.mode === 'meeting' ? copilotMeetingTranscript : copilotInterviewTranscript}
       codingBank={copilotCodingBank}
       hasActivePlan={hasActivePlan}
+      initialAutoAnswer={copilotSetup.autoAnswer}
     />
   )
 }

@@ -17,7 +17,6 @@ import { AutoApplyAdditionalPage } from './pages/auto-apply-additional-page'
 import { AutoApplyAgentPage } from './pages/auto-apply-agent-page'
 import { AutoApplyAppliedPage } from './pages/auto-apply-applied-page'
 import { AutoApplyContactPage } from './pages/auto-apply-contact-page'
-import { AutoApplyFullAutoConsentPage } from './pages/auto-apply-full-auto-consent-page'
 import { AutoApplyJobsPage } from './pages/auto-apply-jobs-page'
 import { AutoApplyMethodPage } from './pages/auto-apply-method-page'
 import { AutoApplyPreferencesPage } from './pages/auto-apply-preferences-page'
@@ -42,6 +41,8 @@ import { DocumentsAddPage } from './pages/documents-add-page'
 import { DocumentsManualPage } from './pages/documents-manual-page'
 import { DocumentsPage } from './pages/documents-page'
 import { DownloadsPage } from './pages/downloads-page'
+import { MarketplacePage } from './pages/marketplace-page'
+import { SupportPage } from './pages/support-page'
 import { TutorialsPage } from './pages/tutorials-page'
 import { InterviewCompletePage } from './pages/interview-complete-page'
 import { InterviewConfigurePage } from './pages/interview-configure-page'
@@ -146,12 +147,20 @@ export function WebRoutes() {
     return <DocumentsPage />
   }
 
+  if (routePath === '/marketplace') {
+    return <MarketplacePage />
+  }
+
   if (routePath === '/downloads') {
     return <DownloadsPage />
   }
 
   if (routePath === '/tutorials') {
     return <TutorialsPage />
+  }
+
+  if (routePath === '/support') {
+    return <SupportPage />
   }
 
   if (routePath === '/billing') {
@@ -280,10 +289,6 @@ export function WebRoutes() {
 
   if (routePath === '/auto-apply/method') {
     return <AutoApplyMethodPage />
-  }
-
-  if (routePath === '/auto-apply/full-auto') {
-    return <AutoApplyFullAutoConsentPage />
   }
 
   if (routePath === '/auto-apply/agent') {

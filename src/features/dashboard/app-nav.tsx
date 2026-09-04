@@ -12,7 +12,10 @@ import {
   DownloadIcon,
   InterviewPrepIcon,
   KnowledgeBaseIcon,
+  MarketplaceIcon,
   SettingsIcon,
+  SupportIcon,
+  TutorialIcon,
 } from './dashboard-nav-icons'
 
 type AppNavEntry = {
@@ -31,9 +34,12 @@ const APP_NAV_ENTRIES: readonly AppNavEntry[] = [
   { label: 'Interview Prep', href: '/v3/interview-prep/history', icon: <InterviewPrepIcon />, matchPrefix: '/v3/interview-prep' },
   { label: 'Interviews & Meetings', href: '/v3/interview-copilot/history', icon: <CopilotIcon />, matchPrefix: '/v3/interview-copilot' },
   { label: 'Knowledge Base', href: '/v3/documents', icon: <KnowledgeBaseIcon />, matchPrefix: '/v3/documents', dividerBefore: true },
+  { label: 'Marketplace', href: '/v3/marketplace', icon: <MarketplaceIcon />, matchPrefix: '/v3/marketplace' },
   { label: 'Download Apps', href: '/v3/downloads', icon: <DownloadIcon />, matchPrefix: '/v3/downloads' },
   { label: 'Billing & subscription', href: '/v3/billing', icon: <BillingIcon />, matchPrefix: '/v3/billing' },
   { label: 'Settings', href: '/v3/settings', icon: <SettingsIcon />, matchPrefix: '/v3/settings' },
+  { label: 'Tutorial', href: '/v3/tutorials', icon: <TutorialIcon />, matchPrefix: '/v3/tutorials', dividerBefore: true },
+  { label: 'Support', href: '/v3/support', icon: <SupportIcon />, matchPrefix: '/v3/support' },
 ]
 
 export function useAppSideMenuItems(): readonly SideMenuItem[] {

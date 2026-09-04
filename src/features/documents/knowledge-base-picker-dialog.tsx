@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ComponentType, type HTMLAttributes } from 'react'
 import { FileText, Plus } from 'lucide-react'
 
 import type { ContextDocumentRow } from '@/contracts/documents.draft'
@@ -13,6 +13,8 @@ export type KnowledgeBasePickerDialogProps = {
   readonly onAddDocument: (doc: ContextDocumentRow) => void
   readonly description: string
   readonly listMaxHeightClassName?: string
+  /** Overrides the popup shell — used to confine the dialog within the simulated desktop app window. */
+  readonly popupComponent?: ComponentType<HTMLAttributes<HTMLDivElement>>
 }
 
 let pastedDocCounter = 0
@@ -26,6 +28,7 @@ export function KnowledgeBasePickerDialog({
   onAddDocument,
   description,
   listMaxHeightClassName = 'max-h-60',
+  popupComponent: Popup = DialogPopup,
 }: KnowledgeBasePickerDialogProps) {
   const [draftIds, setDraftIds] = useState<ReadonlySet<string>>(selectedIds)
   const [addOpen, setAddOpen] = useState(false)
@@ -70,9 +73,9 @@ export function KnowledgeBasePickerDialog({
         onOpenChange(next)
       }}
     >
-      <DialogPopup aria-label="Add documents from Knowledge Base">
+      <Popup aria-label="Add documents from Knowledge Base">
         <DialogClose />
-        <DialogTitle>Add from Knowledge Base</DialogTitle>
+        <DialogTitle className="font-gowun">Add from Knowledge Base</DialogTitle>
         <p className="mt-1 text-sm text-ink-muted">{description}</p>
 
         {documents.length > 0 ? (
@@ -138,7 +141,7 @@ export function KnowledgeBasePickerDialog({
             Add Selected
           </Button>
         </div>
-      </DialogPopup>
+      </Popup>
     </Dialog>
   )
 }

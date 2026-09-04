@@ -5,7 +5,7 @@ export function AutoApplyMethodPage() {
     <AutoApplyMethodView
       homeHref="/v3/app"
       backHref="/v3/auto-apply/review"
-      fullAutoHref="/v3/auto-apply/full-auto"
+      agentHref="/v3/auto-apply/agent"
       jobsHref="/v3/auto-apply/jobs"
       extensionHref="/v3/extension"
     />

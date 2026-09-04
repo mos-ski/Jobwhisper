@@ -12,7 +12,7 @@ export function DesktopSignInView() {
         className="pointer-events-none absolute left-1/2 top-0 size-[480px] -translate-x-1/2 -translate-y-1/3 rounded-full bg-[#0052ff]/25 blur-[100px]"
       />
       <JobwhisperMark className="relative h-8 w-auto text-white" />
-      <h1 className="relative max-w-md font-gowun text-4xl font-normal leading-[1.15] text-white">
+      <h1 className="relative max-w-md font-gowun text-4xl font-medium leading-[1.15] text-white">
         Ease into your interview like it&rsquo;s nothing.
       </h1>
       <button

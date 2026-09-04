@@ -7,7 +7,7 @@ export function EmailsIndexPage() {
     <main className="min-h-screen bg-canvas px-6 py-10 text-ink">
       <div className="mx-auto max-w-5xl">
         <p className="text-sm font-semibold uppercase tracking-wide text-accent-text">email review surface</p>
-        <h1 className="mt-3 text-4xl font-semibold tracking-normal">Transactional email templates</h1>
+        <h1 className="font-gowun mt-3 text-4xl font-semibold tracking-normal">Transactional email templates</h1>
         <p className="mt-3 max-w-2xl text-base leading-7 text-ink-muted">
           Real, inline-styled, table-based HTML, browsable here and directly usable by developers wiring up sending.
           Each preview renders the template in an isolated frame with a timezone switcher.

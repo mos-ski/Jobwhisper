@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode, type RefObject } from 'react'
-import { ArrowLeft, ArrowUpDown, ChevronDown, ChevronRight, ChevronUp, Code2, FileText, MessageCircle, Pause, PhoneOff, Play, Plus, Send, Settings, Users, Video, VideoOff, X } from 'lucide-react'
+import { ArrowLeft, ArrowUpDown, ChevronDown, ChevronRight, ChevronUp, CircleHelp, Code2, FileText, MessageCircle, Pause, PhoneOff, Play, Plus, Send, Settings, Users, Video, VideoOff, X } from 'lucide-react'
 
 import type { ContextDocumentRow } from '@/contracts/documents.draft'
 import type { ResumeHistoryRow } from '@/contracts/resume.draft'
 import { AppShell } from '@/features/dashboard/app-nav'
+import { KnowledgeBasePickerDialog } from '@/features/documents/knowledge-base-picker-dialog'
 import { useCameraStream } from '@/hooks/useCameraStream'
 import { useTypewriter } from '@/hooks/useTypewriter'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
@@ -12,6 +13,7 @@ import type {
   CopilotHistoryRow,
   CopilotLiveSession,
   CopilotMode,
+  CopilotModel,
   CopilotPermissionStep,
   CopilotReport,
   CopilotResponseLength,
@@ -26,14 +28,11 @@ import {
   AiSuggestionAction,
   Avatar,
   Badge,
-  Button,
   Checkbox,
   cn,
   DataTable,
   Dialog,
-  DialogClose,
   DialogPopup,
-  DialogTitle,
   DocumentDropAction,
   ExampleResponseCard,
   FormChoiceGroup,
@@ -51,6 +50,9 @@ import {
   Tabs,
   TabsContent,
   TabsList,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
   UploadedFileDialog,
   TabsTrigger,
 } from '@/ui'
@@ -115,6 +117,7 @@ export type CopilotLiveViewProps = {
   readonly demoMode?: boolean
   /** Interview Copilot credit top-ups require an active Ace Your Interview plan. See PRICING.md §1, §4. */
   readonly hasActivePlan?: boolean
+  readonly initialAutoAnswer?: boolean
 }
 
 export type CopilotCompleteViewProps = {
@@ -250,10 +253,12 @@ const COPILOT_AI_SUGGESTION =
 export function CopilotConfigureView({ homeHref, uploadHref, preferencesHref, setup, knowledgeBaseDocuments }: CopilotConfigureViewProps) {
   const mode = setup.mode
   const [additionalContext, setAdditionalContext] = useState(setup.additionalContext)
+  const [targetRole, setTargetRole] = useState('')
+  const [companyName, setCompanyName] = useState('')
   const [selectedDocIds, setSelectedDocIds] = useState<ReadonlySet<string>>(new Set())
   const [pickerOpen, setPickerOpen] = useState(false)
-  const [draftDocIds, setDraftDocIds] = useState<ReadonlySet<string>>(new Set())
-  const selectedDocuments = knowledgeBaseDocuments.filter((doc) => selectedDocIds.has(doc.id))
+  const [documents, setDocuments] = useState(knowledgeBaseDocuments)
+  const selectedDocuments = documents.filter((doc) => selectedDocIds.has(doc.id))
   const { type, isTyping } = useTypewriter()
 
   function handleAiSuggestion() {
@@ -261,18 +266,9 @@ export function CopilotConfigureView({ homeHref, uploadHref, preferencesHref, se
     type(COPILOT_AI_SUGGESTION, (partial) => setAdditionalContext(base + partial))
   }
 
-  function openDocumentPicker() {
-    setDraftDocIds(selectedDocIds)
-    setPickerOpen(true)
-  }
-
-  function toggleDraftDoc(id: string) {
-    setDraftDocIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
+  function handleFillFromResume() {
+    setTargetRole(setup.targetRole)
+    setCompanyName(setup.companyName)
   }
 
   return (
@@ -295,28 +291,16 @@ export function CopilotConfigureView({ homeHref, uploadHref, preferencesHref, se
         >
           {mode === 'interview' ? (
             <div className="grid gap-3 sm:grid-cols-2">
-              <FormSelectField
-                id="copilot-interview-type"
-                label="Interview type"
-                defaultValue={setup.interviewType.toLowerCase()}
-                options={[
-                  { label: 'Introductory', value: 'introductory' },
-                  { label: 'Behavioral', value: 'behavioral' },
-                  { label: 'Product case', value: 'product case' },
-                ]}
-              />
-              <FormSelectField
-                id="copilot-difficulty"
-                label="Difficulty"
-                defaultValue={setup.difficulty.toLowerCase()}
-                options={[
-                  { label: 'Easy', value: 'easy' },
-                  { label: 'Medium', value: 'medium' },
-                  { label: 'Hard', value: 'hard' },
-                ]}
-              />
-              <FormField id="copilot-target-role" label="Target Role" placeholder="e.g. Senior Software Engineer" />
-              <FormField id="copilot-company" label="Company Name" placeholder="e.g. Google, Meta" />
+              <FormField id="copilot-target-role" label="Target Role" placeholder="e.g. Senior Software Engineer" value={targetRole} onChange={(event) => setTargetRole(event.target.value)} />
+              <FormField id="copilot-company" label="Company Name" placeholder="e.g. Google, Meta" value={companyName} onChange={(event) => setCompanyName(event.target.value)} />
+              <button
+                type="button"
+                onClick={handleFillFromResume}
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-text hover:text-accent sm:col-span-full"
+              >
+                <JobwhisperAiIcon className="size-4" />
+                Fill fields from resume
+              </button>
             </div>
           ) : mode === 'coding' ? (
             <div className="grid gap-3 sm:grid-cols-2">
@@ -347,7 +331,7 @@ export function CopilotConfigureView({ homeHref, uploadHref, preferencesHref, se
               <FormField id="copilot-meeting-company" label="Client / Team" placeholder="e.g. Product Team" />
             </div>
           )}
-          <DocumentDropAction onTrigger={openDocumentPicker} hint="Add from Knowledge Base">
+          <DocumentDropAction onTrigger={() => setPickerOpen(true)} hint="Add from Knowledge Base">
             {selectedDocuments.length > 0 ? (
               <span className="flex flex-wrap justify-center gap-2">
                 {selectedDocuments.map((doc) => (
@@ -370,52 +354,15 @@ export function CopilotConfigureView({ homeHref, uploadHref, preferencesHref, se
         </FormPanel>
       </section>
 
-      <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
-        <DialogPopup aria-label="Add documents from Knowledge Base">
-          <DialogClose />
-          <DialogTitle>Add from Knowledge Base</DialogTitle>
-          <p className="mt-1 text-sm text-ink-muted">Select the documents you want Copilot to use as context for this session.</p>
-          <div className="mt-4 rounded-lg border-2 border-dashed border-border p-6 text-center hover:border-accent transition-colors">
-            <input
-              type="file"
-              id="doc-upload"
-              className="sr-only"
-              accept=".pdf,.doc,.docx,.txt"
-              onChange={() => {}}
-            />
-            <label htmlFor="doc-upload" className="cursor-pointer">
-              <Plus aria-hidden="true" className="mx-auto size-6 text-ink-muted" />
-              <p className="mt-2 text-sm font-medium text-ink">Upload a new document</p>
-              <p className="mt-1 text-xs text-ink-muted">PDF, DOC, DOCX or TXT</p>
-            </label>
-          </div>
-          <div className="mt-4 grid max-h-60 gap-1 overflow-y-auto">
-            {knowledgeBaseDocuments.length === 0 ? (
-              <p className="py-6 text-center text-sm text-ink-muted">No documents in your Knowledge Base yet.</p>
-            ) : (
-              knowledgeBaseDocuments.map((doc) => (
-                <label key={doc.id} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 hover:bg-surface-subtle">
-                  <Checkbox checked={draftDocIds.has(doc.id)} onCheckedChange={() => toggleDraftDoc(doc.id)} aria-label={doc.name} />
-                  <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{doc.name}</span>
-                  <span className="shrink-0 text-xs text-ink-muted">{doc.sizeOrUrl}</span>
-                </label>
-              ))
-            )}
-          </div>
-          <div className="mt-6 flex justify-end gap-3">
-            <Button variant="ghost" onClick={() => setPickerOpen(false)}>Cancel</Button>
-            <Button
-              onClick={() => {
-                setSelectedDocIds(draftDocIds)
-                setPickerOpen(false)
-              }}
-            >
-              Add Selected
-            </Button>
-          </div>
-        </DialogPopup>
-      </Dialog>
+      <KnowledgeBasePickerDialog
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        documents={documents}
+        selectedIds={selectedDocIds}
+        onConfirm={setSelectedDocIds}
+        onAddDocument={(doc) => setDocuments((prev) => [...prev, doc])}
+        description="Select the documents you want Copilot to use as context for this session."
+      />
     </Workspace>
   )
 }
@@ -425,9 +372,9 @@ const RESPONSE_MODE_EXAMPLES: Record<CopilotResponseMode, { readonly helperText:
     helperText: 'Best for candidates who want a direct, no-frills answer',
     example: (
       <>
-        "I redesigned a <strong>vehicle maintenance app</strong> that had low engagement. Led a team to identify pain points,
-        improved UI, and introduced a personalized dashboard. <strong>Engagement increased by 30% in 3 months</strong>, and
-        customer satisfaction improved significantly."
+        "I redesigned a vehicle maintenance app that had low engagement. Led a team to identify pain points, improved UI,
+        and introduced a personalized dashboard. Engagement increased by 30% in 3 months, and customer satisfaction
+        improved significantly."
       </>
     ),
   },
@@ -435,9 +382,9 @@ const RESPONSE_MODE_EXAMPLES: Record<CopilotResponseMode, { readonly helperText:
     helperText: 'Best for candidates who want the key points, not a full script',
     example: (
       <>
-        • <strong>Situation:</strong> vehicle maintenance app, low engagement
-        <br />• <strong>Action:</strong> led team, identified pain points, redesigned UI
-        <br />• <strong>Result:</strong> <strong>+30% engagement in 3 months</strong>
+        • Situation: vehicle maintenance app, low engagement
+        <br />• Action: led team, identified pain points, redesigned UI
+        <br />• Result: +30% engagement in 3 months
       </>
     ),
   },
@@ -445,8 +392,8 @@ const RESPONSE_MODE_EXAMPLES: Record<CopilotResponseMode, { readonly helperText:
     helperText: 'Best for candidates who want guidance on how to answer, not the answer itself',
     example: (
       <>
-        Lead with the outcome, mention the <strong>30% engagement lift</strong> first, then walk back through what you
-        changed. Keep the redesign details brief; the interviewer is listening for impact, not implementation.
+        Lead with the outcome, mention the 30% engagement lift first, then walk back through what you changed. Keep the
+        redesign details brief; the interviewer is listening for impact, not implementation.
       </>
     ),
   },
@@ -455,6 +402,10 @@ const RESPONSE_MODE_EXAMPLES: Record<CopilotResponseMode, { readonly helperText:
 export function CopilotPreferencesView({ homeHref, configureHref, shareHref, setup }: CopilotPreferencesViewProps) {
   const [responseMode, setResponseMode] = useState(setup.responseMode)
   const [responseLength, setResponseLength] = useState(setup.responseLength)
+  const [model, setModel] = useState<CopilotModel>(setup.model)
+  const [responseLanguage, setResponseLanguage] = useState(setup.responseLanguage)
+  const [autoAnswer, setAutoAnswer] = useState(setup.autoAnswer)
+  const [saveTranscript, setSaveTranscript] = useState(setup.saveTranscript)
   const activeExample = RESPONSE_MODE_EXAMPLES[responseMode]
 
   return (
@@ -489,6 +440,58 @@ export function CopilotPreferencesView({ homeHref, configureHref, shareHref, set
               selected={responseLength}
               onSelectedChange={setResponseLength}
             />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <FormSelectField
+                id="copilot-model"
+                label="Model"
+                value={model}
+                onValueChange={(value) => setModel(value as CopilotModel)}
+                options={[
+                  { label: 'OpenAI', value: 'openai' },
+                  { label: 'Anthropic', value: 'anthropic' },
+                  { label: 'Gemini', value: 'gemini' },
+                  { label: 'Kimi', value: 'kimi' },
+                  { label: 'Qwen', value: 'qwen' },
+                ]}
+              />
+              <FormSelectField
+                id="copilot-response-language"
+                label="Response language"
+                value={responseLanguage}
+                onValueChange={setResponseLanguage}
+                options={[
+                  { label: 'English', value: 'English' },
+                  { label: 'Spanish', value: 'Spanish' },
+                  { label: 'French', value: 'French' },
+                  { label: 'German', value: 'German' },
+                  { label: 'Portuguese', value: 'Portuguese' },
+                  { label: 'Mandarin Chinese', value: 'Mandarin Chinese' },
+                ]}
+              />
+            </div>
+            <div className="grid gap-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Behavior</p>
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                <span className="inline-flex items-center gap-1.5">
+                  <Checkbox checked={autoAnswer} onCheckedChange={(checked) => setAutoAnswer(Boolean(checked))} label="Auto Answer" />
+                  <Tooltip>
+                    <TooltipTrigger className="text-ink-muted hover:text-ink focus-visible:outline-none">
+                      <CircleHelp aria-hidden="true" className="size-3.5" />
+                    </TooltipTrigger>
+                    <TooltipContent>Copilot answers live-interviewer questions automatically instead of waiting for a manual trigger.</TooltipContent>
+                  </Tooltip>
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Checkbox checked={saveTranscript} onCheckedChange={(checked) => setSaveTranscript(Boolean(checked))} label="Save Transcript" />
+                  <Tooltip>
+                    <TooltipTrigger className="text-ink-muted hover:text-ink focus-visible:outline-none">
+                      <CircleHelp aria-hidden="true" className="size-3.5" />
+                    </TooltipTrigger>
+                    <TooltipContent>Keep a written transcript of this session in your history.</TooltipContent>
+                  </Tooltip>
+                </span>
+              </div>
+            </div>
         </FormPanel>
       </section>
     </Workspace>
@@ -774,7 +777,7 @@ function CopilotLiveSettingsModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup aria-label="Session settings" className="border-white/10 bg-[#1a2332] text-white before:bg-white/20 sm:max-w-lg">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Settings</h2>
+          <h2 className="font-gowun text-lg font-semibold">Settings</h2>
           <button type="button" onClick={() => onOpenChange(false)} className="grid size-8 place-items-center rounded-lg text-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30" aria-label="Close settings">
             <X aria-hidden="true" className="size-5" />
           </button>
@@ -1089,7 +1092,7 @@ const COPILOT_REPORT_LABELS: Record<
 function CopilotTalkTimeCard({ talkTime }: { readonly talkTime: CopilotTalkTime }) {
   return (
     <div className="rounded-panel border border-border p-6 shadow-control">
-      <h3 className="text-lg font-bold leading-7">Talk Time</h3>
+      <h3 className="font-gowun text-lg font-bold leading-7">Talk Time</h3>
       <div className="mt-4 flex h-3 overflow-hidden rounded-pill bg-surface-subtle">
         <div className="bg-accent" style={{ inlineSize: `${talkTime.userPercent}%` }} />
         <div className="bg-border" style={{ inlineSize: `${talkTime.otherPercent}%` }} />
@@ -1127,7 +1130,7 @@ export function CopilotReportView({ homeHref, historyHref, report, mode }: Copil
         <div className="mx-auto flex max-w-[64rem] flex-col gap-4 pt-8">
           <article className="w-full bg-surface shadow-panel">
             <div className="flex min-h-[5rem] items-center border-b border-border px-8">
-              <h1 className="text-xl font-medium leading-5 text-ink">Report</h1>
+              <h1 className="font-gowun text-xl font-bold leading-5 text-ink">Report</h1>
             </div>
 
             <div className="px-8 pt-6">
@@ -1141,11 +1144,11 @@ export function CopilotReportView({ homeHref, historyHref, report, mode }: Copil
                 <TabsContent value="summary">
                   <div className="flex flex-col gap-6 pb-8">
                     <div className="flex flex-col items-start gap-6 rounded-panel border border-border p-6 shadow-control sm:flex-row sm:items-center">
-                      <div className="grid size-28 shrink-0 place-items-center rounded-full border-8 border-positive/30 bg-positive-surface text-4xl font-black text-positive">
+                      <div className="font-gowun grid size-28 shrink-0 place-items-center rounded-full border-8 border-positive/30 bg-positive-surface text-4xl font-black text-positive">
                         {report.score}
                       </div>
                       <div>
-                        <h2 className="text-xl font-bold leading-8">Summary</h2>
+                        <h2 className="font-gowun text-xl font-bold leading-8">Summary</h2>
                         <p className="mt-2 text-base leading-7 text-ink-muted">{report.summary}</p>
                       </div>
                     </div>
@@ -1168,7 +1171,7 @@ export function CopilotReportView({ homeHref, historyHref, report, mode }: Copil
                 <TabsContent value="call">
                   <div className="flex flex-col gap-6 pb-8">
                     <div className="rounded-panel border border-border p-6 shadow-control lg:p-8">
-                      <h3 className="text-lg font-bold leading-7">{reportLabels.recordingHeading}</h3>
+                      <h3 className="font-gowun text-lg font-bold leading-7">{reportLabels.recordingHeading}</h3>
                       <div className="mt-4 flex min-h-16 items-center gap-4 rounded-panel border border-border bg-surface-subtle p-3">
                         <button type="button" aria-label="Play recording" className="grid size-12 place-items-center rounded-lg bg-accent text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                           <Play aria-hidden="true" className="size-5" />
@@ -1254,7 +1257,7 @@ function TranscriptBubble({
         {accentIndex !== null ? <span aria-hidden="true" className={cn('size-1.5 shrink-0 rounded-full', SPEAKER_DOT_ACCENTS[accentIndex])} /> : null}
         {speaker}
       </p>
-      <p className="whitespace-pre-wrap break-words text-brand-bar-text" style={{ fontSize: `${fontSize}px` }}>{text}</p>
+      <p className={cn('whitespace-pre-wrap break-words text-brand-bar-text', kind === 'ai' && 'font-gowun font-medium')} style={{ fontSize: `${fontSize}px` }}>{text}</p>
     </div>
   )
 }
@@ -1633,7 +1636,7 @@ const TOPUP_CENTS_PER_CREDIT = 40
 // of $0.40 — $25 would be 62.5 credits, so presets stick to $10/$20/$50.
 const TOPUP_PRESET_DOLLARS = [10, 20, 50]
 
-export function CopilotLiveView({ completeHref, session, isLoading = false, transcriptBank = [], codingBank = [], demoMode = false, hasActivePlan = true }: CopilotLiveViewProps) {
+export function CopilotLiveView({ completeHref, session, isLoading = false, transcriptBank = [], codingBank = [], demoMode = false, hasActivePlan = true, initialAutoAnswer = false }: CopilotLiveViewProps) {
   const [assistantMessages, setAssistantMessages] = useState<readonly AiAssistantMessage[]>([])
   const [draft, setDraft] = useState('')
   const assistantScrollRef = useRef<HTMLDivElement>(null)
@@ -1647,7 +1650,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
   const [autoScroll, setAutoScroll] = useState(true)
   const [scrollSpeed, setScrollSpeed] = useState(3)
   const [fontSize, setFontSize] = useState(14)
-  const [responseMode, setResponseMode] = useState<'auto' | 'manual'>('manual')
+  const [responseMode, setResponseMode] = useState<'auto' | 'manual'>(initialAutoAnswer ? 'auto' : 'manual')
   const [activityLabel, setActivityLabel] = useState(session.activityLabel)
   const [showChat, setShowChat] = useState(false)
   const [videoEnabled, setVideoEnabled] = useState(true)
@@ -2022,7 +2025,7 @@ export function CopilotCompleteView({ homeHref, sessionHref, historyHref, report
       <section className="px-4 py-9">
         <form className="mx-auto w-full max-w-lg border border-border bg-surface shadow-control">
           <div className="grid gap-5 p-8">
-            <h1 className="text-3xl font-semibold">{meta.completeTitle}</h1>
+            <h1 className="font-gowun text-3xl font-semibold">{meta.completeTitle}</h1>
             <p className="text-base leading-6 text-ink-muted">
               Thank you for completing your AI {meta.sessionNoun}{companyName ? ` with ${companyName}` : ''}.
             </p>
@@ -2050,7 +2053,7 @@ export function CopilotHistoryView({ homeHref, createHref, reportHref, rows }: C
       <section className="px-4 py-8 lg:px-12 xl:px-24">
         <div className="mx-auto max-w-7xl bg-surface shadow-panel">
           <div className="flex min-h-[5rem] items-center justify-between gap-4 border-b border-border px-8">
-            <h1 className="text-xl font-medium leading-5 text-ink">Past Copilot Sessions</h1>
+            <h1 className="font-gowun text-xl font-bold leading-5 text-ink">Past Copilot Sessions</h1>
             <a
               href={`${createHref}?mode=${activeMode}`}
               className="inline-flex min-h-10 shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-lg bg-accent px-4 py-2 text-base font-semibold leading-6 text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"

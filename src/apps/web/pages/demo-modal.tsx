@@ -101,6 +101,7 @@ function DemoRoutes({ onClose }: { readonly onClose: () => void }) {
               session={copilotLiveSession}
               transcriptBank={copilotInterviewTranscript}
               demoMode
+              initialAutoAnswer={copilotSetup.autoAnswer}
             />
           }
         />

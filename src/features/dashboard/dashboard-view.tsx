@@ -1,4 +1,4 @@
-import { ChevronRight, CircleHelp, Code2, ExternalLink, Lock, LogOut, Mail, Menu, Monitor, PanelLeftClose, PanelLeftOpen, Play, Settings, User, Video, X } from 'lucide-react'
+import { ArrowUpRight, ChevronRight, CircleHelp, ExternalLink, Lock, LogOut, Mail, Menu, Monitor, PanelLeftClose, PanelLeftOpen, Play, Settings, User, X } from 'lucide-react'
 import { FaApple } from 'react-icons/fa'
 import { SiGoogleplay } from 'react-icons/si'
 import { useState, type ReactNode } from 'react'
@@ -7,7 +7,6 @@ import type { DashboardAction, DashboardActionId, DashboardInstallPrompt, Dashbo
 import type { UserIdentity } from '@/contracts/identity'
 import { centsToCredits, formatCredits, usagePercent } from '@/lib/credits'
 import { Button, cn, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, JobwhisperIcon, JobwhisperMark, SideMenu, UpgradeDialog } from '@/ui'
-import { BriefcaseActionIcon, CopilotActionIcon, MonitorActionIcon, ResumeActionIcon } from './dashboard-action-icons'
 import {
   AutoApplyIcon,
   BillingIcon,
@@ -17,7 +16,10 @@ import {
   DownloadIcon,
   InterviewPrepIcon,
   KnowledgeBaseIcon,
+  MarketplaceIcon,
   SettingsIcon,
+  SupportIcon,
+  TutorialIcon,
 } from './dashboard-nav-icons'
 
 export type DashboardViewProps = {
@@ -43,16 +45,21 @@ const navIconByLabel: Record<string, ReactNode> = {
   'Interview Prep': <InterviewPrepIcon />,
   'Interviews & Meetings': <CopilotIcon />,
   'Knowledge Base': <KnowledgeBaseIcon />,
+  Marketplace: <MarketplaceIcon />,
   'Download Apps': <DownloadIcon />,
   'Billing & subscription': <BillingIcon />,
   Settings: <SettingsIcon />,
+  Tutorial: <TutorialIcon />,
+  Support: <SupportIcon />,
 }
+
+const NAV_DIVIDER_LABELS = new Set(['Knowledge Base', 'Tutorial'])
 
 function toSideMenuItems(navItems: readonly DashboardNavItem[]) {
   return navItems.map((item) => ({
     ...item,
     icon: navIconByLabel[item.label] ?? <SettingsIcon />,
-    dividerBefore: item.label === 'Knowledge Base',
+    dividerBefore: NAV_DIVIDER_LABELS.has(item.label),
   }))
 }
 
@@ -427,40 +434,48 @@ function DashboardHeader({
   )
 }
 
-const actionIconById: Record<DashboardActionId, ReactNode> = {
-  'resume-tailor': <ResumeActionIcon />,
-  'interview-practice': <MonitorActionIcon />,
-  'interview-copilot': <CopilotActionIcon />,
-  'coding-copilot': <Code2 aria-hidden="true" />,
-  'meeting-copilot': <Video aria-hidden="true" />,
-  'auto-apply': <BriefcaseActionIcon />,
+const actionIconById: Record<DashboardActionId, string> = {
+  'resume-tailor': '/v3-assets/figma/action-icon-resume.svg',
+  'interview-practice': '/v3-assets/figma/action-icon-interview-prep.svg',
+  'interview-copilot': '/v3-assets/figma/action-icon-copilot.svg',
+  'coding-copilot': '/v3-assets/figma/action-icon-coding.svg',
+  'meeting-copilot': '/v3-assets/figma/action-icon-meeting.svg',
+  'auto-apply': '/v3-assets/figma/action-icon-auto-apply.svg',
+  'done-for-you': '/v3-assets/figma/action-icon-dfy.svg',
 }
 
 function ActionCard({ action, onLockedClick }: { readonly action: DashboardAction; readonly onLockedClick: (action: DashboardAction) => void }) {
   const locked = action.locked ?? false
 
   const cardClassName = cn(
-    'group flex min-h-32 flex-col gap-3 rounded-lg border border-border bg-surface px-5 py-4 text-start shadow-control transition duration-200 ease-out hover:border-accent hover:bg-accent-subtle focus-visible:border-accent focus-visible:bg-accent-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus motion-reduce:transition-none sm:hover:-translate-y-0.5',
+    'group flex flex-col gap-3 rounded-[9px] border border-border bg-surface px-[18px] py-3 text-start shadow-control transition duration-200 ease-out hover:border-accent hover:bg-accent-subtle focus-visible:border-accent focus-visible:bg-accent-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus motion-reduce:transition-none sm:hover:-translate-y-0.5',
   )
 
   const content = (
     <>
       <span
         aria-hidden="true"
-        className="size-4 text-ink transition-transform duration-200 group-hover:scale-110 group-focus-visible:scale-110 motion-reduce:transition-none [&>svg]:size-4"
+        className="relative flex h-[57.6px] w-[56.5px] shrink-0 items-center justify-center transition-transform duration-200 group-hover:scale-110 group-focus-visible:scale-110 motion-reduce:transition-none"
       >
-        {locked ? <Lock aria-hidden="true" /> : actionIconById[action.id] ?? null}
+        <img src={actionIconById[action.id]} alt="" className={cn('size-full object-contain', locked && 'opacity-50 grayscale')} />
+        {locked ? (
+          <span className="absolute -bottom-1 -right-1 grid size-5 place-items-center rounded-full border border-border bg-surface shadow-control">
+            <Lock aria-hidden="true" className="size-3 text-ink-muted" />
+          </span>
+        ) : null}
       </span>
       <div className="grid gap-1.5">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="text-sm font-bold tracking-normal text-ink transition-colors duration-200 group-hover:text-accent group-focus-visible:text-accent motion-reduce:transition-none">
-            {action.title} <span aria-hidden="true">-&gt;</span>
+          <h2 className="font-gowun text-sm font-bold leading-[18px] tracking-[-0.28px] text-ink transition-colors duration-200 group-hover:text-accent group-focus-visible:text-accent motion-reduce:transition-none">
+            {action.title}
+            {action.linkStyle === 'arrow' ? <span aria-hidden="true"> →</span> : null}
+            {action.linkStyle === 'external' ? <ArrowUpRight aria-hidden="true" className="ms-1 inline size-3.5 align-[-1px]" /> : null}
           </h2>
           {action.badge ? (
-            <span className="rounded-soft bg-positive-surface px-1.5 py-0.5 text-xs font-bold uppercase tracking-wide text-positive">{action.badge}</span>
+            <span className="rounded-[4px] bg-[#e8e8e8] px-1.5 py-0.5 text-[9px] font-bold uppercase leading-[13.5px] tracking-[0.45px] text-[#475467]">{action.badge}</span>
           ) : null}
         </div>
-        <p className="text-xs font-medium leading-5 text-ink-muted">{action.description}</p>
+        <p className="text-xs leading-[18px] tracking-[-0.24px] text-ink-muted">{action.description}</p>
       </div>
     </>
   )
@@ -535,9 +550,9 @@ function DashboardLoadingView() {
           <div className="mx-auto w-full max-w-3xl">
             <SkeletonBlock className="h-8 w-full max-w-lg" />
             <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {Array.from({ length: 4 }, (_, index) => (
-                <div key={index} className="min-h-32 rounded-lg border border-border bg-surface px-5 py-4 shadow-control">
-                  <SkeletonBlock className="size-4" />
+              {Array.from({ length: 7 }, (_, index) => (
+                <div key={index} className="min-h-44 rounded-[9px] border border-border bg-surface px-[18px] py-3 shadow-control">
+                  <SkeletonBlock className="h-[57.6px] w-[56.5px]" />
                   <SkeletonBlock className="mt-5 h-4 w-40" />
                   <SkeletonBlock className="mt-3 h-12 w-full" />
                 </div>
@@ -617,7 +632,7 @@ export function DashboardView({
         <DashboardSidebar navItems={navItems} collapsed={collapsed} />
         <section className="relative min-h-[calc(100vh-3.5rem)] flex-1 px-4 py-10 sm:px-6 sm:py-12 lg:px-16 lg:py-36">
           <div className="mx-auto w-full max-w-3xl">
-            <h1 className="text-xl font-semibold leading-tight text-ink sm:text-2xl">Welcome, what would you like to do today?</h1>
+            <h1 className="font-gowun text-xl font-semibold leading-tight text-ink sm:text-2xl">Welcome, what would you like to do today?</h1>
             <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {actions.map((action) => (
                 <ActionCard key={action.id} action={action} onLockedClick={setUpgradeAction} />

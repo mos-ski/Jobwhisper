@@ -55,7 +55,7 @@ export function EmailPreviewPage() {
           Back to all emails
         </a>
 
-        <h1 className="mt-4 text-3xl font-semibold tracking-normal">{entry.label}</h1>
+        <h1 className="font-gowun mt-4 text-3xl font-semibold tracking-normal">{entry.label}</h1>
         <p className="mt-2 max-w-xl text-sm leading-6 text-ink-muted">{entry.description}</p>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2">

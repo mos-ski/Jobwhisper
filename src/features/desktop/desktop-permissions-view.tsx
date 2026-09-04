@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Check, Mic, MonitorUp } from 'lucide-react'
 
@@ -67,49 +68,92 @@ export function DesktopPermissionsView() {
                 <div className="flex items-center gap-3">
                   <span
                     className={cn(
-                      'grid size-8 shrink-0 place-items-center rounded-full bg-white text-xs font-bold',
+                      'relative grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-white text-xs font-bold',
                       isGranted ? 'text-positive' : 'text-[#0052ff]',
                     )}
                   >
-                    {isGranted ? <Check aria-hidden="true" className="size-4" /> : index + 1}
+                    <AnimatePresence mode="wait" initial={false}>
+                      {isGranted ? (
+                        <motion.span
+                          key="check"
+                          initial={{ opacity: 0, scale: 0.5 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.5 }}
+                          transition={{ duration: 0.18 }}
+                          className="grid place-items-center"
+                        >
+                          <Check aria-hidden="true" className="size-4" />
+                        </motion.span>
+                      ) : (
+                        <motion.span
+                          key="number"
+                          initial={{ opacity: 0, scale: 0.5 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.5 }}
+                          transition={{ duration: 0.18 }}
+                        >
+                          {index + 1}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
                   </span>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold leading-5 text-white">{step.title}</p>
                     <p className="mt-0.5 text-xs leading-4 text-[#d2d2d2]">{step.description}</p>
                   </div>
                 </div>
-                {isGranted ? (
-                  <p className="flex items-center gap-1.5 text-xs font-semibold text-positive">
-                    <Check aria-hidden="true" className="size-3.5" />
-                    Access granted
-                  </p>
-                ) : (
-                  <button
-                    type="button"
-                    disabled={!isAvailable || isPending}
-                    onClick={() => handleGrant(step.id)}
-                    className={cn(
-                      'flex h-10 w-full items-center justify-center gap-2 rounded-lg text-sm font-medium text-white',
-                      isAvailable ? 'bg-[#0052ff]' : 'bg-[#21a0fc]/25 text-white/50',
-                    )}
-                  >
-                    <Icon aria-hidden="true" className="size-4" />
-                    {isPending ? 'Requesting…' : step.actionLabel}
-                  </button>
-                )}
+                <AnimatePresence mode="wait" initial={false}>
+                  {isGranted ? (
+                    <motion.p
+                      key="granted"
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="flex items-center gap-1.5 text-xs font-semibold text-positive"
+                    >
+                      <Check aria-hidden="true" className="size-3.5" />
+                      Access granted
+                    </motion.p>
+                  ) : (
+                    <motion.button
+                      key="action"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      type="button"
+                      disabled={!isAvailable || isPending}
+                      onClick={() => handleGrant(step.id)}
+                      className={cn(
+                        'flex h-10 w-full items-center justify-center gap-2 rounded-lg text-sm font-medium text-white transition-colors',
+                        isAvailable ? 'bg-[#0052ff]' : 'bg-[#21a0fc]/25 text-white/50',
+                        isPending && 'animate-pulse',
+                      )}
+                    >
+                      <Icon aria-hidden="true" className="size-4" />
+                      {isPending ? 'Requesting…' : step.actionLabel}
+                    </motion.button>
+                  )}
+                </AnimatePresence>
               </div>
             )
           })}
 
-          {allGranted ? (
-            <button
-              type="button"
-              onClick={() => navigate('/desktop/configure')}
-              className="mt-1 flex h-10 w-full items-center justify-center rounded-lg bg-[#0052ff] text-sm font-medium text-white"
-            >
-              Continue
-            </button>
-          ) : null}
+          <AnimatePresence>
+            {allGranted ? (
+              <motion.button
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.22 }}
+                type="button"
+                onClick={() => navigate('/desktop/home')}
+                className="mt-1 flex h-10 w-full items-center justify-center rounded-lg bg-[#0052ff] text-sm font-medium text-white"
+              >
+                Continue
+              </motion.button>
+            ) : null}
+          </AnimatePresence>
         </div>
       </div>
     </div>

@@ -1103,7 +1103,7 @@ function ResumePreviewDialog({
         <div className="flex shrink-0 items-center justify-between border-b border-border px-4 pb-3 pt-6">
           <div className="flex items-center gap-2">
             {pendingSuggestion ? <JobwhisperAiIcon className="size-4" /> : <FileText aria-hidden="true" className="size-4 text-ink-muted" />}
-            <DialogTitle className="text-sm">{pendingSuggestion ? 'Review Changes' : 'Resume Preview'}</DialogTitle>
+            <DialogTitle className="font-gowun text-sm">{pendingSuggestion ? 'Review Changes' : 'Resume Preview'}</DialogTitle>
             {pendingSuggestion ? (
               <span className="rounded-pill bg-accent-subtle px-2 py-0.5 text-[10px] font-bold text-accent-text">{changes.length}</span>
             ) : (
@@ -1290,7 +1290,7 @@ function AtsScoreDrawer({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup placement="end-sheet" aria-label="ATS score breakdown" className="flex max-h-[85vh] flex-col p-0 lg:max-h-none">
         <div className="flex shrink-0 items-center justify-between border-b border-border px-5 py-4">
-          <DialogTitle className="text-base">ATS Score</DialogTitle>
+          <DialogTitle className="font-gowun text-base">ATS Score</DialogTitle>
           <DialogClose className="static" />
         </div>
         <div className="grid flex-1 gap-6 overflow-y-auto p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">

@@ -25,7 +25,7 @@ export function ListPickerDialog({ open, onOpenChange, title, description, items
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup aria-label={title}>
         <DialogClose />
-        <DialogTitle>{title}</DialogTitle>
+        <DialogTitle className="font-gowun">{title}</DialogTitle>
         {description ? <p className="mt-1 text-sm text-ink-muted">{description}</p> : null}
         <div className="mt-4 grid max-h-80 gap-1 overflow-y-auto">
           {items.length === 0 ? (

@@ -1,4 +1,4 @@
-import type { CopilotModelTier } from './copilot.draft'
+import type { CopilotModel } from './copilot.draft'
 
 export type InterviewType = 'introductory' | 'behavioral' | 'technical' | 'case-study';
 
@@ -24,7 +24,7 @@ export type InterviewPrepSession = {
   readonly additionalContext: string;
   readonly optionalDocuments: readonly string[];
   readonly responseLanguage: string;
-  readonly modelTier: CopilotModelTier;
+  readonly model: CopilotModel;
   readonly saveTranscript: boolean;
 };
 

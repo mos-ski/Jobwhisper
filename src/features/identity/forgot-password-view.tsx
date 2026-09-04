@@ -32,7 +32,7 @@ export function ForgotPasswordView({ emailValue, signInHref }: ForgotPasswordVie
                 <div className="grid size-14 place-items-center rounded-pill bg-accent-subtle text-accent-text">
                   <Mail aria-hidden="true" className="size-6" />
                 </div>
-                <h1 className="mt-6 text-center text-2xl font-semibold leading-tight text-brand-bar-text">Check your email</h1>
+                <h1 className="font-gowun mt-6 text-center text-2xl font-semibold leading-tight text-brand-bar-text">Check your email</h1>
                 <p className="mt-2 max-w-sm text-center text-base text-ink-muted">
                   We sent a password reset link to <span className="font-semibold text-ink">{email}</span>. Follow the link to choose a new password.
                 </p>
@@ -45,7 +45,7 @@ export function ForgotPasswordView({ emailValue, signInHref }: ForgotPasswordVie
               </>
             ) : (
               <>
-                <h1 className="text-center text-2xl font-semibold leading-tight text-brand-bar-text">Reset your password</h1>
+                <h1 className="font-gowun text-center text-2xl font-semibold leading-tight text-brand-bar-text">Reset your password</h1>
                 <p className="mt-2 max-w-sm text-center text-base text-ink-muted">
                   Enter the email associated with your account and we&apos;ll send you a link to reset your password.
                 </p>

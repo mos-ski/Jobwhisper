@@ -1,7 +1,14 @@
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
+import { motion } from 'framer-motion'
 import { GripHorizontal } from 'lucide-react'
 
 import { cn } from '@/ui'
+
+const DesktopFrameContext = createContext<HTMLDivElement | null>(null)
+
+export function useDesktopFrameElement(): HTMLDivElement | null {
+  return useContext(DesktopFrameContext)
+}
 
 const MIN_WIDTH = 720
 const MIN_HEIGHT = 480
@@ -38,6 +45,7 @@ export type DesktopShellProps = {
 
 export function DesktopShell({ children }: DesktopShellProps) {
   const [frame, setFrame] = useState<WindowFrame>(initialFrame)
+  const [frameEl, setFrameEl] = useState<HTMLDivElement | null>(null)
   const dragState = useRef<{ readonly startX: number; readonly startY: number; readonly originX: number; readonly originY: number } | null>(null)
   const resizeState = useRef<{ readonly startX: number; readonly startY: number; readonly originWidth: number; readonly originHeight: number } | null>(null)
 
@@ -84,21 +92,27 @@ export function DesktopShell({ children }: DesktopShellProps) {
     <div className="fixed inset-0 overflow-hidden bg-canvas">
       <div aria-hidden="true" className="pointer-events-none absolute -left-40 -top-40 size-[560px] rounded-full bg-accent-subtle blur-3xl" />
       <div aria-hidden="true" className="pointer-events-none absolute -bottom-48 -right-32 size-[620px] rounded-full bg-accent-muted blur-3xl" />
-      <div
+      <motion.div
+        ref={setFrameEl}
+        initial={{ opacity: 0, scale: 0.96, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         className="absolute flex flex-col overflow-hidden rounded-xl shadow-2xl ring-1 ring-black/5"
         style={{ left: frame.x, top: frame.y, width: frame.width, height: frame.height }}
       >
         <div
           onPointerDown={handleTitleBarPointerDown}
-          className="flex h-9 shrink-0 cursor-grab items-center bg-[#141d2e] px-4 select-none active:cursor-grabbing"
+          className="flex h-[68px] shrink-0 cursor-grab items-center bg-[#141d2e] px-[27px] select-none active:cursor-grabbing"
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-[7px]">
             <span className="size-3.5 rounded-full bg-[#ff5f57]" />
             <span className="size-3.5 rounded-full bg-[#febc2e]" />
             <span className="size-3.5 rounded-full bg-[#28c840]" />
           </div>
         </div>
-        <div className="min-h-0 flex-1 overflow-auto">{children}</div>
+        <DesktopFrameContext.Provider value={frameEl}>
+          <div className="min-h-0 flex-1 overflow-auto">{children}</div>
+        </DesktopFrameContext.Provider>
         <div
           onPointerDown={handleResizePointerDown}
           role="presentation"
@@ -107,7 +121,7 @@ export function DesktopShell({ children }: DesktopShellProps) {
         >
           <GripHorizontal aria-hidden="true" className="size-3.5 rotate-45" />
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

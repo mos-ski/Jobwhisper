@@ -1,7 +1,6 @@
-import { forwardRef, useEffect, useRef, useState, type AnchorHTMLAttributes, type ButtonHTMLAttributes, type FormHTMLAttributes, type InputHTMLAttributes, type MouseEvent, type ReactNode, type TextareaHTMLAttributes } from 'react'
+import { forwardRef, useEffect, useId, useRef, useState, type AnchorHTMLAttributes, type ButtonHTMLAttributes, type FormHTMLAttributes, type InputHTMLAttributes, type MouseEvent, type ReactNode, type TextareaHTMLAttributes } from 'react'
 import { ArrowLeft, ArrowRight, ChevronDown, ChevronRight, Check, FileText, Pencil } from 'lucide-react'
 
-import { JobwhisperAiIcon } from './brand-mark'
 import { cn } from './cn'
 import { Dialog, DialogPopup, DialogTitle } from './dialog'
 import { SelectField } from './select-field'
@@ -76,7 +75,7 @@ export const FormPanel = forwardRef<HTMLFormElement, FormPanelProps>(
       <>
         <form ref={ref} data-slot="form-panel" className={cn('mx-auto w-full max-w-[30rem] border border-border bg-surface shadow-panel', className)} {...props}>
           <header data-slot="form-panel-header" className="flex min-h-20 items-center justify-center gap-2 border-b border-border px-6 py-7 text-center">
-            <h1 className="text-xl font-medium leading-7 text-ink">{title}</h1>
+            <h1 className="font-gowun text-xl font-medium leading-7 text-ink">{title}</h1>
             {step ? <span className="text-sm font-medium leading-5 text-ink-muted">{step}</span> : null}
           </header>
           {uploadedFile ? (
@@ -166,7 +165,7 @@ export function UploadedFileDialog({ open, onOpenChange, fileName, fileUrl, cont
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup aria-label="Resume uploaded" className="sm:max-w-lg">
-        <DialogTitle>Resume uploaded</DialogTitle>
+        <DialogTitle className="font-gowun">Resume uploaded</DialogTitle>
         <div className="mt-4 overflow-hidden rounded-lg border border-border">
           {fileUrl ? (
             <iframe
@@ -361,6 +360,31 @@ export const FormTextArea = forwardRef<HTMLTextAreaElement, FormTextAreaProps>(
   },
 )
 
+function AiSuggestionIcon({ className }: { readonly className?: string }) {
+  const uid = useId()
+  const gradientA = `${uid}-a`
+  const gradientB = `${uid}-b`
+  return (
+    <svg viewBox="0 0 16 13" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
+      <path
+        d="M4.79915 3.05872C4.96373 2.96571 5.1262 2.92311 5.31301 2.90274C5.79751 2.84992 6.22593 3.16771 6.29348 3.65563C6.32633 3.89292 6.27123 4.14433 6.23296 4.38189C6.17596 4.72143 6.12196 5.06148 6.071 5.40197C6.01209 5.80053 5.78793 6.95482 6.61524 6.60148C7.11758 6.38694 7.51442 5.81425 7.84329 5.38838C8.33054 4.75752 8.75898 4.0724 9.21816 3.41906C9.54011 2.96374 9.88074 2.52204 10.2394 2.09505C10.6521 1.60974 11.3982 0.958544 12.0543 0.882917C12.5469 0.826103 12.8245 1.38502 12.906 1.79021C12.9679 2.09833 12.9732 2.39618 12.9798 2.71201C12.9968 3.52456 12.9283 4.33841 12.9497 5.15032C12.9556 5.33328 13.0267 5.7186 13.175 5.83564C13.5548 6.13556 14.1798 5.18896 14.363 4.96368C14.6923 4.55995 15.025 4.15905 15.3611 3.76096C15.4401 3.66887 15.9034 3.11749 15.9969 3.20435C16.0747 3.558 14.6583 5.846 14.4264 6.2347C14.1064 6.76369 13.7938 7.2929 13.4446 7.80423C13.1271 8.26922 12.7874 8.84081 12.2516 9.07632C11.9234 9.23685 11.4954 9.01091 11.3652 8.67863C11.128 8.07364 11.1235 7.33144 11.0306 6.691C10.9771 6.3223 10.9582 5.90518 10.8291 5.56327C10.6534 5.16526 10.3465 5.00124 9.92421 5.04423C9.30186 5.10759 8.72425 5.83385 8.36467 6.29293C7.9979 6.75866 7.65496 7.2426 7.3371 7.74293C7.0019 8.2757 6.70383 8.816 6.37677 9.34766C5.9425 10.0434 5.49856 10.7331 5.04508 11.4165C4.72143 11.9005 4.25608 12.7991 3.61088 12.8747C3.16076 12.9274 2.82072 12.4747 2.84566 12.047C2.87534 11.5379 3.05494 11.0082 3.1986 10.5157L3.77529 8.56347C3.99974 7.8056 4.58384 5.96647 4.5222 5.27275C4.51304 5.16969 4.48028 5.0315 4.39495 4.9634C4.28006 4.87171 4.11572 4.94526 4.0073 5.0105C3.27383 5.45184 0.585779 8.84764 0.332402 8.87807C0.0467409 8.76828 1.20107 7.15663 1.31976 6.99027C1.99115 6.04936 2.64095 5.0877 3.43489 4.24364C3.85113 3.80112 4.25808 3.3547 4.79915 3.05872Z"
+        fill={`url(#${gradientA})`}
+      />
+      <path d="M14.25 9.5L14.7227 10.7773L16 11.25L14.7227 11.7227L14.25 13L13.7773 11.7227L12.5 11.25L13.7773 10.7773L14.25 9.5Z" fill={`url(#${gradientB})`} />
+      <defs>
+        <linearGradient id={gradientA} x1="0.287109" y1="6.87891" x2="16" y2="6.87891" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#134ABE" />
+          <stop offset="1" stopColor="#FF5E93" />
+        </linearGradient>
+        <linearGradient id={gradientB} x1="12.5" y1="11.25" x2="16" y2="11.25" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#134ABE" />
+          <stop offset="1" stopColor="#FF5E93" />
+        </linearGradient>
+      </defs>
+    </svg>
+  )
+}
+
 export type AiSuggestionActionProps = ButtonHTMLAttributes<HTMLButtonElement>
 
 export const AiSuggestionAction = forwardRef<HTMLButtonElement, AiSuggestionActionProps>(
@@ -373,8 +397,8 @@ export const AiSuggestionAction = forwardRef<HTMLButtonElement, AiSuggestionActi
         className={cn('ms-auto inline-flex min-h-7 items-center gap-1.5 rounded-soft px-1 text-sm font-bold leading-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus', className)}
         {...props}
       >
-        <JobwhisperAiIcon className="size-3.5 shrink-0" />
-        <span className="text-accent-text">{children}</span>
+        <AiSuggestionIcon className="h-[13px] w-4 shrink-0" />
+        <span className="bg-gradient-to-r from-[#134ABE] to-[#FF5E93] bg-clip-text text-transparent">{children}</span>
       </button>
     )
   },
@@ -437,8 +461,8 @@ export function FormChoiceGroup<TValue extends string = string>({ label, name, o
             data-slot="form-choice"
             data-variant={option.value === selected ? 'selected' : 'default'}
             className={cn(
-              'flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors duration-normal ease-default focus-within:ring-2 focus-within:ring-focus',
-              option.value === selected ? 'border-accent bg-accent-subtle text-accent shadow-control' : 'border-input bg-surface text-ink-muted hover:border-border hover:text-ink',
+              'flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors duration-normal ease-default focus-within:ring-2 focus-within:ring-focus',
+              option.value === selected ? 'border-accent bg-accent-subtle font-semibold text-accent' : 'border-input bg-surface font-medium text-ink-muted hover:border-border hover:text-ink',
             )}
           >
             <input
@@ -470,10 +494,10 @@ export const ExampleResponseCard = forwardRef<HTMLDivElement, ExampleResponseCar
   function ExampleResponseCard({ children, helperText, className, ...props }, ref) {
     return (
       <div ref={ref} data-slot="example-response-card" className={cn('grid gap-3', className)} {...props}>
-        <blockquote className="rounded-lg border border-border bg-surface-subtle px-4 py-3 text-sm font-medium leading-7 text-ink shadow-control">
+        <blockquote className="font-gowun font-medium rounded-lg border border-border bg-surface-subtle px-4 py-3 text-sm leading-6 text-ink-muted">
           {children}
         </blockquote>
-        {helperText ? <p className="text-xs font-semibold leading-5 text-ink-muted">{helperText}</p> : null}
+        {helperText ? <p className="text-xs leading-5 text-ink-muted">{helperText}</p> : null}
       </div>
     )
   },

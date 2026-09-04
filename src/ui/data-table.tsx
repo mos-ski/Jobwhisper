@@ -378,7 +378,7 @@ export const DataTable = forwardRef<HTMLElement, DataTableProps<{ readonly id: s
               <DialogClose />
               {mobileDetailRow ? (
                 <>
-                  <DialogTitle>{itemLabel(mobileDetailRow)}</DialogTitle>
+                  <DialogTitle className="font-gowun">{itemLabel(mobileDetailRow)}</DialogTitle>
                   <dl className="mt-4 grid gap-3">
                     {columns.filter((column) => !column.hideInMobileDetail).map((column) => (
                       <div key={column.key} className="flex items-start justify-between gap-4 border-b border-border pb-3 text-sm">
@@ -421,7 +421,7 @@ export const DataTable = forwardRef<HTMLElement, DataTableProps<{ readonly id: s
       <article ref={ref} data-slot="data-table" className={cn('min-w-0 bg-surface shadow-panel', className)}>
         {title || action ? (
           <header className="flex min-h-[5rem] items-center justify-between gap-4 border-b border-border px-8">
-            {title ? <h1 className="text-xl font-medium leading-5 text-ink">{title}</h1> : <span />}
+            {title ? <h1 className="font-gowun text-xl font-bold leading-5 text-ink">{title}</h1> : <span />}
             {action ? (
               action.onClick ? (
                 <button

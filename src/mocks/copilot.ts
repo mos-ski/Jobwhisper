@@ -20,7 +20,7 @@ export const copilotSetup: CopilotSetup = {
   responseMode: 'default',
   responseLength: 'medium',
   responseLanguage: 'English',
-  modelTier: 'balanced',
+  model: 'openai',
   autoAnswer: false,
   saveTranscript: true,
 }

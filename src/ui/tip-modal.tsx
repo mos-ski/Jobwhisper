@@ -23,7 +23,7 @@ export function TipModal({ open, onOpenChange, title, body, items, actionLabel =
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup aria-label={title}>
-        <DialogTitle>{title}</DialogTitle>
+        <DialogTitle className="font-gowun">{title}</DialogTitle>
         {body ? <p className="mt-2 text-sm leading-6 text-ink-muted">{body}</p> : null}
         {items && items.length > 0 ? (
           <div className="mt-4 grid gap-4">

@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
-import { AlertTriangle, ArrowLeft, ArrowUpLeft, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ExternalLink, FileText, Filter, Globe, LinkIcon, Lock, PenLine, Play, RefreshCw, Search, Send, Settings, X, Zap, Trash2, Download, Mail } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, ArrowUpLeft, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, CircleHelp, ExternalLink, FileText, Filter, Globe, LinkIcon, PenLine, Play, RefreshCw, Search, Send, Settings, X, Zap, Trash2, Download, Mail } from 'lucide-react'
 import { SiGooglechrome, SiGoogleplay } from 'react-icons/si'
 
-import type { AutoApplyApplication, AutoApplyJob, AutoApplyOutcome, AutoApplySetup } from '@/contracts/auto-apply.draft'
+import type { AutoApplyApplication, AutoApplyApplicationDetails, AutoApplyJob, AutoApplyOutcome, AutoApplySetup } from '@/contracts/auto-apply.draft'
 import {
   DEFAULT_AUTO_APPLY_SETUP,
   EMPLOYMENT_TYPES,
@@ -86,8 +86,8 @@ export type AutoApplyJobsViewProps = {
   readonly resumeHistoryHref: string
   readonly jobs: readonly AutoApplyJob[]
   readonly selectedJob?: AutoApplyJob
-  readonly isPremiumUser?: boolean
   readonly resumePreview: ResumeDocument
+  readonly preferredLocations: readonly string[]
 }
 
 export type AutoApplyAppliedViewProps = {
@@ -138,6 +138,30 @@ function matchLabel(percent: number): string {
 
 function Tag({ children }: { readonly children: ReactNode }) {
   return <span className="rounded-full bg-accent-subtle px-2 py-1 text-xs font-medium text-accent-text">{children}</span>
+}
+
+function AnimatedPercent({ value, className }: { readonly value: number; readonly className?: string }) {
+  const [displayed, setDisplayed] = useState(0)
+
+  useEffect(() => {
+    setDisplayed(0)
+    const durationMs = 600
+    const startTime = performance.now()
+    let frame: number
+
+    function tick(now: number) {
+      const elapsed = now - startTime
+      const progress = Math.min(1, elapsed / durationMs)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setDisplayed(Math.round(eased * value))
+      if (progress < 1) frame = requestAnimationFrame(tick)
+    }
+
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [value])
+
+  return <p className={className}>{displayed}%</p>
 }
 
 export function AutoApplyUploadView({ homeHref, contactHref, agentHref, uploadedFileName, savedResumes }: AutoApplyUploadViewProps) {
@@ -324,7 +348,7 @@ export function AutoApplyReviewView({ homeHref, contactHref, additionalHref, met
 export type AutoApplyMethodViewProps = {
   readonly homeHref: string
   readonly backHref: string
-  readonly fullAutoHref: string
+  readonly agentHref: string
   readonly jobsHref: string
   readonly extensionHref: string
 }
@@ -341,12 +365,16 @@ type AutoApplyMethodCard = {
   readonly href: string
   readonly leadingIcons: readonly ReactNode[]
   readonly trailingIcon?: ReactNode
+  readonly availabilityClassName?: string
 }
 
 const AVAILABILITY_ICON_CLASS = 'size-[13.5px] text-ink-muted/50'
 
-export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref, extensionHref }: AutoApplyMethodViewProps) {
+export function AutoApplyMethodView({ homeHref, backHref, agentHref, jobsHref, extensionHref }: AutoApplyMethodViewProps) {
   const [selected, setSelected] = useState<AutoApplyMethodId>('full-auto')
+  const [preferencesOpen, setPreferencesOpen] = useState(false)
+  const [extensionAdded, setExtensionAdded] = useState(false)
+  const [fullAutoConfigured, setFullAutoConfigured] = useState(false)
 
   const methods: readonly AutoApplyMethodCard[] = [
     {
@@ -356,7 +384,7 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
       availability: 'Available on web',
       iconSrc: '/v3-assets/figma/auto-apply-method-full-auto.svg',
       iconClassName: 'h-[42px] w-[48.07px]',
-      href: fullAutoHref,
+      href: agentHref,
       leadingIcons: [<Globe key="globe" aria-hidden="true" className={AVAILABILITY_ICON_CLASS} />],
     },
     {
@@ -376,16 +404,23 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
       id: 'extension',
       title: 'Browser Extension',
       description: 'Apply directly from LinkedIn, Glassdoor, Indeed, and Workable with the Jobwhisper extension installed.',
-      availability: 'Download Extension',
+      availability: extensionAdded ? 'Extension added' : 'Download Extension',
       iconSrc: '/v3-assets/figma/auto-apply-method-extension.svg',
       iconClassName: 'h-[42px] w-[48.234px]',
       href: extensionHref,
-      leadingIcons: [<SiGooglechrome key="chrome" aria-hidden="true" className={AVAILABILITY_ICON_CLASS} />],
-      trailingIcon: <ArrowUpLeft aria-hidden="true" className={AVAILABILITY_ICON_CLASS} />,
+      leadingIcons: [<SiGooglechrome key="chrome" aria-hidden="true" className="size-[13.5px] text-accent" />],
+      trailingIcon: extensionAdded ? <Check aria-hidden="true" className="size-[13.5px] text-accent" /> : <ArrowUpLeft aria-hidden="true" className="size-[13.5px] text-accent" />,
+      availabilityClassName: 'text-ink',
     },
   ]
 
-  const activeHref = methods.find((method) => method.id === selected)?.href ?? fullAutoHref
+  const activeHref = methods.find((method) => method.id === selected)?.href ?? agentHref
+  const nextLabel =
+    selected === 'full-auto' && !fullAutoConfigured
+      ? 'Set Preference'
+      : selected === 'extension' && !extensionAdded
+        ? 'Add to Chrome'
+        : 'Choose this Way'
 
   return (
     <Workspace>
@@ -395,7 +430,22 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
           title="Choose How You Auto Apply"
           step="4/4"
           className="max-w-3xl"
-          footer={<FormPanelFooter backHref={backHref} nextHref={activeHref} nextLabel="Choose this Way" />}
+          footer={
+            <FormPanelFooter
+              backHref={backHref}
+              nextHref={activeHref}
+              nextLabel={nextLabel}
+              onNextClick={(event) => {
+                if (selected === 'full-auto' && !fullAutoConfigured) {
+                  event.preventDefault()
+                  setPreferencesOpen(true)
+                } else if (selected === 'extension' && !extensionAdded) {
+                  event.preventDefault()
+                  setExtensionAdded(true)
+                }
+              }}
+            />
+          }
         >
           <div className="grid gap-3 sm:grid-cols-3">
             {methods.map((method, index) => {
@@ -417,7 +467,7 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
                   <div className="h-[85px] w-[163px]">
                     <p className="text-[12px] leading-[18px] text-ink-muted">{method.description}</p>
                   </div>
-                  <p className="mt-auto flex items-center gap-[4px] text-[8.8px] font-medium leading-[16.2px] text-ink-muted/50">
+                  <p className={cn('mt-auto flex items-center gap-[4px] text-[8.8px] font-medium leading-[16.2px]', method.availabilityClassName ?? 'text-ink-muted/50')}>
                     {method.leadingIcons}
                     {method.availability}
                     {method.trailingIcon}
@@ -434,80 +484,11 @@ export function AutoApplyMethodView({ homeHref, backHref, fullAutoHref, jobsHref
           </div>
         </FormPanel>
       </section>
-    </Workspace>
-  )
-}
-
-export type AutoApplyFullAutoConsentViewProps = {
-  readonly homeHref: string
-  readonly backHref: string
-  readonly agentHref: string
-}
-
-export function AutoApplyFullAutoConsentView({ homeHref, backHref, agentHref }: AutoApplyFullAutoConsentViewProps) {
-  const [startTiming, setStartTiming] = useState<'now' | 'tomorrow'>('now')
-  const [jobsPerDay, setJobsPerDay] = useState(10)
-  const [agreed, setAgreed] = useState(false)
-
-  return (
-    <Workspace>
-      <Header homeHref={homeHref} />
-      <section className="px-4 py-9">
-        <FormPanel
-          title="Full Auto Apply"
-          footer={<FormPanelFooter backHref={backHref} nextHref={agentHref} nextLabel="Start Full Auto" nextDisabled={!agreed} />}
-        >
-          <div className="grid gap-2">
-            <p className="text-sm font-semibold text-ink">When should Jobwhisper start?</p>
-            <div className="grid grid-cols-2 gap-2">
-              {(['now', 'tomorrow'] as const).map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  onClick={() => setStartTiming(option)}
-                  className={cn(
-                    'min-h-10 rounded-lg border px-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
-                    startTiming === option ? 'border-accent bg-accent-subtle text-accent-text' : 'border-input text-ink-muted hover:border-border hover:text-ink',
-                  )}
-                >
-                  {option === 'now' ? 'Right away' : 'Tomorrow morning'}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-5 grid gap-2">
-            <label htmlFor="jobs-per-day" className="text-sm font-semibold text-ink">
-              Applications per day
-            </label>
-            <input
-              id="jobs-per-day"
-              type="number"
-              min={1}
-              max={50}
-              value={jobsPerDay}
-              onChange={(event) => setJobsPerDay(Math.max(1, Math.min(50, Number(event.target.value) || 1)))}
-              className="min-h-11 w-24 rounded-lg border border-input bg-surface px-3 py-2 text-sm text-ink shadow-control outline-none focus:border-focus focus:ring-2 focus:ring-focus"
-            />
-            <p className="text-xs text-ink-muted">You can change this anytime from the agent dashboard.</p>
-          </div>
-
-          <div className="mt-6 rounded-panel border border-warning bg-warning-surface p-4">
-            <div className="flex items-start gap-2">
-              <AlertTriangle aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-warning" />
-              <div className="grid gap-2 text-sm leading-5 text-warning">
-                <p>Jobwhisper's AI will submit applications on your behalf without asking before each one. We can't guarantee interviews or offers, and we're not responsible for what gets submitted while Full Auto is running.</p>
-                <p>Check in on your agent every few days. Don't leave it running unattended for weeks at a time.</p>
-              </div>
-            </div>
-          </div>
-
-          <label className="mt-4 flex items-start gap-3 text-sm leading-5 text-ink">
-            <Checkbox checked={agreed} onCheckedChange={(value) => setAgreed(value === true)} className="mt-0.5" />
-            <span>I understand and agree to let Jobwhisper apply to jobs on my behalf.</span>
-          </label>
-        </FormPanel>
-      </section>
+      <AutoApplyPreferencesDialog
+        open={preferencesOpen}
+        onOpenChange={setPreferencesOpen}
+        onSave={() => setFullAutoConfigured(true)}
+      />
     </Workspace>
   )
 }
@@ -1083,7 +1064,7 @@ function AppShell({
       <section className="p-4 lg:p-8">
         <div className="mx-auto min-h-[56rem] max-w-7xl bg-surface shadow-panel">
           <div className="border-b border-border px-8 py-8">
-            <h1 className="text-xl font-medium">{title}</h1>
+            <h1 className="font-gowun text-xl font-medium">{title}</h1>
           </div>
           <div className="p-8">
             <nav aria-label="Auto apply sections" className="flex gap-6 border-b border-border text-sm font-medium">
@@ -1329,6 +1310,26 @@ function OutcomeBadge({ outcome }: { readonly outcome: AutoApplyOutcome }) {
   return <span className="shrink-0 rounded-lg bg-warning-surface px-4 py-2 text-sm font-medium text-warning">Needs Review</span>
 }
 
+const JOB_STATUS_LABELS: Record<AutoApplyJob['status'], string> = {
+  applied: 'Applied',
+  new: 'New',
+  queued: 'Queued',
+  applying: 'Applying',
+  'posting-closed': 'Posting closed',
+}
+
+const JOB_STATUS_CLASSES: Record<AutoApplyJob['status'], string> = {
+  applied: 'bg-accent-subtle text-accent-text',
+  new: 'bg-warning-surface text-warning',
+  queued: 'bg-accent-subtle text-accent-text',
+  applying: 'bg-accent-subtle text-accent-text',
+  'posting-closed': 'bg-surface-subtle text-ink-muted',
+}
+
+function JobStatusBadge({ status, className }: { readonly status: AutoApplyJob['status']; readonly className?: string }) {
+  return <span className={cn('shrink-0 rounded-lg px-4 py-2 text-sm font-medium', JOB_STATUS_CLASSES[status], className)}>{JOB_STATUS_LABELS[status]}</span>
+}
+
 function JobList({
   jobs,
   selectedJob,
@@ -1391,23 +1392,17 @@ function JobList({
               </span>
               <span className="min-w-0 flex-1">
                 <span className="flex flex-wrap items-center gap-2">
-                  <span className="font-semibold text-ink">{job.title}</span>
+                  <span className="font-gowun font-semibold text-ink">{job.title}</span>
                   <span className="rounded px-2 py-0.5 text-[10px] font-bold text-positive bg-positive-surface">{job.matchPercent}% MATCH</span>
                 </span>
                 <span className="mt-1 block text-xs text-ink-muted">
                   {job.company} - {job.location} - {job.type}
                 </span>
                 <span className="mt-1 block text-xs text-ink-muted">
-                  {job.dateLabel} - {job.source}
+                  Found {job.dateLabel} - {job.source}
                 </span>
               </span>
-              {variant === 'applied' && job.outcome ? (
-                <OutcomeBadge outcome={job.outcome} />
-              ) : job.status === 'applied' ? (
-                <span className="shrink-0 rounded-lg bg-accent-subtle px-4 py-2 text-sm font-medium text-accent-text">Applied</span>
-              ) : (
-                <span className="shrink-0 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-on-accent">Apply</span>
-              )}
+              {variant === 'applied' && job.outcome ? <OutcomeBadge outcome={job.outcome} /> : <JobStatusBadge status={job.status} />}
             </button>
           )
         })}
@@ -1435,16 +1430,119 @@ function JobList({
   )
 }
 
+function ApplicationQuestionCard({ question, answer }: { readonly question: string; readonly answer: string }) {
+  const [expanded, setExpanded] = useState(false)
+  const needsTruncation = answer.length > 120
+  const displayAnswer = needsTruncation && !expanded ? answer.slice(0, 120) + '...' : answer
+
+  return (
+    <div className="rounded-lg border border-border bg-surface p-4">
+      <p className="text-sm leading-6 text-ink">{question}</p>
+      <p className="mt-2 text-sm leading-6 text-ink-muted">{displayAnswer}</p>
+      {needsTruncation ? (
+        <button
+          type="button"
+          onClick={() => setExpanded((prev) => !prev)}
+          className="mt-2 flex items-center gap-1 text-sm font-medium text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+        >
+          <ChevronDown aria-hidden="true" className={cn('size-3.5 transition-transform', expanded && 'rotate-180')} />
+          {expanded ? 'Show less' : 'Show more'}
+        </button>
+      ) : null}
+    </div>
+  )
+}
+
+function ApplicationQuestionsSection({ questions }: { readonly questions: readonly AutoApplyApplicationQuestion[] }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <section className="rounded-lg border border-border">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex w-full items-center justify-between px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-inset"
+      >
+        <h3 className="text-sm font-bold text-ink">Application Questions</h3>
+        <ChevronUp aria-hidden="true" className={cn('size-4 shrink-0 text-ink-muted transition-transform', !open && 'rotate-180')} />
+      </button>
+      {open ? (
+        <div className="grid gap-3 border-t border-border px-4 pb-4 pt-3">
+          {questions.map((qa) => (
+            <ApplicationQuestionCard key={qa.question} question={qa.question} answer={qa.answer} />
+          ))}
+        </div>
+      ) : null}
+    </section>
+  )
+}
+
+function ApplicationDetailsSection({ details }: { readonly details: AutoApplyApplicationDetails }) {
+  const [open, setOpen] = useState(false)
+
+  const fields = [
+    { label: 'First Name', value: details.firstName },
+    { label: 'Last Name', value: details.lastName },
+    { label: 'Phone', value: details.phone },
+    { label: 'Address', value: details.address },
+    { label: 'City', value: details.city },
+    { label: 'ZIP', value: details.zip },
+    { label: 'LinkedIn URL', value: details.linkedInUrl },
+    { label: 'Date Available', value: details.dateAvailable },
+    { label: 'Desired Pay', value: details.desiredPay },
+    ...(details.websiteOrPortfolio ? [{ label: 'Website, Blog or Portfolio', value: details.websiteOrPortfolio }] : [{ label: 'Website, Blog or Portfolio', value: 'Not answered' }]),
+    { label: 'Country', value: details.country },
+    { label: 'State / Province', value: details.stateProvince },
+  ]
+
+  return (
+    <section className="rounded-lg border border-border">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex w-full items-center justify-between px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-inset"
+      >
+        <h3 className="text-sm font-bold text-ink">Application Details</h3>
+        <ChevronUp aria-hidden="true" className={cn('size-4 shrink-0 text-ink-muted transition-transform', !open && 'rotate-180')} />
+      </button>
+      {open ? (
+        <div className="grid gap-3 border-t border-border px-4 pb-4 pt-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Personal Info</p>
+          <div className="grid gap-2">
+            {fields.map((field) => (
+              <div key={field.label} className="rounded-lg border border-border bg-surface px-4 py-3">
+                <p className="text-xs text-ink-muted">{field.label}</p>
+                <p className="mt-0.5 text-sm text-ink">{field.value}</p>
+              </div>
+            ))}
+          </div>
+          <div className="rounded-lg border border-border bg-surface px-4 py-3">
+            <p className="text-xs text-ink-muted">Upload your resume</p>
+            <p className="mt-0.5 flex items-center gap-2 text-sm text-ink">
+              <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
+              {details.resumeFileName}
+            </p>
+          </div>
+        </div>
+      ) : null}
+    </section>
+  )
+}
+
 function JobPreview({
   job,
   onClose,
   applied = false,
   resumePreview,
+  preferredLocations = [],
+  setupHref,
 }: {
   readonly job: AutoApplyJob
   readonly onClose: () => void
   readonly applied?: boolean
   readonly resumePreview: ResumeDocument
+  readonly preferredLocations?: readonly string[]
+  readonly setupHref: string
 }) {
   const [resumePreviewOpen, setResumePreviewOpen] = useState(false)
   const [getResumeOpen, setGetResumeOpen] = useState(false)
@@ -1459,7 +1557,7 @@ function JobPreview({
         </div>
         <div className="flex items-center justify-between px-6 pb-4">
           <div>
-            <h2 className="text-xl font-bold leading-tight text-ink">{job.title}</h2>
+            <h2 className="font-gowun text-xl font-bold leading-tight text-ink">{job.title}</h2>
             <p className="mt-1 text-sm text-ink-muted">{job.company}{job.location ? ` · ${job.location}` : ''}</p>
           </div>
           <button type="button" onClick={onClose} aria-label="Close job preview" className="grid size-10 shrink-0 place-items-center rounded-lg text-ink-muted transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
@@ -1467,13 +1565,27 @@ function JobPreview({
           </button>
         </div>
         <div className="flex-1 overflow-y-auto px-6 pb-6">
-          <div className="flex items-center gap-2">
-            {applied && job.outcome ? (
-              <OutcomeBadge outcome={job.outcome} />
-            ) : (
-              <span className={cn('rounded-full px-3 py-1 text-xs font-semibold', applied ? 'bg-positive-surface text-positive' : 'bg-warning-surface text-warning')}>{applied ? 'Applied' : 'NEW'}</span>
-            )}
-            <span className="text-sm text-ink-muted">{job.dateLabel}</span>
+          <div className="flex flex-wrap items-center gap-2">
+            {applied && job.outcome ? <OutcomeBadge outcome={job.outcome} /> : <JobStatusBadge status={job.status} className="rounded-full" />}
+            <span className="rounded-full border border-border px-3 py-1 text-xs font-medium text-ink">{job.salaryLabel}</span>
+            <span className="rounded-full border border-border px-3 py-1 text-xs font-medium text-ink">{job.postedDateLabel}</span>
+            {!applied ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-subtle px-3 py-1 text-xs font-medium text-ink-muted">
+                <CircleHelp aria-hidden="true" className="size-3.5" />
+                Still open? Not checked
+              </span>
+            ) : null}
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Posted</p>
+              <p className="mt-1 text-sm text-ink">{job.postedDateLabel}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Found</p>
+              <p className="mt-1 text-sm text-ink">{job.dateLabel}</p>
+            </div>
           </div>
 
           <div className="mt-5 grid gap-5">
@@ -1494,6 +1606,13 @@ function JobPreview({
               </section>
             ) : null}
 
+            {!applied && job.status === 'posting-closed' ? (
+              <section className="rounded-lg bg-surface-subtle p-4">
+                <h3 className="text-xs font-bold uppercase tracking-wide text-ink-muted">What Happened</h3>
+                <p className="mt-1 text-sm leading-6 text-ink-muted">The employer has taken this posting down.</p>
+              </section>
+            ) : null}
+
             {applied ? (
               <section className="grid gap-2">
                 <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Resume Used</h3>
@@ -1505,6 +1624,80 @@ function JobPreview({
                   <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
                   <span className="truncate">{job.resumeFileName}</span>
                 </button>
+              </section>
+            ) : null}
+
+            {applied && job.coverLetterFileName ? (
+              <section className="grid gap-2">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Cover Letter</h3>
+                <span className="flex min-w-0 items-center gap-2 text-sm text-ink">
+                  <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
+                  <span className="truncate">{job.coverLetterFileName}</span>
+                </span>
+              </section>
+            ) : null}
+
+            {applied && job.events && job.events.length > 0 ? (
+              <section className="grid gap-2">
+                {job.appliedDateHeading ? <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{job.appliedDateHeading}</h3> : null}
+                <ul className="grid">
+                  {job.events.map((event, idx) => {
+                    const isLast = idx === job.events!.length - 1
+                    return (
+                      <li key={event.label} className={cn('relative flex gap-3', !isLast && 'pb-5')}>
+                        {!isLast ? <span aria-hidden="true" className="absolute start-[9px] top-5 bottom-0 w-0.5 bg-border" /> : null}
+                        <span aria-hidden="true" className="relative z-10 grid size-5 shrink-0 place-items-center rounded-full bg-positive">
+                          <Check aria-hidden="true" className="size-3 text-surface" strokeWidth={3} />
+                        </span>
+                        <span className="flex flex-1 items-center justify-between gap-3 text-sm">
+                          <span className="text-ink">{event.label}</span>
+                          <span className="shrink-0 text-ink-muted">{event.time}</span>
+                        </span>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </section>
+            ) : null}
+
+            {applied && job.activityLog && job.activityLog.length > 0 ? (
+              <section className="grid gap-2">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Activity Log</h3>
+                <ul className="grid gap-1.5">
+                  {job.activityLog.map((entry) => (
+                    <li key={entry} className="flex items-center gap-2 text-sm text-ink-muted">
+                      <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-ink-muted" />
+                      {entry}
+                    </li>
+                  ))}
+                </ul>
+                <button type="button" className="flex items-center gap-1.5 text-sm font-medium text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                  <Play aria-hidden="true" className="size-3.5" />
+                  See Replay
+                </button>
+              </section>
+            ) : null}
+
+            {applied && job.applicationDetails ? <ApplicationDetailsSection details={job.applicationDetails} /> : null}
+
+            {applied && job.applicationQuestions && job.applicationQuestions.length > 0 ? (
+              <ApplicationQuestionsSection questions={job.applicationQuestions} />
+            ) : null}
+
+            {!applied ? (
+              <section className="grid gap-2">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Resume We&rsquo;ll Submit</h3>
+                <div className="flex items-center justify-between gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setResumePreviewOpen(true)}
+                    className="flex min-w-0 items-center gap-2 rounded-lg text-sm text-ink underline underline-offset-4 transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  >
+                    <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
+                    <span className="truncate">{job.resumeFileName}</span>
+                  </button>
+                  <span className="shrink-0 rounded-full bg-positive-surface px-2.5 py-0.5 text-xs font-bold text-positive">ATS {job.matchPercent}</span>
+                </div>
               </section>
             ) : null}
 
@@ -1533,8 +1726,18 @@ function JobPreview({
                 <section className="rounded-lg bg-positive-surface p-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-bold uppercase tracking-wide text-positive">{matchLabel(job.matchPercent)}</h3>
-                    <p className="text-2xl font-bold text-positive">{job.matchPercent}%</p>
+                    <AnimatedPercent key={job.id} value={job.matchPercent} className="text-2xl font-bold text-positive" />
                   </div>
+                  {job.matchBreakdown.length > 0 ? (
+                    <ul className="mt-3 grid gap-1.5 border-t border-positive/20 pt-3">
+                      {job.matchBreakdown.map((factor) => (
+                        <li key={factor.label} className="flex items-center justify-between gap-3 text-sm text-ink">
+                          <span>{factor.label}</span>
+                          <span className="shrink-0 font-semibold text-positive">+{factor.points}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
                 </section>
 
                 <div className="flex flex-wrap gap-2">{job.tags.map((tag) => <Tag key={tag}>{tag}</Tag>)}</div>
@@ -1547,8 +1750,10 @@ function JobPreview({
             ) : null}
           </div>
 
+          {!applied && job.status !== 'posting-closed' ? <ProfileIncompleteBanner preferredLocations={preferredLocations} setupHref={setupHref} /> : null}
+
           <div className="mt-6 grid gap-2 border-t border-border pt-5">
-            {applied ? (
+            {applied || job.status === 'posting-closed' ? (
               <>
                 <a href={job.listingUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                   <ExternalLink aria-hidden="true" className="size-4" />
@@ -1595,7 +1800,7 @@ function GetResumeDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup aria-label="Get a tailored resume">
         <DialogClose />
-        <DialogTitle>Get a tailored resume</DialogTitle>
+        <DialogTitle className="font-gowun">Get a tailored resume</DialogTitle>
         <DialogDescription>
           Jobwhisper will tailor a resume for <span className="font-semibold text-ink">{job.title}</span> at <span className="font-semibold text-ink">{job.company}</span>, using this job's description. This uses <span className="font-semibold text-ink">1 Resume Builder credit</span> ($0.10).
         </DialogDescription>
@@ -1633,7 +1838,7 @@ function ResumeUsedDialog({
         </div>
         <div className="flex-1 overflow-y-auto bg-canvas px-4 py-6 sm:px-8">
           <div className="mx-auto max-w-2xl rounded-lg border border-border bg-surface p-8 shadow-panel">
-            <h1 className="text-2xl font-bold text-ink">{resume.candidateName}</h1>
+            <h1 className="font-gowun text-2xl font-bold text-ink">{resume.candidateName}</h1>
             <p className="mt-1 text-sm text-ink-muted">
               {resume.email} · {resume.location} · {resume.linkedinUrl}
             </p>
@@ -1753,7 +1958,10 @@ function FilterDropdown({
               options={[
                 { label: 'All statuses', value: 'all' },
                 { label: 'New', value: 'new' },
+                { label: 'Queued', value: 'queued' },
+                { label: 'Applying', value: 'applying' },
                 { label: 'Applied', value: 'applied' },
+                { label: 'Posting closed', value: 'posting-closed' },
               ]}
             />
             {activeCount > 0 ? (
@@ -1788,7 +1996,41 @@ function applyJobFilters(jobs: readonly AutoApplyJob[], search: string, filters:
   })
 }
 
-export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, appliedHref, resumeHistoryHref, jobs, selectedJob: initialSelectedJob, isPremiumUser = false, resumePreview }: AutoApplyJobsViewProps) {
+function ProfileIncompleteBanner({ preferredLocations, setupHref }: { readonly preferredLocations: readonly string[]; readonly setupHref: string }) {
+  if (preferredLocations.length > 0) return null
+
+  return (
+    <div className="mb-3 border border-warning/30 bg-warning-surface p-[18px]">
+      <p className="text-xs font-bold uppercase tracking-wide text-warning">Finish your profile to apply</p>
+      <p className="mt-1 text-sm text-ink">Auto-Apply cannot complete an employer&rsquo;s form without these, so it won&rsquo;t start one.</p>
+      <p className="mt-3 text-sm">
+        <span className="font-semibold text-ink">Preferred locations</span>{' '}
+        <a href={setupHref} className="font-medium text-accent underline underline-offset-4 hover:text-accent-hover">
+          Add your preferred locations
+        </a>
+      </p>
+    </div>
+  )
+}
+
+function AutoApplyExtensionPromo() {
+  return (
+    <div className="mb-3 flex items-start gap-6 border border-border bg-surface p-[18px]">
+      <img src="/v3-assets/figma/auto-apply-extension-icon.svg" alt="" className="h-[42px] w-[48.2px] shrink-0" />
+      <div className="min-w-0 flex-1">
+        <p className="text-xs font-bold text-ink">Apply with our Auto Apply Extension</p>
+        <p className="mt-1 text-xs text-ink-muted">Apply directly from LinkedIn, Glassdoor, Indeed, and Workable with the Jobwhisper extension installed.</p>
+        <a href="/v3/extension" className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-ink-muted hover:text-ink">
+          <SiGooglechrome aria-hidden="true" className="size-3" />
+          Download Extension
+          <ArrowUpLeft aria-hidden="true" className="size-3" />
+        </a>
+      </div>
+    </div>
+  )
+}
+
+export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, appliedHref, resumeHistoryHref, jobs, selectedJob: initialSelectedJob, resumePreview, preferredLocations }: AutoApplyJobsViewProps) {
   const [selectedJob, setSelectedJob] = useState<AutoApplyJob | undefined>(initialSelectedJob)
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<JobFilters>(DEFAULT_FILTERS)
@@ -1804,7 +2046,7 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
         <div className="mx-auto max-w-7xl">
           <div className="min-h-[56rem] bg-surface shadow-panel">
             <div className="flex min-h-[5rem] items-center justify-between gap-4 border-b border-border px-[16px] sm:px-8">
-              <h1 className="text-xl font-medium leading-5 text-ink">Jobs</h1>
+              <h1 className="font-gowun text-xl font-bold leading-5 text-ink">Jobs</h1>
               <a href={setupHref} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                 Update Preference
               </a>
@@ -1818,7 +2060,10 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
                   <a href={appliedHref} className="min-h-11 border-b-2 border-transparent px-1 pb-2 text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Applied</a>
                 </nav>
               </div>
-              <div className="flex gap-6 pt-5">
+              <div className="pt-5">
+                <ProfileIncompleteBanner preferredLocations={preferredLocations} setupHref={setupHref} />
+              </div>
+              <div className="flex gap-6">
                 <div className="min-w-0 flex-1">
                   <div className="mb-3 flex gap-2">
                     <label className="relative block flex-1">
@@ -1850,6 +2095,7 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
                       <Settings aria-hidden="true" className="size-4" />
                     </button>
                   </div>
+                  <AutoApplyExtensionPromo />
                   <div className="-mx-[16px] sm:mx-0">
                     <JobList jobs={filtered} selectedJob={selectedJob} onSelectJob={(job) => setSelectedJob(selectedJob?.id === job.id ? undefined : job)} />
                   </div>
@@ -1860,105 +2106,45 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
                   </div>
                 </div>
                 {selectedJob ? (
-                  <JobPreview job={selectedJob} onClose={() => setSelectedJob(undefined)} applied={selectedJob.status === 'applied'} resumePreview={resumePreview} />
+                  <JobPreview job={selectedJob} onClose={() => setSelectedJob(undefined)} applied={selectedJob.status === 'applied'} resumePreview={resumePreview} preferredLocations={preferredLocations} setupHref={setupHref} />
                 ) : null}
               </div>
             </div>
           </div>
         </div>
       </section>
-      <AutoApplySettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} isPremium={isPremiumUser} />
+      <AutoApplyPreferencesDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </Workspace>
   )
 }
 
-function AutoApplySettingsDialog({
+function AutoApplyPreferencesDialog({
   open,
   onOpenChange,
-  isPremium,
+  onSave,
 }: {
   readonly open: boolean
   readonly onOpenChange: (open: boolean) => void
-  readonly isPremium: boolean
+  readonly onSave?: () => void
 }) {
-  const [autoApplyEnabled, setAutoApplyEnabled] = useState(false)
-  const [dailyQuota, setDailyQuota] = useState(5)
+  const [dailyQuota, setDailyQuota] = useState(10)
   const [startTime, setStartTime] = useState('09:00')
-  const [showUpgradeGate, setShowUpgradeGate] = useState(false)
+  const [agreed, setAgreed] = useState(false)
 
   function handleSave() {
-    if (!isPremium) {
-      setShowUpgradeGate(true)
-      return
-    }
     onOpenChange(false)
-  }
-
-  if (showUpgradeGate) {
-    return (
-      <Dialog
-        open={open}
-        onOpenChange={(nextOpen) => {
-          onOpenChange(nextOpen)
-          if (!nextOpen) setShowUpgradeGate(false)
-        }}
-      >
-        <DialogPopup aria-label="Upgrade to Premium">
-          <DialogClose />
-          <span aria-hidden="true" className="grid size-11 place-items-center rounded-xl border border-border bg-surface-raised text-ink-muted shadow-control [&>svg]:size-5">
-            <Lock aria-hidden="true" />
-          </span>
-          <DialogTitle className="mt-4">Upgrade to Premium</DialogTitle>
-          <p className="mt-1 text-sm text-ink-muted">
-            Automating job applications is available on our Premium plan. Upgrade to save this quota and let Jobwhisper apply to matching jobs for you automatically.
-          </p>
-          <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-            <button
-              type="button"
-              onClick={() => setShowUpgradeGate(false)}
-              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-border px-4 text-sm font-medium text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-            >
-              Not now
-            </button>
-            <a
-              href="/v3/billing"
-              className="inline-flex min-h-11 items-center justify-center rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-            >
-              Upgrade Plan
-            </a>
-          </div>
-        </DialogPopup>
-      </Dialog>
-    )
+    onSave?.()
   }
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(nextOpen) => {
-        onOpenChange(nextOpen)
-        if (!nextOpen) setShowUpgradeGate(false)
-      }}
-    >
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup aria-label="Automate job applications">
         <DialogClose />
-        <DialogTitle>Automate job applications</DialogTitle>
+        <DialogTitle className="font-gowun">Automate job applications</DialogTitle>
         <p className="mt-1 text-sm text-ink-muted">
           Let Jobwhisper automatically apply to jobs that match your preferences, up to a daily limit you set.
         </p>
-        <label className="mt-5 flex items-center justify-between gap-3 rounded-lg border border-border p-4">
-          <span className="min-w-0">
-            <span className="block text-sm font-semibold text-ink">Auto-apply to matching jobs</span>
-            <span className="mt-0.5 block text-xs text-ink-muted">Applications are submitted automatically as new matches come in.</span>
-          </span>
-          <input
-            type="checkbox"
-            checked={autoApplyEnabled}
-            onChange={(event) => setAutoApplyEnabled(event.target.checked)}
-            className="size-5 shrink-0 rounded border-input text-accent focus:ring-2 focus:ring-focus"
-          />
-        </label>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
           <div className="grid gap-1.5">
             <label htmlFor="auto-apply-quota" className="text-sm font-medium text-ink">
               Applications per day
@@ -1970,8 +2156,7 @@ function AutoApplySettingsDialog({
               max={50}
               value={dailyQuota}
               onChange={(event) => setDailyQuota(Number(event.target.value))}
-              disabled={!autoApplyEnabled}
-              className="min-h-11 rounded-lg border border-input bg-surface px-3.5 py-2.5 text-sm text-ink shadow-control outline-none focus:border-focus focus:ring-2 focus:ring-focus disabled:cursor-not-allowed disabled:opacity-50"
+              className="min-h-11 rounded-lg border border-input bg-surface px-3.5 py-2.5 text-sm text-ink shadow-control outline-none focus:border-focus focus:ring-2 focus:ring-focus"
             />
           </div>
           <div className="grid gap-1.5">
@@ -1983,12 +2168,25 @@ function AutoApplySettingsDialog({
               type="time"
               value={startTime}
               onChange={(event) => setStartTime(event.target.value)}
-              disabled={!autoApplyEnabled}
-              className="min-h-11 rounded-lg border border-input bg-surface px-3.5 py-2.5 text-sm text-ink shadow-control outline-none focus:border-focus focus:ring-2 focus:ring-focus disabled:cursor-not-allowed disabled:opacity-50"
+              className="min-h-11 rounded-lg border border-input bg-surface px-3.5 py-2.5 text-sm text-ink shadow-control outline-none focus:border-focus focus:ring-2 focus:ring-focus"
             />
           </div>
         </div>
         <p className="mt-2 text-xs text-ink-muted">Jobwhisper will start submitting applications at this time each day, until your daily quota is reached.</p>
+
+        <div className="mt-4 flex items-start gap-2 border-s-2 border-warning bg-surface-subtle px-4 py-3">
+          <AlertTriangle aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-warning" />
+          <div className="grid gap-1.5 text-sm leading-5 text-ink-muted">
+            <p>Jobwhisper's AI will submit applications on your behalf without asking before each one. We can't guarantee interviews or offers, and we're not responsible for what gets submitted while automation is running.</p>
+            <p>Check in on your agent every few days. Don't leave it running unattended for weeks at a time.</p>
+          </div>
+        </div>
+
+        <label className="mt-4 flex items-start gap-3 text-sm leading-5 text-ink">
+          <Checkbox checked={agreed} onCheckedChange={(value) => setAgreed(value === true)} className="mt-0.5" />
+          <span>I understand and agree to let Jobwhisper apply to jobs on my behalf.</span>
+        </label>
+
         <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button
             type="button"
@@ -2000,7 +2198,8 @@ function AutoApplySettingsDialog({
           <button
             type="button"
             onClick={handleSave}
-            className="inline-flex min-h-11 items-center justify-center rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            disabled={!agreed}
+            className="inline-flex min-h-11 items-center justify-center rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:pointer-events-none disabled:opacity-50"
           >
             Save
           </button>
@@ -2041,7 +2240,7 @@ function RetryApplicationModal({
             <>
               <div className="flex items-center gap-3">
                 <CheckCircle2 aria-hidden="true" className="size-6 shrink-0 text-positive" />
-                <DialogTitle>Application resubmitted</DialogTitle>
+                <DialogTitle className="font-gowun">Application resubmitted</DialogTitle>
               </div>
               <DialogDescription className="text-ink">
                 We&apos;ve resubmitted your application to {job.company} with the updated information. We&apos;ll let you know once we hear back.
@@ -2058,7 +2257,7 @@ function RetryApplicationModal({
             <>
               <div className="flex items-center gap-3">
                 <AlertTriangle aria-hidden="true" className="size-6 shrink-0 text-warning" />
-                <DialogTitle>Needs Review</DialogTitle>
+                <DialogTitle className="font-gowun">Needs Review</DialogTitle>
               </div>
               <DialogDescription className="text-ink">
                 {job.reviewNote ?? 'This application needs some missing information before it can be retried.'}
@@ -2130,7 +2329,7 @@ export function AutoApplyAppliedView({ homeHref, setupHref, agentHref, jobsHref,
         <div className="mx-auto max-w-7xl">
           <div className="min-h-[56rem] bg-surface shadow-panel">
             <div className="flex min-h-[5rem] items-center justify-between gap-4 border-b border-border px-[16px] sm:px-8">
-              <h1 className="text-xl font-medium leading-5 text-ink">Applied</h1>
+              <h1 className="font-gowun text-xl font-bold leading-5 text-ink">Applied</h1>
               <a href={setupHref} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                 Update Preference
               </a>
@@ -2168,6 +2367,7 @@ export function AutoApplyAppliedView({ homeHref, setupHref, agentHref, jobsHref,
                       Refresh
                     </button>
                   </div>
+                  <AutoApplyExtensionPromo />
                   <div className="-mx-[16px] sm:mx-0">
                     <JobList
                       jobs={filtered}
@@ -2187,6 +2387,7 @@ export function AutoApplyAppliedView({ homeHref, setupHref, agentHref, jobsHref,
                     onClose={() => setSelectedJob(undefined)}
                     applied
                     resumePreview={resumePreview}
+                    setupHref={setupHref}
                   />
                 ) : null}
               </div>

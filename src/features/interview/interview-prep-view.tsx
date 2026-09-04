@@ -5,6 +5,7 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
+  CircleHelp,
   FileText,
   Mic,
   MicOff,
@@ -18,6 +19,7 @@ import {
   X,
 } from 'lucide-react'
 
+import type { CopilotModel } from '@/contracts/copilot.draft'
 import type {
   InterviewHistoryRow,
   InterviewLiveSession,
@@ -31,8 +33,9 @@ import type { ContextDocumentRow } from '@/contracts/documents.draft'
 import type { ResumeHistoryRow } from '@/contracts/resume.draft'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
 import { AppShell } from '@/features/dashboard/app-nav'
+import { KnowledgeBasePickerDialog } from '@/features/documents/knowledge-base-picker-dialog'
 import { centsToCredits, creditsToCents } from '@/lib/credits'
-import { AiSuggestionAction, Avatar, Badge, Button, Checkbox, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, UploadedFileDialog } from '@/ui'
+import { AiSuggestionAction, Avatar, Badge, Checkbox, cn, DataTable, Dialog, DialogPopup, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, Tooltip, TooltipContent, TooltipTrigger, UploadedFileDialog } from '@/ui'
 import { useCameraStream } from '@/hooks/useCameraStream'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 import { useTypewriter } from '@/hooks/useTypewriter'
@@ -207,10 +210,16 @@ const INTERVIEW_AI_SUGGESTION =
 
 export function InterviewConfigureView({ homeHref, uploadHref, voiceHref, session, knowledgeBaseDocuments = [] }: InterviewConfigureViewProps) {
   const [additionalContext, setAdditionalContext] = useState(session.additionalContext)
+  const [targetRole, setTargetRole] = useState('')
+  const [companyName, setCompanyName] = useState('')
   const [selectedDocIds, setSelectedDocIds] = useState<ReadonlySet<string>>(new Set())
   const [pickerOpen, setPickerOpen] = useState(false)
-  const [draftDocIds, setDraftDocIds] = useState<ReadonlySet<string>>(new Set())
-  const selectedDocuments = knowledgeBaseDocuments.filter((doc) => selectedDocIds.has(doc.id))
+  const [documents, setDocuments] = useState(knowledgeBaseDocuments)
+  const [model, setModel] = useState<CopilotModel>(session.model)
+  const [responseLanguage, setResponseLanguage] = useState(session.responseLanguage)
+  const [autoAnswer, setAutoAnswer] = useState(false)
+  const [saveTranscript, setSaveTranscript] = useState(session.saveTranscript)
+  const selectedDocuments = documents.filter((doc) => selectedDocIds.has(doc.id))
   const { type, isTyping } = useTypewriter()
 
   function handleAiSuggestion() {
@@ -218,18 +227,9 @@ export function InterviewConfigureView({ homeHref, uploadHref, voiceHref, sessio
     type(INTERVIEW_AI_SUGGESTION, (partial) => setAdditionalContext(base + partial))
   }
 
-  function openDocumentPicker() {
-    setDraftDocIds(selectedDocIds)
-    setPickerOpen(true)
-  }
-
-  function toggleDraftDoc(id: string) {
-    setDraftDocIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
+  function handleFillFromResume() {
+    setTargetRole(session.targetRole)
+    setCompanyName(session.companyName)
   }
 
   return (
@@ -267,10 +267,18 @@ export function InterviewConfigureView({ homeHref, uploadHref, voiceHref, sessio
                   { label: 'Hard', value: 'hard' },
                 ]}
               />
-              <FormField id="target-role" label="Target Role" placeholder="e.g. Senior Software Engineer" />
-              <FormField id="interview-company" label="Company Name" placeholder="e.g. Google, Meta" />
+              <FormField id="target-role" label="Target Role" placeholder="e.g. Senior Software Engineer" value={targetRole} onChange={(event) => setTargetRole(event.target.value)} />
+              <FormField id="interview-company" label="Company Name" placeholder="e.g. Google, Meta" value={companyName} onChange={(event) => setCompanyName(event.target.value)} />
+              <button
+                type="button"
+                onClick={handleFillFromResume}
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-text hover:text-accent sm:col-span-full"
+              >
+                <JobwhisperAiIcon className="size-4" />
+                Fill fields from resume
+              </button>
           </div>
-          <DocumentDropAction onTrigger={openDocumentPicker} hint="Add from Knowledge Base">
+          <DocumentDropAction onTrigger={() => setPickerOpen(true)} hint="Add from Knowledge Base">
             {selectedDocuments.length > 0 ? (
               <span className="flex flex-wrap justify-center gap-2">
                 {selectedDocuments.map((doc) => (
@@ -290,41 +298,71 @@ export function InterviewConfigureView({ homeHref, uploadHref, voiceHref, sessio
             className={cn(isTyping && 'ring-2 ring-accent shadow-[0_0_0_4px_var(--lf-accent-subtle)] transition-shadow duration-normal')}
           />
           <AiSuggestionAction onClick={handleAiSuggestion} disabled={isTyping} />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <FormSelectField
+              id="interview-model"
+              label="Model"
+              value={model}
+              onValueChange={(value) => setModel(value as CopilotModel)}
+              options={[
+                { label: 'OpenAI', value: 'openai' },
+                { label: 'Anthropic', value: 'anthropic' },
+                { label: 'Gemini', value: 'gemini' },
+                { label: 'Kimi', value: 'kimi' },
+                { label: 'Qwen', value: 'qwen' },
+              ]}
+            />
+            <FormSelectField
+              id="interview-response-language"
+              label="Response language"
+              value={responseLanguage}
+              onValueChange={setResponseLanguage}
+              options={[
+                { label: 'English', value: 'English' },
+                { label: 'Spanish', value: 'Spanish' },
+                { label: 'French', value: 'French' },
+                { label: 'German', value: 'German' },
+                { label: 'Portuguese', value: 'Portuguese' },
+                { label: 'Mandarin Chinese', value: 'Mandarin Chinese' },
+              ]}
+            />
+          </div>
+          <div className="grid gap-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Behavior</p>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+              <span className="inline-flex items-center gap-1.5">
+                <Checkbox checked={autoAnswer} onCheckedChange={(checked) => setAutoAnswer(Boolean(checked))} label="Auto Answer" />
+                <Tooltip>
+                  <TooltipTrigger className="text-ink-muted hover:text-ink focus-visible:outline-none">
+                    <CircleHelp aria-hidden="true" className="size-3.5" />
+                  </TooltipTrigger>
+                  <TooltipContent>Skip attempting each question yourself, reveal the AI's model answer immediately instead.</TooltipContent>
+                </Tooltip>
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Checkbox checked={saveTranscript} onCheckedChange={(checked) => setSaveTranscript(Boolean(checked))} label="Save Transcript" />
+                <Tooltip>
+                  <TooltipTrigger className="text-ink-muted hover:text-ink focus-visible:outline-none">
+                    <CircleHelp aria-hidden="true" className="size-3.5" />
+                  </TooltipTrigger>
+                  <TooltipContent>Keep a written transcript of this session in your history.</TooltipContent>
+                </Tooltip>
+              </span>
+            </div>
+          </div>
         </FormPanel>
       </section>
 
-      <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
-        <DialogPopup aria-label="Add documents from Knowledge Base">
-          <DialogClose />
-          <DialogTitle>Add from Knowledge Base</DialogTitle>
-          <p className="mt-1 text-sm text-ink-muted">Select the documents you want the interviewer to use as context for this session.</p>
-          <div className="mt-4 grid max-h-80 gap-1 overflow-y-auto">
-            {knowledgeBaseDocuments.length === 0 ? (
-              <p className="py-6 text-center text-sm text-ink-muted">No documents in your Knowledge Base yet.</p>
-            ) : (
-              knowledgeBaseDocuments.map((doc) => (
-                <label key={doc.id} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 hover:bg-surface-subtle">
-                  <Checkbox checked={draftDocIds.has(doc.id)} onCheckedChange={() => toggleDraftDoc(doc.id)} aria-label={doc.name} />
-                  <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{doc.name}</span>
-                  <span className="shrink-0 text-xs text-ink-muted">{doc.sizeOrUrl}</span>
-                </label>
-              ))
-            )}
-          </div>
-          <div className="mt-6 flex justify-end gap-3">
-            <Button variant="ghost" onClick={() => setPickerOpen(false)}>Cancel</Button>
-            <Button
-              onClick={() => {
-                setSelectedDocIds(draftDocIds)
-                setPickerOpen(false)
-              }}
-            >
-              Add Selected
-            </Button>
-          </div>
-        </DialogPopup>
-      </Dialog>
+      <KnowledgeBasePickerDialog
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        documents={documents}
+        selectedIds={selectedDocIds}
+        onConfirm={setSelectedDocIds}
+        onAddDocument={(doc) => setDocuments((prev) => [...prev, doc])}
+        description="Select the documents you want the interviewer to use as context for this session."
+        listMaxHeightClassName="max-h-80"
+      />
     </Workspace>
   )
 }
@@ -378,7 +416,7 @@ export function InterviewVoiceView({ homeHref, configureHref, sessionHref, voice
         <div className="mx-auto w-full max-w-[720px]">
           <div className="border border-border bg-surface shadow-control">
             <div className="flex items-center justify-center gap-2 border-b border-border px-8 py-6">
-              <h1 className="text-lg font-medium">Choose interviewer voice</h1>
+              <h1 className="font-gowun text-lg font-medium">Choose interviewer voice</h1>
               <span className="text-xs text-ink-muted">2/2</span>
             </div>
             <div className="grid grid-cols-2 gap-x-5 gap-y-4 px-4 py-6 sm:grid-cols-2 sm:px-10 sm:py-8 lg:grid-cols-3">
@@ -660,7 +698,7 @@ function InterviewLiveSettingsModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup aria-label="Session settings" className="border-white/10 bg-[#1a2332] text-white before:bg-white/20 sm:max-w-lg">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Settings</h2>
+          <h2 className="font-gowun text-lg font-semibold">Settings</h2>
           <button type="button" onClick={() => onOpenChange(false)} className="grid size-8 place-items-center rounded-lg text-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30" aria-label="Close settings">
             <X aria-hidden="true" className="size-5" />
           </button>
@@ -1234,7 +1272,7 @@ export function InterviewCompleteView({ homeHref, sessionHref, preparingReportHr
             <span className="mx-auto grid size-16 place-items-center rounded-full bg-positive-surface text-positive">
               <Check aria-hidden="true" className="size-8" />
             </span>
-            <h1 className="text-2xl font-bold leading-8">Your Interview is complete!</h1>
+            <h1 className="font-gowun text-2xl font-bold leading-8">Your Interview is complete!</h1>
             <p className="mx-auto max-w-md text-sm leading-6 text-ink-muted">
               Thank you for completing your AI interview{companyName ? ` with ${companyName}` : ''}.
             </p>
@@ -1296,7 +1334,7 @@ export function InterviewPreparingReportView({ homeHref, steps, onComplete }: In
       <section className="px-4 py-12">
         <div className="mx-auto w-full max-w-lg border border-border bg-surface shadow-control">
           <div className="flex items-center justify-center gap-2 border-b border-border px-8 py-8">
-            <h1 className="text-xl font-medium">Preparing your coaching report...</h1>
+            <h1 className="font-gowun text-xl font-medium">Preparing your coaching report...</h1>
             <span className="text-sm text-ink-muted">1/2</span>
           </div>
           <div className="grid gap-4 p-8">
@@ -1462,7 +1500,7 @@ export function InterviewReportView({ homeHref, scenariosHref, practiceHref, rep
         <div className="mx-auto flex max-w-[64rem] flex-col gap-4 pt-8">
           <article className="w-full bg-surface shadow-panel">
             <div className="flex min-h-[5rem] items-center border-b border-border px-8">
-              <h1 className="text-xl font-medium leading-5 text-ink">Report</h1>
+              <h1 className="font-gowun text-xl font-bold leading-5 text-ink">Report</h1>
             </div>
 
             <div className="px-8 pt-6">
@@ -1479,7 +1517,7 @@ export function InterviewReportView({ homeHref, scenariosHref, practiceHref, rep
                       <div className="flex items-center gap-4">
                         <img src={report.interviewerImageSrc} alt="" className="size-16 rounded-full border-2 border-border object-cover shadow-control" />
                         <div>
-                          <h2 className="text-2xl font-bold leading-8">{report.title}</h2>
+                          <h2 className="font-gowun text-2xl font-bold leading-8">{report.title}</h2>
                           <p className="mt-1 text-sm text-ink-muted">{report.subtitle}</p>
                         </div>
                       </div>
@@ -1490,11 +1528,11 @@ export function InterviewReportView({ homeHref, scenariosHref, practiceHref, rep
                     </div>
 
                     <div className="flex flex-col items-start gap-6 rounded-panel border border-border p-6 shadow-control sm:flex-row sm:items-center">
-                      <div className="grid size-28 shrink-0 place-items-center rounded-full border-8 border-positive/30 bg-positive-surface text-4xl font-black text-positive">
+                      <div className="font-gowun grid size-28 shrink-0 place-items-center rounded-full border-8 border-positive/30 bg-positive-surface text-4xl font-black text-positive">
                         {report.score}
                       </div>
                       <div>
-                        <h2 className="text-xl font-bold leading-8">Summary</h2>
+                        <h2 className="font-gowun text-xl font-bold leading-8">Summary</h2>
                         <p className="mt-2 text-base leading-7 text-ink-muted">{report.summary}</p>
                       </div>
                     </div>
@@ -1515,7 +1553,7 @@ export function InterviewReportView({ homeHref, scenariosHref, practiceHref, rep
                 <TabsContent value="call">
                   <div className="flex flex-col gap-6 pb-8">
                     <div className="rounded-panel border border-border p-6 shadow-control lg:p-8">
-                      <h3 className="text-lg font-bold leading-7">Call Recording</h3>
+                      <h3 className="font-gowun text-lg font-bold leading-7">Call Recording</h3>
                       <div className="mt-4 flex min-h-16 items-center gap-4 rounded-panel border border-border bg-surface-subtle p-3">
                         <button type="button" aria-label="Play recording" className="grid size-12 place-items-center rounded-lg bg-accent text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                           <Play aria-hidden="true" className="size-5" />
