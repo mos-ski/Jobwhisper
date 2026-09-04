@@ -8,7 +8,8 @@ import type {
   AdminMarketplaceItem,
   AdminTutorialItem,
 } from '@/contracts/admin-content.draft'
-import type { AdminNavItem, AdminNotification, AdminSearchResult } from '@/contracts/admin.draft'
+import type { AdminMarketplacePricingConfig } from '@/contracts/admin-configuration.draft'
+import type { AdminModuleId, AdminNavItem, AdminNotification, AdminSearchResult } from '@/contracts/admin.draft'
 import type { UserIdentity } from '@/contracts/identity'
 import {
   Badge,
@@ -76,6 +77,8 @@ export type AdminContentViewProps = {
   readonly tab: AdminContentTab
   readonly onTabChange: (tab: AdminContentTab) => void
   readonly marketplaceItems: readonly AdminMarketplaceItem[]
+  /** The price-bound guardrail owned by Configuration → Pricing (`AdminMarketplacePricingConfig`) — read here rather than duplicated, so an admin cannot price a marketplace item outside what Configuration allows. */
+  readonly marketplacePricing: AdminMarketplacePricingConfig
   readonly downloadItems: readonly AdminDownloadItem[]
   readonly tutorialItems: readonly AdminTutorialItem[]
   readonly faqItems: readonly AdminFaqItem[]
@@ -92,6 +95,7 @@ export function AdminContentView({
   tab,
   onTabChange,
   marketplaceItems: initialMarketplace,
+  marketplacePricing,
   downloadItems: initialDownloads,
   tutorialItems: initialTutorials,
   faqItems: initialFaq,
@@ -110,7 +114,7 @@ export function AdminContentView({
   /* ---------- marketplace state ---------- */
   const [mpDialogOpen, setMpDialogOpen] = useState(false)
   const [mpEditing, setMpEditing] = useState<AdminMarketplaceItem | null>(null)
-  const [mpForm, setMpForm] = useState({ name: '', priceDollars: '', description: '' })
+  const [mpForm, setMpForm] = useState({ name: '', priceDollars: '', description: '', assetFileName: '' })
   const [mpTouched, setMpTouched] = useState(false)
 
   /* ---------- downloads state ---------- */
@@ -137,30 +141,41 @@ export function AdminContentView({
 
   function openMpAdd() {
     setMpEditing(null)
-    setMpForm({ name: '', priceDollars: '', description: '' })
+    setMpForm({ name: '', priceDollars: '', description: '', assetFileName: '' })
     setMpTouched(false)
     setMpDialogOpen(true)
   }
 
   function openMpEdit(item: AdminMarketplaceItem) {
     setMpEditing(item)
-    setMpForm({ name: item.name, priceDollars: String(item.priceDollars), description: item.description })
+    setMpForm({ name: item.name, priceDollars: String(item.priceDollars), description: item.description, assetFileName: item.assetFileName })
     setMpTouched(false)
     setMpDialogOpen(true)
   }
 
+  // The price guardrail is owned by Configuration → Pricing (AdminMarketplacePricingConfig), not
+  // redefined here — every add/edit is validated against whatever min/max it currently holds.
+  const mpMinDollars = marketplacePricing.minPriceCents / 100
+  const mpMaxDollars = marketplacePricing.maxPriceCents / 100
+
   const mpNameError = mpTouched && !mpForm.name.trim() ? 'Name is required.' : undefined
-  const mpPriceError = mpTouched && (!mpForm.priceDollars || Number(mpForm.priceDollars) <= 0) ? 'Enter a price greater than $0.' : undefined
+  const mpPriceValue = Number(mpForm.priceDollars)
+  const mpPriceError =
+    mpTouched && (!mpForm.priceDollars || Number.isNaN(mpPriceValue) || mpPriceValue < mpMinDollars || mpPriceValue > mpMaxDollars)
+      ? `Enter a price between $${mpMinDollars} and $${mpMaxDollars} — the bound set in Configuration → Pricing.`
+      : undefined
+  const mpAssetError = mpTouched && !mpForm.assetFileName.trim().toLowerCase().endsWith('.pdf') ? 'Enter a PDF filename, e.g. swipe-file.pdf.' : undefined
 
   function saveMarketplace() {
     setMpTouched(true)
-    if (!mpForm.name.trim() || !mpForm.priceDollars || Number(mpForm.priceDollars) <= 0) return
-    const price = Number(mpForm.priceDollars)
+    if (!mpForm.name.trim() || !mpForm.priceDollars || Number.isNaN(mpPriceValue) || mpPriceValue < mpMinDollars || mpPriceValue > mpMaxDollars) return
+    if (!mpForm.assetFileName.trim().toLowerCase().endsWith('.pdf')) return
+    const price = mpPriceValue
     if (mpEditing) {
-      setMarketplaceItems((prev) => prev.map((item) => item.id === mpEditing.id ? { ...item, name: mpForm.name.trim(), priceDollars: price, description: mpForm.description.trim() } : item))
+      setMarketplaceItems((prev) => prev.map((item) => item.id === mpEditing.id ? { ...item, name: mpForm.name.trim(), priceDollars: price, description: mpForm.description.trim(), assetFileName: mpForm.assetFileName.trim() } : item))
     } else {
       const id = `mp-${Date.now()}`
-      setMarketplaceItems((prev) => [...prev, { id, name: mpForm.name.trim(), priceDollars: price, description: mpForm.description.trim() }])
+      setMarketplaceItems((prev) => [...prev, { id, name: mpForm.name.trim(), priceDollars: price, description: mpForm.description.trim(), assetFileName: mpForm.assetFileName.trim() }])
     }
     setMpDialogOpen(false)
   }
@@ -182,6 +197,7 @@ export function AdminContentView({
     { key: 'name', label: 'Item', sortable: true, sortValue: (r) => r.name, render: (r) => <span className="font-medium text-ink">{r.name}</span> },
     { key: 'price', label: 'Price', sortable: true, sortValue: (r) => r.priceDollars, render: (r) => <span className="tabular-nums text-ink">${r.priceDollars}</span> },
     { key: 'description', label: 'Description', render: (r) => <span className="line-clamp-2 text-sm text-ink-muted">{r.description}</span> },
+    { key: 'asset', label: 'PDF asset', render: (r) => <span className="text-sm text-ink-muted">{r.assetFileName}</span> },
     { key: 'actions', label: 'Actions', hideInMobileDetail: true, render: (r) => (
       <span className="flex gap-1">
         <button type="button" onClick={() => openMpEdit(r)} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"><Pencil aria-hidden="true" className="size-3.5" />Edit</button>
@@ -413,7 +429,7 @@ export function AdminContentView({
   /* ======================================================================== */
 
   return (
-    <AdminShell user={user} navItems={navItems} activeModule="systems" notifications={notifications} searchResults={searchResults}>
+    <AdminShell user={user} navItems={navItems} activeModule={'content' as unknown as AdminModuleId} notifications={notifications} searchResults={searchResults}>
       <div className="grid gap-6 p-4 sm:p-6">
         <div>
           <h1 className="font-gowun text-3xl font-bold leading-tight text-ink">Content</h1>
@@ -462,8 +478,19 @@ export function AdminContentView({
           <DialogDescription>Items appear in the candidate-side Marketplace tab.</DialogDescription>
           <div className="mt-4 grid gap-4">
             <TextField id="mp-name" label="Name" value={mpForm.name} onChange={(e) => setMpForm((prev) => ({ ...prev, name: e.target.value }))} error={mpNameError} placeholder="e.g. Interview Answer Swipe File" />
-            <TextField id="mp-price" label="Price (USD)" type="number" value={mpForm.priceDollars} onChange={(e) => setMpForm((prev) => ({ ...prev, priceDollars: e.target.value }))} error={mpPriceError} placeholder="19" />
+            <TextField
+              id="mp-price"
+              label={`Price (USD, $${mpMinDollars}–$${mpMaxDollars})`}
+              type="number"
+              min={mpMinDollars}
+              max={mpMaxDollars}
+              value={mpForm.priceDollars}
+              onChange={(e) => setMpForm((prev) => ({ ...prev, priceDollars: e.target.value }))}
+              error={mpPriceError}
+              placeholder={String(mpMinDollars)}
+            />
             <FormTextArea id="mp-desc" label="Description" value={mpForm.description} onChange={(e) => setMpForm((prev) => ({ ...prev, description: e.target.value }))} rows={3} placeholder="Short description shown to candidates" />
+            <TextField id="mp-asset" label="PDF asset filename" value={mpForm.assetFileName} onChange={(e) => setMpForm((prev) => ({ ...prev, assetFileName: e.target.value }))} error={mpAssetError} placeholder="e.g. swipe-file.pdf" />
           </div>
           <div className="mt-5 flex flex-wrap justify-end gap-2">
             <DialogClose className="static inline-flex min-h-9 items-center rounded-lg border border-input px-4 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Cancel</DialogClose>

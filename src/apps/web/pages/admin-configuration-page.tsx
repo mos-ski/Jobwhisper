@@ -16,7 +16,7 @@ import {
   adminUnsubscribedAllowance,
 } from '@/mocks/admin-configuration'
 
-const CONFIG_TABS: readonly AdminConfigurationTab[] = ['pricing', 'coupons', 'trials']
+const CONFIG_TABS: readonly AdminConfigurationTab[] = ['pricing', 'coupons', 'trials', 'referral']
 
 export function AdminConfigurationPage() {
   const [params, setParams] = useSearchParams()

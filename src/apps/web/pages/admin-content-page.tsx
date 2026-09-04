@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import type { AdminContentTab } from '@/contracts/admin-content.draft'
 import { AdminContentView } from '@/features/admin/admin-content-view'
 import { adminNavItems, adminNotifications, adminSearchResults, adminSession } from '@/mocks/admin'
+import { adminMarketplacePricing } from '@/mocks/admin-configuration'
 import { adminDownloadItems, adminFaqItems, adminMarketplaceItems, adminTutorialItems } from '@/mocks/admin-content'
 
 const CONTENT_TABS: readonly AdminContentTab[] = ['marketplace', 'downloads', 'tutorials', 'faq']
@@ -28,6 +29,7 @@ export function AdminContentPage() {
         setParams(next, { replace: true })
       }}
       marketplaceItems={adminMarketplaceItems}
+      marketplacePricing={adminMarketplacePricing}
       downloadItems={adminDownloadItems}
       tutorialItems={adminTutorialItems}
       faqItems={adminFaqItems}

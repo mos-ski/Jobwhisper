@@ -51,7 +51,7 @@ import {
 
 import { AdminShell } from './admin-shell'
 
-export type AdminConfigurationTab = 'pricing' | 'coupons' | 'trials'
+export type AdminConfigurationTab = 'pricing' | 'coupons' | 'trials' | 'referral'
 
 export type AdminConfigurationViewProps = {
   readonly user: UserIdentity
@@ -2083,18 +2083,14 @@ function TrialsTab({
   unsubscribedAllowance,
   survey,
   plans,
-  referral,
   onSaveTrials,
-  onSaveReferral,
 }: {
   readonly trial: AdminTrialConfig
   readonly featureDefinitions: readonly AdminConfigFeatureDefinition[]
   readonly unsubscribedAllowance: AdminUnsubscribedAllowanceConfig
   readonly survey: AdminOnboardingSurveyConfig
   readonly plans: readonly AdminPlanConfig[]
-  readonly referral: AdminReferralProgramConfig
   readonly onSaveTrials?: (changes: readonly AdminConfigChange[]) => void
-  readonly onSaveReferral?: (changes: readonly AdminConfigChange[]) => void
 }) {
   const initial = useMemo(
     () => buildTrialsForm(trial, featureDefinitions, unsubscribedAllowance, survey),
@@ -2525,8 +2521,6 @@ function TrialsTab({
             </ol>
           )}
         </SectionPanel>
-
-        <ReferralProgramSection config={referral} onSave={onSaveReferral} />
       </form>
 
       <SectionPanel
@@ -2574,6 +2568,7 @@ const tabLabels: Record<AdminConfigurationTab, string> = {
   pricing: 'Pricing',
   coupons: 'Coupons and promotions',
   trials: 'Trials and onboarding',
+  referral: 'Referral program',
 }
 
 export function AdminConfigurationView({
@@ -2603,7 +2598,7 @@ export function AdminConfigurationView({
   onDeactivateCoupon,
 }: AdminConfigurationViewProps) {
   function handleTabChange(value: string) {
-    if (value === 'pricing' || value === 'coupons' || value === 'trials') onTabChange?.(value)
+    if (value === 'pricing' || value === 'coupons' || value === 'trials' || value === 'referral') onTabChange?.(value)
   }
 
   return (
@@ -2628,7 +2623,7 @@ export function AdminConfigurationView({
 
           <Tabs value={tab} onValueChange={handleTabChange}>
             <TabsList aria-label="Configuration sections">
-              {(['pricing', 'coupons', 'trials'] as const).map((id) => (
+              {(['pricing', 'coupons', 'trials', 'referral'] as const).map((id) => (
                 <TabsTrigger key={id} value={id} className="min-h-11">
                   {tabLabels[id]}
                 </TabsTrigger>
@@ -2666,10 +2661,12 @@ export function AdminConfigurationView({
                 unsubscribedAllowance={unsubscribedAllowance}
                 survey={survey}
                 plans={plans}
-                referral={referral}
                 onSaveTrials={onSaveTrials}
-                onSaveReferral={onSaveReferral}
               />
+            </TabsContent>
+
+            <TabsContent value="referral">
+              <ReferralProgramSection config={referral} onSave={onSaveReferral} />
             </TabsContent>
           </Tabs>
         </div>

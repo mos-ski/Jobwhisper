@@ -33,4 +33,11 @@ export type AdminTutorialItem = TutorialItem & {
 export type AdminDownloadItem = Omit<DownloadItem, 'id'> & {
   readonly id: string
 }
-export type AdminMarketplaceItem = MarketplaceItem
+/**
+ * Extends the candidate-side `MarketplaceItem` with the PDF asset filename backing it.
+ * The candidate view renders a fixed marketplace icon for every item today and has no
+ * per-item asset field to manage — this is what the admin catalog needs to add one.
+ */
+export type AdminMarketplaceItem = MarketplaceItem & {
+  readonly assetFileName: string
+}
