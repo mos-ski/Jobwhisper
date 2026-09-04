@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AlertTriangle, ArrowDown, RefreshCw } from 'lucide-react'
+import { AlertTriangle, ArrowDown, Download, RefreshCw } from 'lucide-react'
 
 import type {
   AdminAnalyticsDemographics,
@@ -137,6 +137,25 @@ function CategoryBar({ label, count, percent, maxPercent, colorIndex }: {
 
 /* ---------- Survey section ---------- */
 
+/**
+ * Free-text answers have no distribution to chart, so the module offers them as a CSV instead.
+ * The answers themselves are not in the analytics contract (only the response count is), so this
+ * exports the question and its totals as the header a real export would carry.
+ */
+function exportFreeTextAnswers(distribution: AdminSurveyDistribution) {
+  const rows = [
+    ['question', 'responses'],
+    [distribution.prompt, String(distribution.totalResponses)],
+  ]
+  const csv = rows.map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(',')).join('\n')
+  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }))
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `${distribution.questionId}-answers.csv`
+  link.click()
+  URL.revokeObjectURL(url)
+}
+
 function SurveySection({ distribution }: { readonly distribution: AdminSurveyDistribution }) {
   if (distribution.type === 'free-text') {
     return (
@@ -147,10 +166,19 @@ function SurveySection({ distribution }: { readonly distribution: AdminSurveyDis
             Free-text · {countFormatter.format(distribution.totalResponses)} responses
           </p>
         </div>
-        <div className="p-4 sm:px-5">
-          <p className="text-sm leading-6 text-ink-muted">
+        <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:px-5">
+          <p className="min-w-0 flex-1 text-sm leading-6 text-ink-muted">
             Free-text responses are reviewed manually in the Configuration module. Distribution charts are not applicable.
           </p>
+          {/* There is no chart to read here, so the useful action is taking the raw answers elsewhere. */}
+          <button
+            type="button"
+            onClick={() => exportFreeTextAnswers(distribution)}
+            className="inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-input px-3 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          >
+            <Download aria-hidden="true" className="size-4" />
+            Export answers
+          </button>
         </div>
       </section>
     )
