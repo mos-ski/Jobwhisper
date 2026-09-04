@@ -37,14 +37,14 @@ const TABS: readonly { readonly id: AdminAnalyticsTab; readonly label: string }[
 // Shades of the brand blue (--lf-accent), darkest to lightest, mixed via color-mix
 // so the ramp stays tied to one token instead of introducing new hardcoded hues.
 const CATEGORY_COLORS = [
-  'color-mix(in srgb, var(--lf-accent) 70%, black)',
-  'color-mix(in srgb, var(--lf-accent) 85%, black)',
   'var(--lf-accent)',
-  'color-mix(in srgb, var(--lf-accent) 88%, white)',
-  'color-mix(in srgb, var(--lf-accent) 74%, white)',
-  'color-mix(in srgb, var(--lf-accent) 60%, white)',
-  'color-mix(in srgb, var(--lf-accent) 46%, white)',
+  'color-mix(in srgb, var(--lf-accent) 82%, white)',
+  'color-mix(in srgb, var(--lf-accent) 68%, white)',
+  'color-mix(in srgb, var(--lf-accent) 56%, white)',
+  'color-mix(in srgb, var(--lf-accent) 44%, white)',
   'color-mix(in srgb, var(--lf-accent) 32%, white)',
+  'color-mix(in srgb, var(--lf-accent) 22%, white)',
+  'color-mix(in srgb, var(--lf-accent) 14%, white)',
 ] as const
 
 function categoryColor(index: number) {
