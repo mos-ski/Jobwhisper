@@ -1,7 +1,7 @@
 import { useSearchParams } from 'react-router-dom'
 
 import { AdminKpisView } from '@/features/admin/admin-kpis-view'
-import { adminNavItems, adminNotifications, adminSearchResults, adminSession } from '@/mocks/admin'
+import { adminDateRanges, adminNavItems, adminNotifications, adminSearchResults, adminSession } from '@/mocks/admin'
 import { adminRevenueKpis } from '@/mocks/admin-kpis'
 
 export function AdminKpisPage() {
@@ -15,6 +15,7 @@ export function AdminKpisPage() {
       navItems={adminNavItems}
       notifications={adminNotifications}
       searchResults={adminSearchResults}
+      dateRanges={adminDateRanges}
       kpis={adminRevenueKpis}
       isLoading={params.get('state') === 'loading'}
     />

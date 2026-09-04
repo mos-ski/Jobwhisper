@@ -1,45 +1,235 @@
-import { useState, type ReactNode } from 'react'
+import { useState } from 'react'
+import { ChevronDown, Settings2 } from 'lucide-react'
 
-import type { AdminRevenueKpis } from '@/contracts/admin-kpis.draft'
-import type { AdminNavItem, AdminNotification, AdminSearchResult } from '@/contracts/admin.draft'
+import type { AdminKpiCard, AdminRevenueKpis } from '@/contracts/admin-kpis.draft'
+import type { AdminDateRange, AdminDateRangeId, AdminNavItem, AdminNotification, AdminSearchResult } from '@/contracts/admin.draft'
 import type { UserIdentity } from '@/contracts/identity'
-import { cn, formatUsdWhole, Skeleton } from '@/ui'
+import type { BadgeVariant } from '@/ui'
+import {
+  Badge,
+  Button,
+  cn,
+  Collapsible,
+  CollapsiblePanel,
+  CollapsibleTrigger,
+  Dialog,
+  DialogClose,
+  DialogDescription,
+  DialogPopup,
+  DialogTitle,
+  formatUsdWhole,
+  Skeleton,
+} from '@/ui'
 
 import { AdminShell } from './admin-shell'
 
-function Section({ title, note, children }: { readonly title: string; readonly note?: string; readonly children: ReactNode }) {
+/* ---------- Status ---------- */
+
+type KpiStatus = 'surplus' | 'achieved' | 'in-progress' | 'at-risk'
+
+type StatusMeta = {
+  readonly label: string
+  readonly badge: BadgeVariant
+  readonly bar: string
+  readonly text: string
+}
+
+const STATUS_META: Record<KpiStatus, StatusMeta> = {
+  surplus: { label: 'Surplus', badge: 'positive', bar: 'bg-positive', text: 'text-positive' },
+  achieved: { label: 'Achieved', badge: 'positive', bar: 'bg-positive', text: 'text-positive' },
+  'in-progress': { label: 'In progress', badge: 'accent', bar: 'bg-accent', text: 'text-accent-text' },
+  'at-risk': { label: 'At risk', badge: 'warning', bar: 'bg-warning', text: 'text-warning' },
+}
+
+/** Percent is rounded first so the badge can never disagree with the number printed beside it. */
+function percentOfTarget(actualCents: number, targetCents: number) {
+  if (targetCents <= 0) return 0
+  return Math.round((actualCents / targetCents) * 100)
+}
+
+function statusOf(percent: number): KpiStatus {
+  if (percent >= 110) return 'surplus'
+  if (percent >= 100) return 'achieved'
+  if (percent >= 70) return 'in-progress'
+  return 'at-risk'
+}
+
+/* ---------- Shared pieces ---------- */
+
+function IndicatorBar({ percent, status, className }: {
+  readonly percent: number
+  readonly status: KpiStatus
+  readonly className?: string
+}) {
   return (
-    <section className="grid gap-3">
-      <h2 className="font-gowun text-xl font-bold text-ink">{title}</h2>
-      {children}
-      {note ? <p className="text-sm leading-6 text-ink-muted">{note}</p> : null}
-    </section>
+    <div className={cn('h-2 w-full overflow-hidden rounded-pill bg-surface-subtle', className)}>
+      <div
+        className={cn('h-full rounded-pill transition-all duration-normal ease-default motion-reduce:transition-none', STATUS_META[status].bar)}
+        style={{ inlineSize: `${Math.min(100, Math.max(0, percent))}%` }}
+      />
+    </div>
   )
 }
 
-function Th({ children, align }: { readonly children: ReactNode; readonly align?: 'end' }) {
+/** The gear that opens the target dialog. */
+function TargetGearButton({ label, onClick }: { readonly label: string; readonly onClick: () => void }) {
   return (
-    <th scope="col" className={cn('px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted', align === 'end' && 'text-end')}>
-      {children}
-    </th>
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={`Edit the target for ${label}`}
+      className="grid size-8 shrink-0 place-items-center rounded-soft text-ink-muted transition-colors hover:bg-surface-subtle hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+    >
+      <Settings2 aria-hidden="true" className="size-4" />
+    </button>
   )
 }
 
-function Td({ children, align, bold }: { readonly children: ReactNode; readonly align?: 'end'; readonly bold?: boolean }) {
+/* ---------- Indicator card ---------- */
+
+function KpiIndicatorCard({ card, targetCents, onEditTarget }: {
+  readonly card: AdminKpiCard
+  readonly targetCents: number
+  readonly onEditTarget: () => void
+}) {
+  const [open, setOpen] = useState(false)
+  const percent = percentOfTarget(card.actualCents, targetCents)
+  const status = statusOf(percent)
+  const meta = STATUS_META[status]
+
   return (
-    <td className={cn('px-4 py-2.5', align === 'end' && 'text-end tabular-nums', bold && 'font-semibold text-ink')}>
-      {children}
-    </td>
+    <Collapsible open={open} onOpenChange={setOpen} className="flex h-fit flex-col bg-surface shadow-panel">
+      <div className="p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{card.label}</h3>
+          <div className="flex shrink-0 items-center gap-1.5">
+            <Badge variant={meta.badge} size="sm">{meta.label}</Badge>
+            <TargetGearButton label={card.label} onClick={onEditTarget} />
+          </div>
+        </div>
+
+        <div className="mt-2 flex items-baseline justify-between gap-3">
+          <p className="font-gowun text-3xl font-bold leading-9 text-ink">{formatUsdWhole(card.actualCents)}</p>
+          <p className={cn('font-gowun text-lg font-bold tabular-nums', meta.text)}>{percent}%</p>
+        </div>
+
+        <IndicatorBar percent={percent} status={status} className="mt-3" />
+
+        <p className="mt-3 text-sm text-ink-muted">of {formatUsdWhole(targetCents)} target</p>
+        <p className="mt-1 text-xs leading-5 text-ink-muted">
+          {card.actualDetail} · plan assumes {card.targetDetail}
+        </p>
+      </div>
+
+      <CollapsibleTrigger className="flex min-h-11 w-full items-center justify-between gap-2 border-t border-border px-4 text-sm font-semibold text-accent-text transition-colors hover:bg-surface-subtle sm:px-5">
+        <span>{open ? 'Hide breakdown' : 'Breakdown'}</span>
+        <ChevronDown aria-hidden="true" className={cn('size-4 transition-transform duration-normal ease-default motion-reduce:transition-none', open && 'rotate-180')} />
+      </CollapsibleTrigger>
+
+      <CollapsiblePanel>
+        <div className="border-t border-border">
+          <table className="w-full text-start text-sm">
+            <caption className="sr-only">{card.label} breakdown, target against the current period</caption>
+            <thead>
+              <tr className="border-b border-border bg-surface-subtle text-ink-muted">
+                <th scope="col" className="px-4 py-2 text-start text-xs font-semibold uppercase tracking-wide sm:px-5">Line</th>
+                <th scope="col" className="px-4 py-2 text-end text-xs font-semibold uppercase tracking-wide">Target</th>
+                <th scope="col" className="px-4 py-2 text-end text-xs font-semibold uppercase tracking-wide sm:px-5">Current</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {card.detailRows.map((row) => {
+                const rowPercent = percentOfTarget(row.actualCents, row.targetCents)
+                const rowStatus = statusOf(rowPercent)
+                return (
+                  <tr key={row.id}>
+                    <th scope="row" className="px-4 py-3 text-start font-semibold text-ink sm:px-5">
+                      <span className="block">{row.label}</span>
+                      <span className="mt-0.5 block text-xs font-normal text-ink-muted">{row.targetDetail}</span>
+                    </th>
+                    <td className="px-4 py-3 text-end align-top tabular-nums text-ink-muted">{formatUsdWhole(row.targetCents)}</td>
+                    <td className="px-4 py-3 text-end align-top sm:px-5">
+                      <span className="block font-semibold tabular-nums text-ink">{formatUsdWhole(row.actualCents)}</span>
+                      <span className={cn('mt-0.5 block text-xs font-semibold tabular-nums', STATUS_META[rowStatus].text)}>
+                        {rowPercent}% · {row.actualDetail}
+                      </span>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+          <p className="border-t border-border p-4 text-xs leading-5 text-ink-muted sm:px-5">{card.detailNote}</p>
+        </div>
+      </CollapsiblePanel>
+    </Collapsible>
   )
 }
 
-function TotalRow({ label, value, colSpan }: { readonly label: string; readonly value: string; readonly colSpan: number }) {
+/* ---------- Target dialog ---------- */
+
+type PendingTarget = {
+  readonly id: string
+  readonly label: string
+  readonly currentCents: number
+  readonly rangeLabel: string
+}
+
+function TargetDialog({ pending, onClose, onSave }: {
+  readonly pending: PendingTarget | null
+  readonly onClose: () => void
+  readonly onSave: (id: string, cents: number) => void
+}) {
+  // Seeded from the target being edited — the dialog is remounted per target, so this stays in step.
+  const [draft, setDraft] = useState(pending ? String(Math.round(pending.currentCents / 100)) : '')
+
   return (
-    <tr className="border-t-2 border-border bg-surface-subtle">
-      <Td bold>{label}</Td>
-      {colSpan > 2 ? Array.from({ length: colSpan - 2 }, (_, i) => <td key={i} />) : null}
-      <Td align="end" bold>{value}</Td>
-    </tr>
+    <Dialog
+      open={pending !== null}
+      onOpenChange={(open) => {
+        if (!open) onClose()
+      }}
+    >
+      <DialogPopup aria-labelledby="kpi-target-dialog-title">
+        <DialogClose aria-label="Cancel" />
+        <DialogTitle id="kpi-target-dialog-title">Set the {pending?.label} target</DialogTitle>
+        <DialogDescription>
+          The target this line is measured against for {pending?.rangeLabel}. Changing it recalculates the
+          indicator and its status straight away — it does not change what was actually earned.
+        </DialogDescription>
+        {pending ? (
+          <form
+            className="mt-6 grid gap-4"
+            onSubmit={(event) => {
+              event.preventDefault()
+              const dollars = Number(draft)
+              if (draft.trim() !== '' && Number.isFinite(dollars) && dollars >= 0) onSave(pending.id, Math.round(dollars * 100))
+              else onClose()
+            }}
+          >
+            <label className="grid gap-1.5">
+              <span className="text-sm font-medium text-ink">Target amount</span>
+              <span className="flex items-center gap-2">
+                <span className="font-gowun text-xl font-bold text-ink">$</span>
+                <input
+                  type="number"
+                  min={0}
+                  step={100}
+                  autoFocus
+                  value={draft}
+                  onChange={(event) => setDraft(event.target.value)}
+                  className="min-h-11 w-full rounded-md border border-input bg-surface px-3 font-gowun text-xl font-bold tabular-nums text-ink outline-none focus:border-focus focus:ring-2 focus:ring-focus"
+                />
+              </span>
+            </label>
+            <div className="flex flex-wrap justify-end gap-3">
+              <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
+              <Button type="submit">Save target</Button>
+            </div>
+          </form>
+        ) : null}
+      </DialogPopup>
+    </Dialog>
   )
 }
 
@@ -47,305 +237,151 @@ function KpiSkeleton() {
   return (
     <div className="grid gap-6 p-4 sm:p-6">
       <Skeleton className="h-9 w-64" />
-      <div className="grid gap-4 sm:grid-cols-3">
-        {Array.from({ length: 3 }, (_, index) => (
-          <Skeleton key={index} className="h-24" />
+      <Skeleton className="h-40" />
+      <div className="grid gap-4 sm:grid-cols-2">
+        {Array.from({ length: 4 }, (_, index) => (
+          <Skeleton key={index} className="h-56" />
         ))}
       </div>
-      <Skeleton className="h-64" />
-      <Skeleton className="h-64" />
     </div>
   )
 }
+
+/* ---------- View ---------- */
 
 export type AdminKpisViewProps = {
   readonly user: UserIdentity
   readonly navItems: readonly AdminNavItem[]
   readonly notifications: readonly AdminNotification[]
   readonly searchResults: readonly AdminSearchResult[]
+  readonly dateRanges: readonly AdminDateRange[]
   readonly kpis: AdminRevenueKpis
   readonly isLoading?: boolean
 }
 
-export function AdminKpisView({ user, navItems, notifications, searchResults, kpis, isLoading = false }: AdminKpisViewProps) {
-  const [targetDollars, setTargetDollars] = useState(String(kpis.targetCents / 100))
-  const targetCents = Math.max(0, Math.round((Number(targetDollars) || 0) * 100))
+export function AdminKpisView({ user, navItems, notifications, searchResults, dateRanges, kpis, isLoading = false }: AdminKpisViewProps) {
+  const [rangeId, setRangeId] = useState<AdminDateRangeId>(dateRanges[1]?.id ?? '30d')
+  const activeRange = dateRanges.find((range) => range.id === rangeId) ?? dateRanges[0]
 
-  const projectedCents = kpis.pathToTarget.reduce((sum, line) => sum + line.revenueCents, 0)
-  const gapCents = projectedCents - targetCents
-  const clearsTarget = gapCents >= 0
+  // Targets are edited through the dialog and held here — nothing is persisted, matching every
+  // other mocked admin mutation in this app. Keyed by range, so a 7-day target and a 30-day
+  // target stay separate numbers.
+  const [targetOverrides, setTargetOverrides] = useState<Readonly<Record<string, number>>>({})
+  const [pendingTarget, setPendingTarget] = useState<PendingTarget | null>(null)
 
-  const [renewalRatePercent, setRenewalRatePercent] = useState(String(kpis.vslForecast.renewalRatePercent))
-  const renewalRate = Math.max(0, Math.min(100, Number(renewalRatePercent) || 0))
-  const renewingCount = Math.round((kpis.vslForecast.monthlySignups * renewalRate) / 100)
-  const renewalRevenueCents = renewingCount * kpis.vslForecast.renewalPriceCents
+  const period = kpis.periods.find((entry) => entry.rangeId === rangeId) ?? kpis.periods[0]
+  const targetFor = (id: string, fallbackCents: number) => targetOverrides[`${rangeId}:${id}`] ?? fallbackCents
+
+  const overallTargetCents = targetFor('overall', period.targetCents)
+  const actualCents = period.cards.reduce((sum, card) => sum + card.actualCents, 0)
+  const plannedCents = period.cards.reduce((sum, card) => sum + targetFor(card.id, card.targetCents), 0)
+
+  const overallPercent = percentOfTarget(actualCents, overallTargetCents)
+  const overallStatus = statusOf(overallPercent)
+  const overallMeta = STATUS_META[overallStatus]
+  const gapCents = actualCents - overallTargetCents
+  const plannedPercent = percentOfTarget(plannedCents, overallTargetCents)
+
+  function saveTarget(id: string, cents: number) {
+    setTargetOverrides((prev) => ({ ...prev, [`${rangeId}:${id}`]: cents }))
+    setPendingTarget(null)
+  }
 
   return (
     <AdminShell user={user} navItems={navItems} activeModule="kpis" notifications={notifications} searchResults={searchResults}>
       {isLoading ? (
         <KpiSkeleton />
       ) : (
-        <div className="grid gap-8 p-4 sm:p-6">
-          <div>
-            <h1 className="font-gowun text-3xl font-bold leading-tight text-ink">Revenue & KPIs</h1>
-            <p className="mt-1 text-sm text-ink-muted">How Jobwhisper makes money, and the path to a self-sustaining monthly target.</p>
-          </div>
-
-          <section className="grid gap-4 sm:grid-cols-3">
-            <article className="bg-surface p-4 shadow-panel">
-              <label htmlFor="kpi-target" className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
-                Monthly target
-              </label>
-              <div className="mt-2 flex items-baseline gap-1">
-                <span className="font-gowun text-2xl font-bold text-ink">$</span>
-                <input
-                  id="kpi-target"
-                  type="number"
-                  min={0}
-                  step={100}
-                  value={targetDollars}
-                  onChange={(event) => setTargetDollars(event.target.value)}
-                  className="w-full min-w-0 border-b border-dashed border-input bg-transparent font-gowun text-3xl font-bold leading-9 text-ink focus-visible:outline-none focus-visible:border-accent"
-                />
-              </div>
-              <p className="mt-1.5 text-xs text-ink-muted">Editable — the self-sustaining line this page plans around.</p>
-            </article>
-            <article className="bg-surface p-4 shadow-panel">
-              <h2 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Projected revenue</h2>
-              <p className="mt-2 font-gowun text-3xl font-bold leading-9 text-ink">{formatUsdWhole(projectedCents)}</p>
-              <p className="mt-1.5 text-xs text-ink-muted">Sum of the plan mix below</p>
-            </article>
-            <article className={cn('p-4 shadow-panel', clearsTarget ? 'bg-positive-surface' : 'bg-warning-surface')}>
-              <h2 className={cn('text-xs font-semibold uppercase tracking-wide', clearsTarget ? 'text-positive' : 'text-warning')}>
-                {clearsTarget ? 'Surplus' : 'Shortfall'}
-              </h2>
-              <p className={cn('mt-2 font-gowun text-3xl font-bold leading-9', clearsTarget ? 'text-positive' : 'text-warning')}>
-                {clearsTarget ? '+' : '−'}{formatUsdWhole(Math.abs(gapCents))}
+        <div className="grid gap-6 p-4 sm:p-6">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h1 className="font-gowun text-3xl font-bold leading-tight text-ink">KPIs</h1>
+              <p className="mt-1 text-sm text-ink-muted">
+                Every revenue line against its target for {activeRange?.rangeLabel}. Open a card for the breakdown behind it; use the gear to change a target.
               </p>
-              <p className={cn('mt-1.5 text-xs', clearsTarget ? 'text-positive' : 'text-warning')}>
-                {clearsTarget ? 'This mix clears the target.' : 'This mix falls short of the target.'}
-              </p>
-            </article>
-          </section>
-
-          <Section title="The three plans">
-            <div className="overflow-x-auto bg-surface shadow-panel">
-              <table className="w-full min-w-[40rem] text-start text-sm">
-                <thead className="border-b border-border">
-                  <tr>
-                    <Th>Plan</Th>
-                    <Th>How it works</Th>
-                    <Th align="end">Price</Th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {kpis.plans.map((plan) => (
-                    <tr key={plan.label}>
-                      <Td bold>{plan.label}</Td>
-                      <Td>{plan.howItWorks}</Td>
-                      <Td align="end">{plan.priceLabel}</Td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </div>
-          </Section>
-
-          <Section title="Path to target — self-sustaining" note={kpis.pathToTargetNote}>
-            <div className="overflow-x-auto bg-surface shadow-panel">
-              <table className="w-full min-w-[40rem] text-start text-sm">
-                <thead className="border-b border-border">
-                  <tr>
-                    <Th>Plan</Th>
-                    <Th>Volume</Th>
-                    <Th align="end">Revenue</Th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {kpis.pathToTarget.map((line) => (
-                    <tr key={line.id}>
-                      <Td bold>{line.label}</Td>
-                      <Td>{line.volumeLabel}</Td>
-                      <Td align="end">{formatUsdWhole(line.revenueCents)}</Td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <TotalRow label="Total" value={formatUsdWhole(projectedCents)} colSpan={3} />
-                </tfoot>
-              </table>
-            </div>
-          </Section>
-
-          <Section title="Done For You — package mix" note={kpis.doneForYouNote}>
-            <div className="overflow-x-auto bg-surface shadow-panel">
-              <table className="w-full min-w-[32rem] text-start text-sm">
-                <thead className="border-b border-border">
-                  <tr>
-                    <Th>Package</Th>
-                    <Th align="end">Price</Th>
-                    <Th align="end">Sales</Th>
-                    <Th align="end">Revenue</Th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {kpis.doneForYouPackages.map((pkg) => (
-                    <tr key={pkg.label}>
-                      <Td bold>{pkg.label}</Td>
-                      <Td align="end">{formatUsdWhole(pkg.priceCents)}</Td>
-                      <Td align="end">{pkg.sales}</Td>
-                      <Td align="end">{formatUsdWhole(pkg.revenueCents)}</Td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <TotalRow
-                    label="Total"
-                    value={formatUsdWhole(kpis.doneForYouPackages.reduce((sum, pkg) => sum + pkg.revenueCents, 0))}
-                    colSpan={4}
-                  />
-                </tfoot>
-              </table>
-            </div>
-          </Section>
-
-          <Section title="Ace Your Interview — tier mix" note={kpis.aceYourInterviewNote}>
-            <div className="overflow-x-auto bg-surface shadow-panel">
-              <table className="w-full min-w-[36rem] text-start text-sm">
-                <thead className="border-b border-border">
-                  <tr>
-                    <Th>Tier</Th>
-                    <Th align="end">Price</Th>
-                    <Th align="end">Mix</Th>
-                    <Th align="end">Subscribers</Th>
-                    <Th align="end">Revenue</Th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {kpis.aceYourInterviewTiers.map((tier) => (
-                    <tr key={tier.label}>
-                      <Td bold>{tier.label}</Td>
-                      <Td align="end">{formatUsdWhole(tier.priceCents)}/mo</Td>
-                      <Td align="end">{tier.mixPercent}%</Td>
-                      <Td align="end">{tier.subscribers}</Td>
-                      <Td align="end">{formatUsdWhole(tier.revenueCents)}</Td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <TotalRow
-                    label="Total"
-                    value={formatUsdWhole(kpis.aceYourInterviewTiers.reduce((sum, tier) => sum + tier.revenueCents, 0))}
-                    colSpan={5}
-                  />
-                </tfoot>
-              </table>
-            </div>
-          </Section>
-
-          <Section title="Find Your Job & credit top-ups" note={kpis.findYourJobNote}>
-            <div className="overflow-x-auto bg-surface shadow-panel">
-              <table className="w-full min-w-[40rem] text-start text-sm">
-                <thead className="border-b border-border">
-                  <tr>
-                    <Th>Source</Th>
-                    <Th>Volume</Th>
-                    <Th align="end">Revenue</Th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {kpis.findYourJobSources.map((source) => (
-                    <tr key={source.label}>
-                      <Td bold>{source.label}</Td>
-                      <Td>{source.volumeLabel}</Td>
-                      <Td align="end">{formatUsdWhole(source.revenueCents)}</Td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <TotalRow
-                    label="Total"
-                    value={formatUsdWhole(kpis.findYourJobSources.reduce((sum, source) => sum + source.revenueCents, 0))}
-                    colSpan={3}
-                  />
-                </tfoot>
-              </table>
-            </div>
-          </Section>
-
-          <Section title="What's underneath the pricing">
-            <p className="text-sm leading-6 text-ink-muted">{kpis.pricingNote}</p>
-          </Section>
-
-          <Section title="Upsell layer">
-            <div className="overflow-x-auto bg-surface shadow-panel">
-              <table className="w-full min-w-[40rem] text-start text-sm">
-                <thead className="border-b border-border">
-                  <tr>
-                    <Th>Upsell</Th>
-                    <Th>Where it happens</Th>
-                    <Th>Offer</Th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {kpis.upsells.map((upsell) => (
-                    <tr key={upsell.label}>
-                      <Td bold>{upsell.label}</Td>
-                      <Td>{upsell.where}</Td>
-                      <Td>{upsell.offer}</Td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Section>
-
-          <Section title="Acquisition & CAC">
-            <div className="grid gap-3">
-              {kpis.acquisitionNotes.map((note) => (
-                <p key={note.title} className="text-sm leading-6 text-ink-muted">
-                  <span className="font-semibold text-ink">{note.title}: </span>
-                  {note.body}
-                </p>
+            <div className="flex flex-wrap gap-1 rounded-md border border-border bg-surface p-1" role="group" aria-label="Date range">
+              {dateRanges.map((range) => (
+                <button
+                  key={range.id}
+                  type="button"
+                  onClick={() => setRangeId(range.id)}
+                  aria-pressed={range.id === rangeId}
+                  className={cn(
+                    'min-h-9 rounded-soft px-3 text-sm font-medium transition-colors duration-normal ease-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+                    range.id === rangeId ? 'bg-accent-subtle text-accent-text' : 'text-ink-muted hover:bg-surface-subtle hover:text-ink',
+                  )}
+                >
+                  {range.label}
+                </button>
               ))}
             </div>
-          </Section>
+          </div>
 
-          <Section title="VSL renewal forecast">
-            <div className="bg-surface p-4 shadow-panel">
-              <p className="text-sm leading-6 text-ink-muted">
-                If <span className="font-semibold text-ink">{kpis.vslForecast.monthlySignups}</span> people take the{' '}
-                {formatUsdWhole(kpis.vslForecast.firstMonthPriceCents)} VSL first-month offer this month, that's{' '}
-                <span className="font-semibold text-ink">{formatUsdWhole(kpis.vslForecast.monthlySignups * kpis.vslForecast.firstMonthPriceCents)}</span> in first-month revenue from the cohort.
-              </p>
-              <div className="mt-4 flex flex-wrap items-end gap-3">
-                <label htmlFor="kpi-renewal-rate" className="text-sm font-medium text-ink">
-                  At a renewal rate of
-                </label>
-                <div className="flex items-baseline gap-1">
-                  <input
-                    id="kpi-renewal-rate"
-                    type="number"
-                    min={0}
-                    max={100}
-                    step={1}
-                    value={renewalRatePercent}
-                    onChange={(event) => setRenewalRatePercent(event.target.value)}
-                    className="w-16 border-b border-dashed border-input bg-transparent font-gowun text-lg font-bold text-ink focus-visible:outline-none focus-visible:border-accent"
-                  />
-                  <span className="text-sm font-medium text-ink">%</span>
-                </div>
+          <section aria-label="Revenue against target" className="bg-surface p-4 shadow-panel sm:p-5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Revenue</h2>
+                <p className="mt-2 font-gowun text-5xl font-bold leading-[1.1] text-ink">{formatUsdWhole(actualCents)}</p>
               </div>
-              <p className="mt-3 text-sm leading-6 text-ink-muted">
-                <span className="font-semibold text-ink">{renewingCount}</span> of those {kpis.vslForecast.monthlySignups} renew into month two at{' '}
-                {formatUsdWhole(kpis.vslForecast.renewalPriceCents)}/mo — that's{' '}
-                <span className="font-gowun text-lg font-bold text-positive">{formatUsdWhole(renewalRevenueCents)}/month</span> in ongoing renewal
-                revenue from this one month's VSL cohort, compounding as every subsequent month's cohort renews on top of it.
-              </p>
+              <div className="flex shrink-0 items-center gap-1.5">
+                <Badge variant={overallMeta.badge}>{overallMeta.label}</Badge>
+                <TargetGearButton
+                  label="revenue"
+                  onClick={() => setPendingTarget({
+                    id: 'overall',
+                    label: 'revenue',
+                    currentCents: overallTargetCents,
+                    rangeLabel: activeRange?.rangeLabel ?? '',
+                  })}
+                />
+              </div>
             </div>
-          </Section>
+
+            <div className="mt-4 flex items-center gap-3">
+              <IndicatorBar percent={overallPercent} status={overallStatus} />
+              <span className={cn('shrink-0 font-gowun text-lg font-bold tabular-nums', overallMeta.text)}>{overallPercent}%</span>
+            </div>
+
+            <p className="mt-3 text-sm text-ink-muted">
+              of {formatUsdWhole(overallTargetCents)} self-sustaining target —{' '}
+              <span className={cn('font-semibold', gapCents >= 0 ? 'text-positive' : 'text-warning')}>
+                {gapCents >= 0 ? `${formatUsdWhole(gapCents)} surplus` : `${formatUsdWhole(Math.abs(gapCents))} short`}
+              </span>
+            </p>
+            <p className="mt-1 text-xs leading-5 text-ink-muted">
+              The four line targets below add up to {formatUsdWhole(plannedCents)}, {plannedPercent}% of target — the plan is deliberately set above the line it has to clear.
+            </p>
+          </section>
+
+          <section aria-label="Revenue lines" className="grid gap-4 sm:grid-cols-2">
+            {period.cards.map((card) => {
+              const cardTargetCents = targetFor(card.id, card.targetCents)
+              return (
+                <KpiIndicatorCard
+                  key={card.id}
+                  card={card}
+                  targetCents={cardTargetCents}
+                  onEditTarget={() => setPendingTarget({
+                    id: card.id,
+                    label: card.label,
+                    currentCents: cardTargetCents,
+                    rangeLabel: activeRange?.rangeLabel ?? '',
+                  })}
+                />
+              )
+            })}
+          </section>
         </div>
       )}
+
+      <TargetDialog
+        // Remounting per target keeps the field's defaultValue in step with whichever card was opened.
+        key={pendingTarget?.id ?? 'none'}
+        pending={pendingTarget}
+        onClose={() => setPendingTarget(null)}
+        onSave={saveTarget}
+      />
     </AdminShell>
   )
 }
