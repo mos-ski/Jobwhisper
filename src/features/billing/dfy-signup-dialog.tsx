@@ -7,7 +7,7 @@ import { Button, Checkbox, cn, Dialog, DialogClose, DialogDescription, DialogPop
 
 export type DfySignupPackage = {
   readonly id: 'dfy-small' | 'dfy-large'
-  readonly jobsLabel: string
+  readonly guaranteeLabel: string
   readonly priceLabel: string
 }
 
@@ -67,10 +67,10 @@ function TermsBlock() {
     <div className="max-h-48 overflow-y-auto border border-border bg-surface-subtle p-3 text-xs leading-5 text-ink-muted [scrollbar-width:thin]">
       <p className="font-semibold text-ink">Done-For-You Service Agreement</p>
       <ul className="mt-2 grid gap-2 ps-4 list-disc">
-        <li>Your package includes a fixed number of applications submitted by a Jobwhisper success manager on your behalf, plus the stated months of product access.</li>
-        <li>A submitted application counts toward your package total even if the posting later closes or you aren&rsquo;t selected — we can&rsquo;t control employer outcomes.</li>
+        <li>Your package guarantees a fixed number of interviews landed through applications a Jobwhisper success manager submits on your behalf. This is a one-time purchase, not a subscription — your Jobwhisper access continues until we deliver the guarantee, however long that takes.</li>
+        <li>We keep applying on your behalf until the guaranteed interview count is reached — a posting closing or you not being selected doesn&rsquo;t count against it.</li>
         <li>Your success manager will reach out within 2 business days of signup to schedule your onboarding call.</li>
-        <li>Refunds: full refund if no applications have been submitted yet; prorated for jobs remaining after that.</li>
+        <li>Refunds: full refund if no applications have been submitted yet; prorated against interviews delivered after that.</li>
         <li>You can update your target roles, locations, and resume in Auto-Apply setup at any time — your success manager uses whatever is current there.</li>
       </ul>
     </div>
@@ -155,7 +155,7 @@ export function DfySignupDialog({ open, onOpenChange, pkg, profile, setupHref, s
           <>
             <StepIndicator step={step} />
             <DialogTitle className="font-gowun">A few questions</DialogTitle>
-            <DialogDescription>{pkg.jobsLabel} · {pkg.priceLabel}. We already have your target roles and locations from Auto-Apply setup.</DialogDescription>
+            <DialogDescription>{pkg.guaranteeLabel} · {pkg.priceLabel}. We already have your target roles and locations from Auto-Apply setup.</DialogDescription>
 
             <div className="mt-4 grid gap-4">
               <TextField
@@ -225,7 +225,7 @@ export function DfySignupDialog({ open, onOpenChange, pkg, profile, setupHref, s
           <>
             <StepIndicator step={step} />
             <DialogTitle className="font-gowun">Payment</DialogTitle>
-            <DialogDescription>{pkg.jobsLabel} · {pkg.priceLabel}</DialogDescription>
+            <DialogDescription>{pkg.guaranteeLabel} · {pkg.priceLabel}</DialogDescription>
 
             <RadioGroup value={paymentChoice} onValueChange={(value) => setPaymentChoice(value as 'saved' | 'new')} className="mt-4 gap-3">
               <label className={cn('flex items-center gap-3 border p-3', paymentChoice === 'saved' ? 'border-accent bg-accent-subtle' : 'border-input')}>

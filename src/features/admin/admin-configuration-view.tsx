@@ -463,8 +463,7 @@ type PackageForm = {
   readonly id: AdminDoneForYouPackageId
   readonly name: string
   readonly price: string
-  readonly jobCount: string
-  readonly accessMonths: string
+  readonly interviewsGuaranteed: string
   readonly inCheckoutCart: boolean
 }
 
@@ -507,8 +506,7 @@ function buildPricingForm(
       id: item.id,
       name: item.name,
       price: centsToInput(item.priceCents),
-      jobCount: String(item.jobCount),
-      accessMonths: String(item.includedAccessMonths),
+      interviewsGuaranteed: String(item.interviewsGuaranteed),
       inCheckoutCart: item.inCheckoutCart,
     })),
     marketplaceMin: centsToInput(marketplace.minPriceCents),
@@ -571,15 +569,11 @@ function validatePricing(form: PricingForm): Readonly<Record<string, string>> {
     }
     if (item.id === 'dfy-small') smallPrice = price
     if (item.id === 'dfy-large' && price !== null && smallPrice !== null && price <= smallPrice) {
-      errors[`${item.id}-price`] = `The 100 job package has to cost more than the 50 job package (${formatUsd(smallPrice)}).`
+      errors[`${item.id}-price`] = `The 20-interview package has to cost more than the 10-interview package (${formatUsd(smallPrice)}).`
     }
-    const jobs = parseWhole(item.jobCount)
-    if (jobs === null || jobs < 1) {
-      errors[`${item.id}-jobs`] = 'Enter a whole number of jobs, at least 1.'
-    }
-    const months = parseWhole(item.accessMonths)
-    if (months === null || months < 1 || months > 24) {
-      errors[`${item.id}-months`] = 'Enter a whole number of months between 1 and 24.'
+    const interviews = parseWhole(item.interviewsGuaranteed)
+    if (interviews === null || interviews < 1) {
+      errors[`${item.id}-interviews`] = 'Enter a whole number of interviews, at least 1.'
     }
   }
 
@@ -653,14 +647,7 @@ function pricingChanges(
     const base = baseline.packages.find((entry) => entry.id === item.id)
     if (!base) continue
     push(`${item.id}-price`, item.name, 'Package price', moneyLabel(base.price), moneyLabel(item.price))
-    push(`${item.id}-jobs`, item.name, 'Jobs included', countLabel(base.jobCount), countLabel(item.jobCount))
-    push(
-      `${item.id}-months`,
-      item.name,
-      'Bundled product access',
-      `${countLabel(base.accessMonths)} months`,
-      `${countLabel(item.accessMonths)} months`,
-    )
+    push(`${item.id}-interviews`, item.name, 'Interviews guaranteed', countLabel(base.interviewsGuaranteed), countLabel(item.interviewsGuaranteed))
     push(`${item.id}-cart`, item.name, 'Offered in the checkout cart', onOffLabel(base.inCheckoutCart), onOffLabel(item.inCheckoutCart))
   }
 
@@ -922,31 +909,24 @@ function PricingTab({
                 <h4 id={`${item.id}-heading`} className="text-sm font-bold text-ink">
                   {item.name}
                 </h4>
-                <div className="grid gap-4 sm:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <ConfigField
                     id={`${item.id}-price`}
-                    label="Price, USD"
+                    label="Price, USD (one-time, not a subscription)"
                     value={item.price}
                     error={errors[`${item.id}-price`]}
                     onChange={(value) => updatePackage(item.id, { price: value })}
                   />
                   <ConfigField
-                    id={`${item.id}-jobs`}
-                    label="Jobs included"
+                    id={`${item.id}-interviews`}
+                    label="Interviews guaranteed"
                     inputMode="numeric"
-                    value={item.jobCount}
-                    error={errors[`${item.id}-jobs`]}
-                    onChange={(value) => updatePackage(item.id, { jobCount: value })}
-                  />
-                  <ConfigField
-                    id={`${item.id}-months`}
-                    label="Months of product access"
-                    inputMode="numeric"
-                    value={item.accessMonths}
-                    error={errors[`${item.id}-months`]}
-                    onChange={(value) => updatePackage(item.id, { accessMonths: value })}
+                    value={item.interviewsGuaranteed}
+                    error={errors[`${item.id}-interviews`]}
+                    onChange={(value) => updatePackage(item.id, { interviewsGuaranteed: value })}
                   />
                 </div>
+                <p className="text-xs text-ink-muted">Jobwhisper product access continues until the guarantee is fulfilled — not a fixed number of months.</p>
                 <Switch
                   label="Offer in the checkout cart"
                   aria-label={`Offer ${item.name} in the checkout cart`}
@@ -955,8 +935,8 @@ function PricingTab({
                 />
                 {item.id === 'dfy-large' && item.inCheckoutCart ? (
                   <ImpactNote>
-                    The two packages are tiers of the same offer, not additive purchases. With both in the cart a buyer can select the 50
-                    job and the 100 job package together. Sell the 100 job package through the nurture flow instead.
+                    The two packages are tiers of the same offer, not additive purchases. With both in the cart a buyer can select the
+                    10-interview and 20-interview package together. Sell the 20-interview package through the nurture flow instead.
                   </ImpactNote>
                 ) : null}
               </section>

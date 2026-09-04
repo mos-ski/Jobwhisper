@@ -17,14 +17,13 @@ export type DoneForYouViewProps = {
 }
 
 const DFY_PACKAGES = [
-  { id: 'dfy-small', jobs: '50 Jobs', price: 497, access: '+ 1 month of Jobwhisper access', recommended: false },
-  { id: 'dfy-large', jobs: '100 Jobs', price: 997, access: '+ 3 months of Jobwhisper access', recommended: true },
+  { id: 'dfy-small', guarantee: '10 Interviews Guaranteed', price: 497, access: 'Access to Jobwhisper until fulfillment', recommended: false },
+  { id: 'dfy-large', guarantee: '20 Interviews Guaranteed', price: 997, access: 'Access to Jobwhisper until fulfillment', recommended: true },
 ] as const
 
 type PackageDetail = {
   readonly name: string
-  readonly jobs: string
-  readonly duration: string
+  readonly guarantee: string
   readonly price: string
   readonly includes: string
 }
@@ -32,17 +31,15 @@ type PackageDetail = {
 const PACKAGE_DETAILS: readonly PackageDetail[] = [
   {
     name: 'Small',
-    jobs: '50',
-    duration: '1 month',
+    guarantee: '10 interviews',
     price: '$497',
-    includes: 'Resume tailoring, job scouting/filtering, applying, success manager, + 1 month of Jobwhisper product access',
+    includes: 'Resume tailoring, job scouting/filtering, applying, a success manager, and Jobwhisper product access until the guarantee is fulfilled',
   },
   {
     name: 'Large',
-    jobs: '100',
-    duration: '1 month',
+    guarantee: '20 interviews',
     price: '$997',
-    includes: 'Resume tailoring, job scouting/filtering, applying, success manager, + 3 months of Jobwhisper product access',
+    includes: 'Resume tailoring, job scouting/filtering, applying, a success manager, and Jobwhisper product access until the guarantee is fulfilled',
   },
 ]
 
@@ -59,8 +56,7 @@ function PackageDetailsTable() {
             <thead>
               <tr className="border-b border-border bg-surface-subtle text-ink-muted">
                 <th className="px-3 py-2.5 text-start font-semibold sm:px-4">Package</th>
-                <th className="px-3 py-2.5 text-start font-semibold sm:px-4">Jobs</th>
-                <th className="px-3 py-2.5 text-start font-semibold sm:px-4">Duration</th>
+                <th className="px-3 py-2.5 text-start font-semibold sm:px-4">Guarantee</th>
                 <th className="px-3 py-2.5 text-start font-semibold sm:px-4">Price</th>
                 <th className="px-3 py-2.5 text-start font-semibold sm:px-4">Includes</th>
               </tr>
@@ -69,8 +65,7 @@ function PackageDetailsTable() {
               {PACKAGE_DETAILS.map((row) => (
                 <tr key={row.name} className="border-b border-border">
                   <td className="px-3 py-2.5 font-medium leading-5 text-ink sm:px-4">{row.name}</td>
-                  <td className="px-3 py-2.5 leading-5 text-ink sm:px-4">{row.jobs}</td>
-                  <td className="px-3 py-2.5 leading-5 text-ink sm:px-4">{row.duration}</td>
+                  <td className="px-3 py-2.5 leading-5 text-ink sm:px-4">{row.guarantee}</td>
                   <td className="px-3 py-2.5 font-semibold leading-5 text-ink sm:px-4">{row.price}</td>
                   <td className="px-3 py-2.5 leading-5 text-ink-muted sm:px-4">{row.includes}</td>
                 </tr>
@@ -118,19 +113,19 @@ export function DoneForYouView({ homeHref, backHref, usageHref, setupHref, profi
                 style={{ animationDelay: `${index * 70}ms`, animationFillMode: 'backwards' }}
                 className="flex animate-ease-in-bottom flex-col rounded-panel border border-border p-6 transition-all duration-normal ease-default hover:-translate-y-0.5 hover:shadow-control"
               >
-                <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Premium</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">One-time offer, not a subscription</p>
                 <p className="mt-4 flex items-baseline gap-1.5">
                   <span className="font-gowun text-3xl font-bold text-ink">${pkg.price}</span>
-                  <span className="text-sm text-ink-muted">per month</span>
+                  <span className="text-sm text-ink-muted">one time</span>
                 </p>
-                <p className="mt-4 text-sm font-bold text-ink">{pkg.jobs}</p>
+                <p className="mt-4 text-sm font-bold text-ink">{pkg.guarantee}</p>
                 <p className="mt-1 text-sm text-ink-muted">{pkg.access}</p>
 
                 <div className="mt-5">
                   <Button
                     variant={pkg.recommended ? 'primary' : 'secondary'}
                     className="w-full"
-                    onClick={() => setSignupPackage({ id: pkg.id, jobsLabel: pkg.jobs, priceLabel: `$${pkg.price}` })}
+                    onClick={() => setSignupPackage({ id: pkg.id, guaranteeLabel: pkg.guarantee, priceLabel: `$${pkg.price}` })}
                   >
                     Get Started
                   </Button>

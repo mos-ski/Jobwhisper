@@ -96,18 +96,18 @@ Confirmed 2026-09-02: this is a **one-time purchase, not a recurring monthly cha
 
 ### 2.2 Plan 3 — Find Jobs, Done For You
 
-A real person manually applies on the user's behalf, with a success manager assigned to guarantee the count. Sold as flat, committed packages, not open per-job billing — though the underlying economics are the same $10/successful job as the human-run rate (§3), just packaged with a bundle discount and a person attached:
+A real person manually applies on the user's behalf, with a success manager assigned to guarantee the outcome. Sold as flat, one-time packages — **not a subscription, not open per-job billing.**
 
-| Package | Jobs | Duration | Price | Includes |
-|---|---|---|---|---|
-| DFY — small | 50 | 1 month | **$497** | Resume tailoring, job scouting/filtering, applying, success manager, **+ 1 month of Jobwhisper product access** |
-| DFY — large | 100 | 1 month | **$997** | Same, **+ 3 months of Jobwhisper product access** (Plan 1) |
+| Package | Guarantee | Price | Includes |
+|---|---|---|---|
+| DFY — small | **10 interviews** | **$497**, one-time | Resume tailoring, job scouting/filtering, applying, success manager, **Jobwhisper product access until the guarantee is fulfilled** |
+| DFY — large | **20 interviews** | **$997**, one-time | Same, **Jobwhisper product access until the guarantee is fulfilled** |
 
-(Corrected 2026-09-02: the large package is $997, not the $999 floated earlier the same day. Revised same day: the small package now also bundles 1 month of Jobwhisper access — previously it had none, only the large package did. Both DFY tiers now scale Jobwhisper access with commitment size: 1 month at 50 jobs, 3 months at 100 jobs.)
+**Revised 2026-09-04: the guarantee metric changed from a job-application count to an interview count, and access changed from a fixed number of months to open-ended.** Previously: 50/100 applications submitted, bundled with 1/3 months of Jobwhisper access respectively. Now: 10/20 interviews *landed* is the actual guarantee — a stronger commitment than "we applied to N jobs for you" — and access to the rest of Jobwhisper continues for as long as it takes to deliver that guarantee, rather than expiring on a fixed calendar window regardless of whether the success manager has finished. Prices are unchanged ($497/$997). This supersedes the "50 jobs / 1 month" and "100 jobs / 3 months" language used everywhere below and in every other pricing doc in this repo.
 
 **Confirmed: the VSL checkout's existing "$999 Done-For-You Resume & LinkedIn Overhaul" offer *is* this — not a separate product.** It needs to be updated to actually present the $497/$997 packages, not left as a single $999 line item.
 
-**Confirmed 2026-09-02: the $497 (small, 50-job) package is added to the VSL checkout's cart** as one of the selectable add-on line items, alongside the existing swipe files/templates/scripts (§4.2, §5) — not replacing that stack, joining it.
+**Confirmed 2026-09-02: the $497 (small, 10-interview) package is added to the VSL checkout's cart** as one of the selectable add-on line items, alongside the existing swipe files/templates/scripts (§4.2, §5) — not replacing that stack, joining it.
 
 **The $997 (large) package is explicitly kept out of the cart** — confirmed 2026-09-02. It's upsold separately, later, as a nurturing campaign (extends §7's cross-sell idea rather than being a second item alongside $497). **Hard constraint for whenever/wherever $997 does get surfaced: a user must never be able to select both $497 and $997 at once** — they're tiers of the same package, not additive purchases. If $997 is ever added to a selectable UI (cart, upsell screen, anywhere), it needs to be mutually exclusive with $497 (radio-button style, not two independent checkboxes) — this was raised explicitly as the thing to avoid, not a minor detail.
 
@@ -189,7 +189,7 @@ A screenshot of an older, **Lightforth-branded** checkout step ("Wait — Boost 
 Every structural and pricing question raised through 2026-09-02 has been resolved, across several planning conversations — condensed to a changelog rather than a growing numbered list of strikethroughs, since re-litigating already-settled items wasn't adding anything:
 
 - Auto Apply and Resume Builder: pay-per-use (prepaid credits), no flat add-on fee, no subscription required, not in the signup order bump. §2, §2.1, §4.1.
-- DFY packages ($497/$997) are the $10/job rate sold as committed batches with a success manager — not a competing model. Both now bundle Jobwhisper access (1mo / 3mo). §2.2.
+- DFY packages ($497/$997) guarantee 10/20 interviews landed, one-time purchases (not subscriptions), with Jobwhisper access bundled until the guarantee is fulfilled rather than a fixed number of months. §2.2.
 - $497 goes in the VSL cart; $997 deliberately doesn't (upsold later, §7) — and the two must never be selectable together. §2.2, §4.2.
 - Job selection (self-pick vs. AI-pick) is a free preference inside Auto Apply, same cost either way, no manual submit step for anyone. Supersedes the earlier "Full-Auto is a Premium perk" idea, which lasted less than a day. §2.3.
 - Credits: 1 per unit always, dollar value varies by feature, $5/$10 minimums are hard floors, 12-month validity. §2.1, §3.

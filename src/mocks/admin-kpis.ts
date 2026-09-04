@@ -5,7 +5,7 @@ export const adminRevenueKpis: AdminRevenueKpis = {
   plans: [
     { label: 'Ace Your Interview', howItWorks: 'Recurring subscription — Starter/Pro/Premium', priceLabel: '$47 / $99 / $197 per month' },
     { label: 'Find Your Job', howItWorks: 'Prepaid pay-as-you-go credits, DIY', priceLabel: '$10 min → $1/successful application · $5 min → $0.10/prompt' },
-    { label: 'Done For You', howItWorks: 'Flat committed package, a success manager applies for the client', priceLabel: '$497 (50 jobs) / $997 (100 jobs)' },
+    { label: 'Done For You', howItWorks: 'One-time package, not a subscription — a success manager applies for the client until the guarantee is met', priceLabel: '$497 (10 interviews guaranteed) / $997 (20 interviews guaranteed)' },
   ],
   pathToTarget: [
     { id: 'dfy', label: 'Done For You', volumeLabel: '5 large + 3 small packages', revenueCents: 647_600 },
@@ -15,8 +15,8 @@ export const adminRevenueKpis: AdminRevenueKpis = {
   ],
   pathToTargetNote: 'Ace Your Interview is the largest line, not Done For You — the subscription base is what actually clears the self-sustaining line here, comfortably past target even weighted toward the lower-priced Starter tier.',
   doneForYouPackages: [
-    { label: 'Large (100 jobs)', priceCents: 99_700, sales: 5, revenueCents: 498_500 },
-    { label: 'Small (50 jobs)', priceCents: 49_700, sales: 3, revenueCents: 149_100 },
+    { label: 'Large (20 interviews guaranteed)', priceCents: 99_700, sales: 5, revenueCents: 498_500 },
+    { label: 'Small (10 interviews guaranteed)', priceCents: 49_700, sales: 3, revenueCents: 149_100 },
   ],
   doneForYouNote: 'The floor to plan around: at least 5 large-package sales a month.',
   aceYourInterviewTiers: [

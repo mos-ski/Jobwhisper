@@ -137,7 +137,7 @@ export const billingStandalonePurchases: readonly BillingStandalonePurchase[] = 
     presetDollars: [25, 50, 100],
     description: 'Let Jobwhisper apply to jobs for you. Pay as you go, no subscription required, credits are valid 12 months. Only charged when an application succeeds.',
     features: ['Scout, Filter, Tailor & Driver agents', 'Free preference: select jobs yourself, or let the AI select for you, same cost either way'],
-    note: 'Want a person to do it for you instead? Done-For-You packages start at $497 for 50 applications, with a success manager and a month of Jobwhisper access included.',
+    note: 'Want a person to do it for you instead? Done-For-You packages start at $497, one-time, for 10 interviews guaranteed — a success manager included, with Jobwhisper access until the guarantee is fulfilled.',
   },
 ]
 

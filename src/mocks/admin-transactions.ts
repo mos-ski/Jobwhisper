@@ -45,7 +45,7 @@ export const adminTransactions: readonly AdminTransactionRow[] = [
     id: 'txn_7T3XQP',
     customerName: 'Renata Alvarez',
     customerEmail: 'renata.alvarez@example.com',
-    productLabel: 'Find Jobs, Done For You · 50 jobs, plus two marketplace add-ons',
+    productLabel: 'Find Jobs, Done For You · 10 interviews guaranteed, plus two marketplace add-ons',
     type: 'done-for-you',
     direction: 'incoming',
     amountCents: 59_645,
@@ -191,7 +191,7 @@ export const adminTransactions: readonly AdminTransactionRow[] = [
     id: 'txn_2S8FMA',
     customerName: 'Yara Haddad',
     customerEmail: 'yara.haddad@example.com',
-    productLabel: 'Find Jobs, Done For You · 100 jobs, 3 months of product access',
+    productLabel: 'Find Jobs, Done For You · 20 interviews guaranteed, access until fulfillment',
     type: 'done-for-you',
     direction: 'incoming',
     amountCents: 99_700,
@@ -361,7 +361,7 @@ export const adminTransactions: readonly AdminTransactionRow[] = [
     id: 'txn_6M2DGT',
     customerName: 'Ingrid Sandvik',
     customerEmail: 'ingrid.sandvik@example.com',
-    productLabel: 'Find Jobs, Done For You · 50 jobs',
+    productLabel: 'Find Jobs, Done For You · 10 interviews guaranteed',
     type: 'done-for-you',
     direction: 'incoming',
     amountCents: 49_700,
@@ -613,7 +613,7 @@ export const adminDisputes: readonly AdminDisputeRow[] = [
     transactionId: 'txn_6M2DGT',
     customerName: 'Ingrid Sandvik',
     customerEmail: 'ingrid.sandvik@example.com',
-    productLabel: 'Find Jobs, Done For You · 50 jobs',
+    productLabel: 'Find Jobs, Done For You · 10 interviews guaranteed',
     amountCents: 49_700,
     reason: 'product-not-received',
     reasonDetail: 'Cardholder says no success manager made contact in the first week.',
@@ -867,7 +867,7 @@ const denseProducts: readonly {
   { label: 'Ace Your Interview · Premium', type: 'subscription-renewal', amountCents: 19_700 },
   { label: 'Credit top-up · 25 credits', type: 'credit-top-up', amountCents: 1_000 },
   { label: 'Credit top-up · 100 credits', type: 'credit-top-up', amountCents: 4_000 },
-  { label: 'Find Jobs, Done For You · 50 jobs', type: 'done-for-you', amountCents: 49_700 },
+  { label: 'Find Jobs, Done For You · 10 interviews guaranteed', type: 'done-for-you', amountCents: 49_700 },
   { label: 'Salary Negotiation Word-for-Word Scripts', type: 'marketplace', amountCents: 1_500 },
 ]
 
@@ -944,7 +944,7 @@ export const adminTransactionDetails: Readonly<Record<string, AdminTransactionDe
     lineItems: [
       {
         id: 'li-dfy',
-        description: 'Find Jobs, Done For You · 50 jobs',
+        description: 'Find Jobs, Done For You · 10 interviews guaranteed',
         detail: 'Resume tailoring, job scouting, applications, success manager, plus 1 month of Jobwhisper access',
         quantity: 1,
         unitAmountCents: 49_700,

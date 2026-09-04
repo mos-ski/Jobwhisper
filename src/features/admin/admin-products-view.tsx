@@ -107,8 +107,8 @@ const errorSeverityLabels: Record<AdminProductErrorGroup['severity'], string> = 
 }
 
 export const PACKAGE_LABELS: Record<string, string> = {
-  'dfy-small': '50 jobs · $497',
-  'dfy-large': '100 jobs · $997',
+  'dfy-small': '10 interviews · $497',
+  'dfy-large': '20 interviews · $997',
 }
 
 const SUCCESS_MANAGERS = ['Daniel Okoye', 'Priya Raghunathan', 'Rachel Adeyemi']

@@ -60,10 +60,10 @@ export type AdminDoneForYouPackageId = 'dfy-small' | 'dfy-large'
 export type AdminDoneForYouPackageConfig = {
   readonly id: AdminDoneForYouPackageId
   readonly name: string
+  /** One-time price — this is not a recurring subscription. */
   readonly priceCents: number
-  readonly jobCount: number
-  /** Months of Jobwhisper product access bundled with the package. */
-  readonly includedAccessMonths: number
+  /** Number of interviews the package guarantees, not a job-application count. */
+  readonly interviewsGuaranteed: number
   /** Whether the package is offered as a line item in the VSL checkout cart. */
   readonly inCheckoutCart: boolean
 }
@@ -108,7 +108,7 @@ export type AdminCoupon = {
    */
   readonly value: number
   readonly scopeId: string
-  /** Pre-resolved scope label, e.g. "Pro plan" or "Done For You, 50 jobs". */
+  /** Pre-resolved scope label, e.g. "Pro plan" or "Done For You, 10 interviews guaranteed". */
   readonly scopeLabel: string
   readonly redemptions: number
   readonly redemptionCap: number
