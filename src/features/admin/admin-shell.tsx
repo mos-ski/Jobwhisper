@@ -63,7 +63,7 @@ function toSideMenuItems(navItems: readonly AdminNavItem[], activeModule: AdminM
     href: item.href,
     icon: moduleIcons[item.id],
     active: item.id === activeModule,
-    dividerBefore: item.id === 'configuration',
+    dividerBefore: item.id === 'activity',
     badgeCount: item.badgeCount,
   }))
 }
