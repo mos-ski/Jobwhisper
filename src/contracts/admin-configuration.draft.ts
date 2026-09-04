@@ -167,6 +167,15 @@ export type AdminOnboardingSurveyConfig = {
   readonly questions: readonly AdminSurveyQuestion[]
 }
 
+export type AdminReferralProgramConfig = {
+  /** Credits awarded to the referrer when their invitee subscribes. */
+  readonly rewardCreditsPerReferral: number
+  /** Hard ceiling on how many successful referrals one account can earn rewards for. */
+  readonly maxReferralsPerAccount: number
+  /** How many days a pending referral reward stays valid before expiring. */
+  readonly rewardExpiryDays: number
+}
+
 /** One line of the "Review changes" confirmation, rendered as old to new. */
 export type AdminConfigChange = {
   readonly id: string

@@ -11,6 +11,7 @@ import {
   adminMarketplacePricing,
   adminOnboardingSurvey,
   adminPlanConfigs,
+  adminReferralProgram,
   adminTrialConfig,
   adminUnsubscribedAllowance,
 } from '@/mocks/admin-configuration'
@@ -47,6 +48,7 @@ export function AdminConfigurationPage() {
       couponScopeOptions={adminCouponScopeOptions}
       trial={adminTrialConfig}
       survey={adminOnboardingSurvey}
+      referral={adminReferralProgram}
       today="2026-09-04"
       isLoading={params.get('state') === 'loading'}
     />

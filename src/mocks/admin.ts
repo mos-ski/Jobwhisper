@@ -27,6 +27,9 @@ export const adminNavItems: readonly AdminNavItem[] = [
   { id: 'accounts', label: 'Accounts', href: '/admin/accounts', matchPrefix: '/admin/accounts' },
   { id: 'transactions', label: 'Transactions', href: '/admin/transactions', matchPrefix: '/admin/transactions', badgeCount: 7 },
   { id: 'products', label: 'Products', href: '/admin/products', matchPrefix: '/admin/products' },
+  { id: 'analytics', label: 'Analytics', href: '/admin/analytics', matchPrefix: '/admin/analytics' },
+  { id: 'content', label: 'Content', href: '/admin/content', matchPrefix: '/admin/content' },
+  { id: 'support', label: 'Support', href: '/admin/support', matchPrefix: '/admin/support', badgeCount: 3 },
   { id: 'configuration', label: 'Configuration', href: '/admin/configuration', matchPrefix: '/admin/configuration' },
   { id: 'systems', label: 'Systems', href: '/admin/systems', matchPrefix: '/admin/systems' },
 ]

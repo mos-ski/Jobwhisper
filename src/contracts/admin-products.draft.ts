@@ -112,6 +112,22 @@ export type AdminProductTrendPoint = {
 
 export type AdminProductSessionOutcome = 'completed' | 'abandoned' | 'failed'
 
+export type AdminDoneForYouPipelineStatus = 'queued' | 'in-progress' | 'completed'
+
+export type AdminDoneForYouApplicant = {
+  readonly id: string
+  readonly userName: string
+  readonly userEmail: string
+  readonly plan: AdminProductTierId
+  readonly targetRole: string
+  readonly targetCompany: string
+  readonly startedLabel: string
+  readonly assignedSuccessManager: string
+  readonly pipelineStatus: AdminDoneForYouPipelineStatus
+  readonly packageId: 'dfy-small' | 'dfy-large'
+  readonly jobsSubmittedCount: number
+}
+
 export type AdminProductSessionRow = {
   readonly id: string
   readonly userName: string
@@ -150,6 +166,7 @@ export type AdminProductDetail = {
   readonly stats: readonly AdminProductDetailStat[]
   readonly trend: readonly AdminProductTrendPoint[]
   readonly sessions: readonly AdminProductSessionRow[]
+  readonly doneForYouApplicants?: readonly AdminDoneForYouApplicant[]
   readonly errorGroups: readonly AdminProductErrorGroup[]
   readonly blastRadiusUsers: number
   readonly blastRadiusLabel: string

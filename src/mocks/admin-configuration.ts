@@ -7,6 +7,7 @@ import type {
   AdminMarketplacePricingConfig,
   AdminOnboardingSurveyConfig,
   AdminPlanConfig,
+  AdminReferralProgramConfig,
   AdminTrialConfig,
   AdminUnsubscribedAllowanceConfig,
 } from '@/contracts/admin-configuration.draft'
@@ -520,4 +521,10 @@ export const adminOnboardingSurvey: AdminOnboardingSurveyConfig = {
       options: [],
     },
   ],
+}
+
+export const adminReferralProgram: AdminReferralProgramConfig = {
+  rewardCreditsPerReferral: 1000,
+  maxReferralsPerAccount: 20,
+  rewardExpiryDays: 90,
 }

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 
 import type {
+  AdminDoneForYouPipelineStatus,
   AdminProductDetail,
   AdminProductErrorGroup,
   AdminProductHealthState,
@@ -26,6 +27,7 @@ import type {
 import type { AdminNavItem, AdminNotification, AdminSearchResult } from '@/contracts/admin.draft'
 import type { UserIdentity } from '@/contracts/identity'
 import {
+  Avatar,
   Badge,
   Button,
   cn,
@@ -93,6 +95,19 @@ const errorSeverityLabels: Record<AdminProductErrorGroup['severity'], string> = 
   warning: 'Warning',
   info: 'For info',
 }
+
+const pipelineStatusMeta: Record<AdminDoneForYouPipelineStatus, { readonly label: string; readonly variant: BadgeVariant }> = {
+  'queued': { label: 'Queued', variant: 'neutral' },
+  'in-progress': { label: 'In progress', variant: 'accent' },
+  'completed': { label: 'Completed', variant: 'positive' },
+}
+
+const PACKAGE_LABELS: Record<string, string> = {
+  'dfy-small': '50 jobs · $497',
+  'dfy-large': '100 jobs · $997',
+}
+
+const SUCCESS_MANAGERS = ['Daniel Okoye', 'Priya Raghunathan', 'Rachel Adeyemi']
 
 function StatusBadge({ status }: { readonly status: AdminProductStatus }) {
   const meta = statusMeta[status]
@@ -434,6 +449,8 @@ export function AdminProductDetailView({
 }: AdminProductDetailViewProps) {
   const [trendMetric, setTrendMetric] = useState<AdminProductTrendMetric>('sessions')
   const [showTrendTable, setShowTrendTable] = useState(false)
+  const [applicantManagerOverrides, setApplicantManagerOverrides] = useState<Readonly<Record<string, string>>>({})
+  const [applicantStatusOverrides, setApplicantStatusOverrides] = useState<Readonly<Record<string, AdminDoneForYouPipelineStatus>>>({})
 
   const filteredSessions = useMemo(() => {
     if (!product) return []
@@ -650,6 +667,117 @@ export function AdminProductDetailView({
                 />
               )}
             </section>
+
+            {product.id === 'done-for-you' && product.doneForYouApplicants ? (
+              <section aria-label="Applicant pipeline" className="grid gap-3">
+                <h2 className="font-gowun text-lg font-bold text-ink">Applicant pipeline</h2>
+                <div className="flex flex-wrap items-end gap-3">
+                  <p className="ms-auto text-sm text-ink-muted">{product.doneForYouApplicants.length} applicants</p>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-start text-sm">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Applicant</th>
+                        <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Target</th>
+                        <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Package</th>
+                        <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Jobs submitted</th>
+                        <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Status</th>
+                        <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Success manager</th>
+                        <th scope="col" className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Started</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {product.doneForYouApplicants.map((applicant) => {
+                        const effectiveManager = applicantManagerOverrides[applicant.id] ?? applicant.assignedSuccessManager
+                        const effectiveStatus = applicantStatusOverrides[applicant.id] ?? applicant.pipelineStatus
+                        const statusMeta = pipelineStatusMeta[effectiveStatus]
+                        return (
+                          <tr key={applicant.id} className="border-b border-border last:border-b-0">
+                            <td className="px-4 py-3">
+                              <span className="flex items-center gap-2">
+                                <Avatar name={applicant.userName} size="xs" />
+                                <span className="min-w-0">
+                                  <span className="block truncate font-medium text-ink">{applicant.userName}</span>
+                                  <span className="block truncate text-xs text-ink-muted">{applicant.userEmail}</span>
+                                </span>
+                              </span>
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className="block min-w-0">
+                                <span className="block truncate text-ink">{applicant.targetRole}</span>
+                                <span className="block truncate text-xs text-ink-muted">{applicant.targetCompany}</span>
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-ink-muted">{PACKAGE_LABELS[applicant.packageId] ?? applicant.packageId}</td>
+                            <td className="px-4 py-3 tabular-nums text-ink">{applicant.jobsSubmittedCount}</td>
+                            <td className="px-4 py-3">
+                              <Badge variant={statusMeta.variant} size="sm">{statusMeta.label}</Badge>
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className="flex items-center gap-1.5">
+                                <Avatar name={effectiveManager} size="xs" />
+                                <span className="truncate">{effectiveManager}</span>
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap text-ink-muted">{applicant.startedLabel}</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="flex flex-wrap gap-4">
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="dfy-applicant-manager" className="text-xs font-semibold text-ink-muted">Reassign manager for:</label>
+                    <select
+                      id="dfy-applicant-manager"
+                      className="rounded-lg border border-input bg-canvas px-2 py-1.5 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                      defaultValue=""
+                      onChange={(e) => {
+                        const applicantId = e.target.value
+                        if (!applicantId) return
+                        const current = applicantManagerOverrides[applicantId] ?? product.doneForYouApplicants!.find((a) => a.id === applicantId)!.assignedSuccessManager
+                        const idx = SUCCESS_MANAGERS.indexOf(current)
+                        const next = SUCCESS_MANAGERS[(idx + 1) % SUCCESS_MANAGERS.length]
+                        setApplicantManagerOverrides((prev) => ({ ...prev, [applicantId]: next }))
+                        e.target.value = ''
+                      }}
+                    >
+                      <option value="">Select applicant…</option>
+                      {product.doneForYouApplicants.map((a) => (
+                        <option key={a.id} value={a.id}>{a.userName}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="dfy-applicant-status" className="text-xs font-semibold text-ink-muted">Set status for:</label>
+                    <select
+                      id="dfy-applicant-status"
+                      className="rounded-lg border border-input bg-canvas px-2 py-1.5 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                      defaultValue=""
+                      onChange={(e) => {
+                        const applicantId = e.target.value
+                        if (!applicantId) return
+                        const current = applicantStatusOverrides[applicantId] ?? product.doneForYouApplicants!.find((a) => a.id === applicantId)!.pipelineStatus
+                        const cycle: readonly AdminDoneForYouPipelineStatus[] = ['queued', 'in-progress', 'completed']
+                        const idx = cycle.indexOf(current)
+                        const next = cycle[(idx + 1) % cycle.length]
+                        setApplicantStatusOverrides((prev) => ({ ...prev, [applicantId]: next }))
+                        e.target.value = ''
+                      }}
+                    >
+                      <option value="">Select applicant…</option>
+                      {product.doneForYouApplicants.map((a) => (
+                        <option key={a.id} value={a.id}>{a.userName}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </section>
+            ) : null}
           </>
         )}
       </div>

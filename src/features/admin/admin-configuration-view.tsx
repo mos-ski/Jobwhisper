@@ -18,6 +18,7 @@ import type {
   AdminMarketplacePricingConfig,
   AdminOnboardingSurveyConfig,
   AdminPlanConfig,
+  AdminReferralProgramConfig,
   AdminSurveyQuestionType,
   AdminTrialConfig,
   AdminUnsubscribedAllowanceConfig,
@@ -69,6 +70,7 @@ export type AdminConfigurationViewProps = {
   readonly couponScopeOptions: readonly AdminCouponScopeOption[]
   readonly trial: AdminTrialConfig
   readonly survey: AdminOnboardingSurveyConfig
+  readonly referral: AdminReferralProgramConfig
   /** Today as a `YYYY-MM-DD` calendar string. Decides whether a new coupon starts active or scheduled. */
   readonly today: string
   readonly isLoading?: boolean
@@ -76,6 +78,7 @@ export type AdminConfigurationViewProps = {
   readonly onSaveTrials?: (changes: readonly AdminConfigChange[]) => void
   readonly onCreateCoupon?: (draft: AdminCouponDraft) => void
   readonly onDeactivateCoupon?: (couponId: string) => void
+  readonly onSaveReferral?: (changes: readonly AdminConfigChange[]) => void
 }
 
 const numberFormatter = new Intl.NumberFormat('en-US')
@@ -1615,6 +1618,170 @@ function CouponsTab({
   )
 }
 
+/* ------------------------------------------------------------------ referral program section */
+
+type ReferralForm = {
+  readonly rewardCreditsPerReferral: string
+  readonly maxReferralsPerAccount: string
+  readonly rewardExpiryDays: string
+}
+
+function buildReferralForm(config: AdminReferralProgramConfig): ReferralForm {
+  return {
+    rewardCreditsPerReferral: String(config.rewardCreditsPerReferral),
+    maxReferralsPerAccount: String(config.maxReferralsPerAccount),
+    rewardExpiryDays: String(config.rewardExpiryDays),
+  }
+}
+
+function validateReferral(form: ReferralForm): Readonly<Record<string, string>> {
+  const errors: Record<string, string> = {}
+  const credits = parseWhole(form.rewardCreditsPerReferral)
+  if (credits === null || credits < 1 || credits > 50_000) {
+    errors['referral-credits'] = 'Enter a whole number of credits between 1 and 50,000.'
+  }
+  const cap = parseWhole(form.maxReferralsPerAccount)
+  if (cap === null || cap < 1 || cap > 1_000) {
+    errors['referral-cap'] = 'Enter a whole number between 1 and 1,000 referrals.'
+  }
+  const expiry = parseWhole(form.rewardExpiryDays)
+  if (expiry === null || expiry < 1 || expiry > 365) {
+    errors['referral-expiry'] = 'Enter a whole number of days between 1 and 365.'
+  }
+  return errors
+}
+
+function referralChanges(baseline: ReferralForm, form: ReferralForm): readonly AdminConfigChange[] {
+  const changes: AdminConfigChange[] = []
+  function push(id: string, field: string, before: string, after: string) {
+    if (before !== after) changes.push({ id, section: 'Referral program', field, before, after })
+  }
+  push(
+    'referral-credits',
+    'Reward per referral',
+    `${countLabel(baseline.rewardCreditsPerReferral)} credits`,
+    `${countLabel(form.rewardCreditsPerReferral)} credits`,
+  )
+  push(
+    'referral-cap',
+    'Max referrals per account',
+    countLabel(baseline.maxReferralsPerAccount),
+    countLabel(form.maxReferralsPerAccount),
+  )
+  push(
+    'referral-expiry',
+    'Reward expiry window',
+    `${countLabel(baseline.rewardExpiryDays)} days`,
+    `${countLabel(form.rewardExpiryDays)} days`,
+  )
+  return changes
+}
+
+function ReferralProgramSection({
+  config,
+  onSave,
+}: {
+  readonly config: AdminReferralProgramConfig
+  readonly onSave?: (changes: readonly AdminConfigChange[]) => void
+}) {
+  const initial = useMemo(() => buildReferralForm(config), [config])
+  const [baseline, setBaseline] = useState<ReferralForm>(initial)
+  const [form, setForm] = useState<ReferralForm>(initial)
+  const [reviewOpen, setReviewOpen] = useState(false)
+  const [savedMessage, setSavedMessage] = useState<string | null>(null)
+  const [blocked, setBlocked] = useState(false)
+
+  const errors = useMemo(() => validateReferral(form), [form])
+  const errorCount = Object.keys(errors).length
+  const changes = useMemo(() => referralChanges(baseline, form), [baseline, form])
+
+  function updateForm(patch: Partial<ReferralForm>) {
+    setSavedMessage(null)
+    setForm((prev) => ({ ...prev, ...patch }))
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (errorCount > 0) {
+      setBlocked(true)
+      return
+    }
+    setBlocked(false)
+    setReviewOpen(true)
+  }
+
+  function handleConfirm() {
+    setBaseline(form)
+    setReviewOpen(false)
+    setSavedMessage(`${changes.length} referral ${changes.length === 1 ? 'setting is' : 'settings are'} live.`)
+    onSave?.(changes)
+  }
+
+  return (
+    <>
+      <form onSubmit={handleSubmit} noValidate>
+        <SectionPanel
+          id="referral-heading"
+          title="Referral program"
+          description="What a referrer earns when their invitee subscribes. Configuration rules only — referral performance and payout analytics live in the Analytics module."
+        >
+          <ConfigActionBar
+            changeCount={changes.length}
+            errorCount={blocked ? errorCount : 0}
+            savedMessage={savedMessage}
+            reviewLabel="Review changes"
+            onDiscard={() => {
+              setForm(baseline)
+              setBlocked(false)
+              setSavedMessage(null)
+            }}
+          />
+          <div className="mt-4 grid gap-4 sm:grid-cols-3">
+            <ConfigField
+              id="referral-credits"
+              label="Reward per referral, credits"
+              inputMode="numeric"
+              value={form.rewardCreditsPerReferral}
+              error={errors['referral-credits']}
+              hint="Credits added to the referrer's balance when their invitee subscribes."
+              onChange={(value) => updateForm({ rewardCreditsPerReferral: value })}
+            />
+            <ConfigField
+              id="referral-cap"
+              label="Max referrals per account"
+              inputMode="numeric"
+              value={form.maxReferralsPerAccount}
+              error={errors['referral-cap']}
+              hint="A hard ceiling on how many referral rewards one account can earn."
+              onChange={(value) => updateForm({ maxReferralsPerAccount: value })}
+            />
+            <ConfigField
+              id="referral-expiry"
+              label="Reward expiry window, days"
+              inputMode="numeric"
+              value={form.rewardExpiryDays}
+              error={errors['referral-expiry']}
+              hint="A pending referral reward expires after this many days if not claimed."
+              onChange={(value) => updateForm({ rewardExpiryDays: value })}
+            />
+          </div>
+        </SectionPanel>
+      </form>
+
+      <ChangeReviewDialog
+        open={reviewOpen}
+        onOpenChange={setReviewOpen}
+        title="Review referral program changes"
+        description="Check every line before this reaches live referral behaviour."
+        impact="Applying this changes what referrers earn and how many referrals they can make from now on."
+        changes={changes}
+        confirmLabel="Apply referral settings"
+        onConfirm={handleConfirm}
+      />
+    </>
+  )
+}
+
 /* ------------------------------------------------------------------ trials tab */
 
 type QuestionForm = {
@@ -1916,14 +2083,18 @@ function TrialsTab({
   unsubscribedAllowance,
   survey,
   plans,
+  referral,
   onSaveTrials,
+  onSaveReferral,
 }: {
   readonly trial: AdminTrialConfig
   readonly featureDefinitions: readonly AdminConfigFeatureDefinition[]
   readonly unsubscribedAllowance: AdminUnsubscribedAllowanceConfig
   readonly survey: AdminOnboardingSurveyConfig
   readonly plans: readonly AdminPlanConfig[]
+  readonly referral: AdminReferralProgramConfig
   readonly onSaveTrials?: (changes: readonly AdminConfigChange[]) => void
+  readonly onSaveReferral?: (changes: readonly AdminConfigChange[]) => void
 }) {
   const initial = useMemo(
     () => buildTrialsForm(trial, featureDefinitions, unsubscribedAllowance, survey),
@@ -2354,6 +2525,8 @@ function TrialsTab({
             </ol>
           )}
         </SectionPanel>
+
+        <ReferralProgramSection config={referral} onSave={onSaveReferral} />
       </form>
 
       <SectionPanel
@@ -2420,10 +2593,12 @@ export function AdminConfigurationView({
   couponScopeOptions,
   trial,
   survey,
+  referral,
   today,
   isLoading = false,
   onSavePricing,
   onSaveTrials,
+  onSaveReferral,
   onCreateCoupon,
   onDeactivateCoupon,
 }: AdminConfigurationViewProps) {
@@ -2491,7 +2666,9 @@ export function AdminConfigurationView({
                 unsubscribedAllowance={unsubscribedAllowance}
                 survey={survey}
                 plans={plans}
+                referral={referral}
                 onSaveTrials={onSaveTrials}
+                onSaveReferral={onSaveReferral}
               />
             </TabsContent>
           </Tabs>

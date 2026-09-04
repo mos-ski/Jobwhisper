@@ -2,10 +2,14 @@ import { useLocation } from 'react-router-dom'
 
 import { AdminAccountDetailPage } from './pages/admin-account-detail-page'
 import { AdminAccountsPage } from './pages/admin-accounts-page'
+import { AdminAnalyticsPage } from './pages/admin-analytics-page'
 import { AdminConfigurationPage } from './pages/admin-configuration-page'
+import { AdminContentPage } from './pages/admin-content-page'
 import { AdminDashboardPage } from './pages/admin-dashboard-page'
 import { AdminProductDetailPage } from './pages/admin-product-detail-page'
 import { AdminProductsPage } from './pages/admin-products-page'
+import { AdminSupportPage } from './pages/admin-support-page'
+import { AdminSupportTicketPage } from './pages/admin-support-ticket-page'
 import { AdminSystemsPage } from './pages/admin-systems-page'
 import { AdminTransactionDetailPage } from './pages/admin-transaction-detail-page'
 import { AdminTransactionsPage } from './pages/admin-transactions-page'
@@ -101,6 +105,22 @@ export function WebRoutes() {
 
   if (routePath.startsWith('/admin/transactions/')) {
     return <AdminTransactionDetailPage transactionId={routePath.replace('/admin/transactions/', '')} />
+  }
+
+  if (routePath === '/admin/analytics') {
+    return <AdminAnalyticsPage />
+  }
+
+  if (routePath === '/admin/content') {
+    return <AdminContentPage />
+  }
+
+  if (routePath === '/admin/support') {
+    return <AdminSupportPage />
+  }
+
+  if (routePath.startsWith('/admin/support/')) {
+    return <AdminSupportTicketPage ticketId={routePath.replace('/admin/support/', '')} />
   }
 
   if (routePath === '/auth/sign-in') {

@@ -1,8 +1,11 @@
 import { useState, type ReactNode } from 'react'
 import {
+  BarChart3,
   Bell,
   Boxes,
   CreditCard,
+  FileText,
+  HeadphonesIcon,
   LayoutDashboard,
   Menu,
   PanelLeftClose,
@@ -38,6 +41,9 @@ const moduleIcons: Record<AdminModuleId, ReactNode> = {
   products: <Boxes />,
   configuration: <SlidersHorizontal />,
   systems: <Server />,
+  analytics: <BarChart3 />,
+  content: <FileText />,
+  support: <HeadphonesIcon />,
 }
 
 export type AdminShellProps = {
