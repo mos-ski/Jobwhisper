@@ -13,6 +13,9 @@ import {
   AccordionTrigger,
   Button,
   cn,
+  Collapsible,
+  CollapsiblePanel,
+  CollapsibleTrigger,
   DataTable,
   Dialog,
   DialogClose,
@@ -495,6 +498,7 @@ function CancelSubscriptionDialog({ renewalLabel }: { readonly renewalLabel: str
 
 function BillingFaqSection({ faqs }: { readonly faqs: readonly AccountFaqEntry[] }) {
   const [query, setQuery] = useState('')
+  const [openCategories, setOpenCategories] = useState<ReadonlySet<string>>(new Set(['Getting started']))
   const trimmed = query.trim().toLowerCase()
 
   const filtered = trimmed
@@ -502,6 +506,15 @@ function BillingFaqSection({ faqs }: { readonly faqs: readonly AccountFaqEntry[]
     : faqs
 
   const categories = Array.from(new Set(filtered.map((faq) => faq.category)))
+
+  function toggleCategory(category: string, open: boolean) {
+    setOpenCategories((prev) => {
+      const next = new Set(prev)
+      if (open) next.add(category)
+      else next.delete(category)
+      return next
+    })
+  }
 
   return (
     <TitledPanel title="Frequently Asked Questions">
@@ -527,21 +540,32 @@ function BillingFaqSection({ faqs }: { readonly faqs: readonly AccountFaqEntry[]
       {filtered.length === 0 ? (
         <p className="border-t border-border px-4 py-6 text-sm text-ink-muted">No questions match “{query.trim()}”. Try a different search, or contact Support from the account menu.</p>
       ) : (
-        categories.map((category) => (
-          <div key={category} className="border-t border-border">
-            <h3 className="px-4 pt-4 text-xs font-semibold uppercase tracking-wide text-ink-muted">{category}</h3>
-            <Accordion>
-              {filtered
-                .filter((faq) => faq.category === category)
-                .map((faq) => (
-                  <AccordionItem key={faq.question} value={faq.question}>
-                    <AccordionTrigger>{faq.question}</AccordionTrigger>
-                    <AccordionPanel>{faq.answer}</AccordionPanel>
-                  </AccordionItem>
-                ))}
-            </Accordion>
-          </div>
-        ))
+        categories.map((category) => {
+          const isOpen = Boolean(trimmed) || openCategories.has(category)
+          const matchCount = filtered.filter((faq) => faq.category === category).length
+          return (
+            <Collapsible key={category} open={isOpen} onOpenChange={(open) => toggleCategory(category, open)} className="border-t border-border">
+              <CollapsibleTrigger className="flex w-full items-center justify-between gap-3 px-4 py-3 text-start hover:bg-surface-subtle">
+                <span className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                  {category} <span className="text-ink-muted/70">({matchCount})</span>
+                </span>
+                <ChevronDown aria-hidden="true" className={cn('size-4 shrink-0 text-ink-muted transition-transform duration-normal ease-default', isOpen && 'rotate-180')} />
+              </CollapsibleTrigger>
+              <CollapsiblePanel>
+                <Accordion>
+                  {filtered
+                    .filter((faq) => faq.category === category)
+                    .map((faq) => (
+                      <AccordionItem key={faq.question} value={faq.question}>
+                        <AccordionTrigger>{faq.question}</AccordionTrigger>
+                        <AccordionPanel>{faq.answer}</AccordionPanel>
+                      </AccordionItem>
+                    ))}
+                </Accordion>
+              </CollapsiblePanel>
+            </Collapsible>
+          )
+        })
       )}
     </TitledPanel>
   )
