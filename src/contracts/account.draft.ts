@@ -18,6 +18,7 @@ export type BillingPlanCard = {
   readonly cadence: string
   readonly annualPrice: string
   readonly annualCadence: string
+  readonly annualDiscountPrice?: string
   readonly credits: string
   readonly description: string
   readonly features: readonly string[]

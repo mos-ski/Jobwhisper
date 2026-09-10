@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
+import { Toaster } from 'sonner'
 
 import { WebRoutes } from './routes'
 
@@ -53,7 +54,7 @@ describe('v3 web auth flow', () => {
 
     await user.click(screen.getByRole('button', { name: 'Subscribe to Pro' }))
 
-    expect(screen.getByRole('heading', { name: 'Welcome, what would you like to do today?' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Complete Your Profile' })).toBeInTheDocument()
   })
 
   it('renders the dashboard with navigation, action cards, and install prompts', () => {
@@ -72,7 +73,7 @@ describe('v3 web auth flow', () => {
     expect(screen.getByRole('link', { name: /Start Interview Copilot/ })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Apply for Jobs/ })).toBeInTheDocument()
     expect(screen.getByText('BETA')).toBeInTheDocument()
-    expect(screen.getByText('For coding interview and stealth version.')).toBeInTheDocument()
+    expect(screen.getByText('Live AI assistance for coding interviews, real-time hints as you work through the problem.')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Install Desktop' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Install Mobile' })).toBeInTheDocument()
   })
@@ -100,9 +101,9 @@ describe('v3 web auth flow', () => {
   it('renders dashboard nav dropdown and credit notification states from URL params', () => {
     const cases = [
       { route: '/v3/app?dropdown=help', name: 'Whats new?' },
-      { route: '/v3/app?dropdown=credits', name: 'Remaining Credits' },
-      { route: '/v3/app?credit=empty', name: '0 credits remaining today' },
-      { route: '/v3/app?credit=low', name: '5 More credits left!' },
+      { route: '/v3/app?dropdown=credits', name: 'Credit balances' },
+      { route: '/v3/app?credit=empty', name: '0% remaining this cycle' },
+      { route: '/v3/app?credit=low', name: '0% left this cycle!' },
     ] as const
 
     for (const item of cases) {
@@ -124,10 +125,22 @@ describe('v3 web auth flow', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByRole('heading', { name: 'Add Context' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Knowledge Base' })).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Search')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Add Document' })).toHaveAttribute('href', '/v3/documents/add')
-    expect(screen.getAllByText('Darnell_Smith_Resume.pdf')).toHaveLength(6)
+    expect(screen.getByRole('button', { name: 'Add Document' })).toBeInTheDocument()
+    expect(screen.getAllByText('Darnell_Smith_Resume.pdf')).toHaveLength(2)
+  })
+
+  it('renders the job directory route with its persistent navigation entry', () => {
+    render(
+      <MemoryRouter initialEntries={['/v3/job-directory']}>
+        <WebRoutes />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByRole('heading', { name: 'Find your next job board' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Job Directory' })).toHaveAttribute('href', '/v3/job-directory')
+    expect(screen.getByRole('button', { name: 'Explore LinkedIn Jobs' })).toBeInTheDocument()
   })
 
   it('renders the document add and manual context form routes', () => {
@@ -152,7 +165,7 @@ describe('v3 web auth flow', () => {
       )
 
       expect(screen.getByRole('heading', { name: item.heading })).toBeInTheDocument()
-      expect(screen.getByText(item.text)).toBeInTheDocument()
+      expect(screen.getAllByText(item.text).length).toBeGreaterThan(0)
       unmount()
     }
   })
@@ -162,7 +175,7 @@ describe('v3 web auth flow', () => {
       {
         route: '/v3/resume',
         heading: 'Upload a resume',
-        text: 'Click to upload',
+        text: 'Upload a Resume',
       },
       {
         route: '/v3/resume/configure',
@@ -172,17 +185,17 @@ describe('v3 web auth flow', () => {
       {
         route: '/v3/resume/editor?tab=chat&state=empty',
         heading: 'ADEDAMOLA ADEWALE',
-        text: 'Send your First Message',
+        text: 'Send a message to adjust your resume',
       },
       {
         route: '/v3/resume/editor?tab=chat&state=suggestions',
         heading: 'ADEDAMOLA ADEWALE',
-        text: 'Accept or Decline Changes',
+        text: 'Accept All',
       },
       {
         route: '/v3/resume/editor?tab=create',
         heading: 'ADEDAMOLA ADEWALE',
-        text: 'Light AI',
+        text: 'AI Suggestion',
       },
       {
         route: '/v3/resume/editor?tab=template',
@@ -192,7 +205,7 @@ describe('v3 web auth flow', () => {
       {
         route: '/v3/resume/history',
         heading: 'Past Resumes',
-        text: 'Showing items 1 - 10 of 146',
+        text: 'Staff Software Engineer, Payments Infrastructure',
       },
     ] as const
 
@@ -204,7 +217,7 @@ describe('v3 web auth flow', () => {
       )
 
       expect(screen.getByRole('heading', { name: item.heading })).toBeInTheDocument()
-      expect(screen.getByText(item.text)).toBeInTheDocument()
+      expect(screen.getAllByText(item.text).length).toBeGreaterThan(0)
       unmount()
     }
   })
@@ -214,7 +227,7 @@ describe('v3 web auth flow', () => {
       {
         route: '/v3/interview-prep',
         heading: 'Upload a resume',
-        text: 'Click to upload',
+        text: 'Upload a Resume',
       },
       {
         route: '/v3/interview-prep/configure',
@@ -243,13 +256,13 @@ describe('v3 web auth flow', () => {
       },
       {
         route: '/v3/interview-prep/history',
-        heading: 'Past Resumes',
-        text: 'Showing items 1 - 10 of 146',
+        heading: 'Past Interview Practice',
+        text: 'Growth Product Lead',
       },
       {
         route: '/v3/interview-prep/report',
         heading: 'Recruiter Screen - Product Designer',
-        text: 'Post-Interview Scorecard',
+        text: 'What Went Well',
       },
     ] as const
 
@@ -261,7 +274,7 @@ describe('v3 web auth flow', () => {
       )
 
       expect(screen.getByRole('heading', { name: item.heading })).toBeInTheDocument()
-      expect(screen.getByText(item.text)).toBeInTheDocument()
+      expect(screen.getAllByText(item.text).length).toBeGreaterThan(0)
       unmount()
     }
   })
@@ -271,7 +284,7 @@ describe('v3 web auth flow', () => {
       {
         route: '/v3/interview-copilot',
         heading: 'Upload a resume',
-        text: 'Click to upload',
+        text: 'Upload a Resume',
       },
       {
         route: '/v3/interview-copilot/configure',
@@ -290,7 +303,7 @@ describe('v3 web auth flow', () => {
       },
       {
         route: '/v3/interview-copilot/ready',
-        heading: 'Share your screen',
+        heading: "You're all set",
         text: 'Start Interview',
       },
       {
@@ -300,13 +313,13 @@ describe('v3 web auth flow', () => {
       },
       {
         route: '/v3/interview-copilot/complete',
-        heading: 'Your Interview is complete!',
+        heading: 'Your interview is complete!',
         text: 'See Report',
       },
       {
         route: '/v3/interview-copilot/history',
         heading: 'Past Copilot Sessions',
-        text: 'Showing items 1 - 10 of 146',
+        text: 'Backend Engineer, Payments',
       },
     ] as const
 
@@ -318,7 +331,7 @@ describe('v3 web auth flow', () => {
       )
 
       expect(screen.getByRole('heading', { name: item.heading })).toBeInTheDocument()
-      expect(screen.getByText(item.text)).toBeInTheDocument()
+      expect(screen.getAllByText(item.text).length).toBeGreaterThan(0)
       unmount()
     }
   })
@@ -328,22 +341,22 @@ describe('v3 web auth flow', () => {
       {
         route: '/v3/auto-apply',
         heading: 'Upload a resume',
-        text: 'Click to upload',
+        text: 'Upload a Resume',
       },
       {
         route: '/v3/auto-apply/contact',
         heading: 'Contact Information',
-        text: 'LinkedIn profile',
+        text: 'Profile Details',
       },
       {
         route: '/v3/auto-apply/preferences',
         heading: 'Job Preferences',
-        text: 'Salary range',
+        text: 'Salary Range',
       },
       {
         route: '/v3/auto-apply/additional',
         heading: 'Additional Information',
-        text: 'Work authorization',
+        text: 'Work Authorization',
       },
       {
         route: '/v3/auto-apply/review',
@@ -353,22 +366,22 @@ describe('v3 web auth flow', () => {
       {
         route: '/v3/auto-apply/agent',
         heading: 'Agents',
-        text: 'Scanning Greenhouse, Workday',
+        text: 'Scanning LinkedIn, Greenhouse, Lever',
       },
       {
         route: '/v3/auto-apply/jobs',
         heading: 'Jobs',
-        text: 'Staff Product Manager, CX Automation',
+        text: 'Group Product Manager, Financial Engineering',
       },
       {
-        route: '/v3/auto-apply/jobs/coinbase',
+        route: '/v3/auto-apply/jobs/coinbase-financial-engineering',
         heading: 'Jobs',
-        text: '46/128 Credit Left',
+        text: '1 Credit',
       },
       {
         route: '/v3/auto-apply/applied',
         heading: 'Applied',
-        text: 'See Replay',
+        text: 'Senior Product Manager - Delinea Desktop Client',
       },
     ] as const
 
@@ -380,12 +393,12 @@ describe('v3 web auth flow', () => {
       )
 
       expect(screen.getByRole('heading', { name: item.heading })).toBeInTheDocument()
-      expect(screen.getByText(item.text)).toBeInTheDocument()
+      expect(screen.getAllByText(item.text).length).toBeGreaterThan(0)
       unmount()
     }
   })
 
-  it('opens upload source choices only after the upload target is clicked', async () => {
+  it('opens the uploaded-resume review after the upload source is selected', async () => {
     const user = userEvent.setup()
 
     render(
@@ -394,14 +407,140 @@ describe('v3 web auth flow', () => {
       </MemoryRouter>,
     )
 
-    const uploadTarget = screen.getByRole('button', { name: /Click to upload/ })
-
-    expect(screen.queryByRole('link', { name: 'Upload a Resume' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: 'Use Jobwhisper Resume' })).not.toBeInTheDocument()
+    const uploadTarget = screen.getByRole('button', { name: /Upload a Resume/ })
+    expect(screen.getByRole('button', { name: /Use Jobwhisper Resume/ })).toBeInTheDocument()
 
     await user.click(uploadTarget)
 
-    expect(screen.getByRole('link', { name: 'Upload a Resume' })).toHaveAttribute('href', '/v3/resume/configure')
-    expect(screen.getByRole('link', { name: 'Use Jobwhisper Resume' })).toHaveAttribute('href', '/v3/resume/configure')
+    expect(screen.getByRole('dialog', { name: 'Resume uploaded' })).toBeInTheDocument()
+    expect(screen.getByText('Continue')).toHaveAttribute('aria-disabled', 'true')
+  })
+
+  it('shows every existing submitted application on the applied page', () => {
+    render(
+      <MemoryRouter initialEntries={['/v3/auto-apply/applied']}>
+        <WebRoutes />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('Senior Product Manager - Delinea Desktop Client')).toBeInTheDocument()
+    expect(screen.getByText('Staff Product Manager, CX Automation')).toBeInTheDocument()
+    expect(screen.getByText('Group Product Manager, Payments Core')).toBeInTheDocument()
+    expect(screen.getByText('Staff Product Manager, Payments')).toBeInTheDocument()
+    expect(screen.getByText('Senior Frontend Engineer')).toBeInTheDocument()
+    expect(screen.getByText('Product Manager, Integrity')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Senior Product Manager - Delinea Desktop Client.*Success/ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Staff Product Manager, CX Automation.*Applied/ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Group Product Manager, Payments Core.*Needs Review/ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Staff Product Manager, Payments.*Failed/ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Senior Frontend Engineer.*Closed/ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Product Manager, Integrity.*Success/ })).toBeInTheDocument()
+  })
+
+  it('keeps the jobs page actionable and queues a new job from its primary action', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <>
+        <MemoryRouter initialEntries={['/v3/auto-apply/jobs']}>
+          <WebRoutes />
+        </MemoryRouter>
+        <Toaster />
+      </>,
+    )
+
+    expect(screen.queryByText('Staff Product Manager, CX Automation')).not.toBeInTheDocument()
+    expect(screen.queryByText('Group Product Manager')).not.toBeInTheDocument()
+
+    const applyButton = screen.getByRole('button', { name: 'Apply to Group Product Manager, Compliance Automation at Coinbase' })
+    expect(applyButton).toHaveTextContent('Apply')
+
+    await user.click(applyButton)
+
+    expect(await screen.findByText('Whisper AI has started the application.')).toBeInTheDocument()
+    const queuedJob = screen.getByRole('button', { name: /Group Product Manager, Compliance Automation.*Queued/ })
+    expect(queuedJob).toBeInTheDocument()
+
+    await user.click(queuedJob)
+
+    expect(screen.queryByRole('button', { name: 'Apply Now' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'View Listing' })).toBeInTheDocument()
+  })
+
+  it('shows 10 jobs on each auto apply first page', () => {
+    const jobsPage = render(
+      <MemoryRouter initialEntries={['/v3/auto-apply/jobs']}>
+        <WebRoutes />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getAllByRole('button', { name: /^View .* at .*, (New|Queued|Applying)$/ })).toHaveLength(10)
+    jobsPage.unmount()
+
+    render(
+      <MemoryRouter initialEntries={['/v3/auto-apply/applied']}>
+        <WebRoutes />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getAllByRole('button', { name: /^View .* at .*, (Applied|Success|Needs Review|Failed|Closed)$/ })).toHaveLength(10)
+  })
+
+  it('shows and dismisses the Done For You jobs promotion', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <MemoryRouter initialEntries={['/v3/auto-apply/jobs']}>
+        <WebRoutes />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByRole('region', { name: 'Done For You' })).toBeInTheDocument()
+    expect(screen.getByTestId('done-for-you-campaign-background')).toHaveAttribute('src', '/v3-assets/figma/dfy-widget-background.svg')
+    expect(screen.getByTestId('done-for-you-guarantee')).toHaveClass('text-[2.53rem]', 'tracking-[-0.2rem]')
+    expect(screen.getByTestId('done-for-you-description')).toHaveClass('text-[1.12rem]', 'leading-[1.4rem]')
+    expect(screen.getByRole('link', { name: 'Sign Up Now' })).toHaveAttribute('href', '/v3/billing/done-for-you')
+
+    await user.click(screen.getByRole('button', { name: 'Maybe Later.' }))
+
+    expect(screen.queryByRole('region', { name: 'Done For You' })).not.toBeInTheDocument()
+  })
+
+  it('explains each billing model and lets users reopen the pricing guide', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <MemoryRouter initialEntries={['/v3/billing']}>
+        <WebRoutes />
+      </MemoryRouter>,
+    )
+
+    const interviewGuide = screen.getByRole('dialog', { name: 'Ace Your Interview Plan' })
+    expect(interviewGuide).toHaveClass('rounded-[2px]', 'p-6', 'sm:w-[352px]')
+    expect(interviewGuide.querySelector('h2')).toHaveClass('text-sm', 'leading-5')
+    expect(interviewGuide.querySelector('p')).toHaveClass('text-sm', 'leading-[22.75px]')
+    expect(screen.getByText(/recurring subscription/i)).toBeInTheDocument()
+    expect(screen.getByText(/one credit gives you one minute/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Next' })).toHaveClass('min-h-9', 'w-[92px]', 'rounded-[7.2px]')
+
+    await user.click(screen.getByRole('button', { name: 'Next' }))
+
+    const usageGuide = screen.getByRole('dialog', { name: 'Auto Apply and Resume Builder' })
+    expect(usageGuide).toHaveTextContent(/prepaid credits with no subscription/i)
+    expect(usageGuide).toHaveTextContent(/successful application/i)
+    expect(usageGuide).toHaveTextContent(/each AI prompt/i)
+
+    await user.click(screen.getByRole('button', { name: 'Next' }))
+
+    expect(screen.getByRole('dialog', { name: 'Done For You' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Learn More' })).toHaveAttribute('href', '/v3/billing/done-for-you')
+
+    await user.click(screen.getByRole('button', { name: 'Done' }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'How it works' }))
+
+    expect(screen.getByRole('dialog', { name: 'Ace Your Interview Plan' })).toBeInTheDocument()
   })
 })

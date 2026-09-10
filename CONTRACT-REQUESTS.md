@@ -24,6 +24,16 @@ For this UI slice, these fields are modeled as app fixture data in `src/mocks/bi
 
 These are currently UI review fixtures. Production should decide whether dashboard navigation stays static in app code or comes from an entitlement-aware backend contract.
 
+## Job Directory Draft Contract
+
+`src/contracts/job-directory.draft.ts` defines temporary flat UI contracts for the curated job-source experience:
+
+- `JobBoard` for source identity, description, focus, supported regions, work styles, website URL, and representative listings.
+- `DirectoryJob` for previewable job details, including employment metadata, salary display, responsibilities, skills, and the canonical external application URL.
+- `JobDirectoryStatus` for ready, loading, error, and offline rendering.
+
+Production should replace these fixtures with backend-owned job-source and listing contracts. A production listing should include an ISO publication timestamp, expiry status, source attribution, canonical listing URL, canonical application URL, and a last-verified timestamp so Jobwhisper can avoid sending candidates to stale roles. The UI currently uses display strings because this is a static review surface.
+
 ## Documents Draft Contract
 
 `src/contracts/documents.draft.ts` defines temporary flat UI contracts for uploaded or linked context documents:

@@ -84,6 +84,31 @@ const appRoutes = [
     description: 'Centered blue credit notification banner for low remaining credits.',
   },
   {
+    href: '/v3/job-directory',
+    label: 'Job Directory',
+    description: 'Trusted job-board directory with search, focus filters, curated in-app job previews, and external application handoff.',
+  },
+  {
+    href: '/v3/job-directory?board=linkedin-jobs&job=linkedin-people-operations',
+    label: 'Job Directory preview',
+    description: '80%-viewport browser-like preview with job list, selected role details, and source-site Apply action.',
+  },
+  {
+    href: '/v3/job-directory?state=loading',
+    label: 'Job Directory loading',
+    description: 'Layout-matched loading rows for the job-board directory.',
+  },
+  {
+    href: '/v3/job-directory?state=error',
+    label: 'Job Directory error',
+    description: 'Recoverable directory load failure with retry action.',
+  },
+  {
+    href: '/v3/job-directory?state=offline',
+    label: 'Job Directory offline',
+    description: 'Cached boards remain browsable while external application handoff is unavailable.',
+  },
+  {
     href: '/v3/documents',
     label: 'Documents',
     description: 'Add-context document table with search, add-document action, type badges, row actions, and pagination.',
@@ -304,7 +329,7 @@ const appRoutes = [
     description: 'Jobs tab with search, filters, excellent-match rows, and pagination.',
   },
   {
-    href: '/v3/auto-apply/jobs/coinbase',
+    href: '/v3/auto-apply/jobs/coinbase-financial-engineering',
     label: 'Auto Apply selected job',
     description: 'Jobs tab with Coinbase job detail panel, match score, credits, and apply action.',
   },
@@ -382,7 +407,12 @@ const adminRoutes = [
   {
     href: '/admin/products',
     label: 'Admin products',
-    description: 'Every product with tier gating, usage, revenue, health, and an availability switch behind a blast-radius confirm.',
+    description: 'Every product with tier gating, usage, revenue, health, and click-through to detail.',
+  },
+  {
+    href: '/admin/feature-flags',
+    label: 'Admin feature flags',
+    description: 'Toggle parts of the web app on and off from a single page.',
   },
   {
     href: '/admin/products/coding-copilot',

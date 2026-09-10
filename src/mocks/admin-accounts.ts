@@ -300,6 +300,18 @@ export const adminAccounts: readonly AdminAccountRow[] = [
     signedUp: 'Aug 20, 2026',
     lastActive: '47 minutes ago',
   },
+  {
+    id: 'acct_leah_chen',
+    name: 'Leah Chen',
+    email: 'leah.chen@example.com',
+    plan: 'premium',
+    planLabel: 'Premium · $197/mo',
+    status: 'paused',
+    creditsRemaining: 2_100,
+    creditsAllowance: 4_000,
+    signedUp: 'Jul 14, 2026',
+    lastActive: '1 day ago',
+  },
 ]
 
 export const adminAccountDetail: AdminAccountDetail = {
@@ -316,6 +328,10 @@ export const adminAccountDetail: AdminAccountDetail = {
   creditsRemaining: 612,
   creditsAllowance: 1_000,
   creditsResetsOn: 'Sep 8, 2026',
+  autoApplyCreditsRemaining: 45,
+  autoApplyCreditsAllowance: 100,
+  resumeBuilderCreditsRemaining: 12,
+  resumeBuilderCreditsAllowance: 50,
   subscription: {
     planLabel: 'Pro',
     priceCents: 9_900,
@@ -627,6 +643,23 @@ export const adminAccountDetail: AdminAccountDetail = {
       detail: 'The signup confirmation bounced from the address on file.',
       occurredAt: 'Jan 8, 2026 · 10:31 AM',
     },
+  ],
+}
+
+export const adminAccountDetailPaused: AdminAccountDetail = {
+  ...adminAccountDetail,
+  status: 'paused',
+  pausedOn: 'Sep 5, 2026',
+  pauseEffectiveDate: 'Sep 8, 2026',
+  auditLog: [
+    {
+      id: 'aud_08',
+      adminName: 'Daniel Okoye',
+      action: 'paused the Pro subscription',
+      detail: 'Billing frozen from Sep 8, 2026. User retains access until then.',
+      occurredAt: 'Sep 5, 2026 · 2:15 PM',
+    },
+    ...adminAccountDetail.auditLog,
   ],
 }
 

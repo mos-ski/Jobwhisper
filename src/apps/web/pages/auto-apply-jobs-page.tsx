@@ -1,6 +1,7 @@
 import { autoApplyJobs, autoApplySetup } from '@/mocks/auto-apply'
 import { resumeDocument } from '@/mocks/resume'
 import { AutoApplyJobsView } from '@/features/auto-apply/auto-apply-view'
+import { toast } from '@/ui'
 
 export function AutoApplyJobsPage({ selectedJobId }: { readonly selectedJobId?: string }) {
   const selectedJob = autoApplyJobs.find((job) => job.id === selectedJobId)
@@ -17,6 +18,7 @@ export function AutoApplyJobsPage({ selectedJobId }: { readonly selectedJobId?: 
       selectedJob={selectedJob}
       resumePreview={resumeDocument}
       profile={{ country: autoApplySetup.country, desiredRole: autoApplySetup.desiredRole, locations: autoApplySetup.locations }}
+      onApplyJob={() => toast.success('Whisper AI has started the application.', { description: 'The application is now in queue.' })}
     />
   )
 }

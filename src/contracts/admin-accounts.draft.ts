@@ -1,6 +1,6 @@
 import type { AdminPlanId, AdminProductId } from './admin.draft'
 
-export type AdminAccountStatus = 'active' | 'suspended' | 'pending'
+export type AdminAccountStatus = 'active' | 'suspended' | 'pending' | 'paused'
 
 /** `all` is the "no filter" sentinel so the value round-trips through a URL query param without needing an absent case. */
 export type AdminAccountStatusFilter = AdminAccountStatus | 'all'
@@ -107,9 +107,18 @@ export type AdminAccountDetail = {
   readonly creditsRemaining: number
   readonly creditsAllowance: number
   readonly creditsResetsOn: string
+  /** Auto Apply credits - separate pay-as-you-go balance */
+  readonly autoApplyCreditsRemaining: number
+  readonly autoApplyCreditsAllowance: number
+  /** Resume Builder credits - separate pay-as-you-go balance */
+  readonly resumeBuilderCreditsRemaining: number
+  readonly resumeBuilderCreditsAllowance: number
   /** Present only while `status` is `suspended`. */
   readonly suspendedOn?: string
   readonly suspensionReason?: string
+  /** Present only while `status` is `paused`. */
+  readonly pausedOn?: string
+  readonly pauseEffectiveDate?: string
   readonly subscription: AdminAccountSubscription
   readonly creditHistory: readonly AdminCreditEntry[]
   readonly activity: readonly AdminActivityEvent[]

@@ -36,6 +36,16 @@ export function DocumentsIcon() {
   )
 }
 
+export function JobDirectoryIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 5.5C3 4.67157 3.67157 4 4.5 4H15.5C16.3284 4 17 4.67157 17 5.5V15.5C17 16.3284 16.3284 17 15.5 17H4.5C3.67157 17 3 16.3284 3 15.5V5.5Z" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M7 4V3.5C7 2.67157 7.67157 2 8.5 2H11.5C12.3284 2 13 2.67157 13 3.5V4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M3 8.5H17M8 11.5H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 export function AutoApplyIcon() {
   return (
     <svg viewBox="0 0 19.9107 19.9107" fill="none" xmlns="http://www.w3.org/2000/svg">

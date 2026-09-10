@@ -15,12 +15,11 @@ export type BillingPlanFixture = {
   readonly popular?: boolean
 }
 
-// A Pro subscriber — the default demo account. Auto Apply and Resume Builder are no longer
-// subscription add-ons (see PRICING.md §2) — they're standalone, pay-as-you-go purchases with
-// their own prepaid credit balance per feature, not modeled in BillingSnapshot yet.
+// A free-tier user — just signed up, no subscription yet. Gets 80 Copilot credits,
+// 10 Auto Apply credits, and 10 Resume Builder credits per month.
 export const billingSnapshot: BillingSnapshot = {
   status: 'ready',
-  plan: 'pro',
+  plan: 'starter',
   wallet: {
     balance: 80,
     currency: 'credits',
@@ -28,7 +27,7 @@ export const billingSnapshot: BillingSnapshot = {
   },
   access: {
     resume: { feature: 'resume', entitled: false, creditCost: 1 },
-    'interview-prep': { feature: 'interview-prep', entitled: true, creditCost: 1 },
+    'interview-prep': { feature: 'interview-prep', entitled: false, creditCost: 1 },
     'auto-apply': { feature: 'auto-apply', entitled: false, creditCost: 1 },
     copilot: { feature: 'copilot', entitled: true, creditCost: 1 },
   },

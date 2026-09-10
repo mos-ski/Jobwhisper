@@ -1,5 +1,5 @@
 import { formatUsd } from '@/ui/currency'
-import { button, calloutBox, heading, infoTable, paragraph, renderEmailShell } from '../shell'
+import { button, greeting, heading, infoTable, paragraph, renderEmailShell } from '../shell'
 import { formatDateInZone } from '../format'
 import type { EmailTemplateBuilder } from '../types'
 
@@ -7,17 +7,19 @@ export const buildPaymentFailedEmail: EmailTemplateBuilder = (timeZone) => {
   const attemptedOn = formatDateInZone(new Date('2026-09-02T16:00:00Z'), timeZone)
 
   const body = `
+${greeting('Ada')}
 ${heading('We couldn\'t process your payment')}
-${paragraph(`Hi Ada, we tried to charge your card on ${attemptedOn} for your Jobwhisper Pro renewal, but the payment didn't go through.`)}
+${paragraph(`We tried to charge your card on ${attemptedOn} for your Jobwhisper Pro renewal, but the payment didn't go through.`)}
 ${infoTable([
   ['Plan', 'Jobwhisper Pro (monthly)'],
   ['Amount due', formatUsd(10000)],
   ['Payment method', 'Visa &middot;&middot;&middot;&middot; 4242'],
   ['Reason', 'Card declined'],
 ])}
-${calloutBox('Grace period', 'Your access continues for now, but update your payment method within 3 days to avoid interruption.', 'live')}
+${paragraph('Your access continues for now, but update your payment method within 3 days to avoid interruption.')}
 ${button('#', 'Update payment method')}
-${paragraph('Need help? Reply to this email and we\'ll sort it out with you.', { muted: true, marginBottom: 0 })}
+${paragraph('Need help? Reply to this email and we\'ll sort it out with you.', { muted: true })}
+${paragraph('Thanks,<br>The Jobwhisper team', { marginBottom: 0 })}
 `
 
   return {

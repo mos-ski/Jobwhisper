@@ -15,6 +15,7 @@ import {
   Search,
   Server,
   SlidersHorizontal,
+  ToggleLeft,
   Users,
 } from 'lucide-react'
 
@@ -42,6 +43,7 @@ const moduleIcons: Record<AdminModuleId, ReactNode> = {
   accounts: <Users />,
   transactions: <CreditCard />,
   products: <Boxes />,
+  'feature-flags': <ToggleLeft />,
   configuration: <SlidersHorizontal />,
   systems: <Server />,
   analytics: <BarChart3 />,

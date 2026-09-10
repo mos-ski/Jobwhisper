@@ -716,7 +716,7 @@ const CANDIDATES: readonly { readonly name: string; readonly email: string; read
   { name: 'Beatrice Cheng', email: 'beatrice.cheng@example.com', plan: 'premium' },
   { name: 'Diego Fuentes', email: 'diego.fuentes@example.com', plan: 'starter' },
   { name: 'Aisha Bello', email: 'aisha.bello@example.com', plan: 'pro' },
-  { name: 'Patrick O’Sullivan', email: 'patrick.osullivan@example.com', plan: 'unsubscribed' },
+  { name: "Patrick O'Sullivan", email: 'patrick.osullivan@example.com', plan: 'unsubscribed' },
   { name: 'Lena Hoffmann', email: 'lena.hoffmann@example.com', plan: 'pro' },
   { name: 'Tunde Balogun', email: 'tunde.balogun@example.com', plan: 'premium' },
   { name: 'Camille Roussel', email: 'camille.roussel@example.com', plan: 'starter' },

@@ -94,8 +94,17 @@ function PlanCard({ plan, annual, index }: { readonly plan: BillingPlanCard; rea
       </div>
 
       <p className="mt-4 flex items-baseline gap-1.5">
-        <span className="font-gowun text-3xl font-bold text-ink">{annual ? plan.annualPrice : plan.price}</span>
-        <span className="text-sm text-ink-muted">{annual ? plan.annualCadence : plan.cadence}</span>
+        {annual && plan.annualDiscountPrice ? (
+          <>
+            <span className="font-gowun text-3xl font-bold text-ink">{plan.annualDiscountPrice}</span>
+            <span className="text-sm text-ink-muted">{plan.cadence}</span>
+          </>
+        ) : (
+          <>
+            <span className="font-gowun text-3xl font-bold text-ink">{annual ? plan.annualPrice : plan.price}</span>
+            <span className="text-sm text-ink-muted">{annual ? plan.annualCadence : plan.cadence}</span>
+          </>
+        )}
       </p>
 
       <p className="mt-4 text-sm font-bold text-ink">{plan.credits}</p>

@@ -30,6 +30,7 @@ export const adminNavItems: readonly AdminNavItem[] = [
   { id: 'accounts', label: 'Users', href: '/admin/accounts', matchPrefix: '/admin/accounts' },
   { id: 'transactions', label: 'Revenue', href: '/admin/transactions', matchPrefix: '/admin/transactions', badgeCount: 7 },
   { id: 'products', label: 'Products', href: '/admin/products', matchPrefix: '/admin/products', badgeCount: newDfyLeadsCount },
+  { id: 'feature-flags', label: 'Feature flags', href: '/admin/feature-flags', matchPrefix: '/admin/feature-flags' },
   { id: 'analytics', label: 'Analytics', href: '/admin/analytics', matchPrefix: '/admin/analytics' },
   { id: 'kpis', label: 'KPIs', href: '/admin/kpis', matchPrefix: '/admin/kpis' },
   { id: 'content', label: 'Content', href: '/admin/content', matchPrefix: '/admin/content' },

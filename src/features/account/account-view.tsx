@@ -1,5 +1,5 @@
-import { AlertTriangle, Bug, Check, ChevronDown, Clock, Copy, CreditCard, ExternalLink, EyeOff, Flag, Gift, Lightbulb, Mail, MessageCircle, Moon, Play, Search, ShoppingCart, Star, Sun, Trash2, Upload } from 'lucide-react'
-import { useEffect, useState, type ReactNode } from 'react'
+import { AlertTriangle, Bug, Check, ChevronDown, CircleHelp, Clock, Copy, CreditCard, ExternalLink, EyeOff, Flag, Gift, Lightbulb, Mail, MessageCircle, Moon, Play, Search, ShoppingCart, Star, Sun, Trash2, Upload } from 'lucide-react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 import type { AccountFaqEntry, BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, SupportRequestKind, SupportRequestType, SupportTicketStatus, SupportTicketSummary, TutorialItem } from '@/contracts/account.draft'
 import type { MarketplaceItem } from '@/contracts/marketplace.draft'
@@ -7,6 +7,7 @@ import type { BadgeVariant } from '@/ui'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
 import { AppShell } from '@/features/dashboard/app-nav'
 import { centsToCredits, creditsToCents, formatCredits } from '@/lib/credits'
+import { BillingPricingGuideCard, type BillingPricingGuideStep } from './billing-pricing-guide'
 import {
   Accordion,
   AccordionItem,
@@ -35,10 +36,7 @@ import {
   TooltipTrigger,
 } from '@/ui'
 
-// Referral bonus amount is still an open item in PRICING.md §7 — 1,000 credits is a
-// placeholder pending a real number, shared here so the billing widget and the Referral
-// settings page can't drift apart the way "3 credits" vs. a new figure would.
-const REFERRAL_BONUS_CREDITS = 1000
+const REFERRAL_BONUS_CREDITS = 100
 const REFERRAL_LINK = 'https://app.jobwhisper.ai/auth/signup?code=Adedamolaiosmk'
 
 // Matches the example date in the Figma spec (node 770:7288) — standalone credits don't yet
@@ -977,12 +975,29 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
   const [autoApplyTotalCredits, setAutoApplyTotalCredits] = useState(0)
   const [resumeBuilderBalance, setResumeBuilderBalance] = useState(0)
   const [resumeBuilderTotalCredits, setResumeBuilderTotalCredits] = useState(0)
+  const [pricingGuideOpen, setPricingGuideOpen] = useState(true)
+  const [pricingGuideStep, setPricingGuideStep] = useState<BillingPricingGuideStep>(0)
+  const pricingGuideTriggerRef = useRef<HTMLButtonElement>(null)
 
   const autoApplyPurchase = standalonePurchases.find((purchase) => purchase.id === 'auto-apply')
   const resumeBuilderPurchase = standalonePurchases.find((purchase) => purchase.id === 'resume-builder')
   const copilotBalanceCredits = Math.round(centsToCredits(remainingCents))
   const copilotTotalCredits = Math.round(centsToCredits(totalCents))
   const findJobsTotalCredits = autoApplyBalance + resumeBuilderBalance
+
+  function openPricingGuide() {
+    setPricingGuideStep(0)
+    setPricingGuideOpen(true)
+  }
+
+  function closePricingGuide() {
+    setPricingGuideOpen(false)
+    window.requestAnimationFrame(() => pricingGuideTriggerRef.current?.focus())
+  }
+
+  function showNextPricingGuideStep() {
+    setPricingGuideStep((current) => Math.min(current + 1, 2) as BillingPricingGuideStep)
+  }
 
   return (
     <AppWorkspace>
@@ -999,13 +1014,31 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
 
           <BillingReferralPrompt referralsHref="/v3/settings?tab=referral" />
 
-          <TitledPanel title="Your Plan">
+          {pricingGuideOpen ? <div className="fixed inset-0 z-modal bg-overlay" aria-hidden="true" /> : null}
+
+          <TitledPanel
+            title="Your Plan"
+            action={
+              <button
+                ref={pricingGuideTriggerRef}
+                type="button"
+                onClick={openPricingGuide}
+                className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-accent-text hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                <CircleHelp aria-hidden="true" className="size-4" />
+                How it works
+              </button>
+            }
+          >
             <div className="grid gap-[12px]">
-              <div>
+              <div className={cn('relative', pricingGuideOpen && pricingGuideStep === 0 && 'z-overlay')}>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Ace Your Interview</p>
                 <div
                   style={{ animationFillMode: 'backwards' }}
-                  className="flex animate-ease-in-bottom items-start gap-[24px] border border-border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control"
+                  className={cn(
+                    'flex animate-ease-in-bottom items-start gap-[24px] border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control',
+                    pricingGuideOpen && pricingGuideStep === 0 ? 'border-accent shadow-control' : 'border-border',
+                  )}
                 >
                   <img src="/v3-assets/figma/plan-row-interview.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
                   <div className="min-w-0 flex-1">
@@ -1022,13 +1055,19 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                     View plans
                   </a>
                 </div>
+                {pricingGuideOpen && pricingGuideStep === 0 ? (
+                  <BillingPricingGuideCard step={0} learnMoreHref="/v3/billing/done-for-you" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
+                ) : null}
               </div>
 
-              <div>
+              <div className={cn('relative', pricingGuideOpen && pricingGuideStep === 1 && 'z-overlay')}>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Find Jobs Yourself</p>
                 <div
                   style={{ animationDelay: '60ms', animationFillMode: 'backwards' }}
-                  className="flex animate-ease-in-bottom items-start gap-[24px] border border-border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control"
+                  className={cn(
+                    'flex animate-ease-in-bottom items-start gap-[24px] border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control',
+                    pricingGuideOpen && pricingGuideStep === 1 ? 'border-accent shadow-control' : 'border-border',
+                  )}
                 >
                   <img src="/v3-assets/figma/plan-row-jobs.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
                   <div className="min-w-0 flex-1">
@@ -1047,13 +1086,19 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                     Buy credits
                   </a>
                 </div>
+                {pricingGuideOpen && pricingGuideStep === 1 ? (
+                  <BillingPricingGuideCard step={1} learnMoreHref="/v3/billing/done-for-you" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
+                ) : null}
               </div>
 
-              <div>
+              <div className={cn('relative', pricingGuideOpen && pricingGuideStep === 2 && 'z-overlay')}>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Done For You</p>
                 <div
                   style={{ animationDelay: '120ms', animationFillMode: 'backwards' }}
-                  className="flex animate-ease-in-bottom items-start gap-[24px] border border-border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control"
+                  className={cn(
+                    'flex animate-ease-in-bottom items-start gap-[24px] border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control',
+                    pricingGuideOpen && pricingGuideStep === 2 ? 'border-accent shadow-control' : 'border-border',
+                  )}
                 >
                   <img src="/v3-assets/figma/plan-row-dfy.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
                   <div className="min-w-0 flex-1">
@@ -1067,6 +1112,9 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                     Sign up
                   </a>
                 </div>
+                {pricingGuideOpen && pricingGuideStep === 2 ? (
+                  <BillingPricingGuideCard step={2} learnMoreHref="/v3/billing/done-for-you" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
+                ) : null}
               </div>
             </div>
           </TitledPanel>

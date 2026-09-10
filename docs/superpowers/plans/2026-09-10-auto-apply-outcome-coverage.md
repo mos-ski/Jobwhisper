@@ -117,22 +117,22 @@ Run both focused Auto Apply route tests and `npm run build`, then confirm Jobs a
 - Consumes: `AutoApplyJob`
 - Produces: 10 visible actionable jobs and 10 visible applied jobs
 
-- [ ] **Step 1: Write failing count assertions**
+- [x] **Step 1: Write failing count assertions**
 
 Assert that the Jobs route renders 10 job-detail buttons and Applied renders 10 job-detail buttons.
 
-- [ ] **Step 2: Verify both counts fail at six**
+- [x] **Step 2: Verify both counts fail at six**
 
 Run the focused first-page count test and confirm the expected six-versus-ten failure.
 
-- [ ] **Step 3: Add eight typed fixtures**
+- [x] **Step 3: Add eight typed fixtures**
 
 Add four actionable records distributed as two New, one Queued, and one Applying. Add four applied records distributed as one Success, one Needs Review, one Failed, and one Closed. Use distinct companies, roles, IDs, listing URLs, and realistic job-search copy.
 
-- [ ] **Step 4: Verify counts and build**
+- [x] **Step 4: Verify counts and build**
 
 Run the first-page count test and `npm run build`; both must succeed.
 
-- [ ] **Step 5: Verify both pages visually**
+- [x] **Step 5: Verify both pages visually**
 
 Reload Jobs and Applied at `http://127.0.0.1:5174` and confirm each renders exactly 10 rows.

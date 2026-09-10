@@ -1,4 +1,4 @@
-import { button, divider, heading, infoTable, paragraph, pill, renderEmailShell } from '../shell'
+import { button, divider, greeting, heading, infoTable, paragraph, pill, renderEmailShell } from '../shell'
 import { formatDateTimeInZone } from '../format'
 import type { EmailTemplateBuilder } from '../types'
 
@@ -6,6 +6,7 @@ export const buildCopilotReportEmail: EmailTemplateBuilder = (timeZone) => {
   const sessionTime = formatDateTimeInZone(new Date('2026-09-01T18:00:00Z'), timeZone)
 
   const body = `
+${greeting('Olivia')}
 ${heading('Your Interview Copilot session report is ready')}
 ${paragraph(`Your live session for the Product Manager role at Coinbase (${sessionTime}) has been recorded and evaluated.`)}
 ${infoTable([
@@ -17,7 +18,8 @@ ${infoTable([
 ${paragraph(`${pill('Overall: Strong', 'positive')}`, { marginBottom: 20 })}
 ${button('#', 'View full report')}
 ${divider()}
-${paragraph('The report includes your transcript, response structure notes, and suggested improvements for your next round.', { muted: true, marginBottom: 0 })}
+${paragraph('The report includes your transcript, response structure notes, and suggested improvements for your next round.', { muted: true })}
+${paragraph('Thanks,<br>The Jobwhisper team', { marginBottom: 0 })}
 `
 
   return {

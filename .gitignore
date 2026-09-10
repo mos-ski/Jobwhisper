@@ -33,3 +33,12 @@ test-results
 
 # Generated extension icons
 public/extension/icons/
+
+# Local brand-guide review exports (the production page uses svg-slides-v2)
+public/brand-guide/check-slide-*.png
+public/brand-guide/figma-assets/
+public/brand-guide/jobwhisper-logo-assets.zip
+public/brand-guide/pages/
+public/brand-guide/svg-current-contact-sheet.png
+public/brand-guide/svg-source-contact-sheet.png
+public/brand-guide/svg-slides/

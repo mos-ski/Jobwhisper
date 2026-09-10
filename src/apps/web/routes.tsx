@@ -10,6 +10,7 @@ import { AdminDashboardPage } from './pages/admin-dashboard-page'
 import { AdminKpisPage } from './pages/admin-kpis-page'
 import { AdminProductDetailPage } from './pages/admin-product-detail-page'
 import { AdminProductsPage } from './pages/admin-products-page'
+import { AdminFeatureFlagsPage } from './pages/admin-feature-flags-page'
 import { AdminSupportPage } from './pages/admin-support-page'
 import { AdminSupportTicketPage } from './pages/admin-support-ticket-page'
 import { AdminSystemsPage } from './pages/admin-systems-page'
@@ -58,6 +59,7 @@ import { InterviewReportPage } from './pages/interview-report-page'
 import { InterviewSessionPage } from './pages/interview-session-page'
 import { InterviewUploadPage } from './pages/interview-upload-page'
 import { InterviewVoicePage } from './pages/interview-voice-page'
+import { JobDirectoryPage } from './pages/job-directory-page'
 import { OnboardingInterestsPage } from './pages/onboarding-interests-page'
 import { OnboardingProfilePage } from './pages/onboarding-profile-page'
 import { ResumeConfigurePage } from './pages/resume-configure-page'
@@ -95,6 +97,10 @@ export function WebRoutes() {
 
   if (routePath === '/admin/products') {
     return <AdminProductsPage />
+  }
+
+  if (routePath === '/admin/feature-flags') {
+    return <AdminFeatureFlagsPage />
   }
 
   if (routePath.startsWith('/admin/products/')) {
@@ -159,6 +165,10 @@ export function WebRoutes() {
 
   if (routePath === '/app') {
     return <DashboardPage />
+  }
+
+  if (routePath === '/job-directory') {
+    return <JobDirectoryPage />
   }
 
   if (routePath === '/resume') {

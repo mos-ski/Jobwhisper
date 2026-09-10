@@ -43,16 +43,10 @@ import {
   Button,
   cn,
   DataTable,
-  Dialog,
-  DialogClose,
-  DialogDescription,
-  DialogPopup,
-  DialogTitle,
   EmptyState,
   formatUsdWhole,
   SelectField,
   Skeleton,
-  Switch,
   type BadgeVariant,
   type DataTableColumn,
 } from '@/ui'
@@ -296,18 +290,9 @@ export function AdminProductsView({
   errorMessage,
   onRetry,
 }: AdminProductsViewProps) {
-  // Nothing persists in this mock, so a confirmed availability change is held here to show the resulting state.
-  const [availabilityOverrides, setAvailabilityOverrides] = useState<Readonly<Record<string, boolean>>>({})
-  const [pendingDisable, setPendingDisable] = useState<AdminProductRow | null>(null)
-
-  function isEnabled(row: AdminProductRow): boolean {
-    return availabilityOverrides[row.id] ?? row.status !== 'disabled'
-  }
-
   const filtered = products.filter((row) => {
     if (status === 'all') return true
-    if (status === 'disabled') return !isEnabled(row)
-    return isEnabled(row) && row.status === status
+    return row.status === status
   })
 
   return (
@@ -376,59 +361,38 @@ export function AdminProductsView({
               />
             ) : (
               <ul className="grid gap-3">
-                {filtered.map((row) => {
-                  const enabled = isEnabled(row)
-                  const effectiveStatus: AdminProductStatus = enabled ? row.status : 'disabled'
-                  return (
-                    <li key={row.id} className="bg-surface p-4 shadow-panel sm:p-5">
+                {filtered.map((row) => (
+                  <li key={row.id}>
+                    <a
+                      href={row.detailHref}
+                      className="block bg-surface p-4 shadow-panel transition-colors hover:bg-surface-subtle sm:p-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                    >
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
                             <h2 className="font-gowun text-lg font-bold text-ink">
-                              <a href={row.detailHref} className="rounded-soft underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-                                {row.name}
-                              </a>
+                              {row.name}
                             </h2>
-                            <StatusBadge status={effectiveStatus} />
-                            {/* Same queue the Products nav badge counts — surfaced on the row that owns it. */}
+                            <StatusBadge status={row.status} />
                             {row.attentionCount && row.attentionLabel ? (
-                              <a
-                                href={row.detailHref}
-                                className="inline-flex items-center gap-1.5 rounded-pill bg-danger px-2 py-0.5 text-xs font-bold leading-4 text-on-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                              >
+                              <span className="inline-flex items-center gap-1.5 rounded-pill bg-danger px-2 py-0.5 text-xs font-bold leading-4 text-on-danger">
                                 {row.attentionCount} {row.attentionLabel}
-                              </a>
+                              </span>
                             ) : null}
                           </div>
                           <p className="mt-1 text-sm leading-6 text-ink-muted">{row.summary}</p>
                           <p className="mt-1 text-xs text-ink-muted">Included with: {row.tierNote}</p>
-                          {effectiveStatus === 'degraded' && row.statusReason ? (
+                          {row.status === 'degraded' && row.statusReason ? (
                             <p className="mt-2 inline-flex items-start gap-1.5 text-xs font-semibold text-warning">
                               <TriangleAlert aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
                               {row.statusReason}
                             </p>
                           ) : null}
-                          {!enabled ? (
-                            <p className="mt-2 inline-flex items-start gap-1.5 text-xs font-semibold text-ink-muted">
-                              <CircleSlash aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
-                              Hidden from {row.blastRadiusLabel}.
-                            </p>
-                          ) : null}
                         </div>
-                        <div className="flex shrink-0 items-center gap-3">
-                          <span className={cn('inline-flex items-center gap-1.5 text-xs font-semibold', healthTones[row.health.state])}>
-                            <Activity aria-hidden="true" className="size-3.5" />
-                            {row.health.label}
-                          </span>
-                          <Switch
-                            checked={enabled}
-                            onCheckedChange={(next) => {
-                              if (next) setAvailabilityOverrides((prev) => ({ ...prev, [row.id]: true }))
-                              else setPendingDisable(row)
-                            }}
-                            aria-label={`${enabled ? 'Disable' : 'Enable'} ${row.name}`}
-                          />
-                        </div>
+                        <span className={cn('inline-flex shrink-0 items-center gap-1.5 text-xs font-semibold', healthTones[row.health.state])}>
+                          <Activity aria-hidden="true" className="size-3.5" />
+                          {row.health.label}
+                        </span>
                       </div>
 
                       <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-3 sm:grid-cols-5">
@@ -438,37 +402,14 @@ export function AdminProductsView({
                         <div><dt className="text-xs text-ink-muted">Revenue</dt><dd className="text-sm font-semibold tabular-nums text-ink">{formatUsdWhole(row.revenueCents)}</dd></div>
                         <div><dt className="text-xs text-ink-muted">Adoption</dt><dd className="text-sm font-semibold tabular-nums text-ink">{row.adoptionPercent}%</dd></div>
                       </dl>
-                    </li>
-                  )
-                })}
+                    </a>
+                  </li>
+                ))}
               </ul>
             )}
           </>
         )}
       </div>
-
-      <Dialog open={pendingDisable !== null} onOpenChange={(open) => { if (!open) setPendingDisable(null) }}>
-        <DialogPopup aria-label="Confirm disabling this product">
-          <DialogTitle>Disable {pendingDisable?.name}?</DialogTitle>
-          <DialogDescription>
-            This immediately hides {pendingDisable?.name} for {pendingDisable?.blastRadiusLabel}. Sessions already running are not interrupted, but no one can start a new one until it is re-enabled.
-          </DialogDescription>
-          <div className="mt-5 flex flex-wrap justify-end gap-2">
-            <DialogClose className="static inline-flex min-h-9 items-center rounded-lg border border-input px-4 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-              Keep it live
-            </DialogClose>
-            <Button
-              variant="danger"
-              onClick={() => {
-                if (pendingDisable) setAvailabilityOverrides((prev) => ({ ...prev, [pendingDisable.id]: false }))
-                setPendingDisable(null)
-              }}
-            >
-              Disable for everyone
-            </Button>
-          </div>
-        </DialogPopup>
-      </Dialog>
     </AdminShell>
   )
 }

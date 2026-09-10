@@ -193,6 +193,24 @@ My name is Moski. I’m a Product Manager at Lightforth, and in this video, I’
 
 So, let’s dive right in.
 
+### Browse the Job Directory
+
+If you want to search manually, open **Job Directory** from the left side of your dashboard.
+
+You’ll see a list of trusted job boards, including general job sites, startup boards, remote-work boards, and regional sources.
+
+You can search the directory or filter it by focus. When a board looks useful, click **Explore**.
+
+Lightforth opens a large preview inside the app. It feels like a focused browser window, but the preview is built by Lightforth so it remains reliable even when a job site does not allow its pages to be embedded.
+
+Choose a role from the list to review the company, location, salary, work arrangement, responsibilities, and skills.
+
+When you find a role you want, click **Apply on** followed by the job board’s name. The source page opens in a new browser tab, and you complete the application there.
+
+If you lose your connection, you can still browse saved boards and job previews. Lightforth will make the external Apply action available again when you are online.
+
+Now let’s look at the automated option.
+
 Once you’ve signed up or logged into Lightforth, go to the left side of your dashboard and click Auto Apply.
 
 The first thing Lightforth will ask you to do is set up your job preferences.
@@ -324,6 +342,14 @@ Click Apply.
 You don’t have to start filling out every application yourself.
 
 Once you’ve selected the jobs you want, the rest of the Auto Apply system starts working.
+
+When you click Apply, the job moves into the application queue and Lightforth confirms that Whisper AI has started the application.
+
+While you browse the Jobs page, you may also see the Done For You option. It connects you with a dedicated success manager who finds suitable roles, tailors your resume, and applies on your behalf, so you can focus on the interviews.
+
+### How pricing works
+
+The billing page introduces the three ways Lightforth charges. Interview plans are recurring subscriptions, and live Interview Prep and Copilot usage is measured in minutes, with one credit representing one minute. Auto Apply and Resume Builder use prepaid credits without a subscription: Auto Apply charges for each successful application, while Resume Builder charges for each AI prompt. Done For You is a separate, one-time managed service with an interview guarantee. Users can replay this explanation at any time from **How it works** in the Your Plan section.
 
 ### Tailor — Prepares Your Resume
 

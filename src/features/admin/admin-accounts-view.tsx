@@ -13,6 +13,8 @@ import {
   LogIn,
   MoreHorizontal,
   NotebookPen,
+  Pause,
+  Play,
   RefreshCw,
   ShieldCheck,
   UserPlus,
@@ -968,11 +970,15 @@ export function AdminAccountDetailView({
   const [creditNote, setCreditNote] = useState('')
   const [creditError, setCreditError] = useState<string | undefined>(undefined)
   const [actionNotice, setActionNotice] = useState<string | null>(null)
+  const [assignPlanDialogOpen, setAssignPlanDialogOpen] = useState(false)
+  const [pauseDialogOpen, setPauseDialogOpen] = useState(false)
+  const [selectedPlan, setSelectedPlan] = useState<AdminPlanId>(account?.plan ?? 'starter')
 
   const canManageCredits = user.permissions.includes('admin:credits:manage')
 
   const status = statusOverride ?? account?.status ?? 'active'
   const isSuspended = status === 'suspended'
+  const isPaused = status === 'paused'
   const creditsRemaining = (account?.creditsRemaining ?? 0) + creditDelta
   const creditHistory = account ? [...addedCreditEntries, ...account.creditHistory] : []
   const auditLog = account ? [...addedAuditEntries, ...account.auditLog] : []
@@ -1047,6 +1053,52 @@ export function AdminAccountDetailView({
     setCreditNote('')
     setCreditError(undefined)
     setCreditsDialogOpen(false)
+  }
+
+  function confirmPlanAssignment() {
+    if (!account || selectedPlan === account.plan) {
+      setAssignPlanDialogOpen(false)
+      return
+    }
+    const previousPlan = account.plan
+    const newPlanLabel = planShortLabels[selectedPlan]
+    setAddedAuditEntries((prev) => [
+      {
+        id: `aud_local_plan_${prev.length + 1}`,
+        adminName: user.name,
+        action: `changed the plan from ${planShortLabels[previousPlan]} to ${newPlanLabel}`,
+        detail: 'Plan reassigned from the account detail screen.',
+        occurredAt: 'Just now',
+      },
+      ...prev,
+    ])
+    setActionNotice(`Plan changed from ${planShortLabels[previousPlan]} to ${newPlanLabel}.`)
+    setAssignPlanDialogOpen(false)
+  }
+
+  function confirmPauseChange() {
+    if (!account) return
+    const next: AdminAccountStatus = isPaused ? 'active' : 'paused'
+    setStatusOverride(next)
+    setAddedAuditEntries((prev) => [
+      {
+        id: `aud_local_pause_${prev.length + 1}`,
+        adminName: user.name,
+        action: next === 'paused' ? 'paused the subscription' : 'resumed the subscription',
+        detail:
+          next === 'paused'
+            ? `Billing frozen from ${account.subscription.renewsOn ?? 'the next billing date'}. User retains access until then.`
+            : `Billing restarts on ${account.subscription.renewsOn ?? 'the next billing date'}.`,
+        occurredAt: 'Just now',
+      },
+      ...prev,
+    ])
+    setActionNotice(
+      next === 'paused'
+        ? `${account.name}'s plan is now paused. Billing stops after ${account.subscription.renewsOn ?? 'the current period'}.`
+        : `${account.name}'s plan is active again.`,
+    )
+    setPauseDialogOpen(false)
   }
 
   if (isLoading) {
@@ -1215,8 +1267,47 @@ export function AdminAccountDetailView({
           </div>
         ) : null}
 
+        {isPaused ? (
+          <div role="status" className="bg-warning-surface p-4">
+            <p className="flex items-start gap-2 text-sm font-bold text-warning">
+              <Pause aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+              This plan is paused{account.pauseEffectiveDate ? ` until ${account.pauseEffectiveDate}` : ''}.
+            </p>
+            <p className="mt-1 ps-6 text-sm leading-6 text-ink">
+              Billing stops after {account.subscription.renewsOn ?? 'the current period'}. The user retains full access until then. Their {countFormatter.format(creditsRemaining)} credits are kept.
+            </p>
+          </div>
+        ) : null}
+
         <div className="grid gap-4 lg:grid-cols-3">
-          <Panel title="Subscription" description={account.subscription.planLabel}>
+          <Panel
+            title="Subscription"
+            description={account.subscription.planLabel}
+            action={
+              !impersonating && !isSuspended ? (
+                <div className="flex gap-2">
+                  <Button
+                    variant={isPaused ? 'primary' : 'secondary'}
+                    size="sm"
+                    leadingIcon={isPaused ? <Play aria-hidden="true" /> : <Pause aria-hidden="true" />}
+                    onClick={() => setPauseDialogOpen(true)}
+                  >
+                    {isPaused ? 'Resume plan' : 'Pause plan'}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedPlan(account.plan)
+                      setAssignPlanDialogOpen(true)
+                    }}
+                  >
+                    Assign plan
+                  </Button>
+                </div>
+              ) : undefined
+            }
+          >
             <dl className="mt-3 grid gap-2 text-sm">
               <div className="flex items-baseline justify-between gap-3">
                 <dt className="text-ink-muted">Price</dt>
@@ -1233,7 +1324,11 @@ export function AdminAccountDetailView({
               <div className="flex items-baseline justify-between gap-3">
                 <dt className="text-ink-muted">Renews on</dt>
                 <dd className="text-ink">
-                  {isSuspended ? 'Paused while suspended' : account.subscription.renewsOn ?? 'Does not renew'}
+                  {isSuspended
+                    ? 'Paused while suspended'
+                    : isPaused
+                      ? `Paused until ${account.pauseEffectiveDate ?? account.subscription.renewsOn ?? 'end of period'}`
+                      : account.subscription.renewsOn ?? 'Does not renew'}
                 </dd>
               </div>
               <div className="flex items-baseline justify-between gap-3">
@@ -1256,24 +1351,73 @@ export function AdminAccountDetailView({
           </Panel>
 
           <Panel title="Credit balance" description={`Resets ${account.creditsResetsOn}`}>
-            <p className="mt-3 font-gowun text-3xl font-bold leading-9 text-ink">{countFormatter.format(creditsRemaining)}</p>
-            <p className="text-sm text-ink-muted">
-              of {countFormatter.format(account.creditsAllowance)} credits this cycle, 1 credit is 1 minute of Copilot
-            </p>
-            <ProgressBar
-              className="mt-3"
-              value={creditsRemaining}
-              max={account.creditsAllowance}
-              label="Credits remaining"
-              showValue
-              color={creditsPercent < 15 ? 'warning' : 'accent'}
-            />
-            {creditsPercent < 15 ? (
-              <p className="mt-2 flex items-center gap-1.5 text-xs font-medium text-warning">
-                <AlertTriangle aria-hidden="true" className="size-3.5 shrink-0" />
-                Below 15 percent of the cycle allowance
-              </p>
-            ) : null}
+            <div className="mt-3 grid gap-4">
+              {/* Copilot credits */}
+              <div>
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="text-sm font-semibold text-ink">Copilot</p>
+                  <p className="text-sm text-ink-muted">1 credit = 1 minute</p>
+                </div>
+                <p className="mt-1 font-gowun text-2xl font-bold leading-8 text-ink">{countFormatter.format(creditsRemaining)}</p>
+                <p className="text-xs text-ink-muted">
+                  of {countFormatter.format(account.creditsAllowance)} credits this cycle
+                </p>
+                <ProgressBar
+                  className="mt-2"
+                  value={creditsRemaining}
+                  max={account.creditsAllowance}
+                  label="Copilot credits remaining"
+                  showValue
+                  color={creditsPercent < 15 ? 'warning' : 'accent'}
+                />
+                {creditsPercent < 15 ? (
+                  <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-warning">
+                    <AlertTriangle aria-hidden="true" className="size-3.5 shrink-0" />
+                    Below 15 percent of the cycle allowance
+                  </p>
+                ) : null}
+              </div>
+
+              {/* Auto Apply credits */}
+              <div className="border-t border-border pt-4">
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="text-sm font-semibold text-ink">Auto Apply</p>
+                  <p className="text-sm text-ink-muted">Pay-as-you-go</p>
+                </div>
+                <p className="mt-1 font-gowun text-2xl font-bold leading-8 text-ink">{countFormatter.format(account.autoApplyCreditsRemaining)}</p>
+                <p className="text-xs text-ink-muted">
+                  of {countFormatter.format(account.autoApplyCreditsAllowance)} credits purchased
+                </p>
+                <ProgressBar
+                  className="mt-2"
+                  value={account.autoApplyCreditsRemaining}
+                  max={account.autoApplyCreditsAllowance}
+                  label="Auto Apply credits remaining"
+                  showValue
+                  color={account.autoApplyCreditsRemaining / account.autoApplyCreditsAllowance < 0.15 ? 'warning' : 'accent'}
+                />
+              </div>
+
+              {/* Resume Builder credits */}
+              <div className="border-t border-border pt-4">
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="text-sm font-semibold text-ink">Resume Builder</p>
+                  <p className="text-sm text-ink-muted">Pay-as-you-go</p>
+                </div>
+                <p className="mt-1 font-gowun text-2xl font-bold leading-8 text-ink">{countFormatter.format(account.resumeBuilderCreditsRemaining)}</p>
+                <p className="text-xs text-ink-muted">
+                  of {countFormatter.format(account.resumeBuilderCreditsAllowance)} credits purchased
+                </p>
+                <ProgressBar
+                  className="mt-2"
+                  value={account.resumeBuilderCreditsRemaining}
+                  max={account.resumeBuilderCreditsAllowance}
+                  label="Resume Builder credits remaining"
+                  showValue
+                  color={account.resumeBuilderCreditsRemaining / account.resumeBuilderCreditsAllowance < 0.15 ? 'warning' : 'accent'}
+                />
+              </div>
+            </div>
           </Panel>
 
           <Panel title="Usage by product" description="Current billing cycle unless noted">
@@ -1523,6 +1667,82 @@ export function AdminAccountDetailView({
               </Button>
             </div>
           </form>
+        </DialogPopup>
+      </Dialog>
+
+      <Dialog open={assignPlanDialogOpen} onOpenChange={setAssignPlanDialogOpen}>
+        <DialogPopup aria-labelledby="account-assign-plan-dialog-title">
+          <DialogClose aria-label="Cancel" />
+          <DialogTitle id="account-assign-plan-dialog-title">Assign plan to {account.name}</DialogTitle>
+          <DialogDescription>
+            Select a new plan for this account. The change takes effect immediately and is recorded in the audit log.
+          </DialogDescription>
+          <div className="mt-4 grid gap-3">
+            <p className="text-sm text-ink-muted">Current plan: <span className="font-medium text-ink">{planShortLabels[account.plan]}</span></p>
+            <div className="grid gap-2">
+              {(['starter', 'pro', 'premium'] as const).map((planId) => (
+                <label
+                  key={planId}
+                  className={cn(
+                    'flex cursor-pointer items-center gap-3 rounded-soft border p-3 transition-colors',
+                    selectedPlan === planId
+                      ? 'border-accent bg-accent-subtle'
+                      : 'border-border hover:bg-surface-subtle',
+                  )}
+                >
+                  <input
+                    type="radio"
+                    name="assign-plan"
+                    value={planId}
+                    checked={selectedPlan === planId}
+                    onChange={() => setSelectedPlan(planId)}
+                    className="size-4 accent-accent"
+                  />
+                  <span className="flex-1">
+                    <span className="block text-sm font-semibold text-ink">{planShortLabels[planId]}</span>
+                    <span className="block text-xs text-ink-muted">
+                      {planId === 'starter' && '$47/mo · 500 credits'}
+                      {planId === 'pro' && '$99/mo · 1,500 credits'}
+                      {planId === 'premium' && '$197/mo · 5,000 credits'}
+                    </span>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="mt-6 flex flex-wrap justify-end gap-3">
+            <Button variant="secondary" onClick={() => setAssignPlanDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmPlanAssignment}
+              disabled={selectedPlan === account.plan}
+            >
+              {selectedPlan === account.plan ? 'Current plan' : `Assign ${planShortLabels[selectedPlan]}`}
+            </Button>
+          </div>
+        </DialogPopup>
+      </Dialog>
+
+      <Dialog open={pauseDialogOpen} onOpenChange={setPauseDialogOpen}>
+        <DialogPopup aria-labelledby="account-pause-dialog-title">
+          <DialogClose aria-label="Cancel" />
+          <DialogTitle id="account-pause-dialog-title">
+            {isPaused ? 'Resume this plan?' : 'Pause this plan?'}
+          </DialogTitle>
+          <DialogDescription>
+            {isPaused
+              ? `Restart ${account.name}'s ${account.subscription.planLabel} subscription. Billing resumes on ${account.subscription.renewsOn ?? 'the next billing date'} and their access is restored.`
+              : `${account.name}'s ${account.subscription.planLabel} subscription will continue until ${account.subscription.renewsOn ?? 'the end of the current period'}. After that, billing stops and they lose access. Their ${countFormatter.format(creditsRemaining)} credits are kept. This is written to the audit log.`}
+          </DialogDescription>
+          <div className="mt-6 flex flex-wrap justify-end gap-3">
+            <Button variant="secondary" onClick={() => setPauseDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant={isPaused ? 'primary' : 'danger'} onClick={confirmPauseChange}>
+              {isPaused ? 'Resume plan' : 'Pause plan'}
+            </Button>
+          </div>
         </DialogPopup>
       </Dialog>
     </AdminShell>

@@ -122,6 +122,24 @@
    Exit condition: user searches, creates a new Copilot session, or opens an existing session in a later state slice.
    Failure branch: history loading and empty states will be rendered when real data loading is introduced.
 
+## Job Directory: Browse -> Preview -> Apply on Source
+
+1. Entry condition: authenticated user selects Job Directory in the app navigation or opens `/v3/job-directory`.
+   Exit condition: the directory displays saved job boards and the user searches or filters by focus.
+   Failure branch: loading uses layout-matched skeletons; a load failure presents Try again; offline mode keeps cached boards browsable.
+
+2. Entry condition: at least one board matches the current search and filter.
+   Exit condition: user selects Explore and the 80% browser-like preview opens with representative jobs from that board.
+   Failure branch: a board without representative jobs keeps the preview open and explains that no jobs are available yet.
+
+3. Entry condition: the board preview contains one or more jobs.
+   Exit condition: user selects a role and reviews its company, location, salary, responsibilities, and skills without leaving Jobwhisper.
+   Failure branch: long details scroll inside the preview while the close action and job list remain keyboard reachable.
+
+4. Entry condition: the user is online and chooses Apply on the selected source.
+   Exit condition: the canonical external application destination opens in a new browser tab.
+   Failure branch: offline mode disables the external handoff and tells the user that applications return with connectivity.
+
 ## Auto Apply: Upload -> Preferences -> Agent -> Jobs -> Applied
 
 1. Entry condition: authenticated user chooses Apply for Jobs from `/v3/app` or opens `/v3/auto-apply`.

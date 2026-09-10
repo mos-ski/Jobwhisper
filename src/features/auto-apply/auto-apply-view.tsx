@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
-import { AlertTriangle, ArrowLeft, ArrowUpLeft, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, CircleHelp, ExternalLink, FileText, Filter, Globe, LinkIcon, PenLine, Play, RefreshCw, Search, Send, Settings, X, Zap, Trash2, Download, Mail } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, ArrowRight, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, CircleHelp, ExternalLink, FileText, Filter, Globe, LinkIcon, PenLine, Play, RefreshCw, Search, Send, Settings, X, Zap, Trash2, Download, Mail } from 'lucide-react'
 import { SiGooglechrome, SiGoogleplay } from 'react-icons/si'
 
 import type { AutoApplyApplication, AutoApplyApplicationDetails, AutoApplyJob, AutoApplyOutcome, AutoApplySetup } from '@/contracts/auto-apply.draft'
@@ -44,6 +44,7 @@ import {
   UploadedFileDialog,
 } from '@/ui'
 import { useAgentSession, type AgentSession, type FeedEvent, type FeedLink } from '@/hooks/useAgentSession'
+import { DoneForYouPromoWidget } from './done-for-you-promo-widget'
 
 export type AutoApplyUploadViewProps = {
   readonly homeHref: string
@@ -88,6 +89,7 @@ export type AutoApplyJobsViewProps = {
   readonly selectedJob?: AutoApplyJob
   readonly resumePreview: ResumeDocument
   readonly profile: AutoApplyProfileSnapshot
+  readonly onApplyJob: (job: AutoApplyJob) => void
 }
 
 export type AutoApplyAppliedViewProps = {
@@ -1338,6 +1340,7 @@ function JobList({
   onSelectionChange,
   variant = 'jobs',
   onReview,
+  onApply,
 }: {
   readonly jobs: readonly AutoApplyJob[]
   readonly selectedJob?: AutoApplyJob
@@ -1346,6 +1349,7 @@ function JobList({
   readonly onSelectionChange?: (ids: ReadonlySet<string>) => void
   readonly variant?: 'jobs' | 'applied'
   readonly onReview?: (job: AutoApplyJob) => void
+  readonly onApply?: (job: AutoApplyJob) => void
 }) {
   const [internalSelected, setInternalSelected] = useState<ReadonlySet<string>>(new Set())
   const selected = selectedIds ?? internalSelected
@@ -1372,38 +1376,60 @@ function JobList({
         {jobs.map((job) => {
           const isSelected = selected.has(job.id)
           const isReviewRow = variant === 'applied' && job.outcome === 'needs-review'
+          const visibleStatus = variant === 'applied' && job.outcome
+            ? job.outcome === 'needs-review' ? 'Needs Review' : job.outcome[0].toUpperCase() + job.outcome.slice(1)
+            : JOB_STATUS_LABELS[job.status]
           return (
-            <button
+            <div
               key={job.id}
-              type="button"
-              onClick={() => (isReviewRow ? onReview?.(job) : onSelectJob(job))}
               className={cn(
-                'group/row flex w-full items-start gap-4 border-b border-border px-[16px] py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+                'group/row flex w-full items-start gap-3 border-b border-border px-[16px] py-3 transition-colors',
                 isSelected ? 'bg-accent/10' : 'hover:bg-surface-subtle',
               )}
             >
-              <span
-                className={cn(
-                  'grid size-9 shrink-0 place-items-center rounded-lg text-xs font-bold',
-                  job.company.toLowerCase().includes('stripe') ? 'bg-accent-subtle text-accent-text' : 'bg-danger-surface text-danger',
-                )}
+              <button
+                type="button"
+                onClick={() => (isReviewRow ? onReview?.(job) : onSelectJob(job))}
+                aria-label={`View ${job.title} at ${job.company}, ${visibleStatus}`}
+                className="flex min-w-0 flex-1 items-start gap-4 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
               >
-                {job.company.slice(0, 2).toUpperCase()}
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="flex flex-wrap items-center gap-2">
-                  <span className="font-gowun font-semibold text-ink">{job.title}</span>
-                  <span className="rounded px-2 py-0.5 text-[10px] font-bold text-positive bg-positive-surface">{job.matchPercent}% MATCH</span>
+                <span
+                  className={cn(
+                    'grid size-9 shrink-0 place-items-center rounded-lg text-xs font-bold',
+                    job.company.toLowerCase().includes('stripe') ? 'bg-accent-subtle text-accent-text' : 'bg-danger-surface text-danger',
+                  )}
+                >
+                  {job.company.slice(0, 2).toUpperCase()}
                 </span>
-                <span className="mt-1 block text-xs text-ink-muted">
-                  {job.company} - {job.location} - {job.type}
+                <span className="min-w-0 flex-1">
+                  <span className="flex flex-wrap items-center gap-2">
+                    <span className="font-gowun font-semibold text-ink">{job.title}</span>
+                    <span className="rounded px-2 py-0.5 text-[10px] font-bold text-positive bg-positive-surface">{job.matchPercent}% MATCH</span>
+                    {variant === 'jobs' && job.status === 'new' ? <JobStatusBadge status="new" className="rounded-full px-2 py-0.5 text-xs" /> : null}
+                  </span>
+                  <span className="mt-1 block text-xs text-ink-muted">
+                    {job.company} - {job.location} - {job.type}
+                  </span>
+                  <span className="mt-1 block text-xs text-ink-muted">
+                    Found {job.dateLabel} - {job.source}
+                  </span>
                 </span>
-                <span className="mt-1 block text-xs text-ink-muted">
-                  Found {job.dateLabel} - {job.source}
-                </span>
-              </span>
-              {variant === 'applied' && job.outcome ? <OutcomeBadge outcome={job.outcome} /> : <JobStatusBadge status={job.status} />}
-            </button>
+              </button>
+              {variant === 'jobs' && job.status === 'new' ? (
+                <button
+                  type="button"
+                  onClick={() => onApply?.(job)}
+                  aria-label={`Apply to ${job.title} at ${job.company}`}
+                  className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                >
+                  Apply
+                </button>
+              ) : variant === 'applied' && job.outcome ? (
+                <OutcomeBadge outcome={job.outcome} />
+              ) : (
+                <JobStatusBadge status={job.status} />
+              )}
+            </div>
           )
         })}
       </div>
@@ -1536,6 +1562,7 @@ function JobPreview({
   resumePreview,
   profile = { country: '', desiredRole: [], locations: [] },
   setupHref,
+  onApply,
 }: {
   readonly job: AutoApplyJob
   readonly onClose: () => void
@@ -1543,6 +1570,7 @@ function JobPreview({
   readonly resumePreview: ResumeDocument
   readonly profile?: AutoApplyProfileSnapshot
   readonly setupHref: string
+  readonly onApply?: (job: AutoApplyJob) => void
 }) {
   const [resumePreviewOpen, setResumePreviewOpen] = useState(false)
   const [getResumeOpen, setGetResumeOpen] = useState(false)
@@ -1600,7 +1628,7 @@ function JobPreview({
             {reasonNote ? (
               <section className={cn('rounded-lg p-4', job.outcome === 'failed' ? 'bg-danger-surface' : 'bg-surface-subtle')}>
                 <h3 className={cn('text-xs font-bold uppercase tracking-wide', job.outcome === 'failed' ? 'text-danger' : 'text-ink-muted')}>
-                  {job.outcome === 'failed' ? 'Why it failed' : 'Why it’s closed'}
+                    {job.outcome === 'failed' ? 'Why it failed' : "Why it's closed"}
                 </h3>
                 <p className={cn('mt-1 text-sm leading-6', job.outcome === 'failed' ? 'text-danger' : 'text-ink-muted')}>{reasonNote}</p>
               </section>
@@ -1753,7 +1781,7 @@ function JobPreview({
           {!applied && job.status !== 'posting-closed' ? <ProfileIncompleteBanner profile={profile} setupHref={setupHref} /> : null}
 
           <div className="mt-6 grid gap-2 border-t border-border pt-5">
-            {applied || job.status === 'posting-closed' ? (
+            {applied || job.status !== 'new' ? (
               <>
                 <a href={job.listingUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                   <ExternalLink aria-hidden="true" className="size-4" />
@@ -1765,7 +1793,7 @@ function JobPreview({
               </>
             ) : (
               <>
-                <button type="button" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                <button type="button" onClick={() => onApply?.(job)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                   <Send aria-hidden="true" className="size-4" />
                   Apply Now
                 </button>
@@ -1960,8 +1988,6 @@ function FilterDropdown({
                 { label: 'New', value: 'new' },
                 { label: 'Queued', value: 'queued' },
                 { label: 'Applying', value: 'applying' },
-                { label: 'Applied', value: 'applied' },
-                { label: 'Posting closed', value: 'posting-closed' },
               ]}
             />
             {activeCount > 0 ? (
@@ -2023,7 +2049,7 @@ export function ProfileIncompleteBanner({ profile, setupHref, description }: {
     <div className="mb-3 border border-warning/30 bg-warning-surface p-[18px]">
       <p className="text-xs font-bold uppercase tracking-wide text-warning">Finish your profile to apply</p>
       <p className="mt-1 text-sm text-ink">
-        {description ?? 'Auto-Apply cannot complete an employer’s form without these, so it won’t start one.'}
+          {description ?? "Auto-Apply cannot complete an employer's form without these, so it won't start one."}
       </p>
       <div className="mt-3 grid gap-2">
         {missing.map((field) => (
@@ -2049,21 +2075,35 @@ function AutoApplyExtensionPromo() {
         <a href="/v3/extension" className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-ink-muted hover:text-ink">
           <SiGooglechrome aria-hidden="true" className="size-3" />
           Download Extension
-          <ArrowUpLeft aria-hidden="true" className="size-3" />
+          <ArrowRight aria-hidden="true" className="size-3" />
         </a>
       </div>
     </div>
   )
 }
 
-export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, appliedHref, resumeHistoryHref, jobs, selectedJob: initialSelectedJob, resumePreview, profile }: AutoApplyJobsViewProps) {
-  const [selectedJob, setSelectedJob] = useState<AutoApplyJob | undefined>(initialSelectedJob)
+export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, appliedHref, resumeHistoryHref, jobs, selectedJob: initialSelectedJob, resumePreview, profile, onApplyJob }: AutoApplyJobsViewProps) {
+  const availableJobs = jobs.filter((job) => job.status !== 'applied' && job.status !== 'posting-closed')
+  const [listedJobs, setListedJobs] = useState<readonly AutoApplyJob[]>(availableJobs)
+  const [selectedJob, setSelectedJob] = useState<AutoApplyJob | undefined>(
+    initialSelectedJob && initialSelectedJob.status !== 'applied' && initialSelectedJob.status !== 'posting-closed'
+      ? initialSelectedJob
+      : undefined,
+  )
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<JobFilters>(DEFAULT_FILTERS)
   const [refreshKey, setRefreshKey] = useState(0)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [promoVisible, setPromoVisible] = useState(true)
 
-  const filtered = applyJobFilters(jobs, search, filters)
+  const filtered = applyJobFilters(listedJobs, search, filters)
+
+  function handleApply(job: AutoApplyJob) {
+    const queuedJob = { ...job, status: 'queued' as const }
+    setListedJobs((current) => current.map((item) => item.id === job.id ? queuedJob : item))
+    setSelectedJob((current) => current?.id === job.id ? queuedJob : current)
+    onApplyJob(queuedJob)
+  }
 
   return (
     <Workspace>
@@ -2123,7 +2163,7 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
                   </div>
                   <AutoApplyExtensionPromo />
                   <div className="-mx-[16px] sm:mx-0">
-                    <JobList jobs={filtered} selectedJob={selectedJob} onSelectJob={(job) => setSelectedJob(selectedJob?.id === job.id ? undefined : job)} />
+                    <JobList jobs={filtered} selectedJob={selectedJob} onSelectJob={(job) => setSelectedJob(selectedJob?.id === job.id ? undefined : job)} onApply={handleApply} />
                   </div>
                   <div className="mt-5 flex items-center justify-center gap-4 text-sm text-ink-muted">
                     <span className="inline-flex items-center gap-1 text-ink-muted"><ChevronLeft aria-hidden="true" className="size-4" />Previous</span>
@@ -2132,7 +2172,7 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
                   </div>
                 </div>
                 {selectedJob ? (
-                  <JobPreview job={selectedJob} onClose={() => setSelectedJob(undefined)} applied={selectedJob.status === 'applied'} resumePreview={resumePreview} profile={profile} setupHref={setupHref} />
+                  <JobPreview job={selectedJob} onClose={() => setSelectedJob(undefined)} applied={false} resumePreview={resumePreview} profile={profile} setupHref={setupHref} onApply={handleApply} />
                 ) : null}
               </div>
             </div>
@@ -2140,6 +2180,12 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
         </div>
       </section>
       <AutoApplyPreferencesDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+      {promoVisible ? (
+        <DoneForYouPromoWidget
+          signupHref="/v3/billing/done-for-you"
+          onDismiss={() => setPromoVisible(false)}
+        />
+      ) : null}
     </Workspace>
   )
 }
@@ -2336,15 +2382,14 @@ function RetryApplicationModal({
 // ─── Applied View ─────────────────────────────────────────────────────────────
 
 export function AutoApplyAppliedView({ homeHref, setupHref, agentHref, jobsHref, appliedHref, resumeHistoryHref, jobs, application, resumePreview }: AutoApplyAppliedViewProps) {
-  const [selectedJob, setSelectedJob] = useState<AutoApplyJob | undefined>(application.job)
+  const [selectedJob, setSelectedJob] = useState<AutoApplyJob | undefined>(undefined)
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<JobFilters>(DEFAULT_FILTERS)
   const [refreshKey, setRefreshKey] = useState(0)
   const [reviewJob, setReviewJob] = useState<AutoApplyJob | undefined>(undefined)
   const [retryOpen, setRetryOpen] = useState(false)
 
-  const allJobs = jobs
-    .map((job) => (job.id === application.job.id ? application.job : job))
+  const allJobs = [application.job, ...jobs.filter((job) => job.id !== application.job.id)]
     .filter((job) => job.status === 'applied')
   const filtered = applyJobFilters(allJobs, search, filters)
 

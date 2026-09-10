@@ -129,9 +129,11 @@ export const adminMarketplacePricing: AdminMarketplacePricingConfig = {
 }
 
 export const adminUnsubscribedAllowance: AdminUnsubscribedAllowanceConfig = {
-  freeMinutes: 50,
+  freeMinutes: 80,
   resetAnchor: 'rolling-30-day',
   resetPeriodDays: 30,
+  autoApplyCredits: 10,
+  resumeBuilderCredits: 10,
 }
 
 export const adminCouponScopeOptions: readonly AdminCouponScopeOption[] = [
@@ -522,7 +524,7 @@ export const adminOnboardingSurvey: AdminOnboardingSurveyConfig = {
 }
 
 export const adminReferralProgram: AdminReferralProgramConfig = {
-  rewardCreditsPerReferral: 1000,
+  rewardCreditsPerReferral: 100,
   maxReferralsPerAccount: 20,
   rewardExpiryDays: 90,
 }

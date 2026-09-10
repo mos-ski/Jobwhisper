@@ -84,6 +84,10 @@ export type AdminUnsubscribedAllowanceConfig = {
   readonly freeMinutes: number
   readonly resetAnchor: AdminAllowanceResetAnchor
   readonly resetPeriodDays: number
+  /** Auto Apply credits for free users */
+  readonly autoApplyCredits: number
+  /** Resume Builder credits for free users */
+  readonly resumeBuilderCredits: number
 }
 
 export type AdminCouponType = 'percent-off' | 'fixed-amount-off' | 'trial-extension'
