@@ -450,7 +450,7 @@ function PageShell({ children, className }: { readonly children: ReactNode; read
 }
 
 const OPTION_CARD_CLASS = 'group flex min-w-0 flex-col p-5 transition-[background-color,box-shadow] duration-normal ease-default hover:bg-surface-subtle hover:shadow-control focus-within:bg-surface-subtle focus-within:shadow-control motion-reduce:transition-none sm:p-7'
-const PLAN_CARD_CLASS = 'group flex min-w-0 flex-col border-2 border-transparent p-5 transition-[background-color,border-color,box-shadow,transform] duration-normal ease-default hover:scale-[0.99] hover:border-accent hover:bg-accent-subtle hover:shadow-control focus-within:scale-[0.99] focus-within:border-accent focus-within:bg-accent-subtle focus-within:shadow-control motion-reduce:transform-none motion-reduce:transition-none sm:p-7'
+const PLAN_CARD_CLASS = 'group flex min-w-0 flex-col p-5 outline outline-2 outline-transparent transition-[background-color,outline-color,box-shadow,transform] duration-normal ease-default hover:scale-[0.99] hover:outline-accent hover:bg-accent-subtle hover:shadow-control focus-within:scale-[0.99] focus-within:outline-accent focus-within:bg-accent-subtle focus-within:shadow-control motion-reduce:transform-none motion-reduce:transition-none sm:p-7'
 const OPTION_ACTION_CLASS = 'my-5 w-full transition-colors duration-normal ease-default group-hover:border-accent group-hover:bg-accent group-hover:text-on-accent group-focus-within:border-accent group-focus-within:bg-accent group-focus-within:text-on-accent motion-reduce:transition-none'
 
 function useAnimatedNumber(target: number) {
