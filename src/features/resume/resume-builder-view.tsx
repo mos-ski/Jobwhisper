@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, Download, FileText,
 import type { ResumeBuilderSession, ResumeBuilderTab, ResumeChatState, ResumeDocument, ResumeHistoryRow, ResumeSectionId, ResumeTemplate } from '@/contracts/resume.draft'
 import { AiSuggestionAction, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, FormField, FormPanel, FormPanelFooter, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, TipModal, TipModalTrigger, UploadedFileDialog } from '@/ui'
 import { AppShell } from '@/features/dashboard/app-nav'
+import { InterviewPrepFeatureWidget } from '@/features/interview/interview-prep-feature-widget'
 import { useTypewriter } from '@/hooks/useTypewriter'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 
@@ -1413,6 +1414,7 @@ export function ResumeEditorView({ homeHref, document, session, templates, tab, 
     return Number.isFinite(parsed) ? parsed / 100 : 0.85
   })
   const [previewOpen, setPreviewOpen] = useState(false)
+  const [showInterviewPrepWidget, setShowInterviewPrepWidget] = useState(true)
   const isMobileViewport = useIsMobileViewport()
 
   function revealSuggestion() {
@@ -1558,6 +1560,13 @@ export function ResumeEditorView({ homeHref, document, session, templates, tab, 
         onReject={handleReject}
         onAtsClick={() => setAtsOpen(true)}
       />
+      {showInterviewPrepWidget ? (
+        <InterviewPrepFeatureWidget
+          href="/v3/interview-prep/history"
+          previewSrc="/v3-assets/figma/form-screen-preview.png"
+          onDismiss={() => setShowInterviewPrepWidget(false)}
+        />
+      ) : null}
       {isMobileViewport ? (
         <TipModal
           open={showPostAcceptTip}
