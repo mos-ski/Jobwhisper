@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import type { AdminAccountDetailTab } from '@/contracts/admin-accounts.draft'
 import { AdminAccountDetailView } from '@/features/admin/admin-accounts-view'
 import { adminNavItems, adminNotifications, adminSearchResults, adminSession } from '@/mocks/admin'
-import { adminAccountDetail, adminAccountDetailSuspended } from '@/mocks/admin-accounts'
+import { adminAccountDetail, adminAccountDetailPaused, adminAccountDetailSuspended } from '@/mocks/admin-accounts'
 
 const DETAIL_TABS: readonly AdminAccountDetailTab[] = ['credits', 'activity', 'audit']
 
@@ -19,8 +19,8 @@ export function AdminAccountDetailPage({ accountId }: AdminAccountDetailPageProp
   const tabParam = params.get('tab')
   const tab = DETAIL_TABS.find((value) => value === tabParam) ?? 'credits'
   const state = params.get('state')
-  // `state=suspended` demos the suspended treatment; `state=missing` demos an id that matched nothing.
-  const account = state === 'missing' ? null : state === 'suspended' ? adminAccountDetailSuspended : adminAccountDetail
+  // `state=suspended` demos the suspended treatment; `state=paused` demos the paused treatment; `state=missing` demos an id that matched nothing.
+  const account = state === 'missing' ? null : state === 'suspended' ? adminAccountDetailSuspended : state === 'paused' ? adminAccountDetailPaused : adminAccountDetail
 
   function setParam(key: string, value: string | null) {
     const next = new URLSearchParams(params)

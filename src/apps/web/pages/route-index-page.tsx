@@ -5,6 +5,11 @@ const marketingRoutes = [
     description: 'Marketing-only Interview Copilot landing page: hero, pain, cost, demo, FAQ, final CTA.',
   },
   {
+    href: '/pricing',
+    label: 'Pricing page',
+    description: 'Tabbed pricing page with three product tiers: Interview Copilot, Auto Apply & Resume, Done For You.',
+  },
+  {
     href: '/vsl',
     label: 'VSL sales page',
     description: 'Full sales/VSL page with before-after demo and a 4-step mock checkout: details, upsells, payment, success.',

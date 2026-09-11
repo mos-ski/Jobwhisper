@@ -94,10 +94,10 @@ function BuilderHeader({
         <button
           type="button"
           onClick={onAtsClick}
-          className="hidden min-h-9 items-center gap-2 rounded-lg border border-border px-4 text-base font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus lg:inline-flex"
+          className="ats-shimmer relative hidden min-h-9 items-center gap-2 overflow-hidden rounded-lg border border-border bg-accent-subtle px-4 text-base font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus lg:inline-flex"
         >
-          <Target aria-hidden="true" className="size-4" />
-          ATS Score
+          <Target aria-hidden="true" className="size-4 relative z-10" />
+          <span className="relative z-10">ATS Score</span>
         </button>
       ) : null}
       {action === 'download' ? (
@@ -1563,7 +1563,7 @@ export function ResumeEditorView({ homeHref, document, session, templates, tab, 
       {showInterviewPrepWidget ? (
         <InterviewPrepFeatureWidget
           href="/v3/interview-prep/history"
-          previewSrc="/v3-assets/figma/form-screen-preview.png"
+          previewVideoSrc="/v3-assets/figma/interview-prep-widget-preview.mp4"
           onDismiss={() => setShowInterviewPrepWidget(false)}
         />
       ) : null}
@@ -1613,7 +1613,7 @@ export function ResumeHistoryView({ homeHref, createHref, editorHref, rows }: Re
       {showInterviewPrepWidget ? (
         <InterviewPrepFeatureWidget
           href="/v3/interview-prep/history"
-          previewSrc="/v3-assets/figma/form-screen-preview.png"
+          previewVideoSrc="/v3-assets/figma/interview-prep-widget-preview.mp4"
           onDismiss={() => setShowInterviewPrepWidget(false)}
         />
       ) : null}

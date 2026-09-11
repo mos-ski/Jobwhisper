@@ -4,13 +4,13 @@ import { cn } from '@/ui'
 
 export type InterviewPrepFeatureWidgetProps = {
   readonly href: string
-  readonly previewSrc: string
+  readonly previewVideoSrc: string
   readonly onDismiss?: () => void
   readonly className?: string
 }
 
 /** A small, dismissible announcement for Interview Prep in the resume workspace. */
-export function InterviewPrepFeatureWidget({ href, previewSrc, onDismiss, className }: InterviewPrepFeatureWidgetProps) {
+export function InterviewPrepFeatureWidget({ href, previewVideoSrc, onDismiss, className }: InterviewPrepFeatureWidgetProps) {
   return (
     <aside
       className={cn(
@@ -43,7 +43,15 @@ export function InterviewPrepFeatureWidget({ href, previewSrc, onDismiss, classN
         className="mt-2 block h-[12.1875rem] overflow-hidden rounded-sm bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
         aria-label="Open Interview Prep"
       >
-        <img src={previewSrc} alt="Interview Prep preview" className="size-full object-cover object-top" />
+        <video
+          src={previewVideoSrc}
+          aria-label="Interview Prep preview"
+          className="size-full object-cover object-top"
+          autoPlay
+          loop
+          muted
+          playsInline
+        />
       </a>
     </aside>
   )

@@ -262,7 +262,7 @@ export function AdminTransactionsView({
       sortable: true,
       sortValue: (row) => statusLabels[row.status],
       render: (row) => (
-        <span className="grid gap-1">
+        <span className="flex flex-col items-start gap-1">
           <StatusBadge status={row.status} />
           {row.failureReason ? <span className="text-xs text-ink-muted">{row.failureReason}</span> : null}
         </span>

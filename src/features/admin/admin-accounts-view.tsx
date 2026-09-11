@@ -982,6 +982,7 @@ export function AdminAccountDetailView({
   const [actionNotice, setActionNotice] = useState<string | null>(null)
   const [assignPlanDialogOpen, setAssignPlanDialogOpen] = useState(false)
   const [pauseDialogOpen, setPauseDialogOpen] = useState(false)
+  const [resetCreditsType, setResetCreditsType] = useState<'copilot' | 'auto-apply' | 'resume-builder' | null>(null)
   const [selectedPlan, setSelectedPlan] = useState<AdminPlanId>(account?.plan ?? 'starter')
 
   const canManageCredits = user.permissions.includes('admin:credits:manage')
@@ -1131,6 +1132,50 @@ export function AdminAccountDetailView({
         ? `Billing stops after ${account.subscription.renewsOn ?? 'the current period'}.`
         : `Billing resumes on ${account.subscription.renewsOn ?? 'the next billing date'}.` },
     )
+  }
+
+  function confirmResetCredits() {
+    if (!account || !resetCreditsType) return
+    const typeLabel = creditTypeOptions.find((o) => o.value === resetCreditsType)?.label ?? 'Credits'
+    const productMap: Record<string, { product: AdminProductId; productLabel: string; currentBalance: number; setDelta: (fn: (prev: number) => number) => void }> = {
+      'copilot': { product: 'interview-copilot', productLabel: 'Interview Copilot', currentBalance: creditsRemaining, setDelta: setCreditDelta },
+      'auto-apply': { product: 'auto-apply', productLabel: 'Auto Apply', currentBalance: autoApplyCreditsRemaining, setDelta: setAutoApplyCreditDelta },
+      'resume-builder': { product: 'resume-builder', productLabel: 'Resume Builder', currentBalance: resumeBuilderCreditsRemaining, setDelta: setResumeBuilderCreditDelta },
+    }
+    const config = productMap[resetCreditsType]
+    if (config.currentBalance === 0) {
+      setResetCreditsType(null)
+      return
+    }
+    const removed = config.currentBalance
+    config.setDelta(() => -removed)
+    setAddedCreditEntries((prev) => [
+      {
+        id: `cr_local_reset_${prev.length + 1}`,
+        kind: 'spend',
+        description: 'Admin reset to zero',
+        product: config.product,
+        productLabel: config.productLabel,
+        amountCredits: -removed,
+        balanceAfter: 0,
+        occurredAt: 'Just now',
+        actor: user.name,
+      },
+      ...prev,
+    ])
+    setAddedAuditEntries((prev) => [
+      {
+        id: `aud_local_reset_${prev.length + 1}`,
+        adminName: user.name,
+        action: `reset ${typeLabel} credits to zero`,
+        detail: `Removed ${countFormatter.format(removed)} credits. Balance set to 0.`,
+        occurredAt: 'Just now',
+      },
+      ...prev,
+    ])
+    setActionNotice(`${typeLabel} credits reset to zero. ${countFormatter.format(removed)} credits removed.`)
+    setResetCreditsType(null)
+    toast.success(`${typeLabel} credits reset`, { description: `${countFormatter.format(removed)} credits removed. Balance is now 0.` })
   }
 
   if (isLoading) {
@@ -1388,7 +1433,12 @@ export function AdminAccountDetailView({
               <div>
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-sm font-semibold text-ink">Copilot</p>
-                  <p className="text-sm text-ink-muted">1 credit = 1 minute</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-ink-muted">1 credit = 1 minute</p>
+                    {!impersonating && creditsRemaining > 0 ? (
+                      <Button variant="secondary" size="sm" onClick={() => setResetCreditsType('copilot')}>Reset</Button>
+                    ) : null}
+                  </div>
                 </div>
                 <p className="mt-1 font-gowun text-2xl font-bold leading-8 text-ink">{countFormatter.format(creditsRemaining)}</p>
                 <p className="text-xs text-ink-muted">
@@ -1414,7 +1464,12 @@ export function AdminAccountDetailView({
               <div className="border-t border-border pt-4">
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-sm font-semibold text-ink">Auto Apply</p>
-                  <p className="text-sm text-ink-muted">Pay-as-you-go</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-ink-muted">Pay-as-you-go</p>
+                    {!impersonating && autoApplyCreditsRemaining > 0 ? (
+                      <Button variant="secondary" size="sm" onClick={() => setResetCreditsType('auto-apply')}>Reset</Button>
+                    ) : null}
+                  </div>
                 </div>
                 <p className="mt-1 font-gowun text-2xl font-bold leading-8 text-ink">{countFormatter.format(autoApplyCreditsRemaining)}</p>
                 <p className="text-xs text-ink-muted">
@@ -1434,7 +1489,12 @@ export function AdminAccountDetailView({
               <div className="border-t border-border pt-4">
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-sm font-semibold text-ink">Resume Builder</p>
-                  <p className="text-sm text-ink-muted">Pay-as-you-go</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-ink-muted">Pay-as-you-go</p>
+                    {!impersonating && resumeBuilderCreditsRemaining > 0 ? (
+                      <Button variant="secondary" size="sm" onClick={() => setResetCreditsType('resume-builder')}>Reset</Button>
+                    ) : null}
+                  </div>
                 </div>
                 <p className="mt-1 font-gowun text-2xl font-bold leading-8 text-ink">{countFormatter.format(resumeBuilderCreditsRemaining)}</p>
                 <p className="text-xs text-ink-muted">
@@ -1791,6 +1851,24 @@ export function AdminAccountDetailView({
             </Button>
             <Button variant={isPaused ? 'primary' : 'danger'} onClick={confirmPauseChange}>
               {isPaused ? 'Resume plan' : 'Pause plan'}
+            </Button>
+          </div>
+        </DialogPopup>
+      </Dialog>
+
+      <Dialog open={resetCreditsType !== null} onOpenChange={(open) => { if (!open) setResetCreditsType(null) }}>
+        <DialogPopup aria-labelledby="account-reset-credits-dialog-title">
+          <DialogClose aria-label="Cancel" />
+          <DialogTitle id="account-reset-credits-dialog-title">Reset credits to zero?</DialogTitle>
+          <DialogDescription>
+            This will remove all {resetCreditsType === 'copilot' ? 'Copilot (Interview)' : resetCreditsType === 'auto-apply' ? 'Auto Apply' : 'Resume Builder'} credits from {account.name}&apos;s balance. The removal is written to the credit history and audit log under your name.
+          </DialogDescription>
+          <div className="mt-6 flex flex-wrap justify-end gap-3">
+            <Button variant="secondary" onClick={() => setResetCreditsType(null)}>
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={confirmResetCredits}>
+              Reset to zero
             </Button>
           </div>
         </DialogPopup>

@@ -216,4 +216,31 @@
   .animate-skeleton-pulse {
     animation: skeletonPulse 1.5s ease-in-out infinite;
   }
+
+  @keyframes atsShimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .ats-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 45%,
+      rgba(255, 255, 255, 0.35) 50%,
+      rgba(255, 255, 255, 0.25) 55%,
+      transparent 100%
+    );
+    animation: atsShimmer 2.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ats-shimmer::after {
+      animation: none;
+    }
+  }
 }
