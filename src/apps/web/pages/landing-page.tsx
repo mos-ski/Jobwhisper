@@ -187,7 +187,10 @@ function LandingNav() {
             Features
             <ChevronDown size={10} className="mt-px" />
           </button>
-          <button className="text-white/60 text-base font-medium tracking-[-0.3px] leading-6 hover:text-white transition-colors">
+          <button
+            onClick={() => navigate('/pricing')}
+            className="text-white/60 text-base font-medium tracking-[-0.3px] leading-6 hover:text-white transition-colors"
+          >
             Pricing
           </button>
           <a
@@ -465,9 +468,9 @@ function LandingFooter() {
           <span aria-hidden="true">·</span>
           <button className="hover:text-white transition-colors">Download</button>
           <span aria-hidden="true">·</span>
-          <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+          <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
           <span aria-hidden="true">·</span>
-          <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+          <a href="/terms" className="hover:text-white transition-colors">Terms of Service</a>
         </div>
       </div>
     </footer>
