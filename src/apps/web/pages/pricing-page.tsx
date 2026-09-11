@@ -512,8 +512,8 @@ function ProOfferWidget({ onDismiss, onClaim }: { readonly onDismiss: () => void
           <span aria-hidden="true" className="text-2xl leading-none">×</span>
         </button>
         <div className="absolute inset-x-0 top-24 text-center font-gowun leading-tight">
-          <h2 className="text-4xl font-normal tracking-[-0.2rem]">Job Twin Offer!</h2>
-          <p className="mt-1 text-2xl tracking-[-0.08rem]">Get 60% off Today</p>
+          <h2 className="text-4xl font-normal tracking-[-0.2rem]">First Month Pro Offer</h2>
+          <p className="mt-1 text-2xl tracking-[-0.08rem]">Get 60% off your first month</p>
         </div>
       </div>
       <div className="px-7 pb-6 pt-8">
