@@ -83,7 +83,7 @@ function PlanCard({ plan, annual, index, onProHover }: { readonly plan: BillingP
   return (
     <article
       style={{ animationDelay: `${index * 70}ms`, animationFillMode: 'backwards' }}
-      onMouseEnter={plan.id === 'pro' && !plan.current ? onProHover : undefined}
+      onMouseEnter={plan.id === 'pro' ? onProHover : undefined}
       className={cn(
         'group flex animate-ease-in-bottom flex-col rounded-panel border-2 border-transparent p-6 outline outline-2 outline-transparent transition-[background-color,outline-color,box-shadow,transform] duration-normal ease-default hover:scale-[0.99] hover:bg-accent-subtle hover:outline-accent hover:shadow-control focus-within:scale-[0.99] focus-within:bg-accent-subtle focus-within:outline-accent focus-within:shadow-control motion-reduce:transform-none motion-reduce:transition-none',
         plan.current ? 'border-positive' : 'border-border',
