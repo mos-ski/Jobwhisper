@@ -492,37 +492,47 @@ function AnimatedPrice({ value }: { readonly value: number }) {
 }
 
 function ProOfferWidget({ onDismiss, onClaim }: { readonly onDismiss: () => void; readonly onClaim: () => void }) {
+  const offerFeatures = ['Unlimited Auto Apply', '60Hrs Interview Copilot Session', '1000+ Resume Messages', '40Hrs Interview Preps']
+
   return (
     <aside
       role="region"
       aria-label="Pro plan offer"
-      className="fixed bottom-4 end-4 z-sticky w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-panel border-2 border-accent bg-surface shadow-panel animate-ease-in-bottom motion-reduce:animate-none"
+      className="fixed bottom-4 end-4 z-sticky w-[min(27rem,calc(100vw-2rem))] overflow-hidden rounded-panel border border-border bg-surface shadow-panel animate-ease-in-bottom motion-reduce:animate-none"
     >
-      <div className="relative bg-accent px-6 pb-6 pt-5 text-on-accent">
+      <div className="relative h-52 overflow-hidden bg-accent px-6 pt-7 text-on-accent">
+        <img src="/v3-assets/figma/dfy-widget-background.svg" alt="" className="pointer-events-none absolute inset-0 size-full object-cover" />
+        <img src="/v3-assets/figma/dfy-widget-wordmark.svg" alt="Jobwhisper" className="absolute inset-x-0 top-7 mx-auto h-6 w-auto" />
         <button
           type="button"
           onClick={onDismiss}
           aria-label="Close Pro plan offer"
-          className="absolute end-2 top-2 grid size-11 place-items-center rounded-soft text-on-accent transition-colors hover:bg-on-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-accent"
+          className="absolute end-2 top-2 grid size-11 place-items-center rounded-soft text-on-accent transition-colors hover:bg-on-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
         >
           <span aria-hidden="true" className="text-2xl leading-none">×</span>
         </button>
-        <p className="text-sm font-semibold uppercase tracking-wide text-on-accent/80">A welcome offer for you</p>
-        <h2 className="mt-2 font-gowun text-3xl font-bold leading-tight">60% off Pro</h2>
-        <p className="mt-2 max-w-xs text-sm leading-6 text-on-accent/90">Get your first month of Pro for $39.60. Bring desktop and web Copilot into every interview.</p>
-      </div>
-      <div className="p-5">
-        <p className="text-sm leading-6 text-ink-muted">Your offer is available once, for a limited time.</p>
-        <div className="mt-4 grid grid-cols-[1fr_auto] gap-3">
-          <Button onClick={onClaim}>Unlock Pro offer</Button>
-          <button
-            type="button"
-            onClick={onDismiss}
-            className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-sm font-semibold text-muted transition-colors hover:bg-surface-subtle hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-          >
-            Maybe later
-          </button>
+        <div className="absolute inset-x-0 top-24 text-center font-gowun leading-tight">
+          <h2 className="text-4xl font-normal tracking-[-0.2rem]">Job Twin Offer!</h2>
+          <p className="mt-1 text-2xl tracking-[-0.08rem]">Get 60% off Today</p>
         </div>
+      </div>
+      <div className="px-7 pb-6 pt-8">
+        <div className="flex items-end gap-2 font-gowun leading-none whitespace-nowrap">
+          <span className="text-4xl text-ink-muted line-through">$99</span>
+          <span className="text-4xl text-accent">$39.60</span>
+          <span className="pb-1 text-lg text-ink">/Month</span>
+        </div>
+        <ul className="mt-5 grid gap-3 text-base leading-6 text-ink-muted">
+          {offerFeatures.map((feature) => (
+            <li key={feature} className="flex items-center gap-2">
+              <span aria-hidden="true" className="flex h-3 w-5 items-center justify-end rounded-sm bg-accent p-0.5">
+                <span className="block h-2 w-2 rounded-sm bg-surface" />
+              </span>
+              <span>{feature}</span>
+            </li>
+          ))}
+        </ul>
+        <Button className="mt-6 w-full" onClick={onClaim}>Take offer now!</Button>
       </div>
     </aside>
   )

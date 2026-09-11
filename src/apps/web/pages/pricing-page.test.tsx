@@ -53,7 +53,7 @@ describe('PricingPage', () => {
 
     await user.hover(screen.getByRole('heading', { level: 3, name: 'Pro' }))
     expect(screen.getByRole('region', { name: 'Pro plan offer' })).toBeInTheDocument()
-    expect(screen.getByText('60% off Pro')).toBeInTheDocument()
+    expect(screen.getByText('Get 60% off Today')).toBeInTheDocument()
   })
 
   it('explains prepaid and managed-service pricing in their tabs', async () => {
