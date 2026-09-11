@@ -244,7 +244,7 @@ function LandingHero() {
             </span>
           </button>
           <button
-            onClick={() => navigate('/v3/auth/choose-plan')}
+            onClick={() => navigate('/pricing')}
             className="flex items-center gap-2 bg-white rounded-[10px] h-12 px-8 text-landing-btn-text text-lg font-semibold whitespace-nowrap hover:bg-white/90 transition-colors"
           >
             See Pricing
@@ -416,7 +416,7 @@ function LandingFeatures() {
       </div>
 
       <button
-        onClick={() => navigate('/v3/auth/choose-plan')}
+        onClick={() => navigate('/pricing')}
         className="flex items-center gap-2 bg-white rounded-[10px] h-12 px-8 text-landing-btn-text text-lg font-semibold whitespace-nowrap hover:bg-white/90 transition-colors"
       >
         See Pricing
