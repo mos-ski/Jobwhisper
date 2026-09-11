@@ -4,6 +4,7 @@ import { Toaster } from 'sonner'
 import { Suspense } from 'react'
 import { WebRoutes } from '@/apps/web/routes'
 import { LandingPage } from '@/apps/web/pages/landing-page'
+import { PricingPage } from '@/apps/web/pages/pricing-page'
 import { VslLandingPage } from '@/apps/web/pages/vsl-landing-page'
 import { BrandingGuidePage } from '@/apps/web/pages/branding-guide-page'
 import { EmailsIndexPage } from '@/apps/web/pages/emails-index-page'
@@ -27,6 +28,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
           <Route path="/vsl" element={<VslLandingPage />} />
           <Route path="/brand-guide" element={<BrandingGuidePage />} />
           <Route path="/emails" element={<EmailsIndexPage />} />
