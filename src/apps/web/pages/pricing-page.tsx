@@ -1,8 +1,8 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Check, ChevronDown } from 'lucide-react'
 
-import { Button, JobwhisperIcon, Tabs, TabsContent, TabsList, TabsTrigger, cn } from '@/ui'
+import { Button, Tabs, TabsContent, TabsList, TabsTrigger, cn } from '@/ui'
 
 type PricingTab = 'interview' | 'job-search' | 'done-for-you'
 
@@ -59,7 +59,7 @@ const INTERVIEW_PLANS: readonly InterviewPlan[] = [
     annualMonthlyPrice: 38,
     credits: 'About 500 interview credits each month',
     description: 'The interview essentials for occasional preparation and live support on the web.',
-    features: ['Interview Prep', 'Interview Copilot on the web', 'Knowledge Base with 3 documents'],
+    features: ['Interview Prep', 'Interview Copilot on desktop and web', 'Knowledge Base with 3 documents'],
   },
   {
     id: 'pro',
@@ -92,7 +92,7 @@ const CREDIT_PRODUCTS: readonly CreditProduct[] = [
     id: 'resume',
     name: 'Resume Builder',
     price: '$0.10 per AI prompt',
-    charge: 'Buy from $5. Credits stay valid for 12 months.',
+    charge: 'Buy from $5. Credits stay valid for 30 days.',
     description: 'Tailor a resume to a role, refine individual sections, and download the finished version.',
     features: ['One credit per AI prompt', 'ATS scoring is free', 'Unlimited downloads', 'No subscription required'],
   },
@@ -100,7 +100,7 @@ const CREDIT_PRODUCTS: readonly CreditProduct[] = [
     id: 'auto-apply',
     name: 'Auto Apply',
     price: '$1 per successful application',
-    charge: 'Buy from $10. Credits stay valid for 12 months.',
+    charge: 'Buy from $10. Credits stay valid for 30 days.',
     description: 'Choose suitable jobs and let Jobwhisper prepare and submit each application for you.',
     features: [
       'Charged only after an application succeeds',
@@ -114,7 +114,7 @@ const CREDIT_PRODUCTS: readonly CreditProduct[] = [
 const MANAGED_PACKAGES: readonly ManagedPackage[] = [
   {
     id: 'ten-interviews',
-    name: '10 interviews',
+    name: '10 interviews guaranteed',
     price: 497,
     description: 'A dedicated success manager runs your search until you receive 10 interview invitations.',
     features: [
@@ -126,7 +126,7 @@ const MANAGED_PACKAGES: readonly ManagedPackage[] = [
   },
   {
     id: 'twenty-interviews',
-    name: '20 interviews',
+    name: '20 interviews guaranteed',
     price: 997,
     description: 'The same managed service for a longer search, continuing until 20 invitations are delivered.',
     features: [
@@ -176,8 +176,8 @@ const SUPPORTING_CONTENT: Readonly<Record<PricingTab, SupportingContent>> = {
         answer: 'Monthly billing renews each month. Annual billing is paid once a year and shows a lower monthly equivalent.',
       },
       {
-        question: 'Which plan includes the web Interview Copilot?',
-        answer: 'Starter, Pro, and Premium all include access to the web Interview Copilot.',
+        question: 'Which plans include Interview Copilot?',
+        answer: 'Starter, Pro, and Premium all include access to Interview Copilot on desktop and web.',
       },
       {
         question: 'Which plans include the desktop app?',
@@ -247,7 +247,7 @@ const SUPPORTING_CONTENT: Readonly<Record<PricingTab, SupportingContent>> = {
     guideItems: [
       { label: 'Resume Builder', value: '$0.10 for each AI prompt' },
       { label: 'Auto Apply', value: '$1 for each successful application' },
-      { label: 'Credit validity', value: 'Credits remain valid for 12 months' },
+      { label: 'Credit validity', value: 'Credits remain valid for 30 days' },
       { label: 'Included at no charge', value: 'ATS scoring and AI suggestions' },
     ],
     faqTitle: 'Job-search credit questions',
@@ -263,7 +263,7 @@ const SUPPORTING_CONTENT: Readonly<Record<PricingTab, SupportingContent>> = {
       },
       {
         question: 'How long do prepaid credits last?',
-        answer: 'Resume Builder and Auto Apply credits remain valid for 12 months from the purchase date.',
+        answer: 'Resume Builder and Auto Apply credits remain valid for 30 days from the purchase date.',
       },
       {
         question: 'Can credits move between products?',
@@ -449,34 +449,129 @@ function PageShell({ children, className }: { readonly children: ReactNode; read
   return <div className={cn('mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8', className)}>{children}</div>
 }
 
+const OPTION_CARD_CLASS = 'group flex min-w-0 flex-col border-2 border-transparent p-5 transition-[background-color,border-color,box-shadow,transform] duration-normal ease-default hover:scale-[0.99] hover:border-accent hover:bg-accent-subtle hover:shadow-control focus-within:scale-[0.99] focus-within:border-accent focus-within:bg-accent-subtle focus-within:shadow-control motion-reduce:transform-none motion-reduce:transition-none sm:p-7'
+const OPTION_ACTION_CLASS = 'my-5 w-full transition-colors duration-normal ease-default group-hover:border-accent group-hover:bg-accent group-hover:text-on-accent group-focus-within:border-accent group-focus-within:bg-accent group-focus-within:text-on-accent motion-reduce:transition-none'
+
+function useAnimatedNumber(target: number) {
+  const [displayValue, setDisplayValue] = useState(target)
+  const previousTargetRef = useRef(target)
+
+  useEffect(() => {
+    const startValue = previousTargetRef.current
+    previousTargetRef.current = target
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    if (reduceMotion || startValue === target) {
+      setDisplayValue(target)
+      return
+    }
+
+    const startTime = performance.now()
+    let frame = 0
+    const finish = window.setTimeout(() => setDisplayValue(target), 450)
+    const update = (now: number) => {
+      const progress = Math.min((now - startTime) / 420, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setDisplayValue(Math.round(startValue + (target - startValue) * eased))
+      if (progress < 1) frame = window.requestAnimationFrame(update)
+    }
+
+    frame = window.requestAnimationFrame(update)
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.clearTimeout(finish)
+    }
+  }, [target])
+
+  return displayValue
+}
+
+function AnimatedPrice({ value }: { readonly value: number }) {
+  const displayValue = useAnimatedNumber(value)
+  return <span className="font-gowun text-4xl font-bold leading-none text-ink">${displayValue}</span>
+}
+
+function ProOfferWidget({ onDismiss, onClaim }: { readonly onDismiss: () => void; readonly onClaim: () => void }) {
+  return (
+    <aside
+      role="region"
+      aria-label="Pro plan offer"
+      className="fixed bottom-4 end-4 z-sticky w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-panel border-2 border-accent bg-surface shadow-panel animate-ease-in-bottom motion-reduce:animate-none"
+    >
+      <div className="relative bg-accent px-6 pb-6 pt-5 text-on-accent">
+        <button
+          type="button"
+          onClick={onDismiss}
+          aria-label="Close Pro plan offer"
+          className="absolute end-2 top-2 grid size-11 place-items-center rounded-soft text-on-accent transition-colors hover:bg-on-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-accent"
+        >
+          <span aria-hidden="true" className="text-2xl leading-none">×</span>
+        </button>
+        <p className="text-sm font-semibold uppercase tracking-wide text-on-accent/80">A welcome offer for you</p>
+        <h2 className="mt-2 font-gowun text-3xl font-bold leading-tight">60% off Pro</h2>
+        <p className="mt-2 max-w-xs text-sm leading-6 text-on-accent/90">Get your first month of Pro for $39.60. Bring desktop and web Copilot into every interview.</p>
+      </div>
+      <div className="p-5">
+        <p className="text-sm leading-6 text-ink-muted">Your offer is available once, for a limited time.</p>
+        <div className="mt-4 grid grid-cols-[1fr_auto] gap-3">
+          <Button onClick={onClaim}>Unlock Pro offer</Button>
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-sm font-semibold text-muted transition-colors hover:bg-surface-subtle hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          >
+            Maybe later
+          </button>
+        </div>
+      </div>
+    </aside>
+  )
+}
+
 function PricingHeader() {
   const navigate = useNavigate()
 
   return (
-    <header className="sticky top-0 z-shell border-b border-border bg-surface">
-      <PageShell className="flex min-h-16 items-center justify-between gap-4">
+    <header className="fixed inset-x-0 top-4 z-shell flex justify-center px-4 sm:top-9">
+      <nav
+        aria-label="Primary"
+        className="flex h-14 w-full max-w-fit items-center rounded-panel border border-border bg-surface pe-2 ps-4 shadow-popover"
+      >
         <a
           href="/"
-          className="inline-flex min-h-11 items-center gap-2 rounded-soft text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          aria-label="Jobwhisper home"
+          className="inline-flex min-h-11 items-center rounded-soft text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
         >
-          <JobwhisperIcon className="size-6" />
-          <span className="text-lg font-semibold">Jobwhisper</span>
+          <img src="/landing-logo.svg" alt="Jobwhisper" className="h-6 w-auto" />
         </a>
-        <nav aria-label="Pricing page" className="hidden items-center gap-6 text-sm font-medium text-ink-muted md:flex">
-          <a className="rounded-soft hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus" href="/">
-            Home
-          </a>
-          <a className="rounded-soft text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus" href="/pricing" aria-current="page">
+        <div className="ms-10 hidden items-center gap-5 md:flex">
+          <button
+            type="button"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-soft text-base font-medium text-ink-muted transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          >
+            Features
+            <ChevronDown aria-hidden="true" className="size-3" />
+          </button>
+          <a className="inline-flex min-h-11 items-center rounded-soft text-base font-medium text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus" href="/pricing" aria-current="page">
             Pricing
           </a>
-          <a className="rounded-soft hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus" href="#pricing-faq">
+          <a className="inline-flex min-h-11 items-center rounded-soft text-base font-medium text-ink-muted transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus" href="#pricing-faq">
             FAQ
           </a>
-        </nav>
-        <Button size="sm" onClick={() => navigate('/v3/auth/choose-plan')}>
-          Get started
-        </Button>
-      </PageShell>
+        </div>
+        <div className="ms-4 flex items-center gap-3.5 md:ms-14">
+          <button
+            type="button"
+            onClick={() => navigate('/v3/auth/sign-in')}
+            className="hidden min-h-11 rounded-soft text-base font-medium text-ink-muted transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:block"
+          >
+            Log in
+          </button>
+          <Button className="min-h-10 px-4" onClick={() => navigate('/v3/downloads')}>
+            Download
+          </Button>
+        </div>
+      </nav>
     </header>
   )
 }
@@ -540,23 +635,36 @@ function FeatureList({ items }: { readonly items: readonly string[] }) {
 
 function InterviewPlans() {
   const [annual, setAnnual] = useState(true)
+  const [showProOffer, setShowProOffer] = useState(false)
+  const proOfferTriggeredRef = useRef(false)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShowProOffer(true), 60_000)
+    return () => window.clearTimeout(timer)
+  }, [])
+
+  const triggerProOffer = () => {
+    if (proOfferTriggeredRef.current) return
+    proOfferTriggeredRef.current = true
+    setShowProOffer(true)
+  }
 
   return (
     <section className="overflow-hidden rounded-sm border border-border bg-surface shadow-panel">
       <PanelHeader
         title="Interview plans"
-        description="Recurring access for Interview Prep and live copilots. Included credits are measured in minutes."
+        description="Recurring access for Interview Prep, desktop Copilot, and web Copilot. Included credits are measured in minutes."
         action={<BillingToggle annual={annual} onChange={() => setAnnual((value) => !value)} />}
       />
       <div className="grid divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0">
         {INTERVIEW_PLANS.map((plan) => {
           const price = annual ? plan.annualMonthlyPrice : plan.monthlyPrice
           return (
-            <article key={plan.id} className="flex min-w-0 flex-col p-5 sm:p-7">
+            <article key={plan.id} className={OPTION_CARD_CLASS} onMouseEnter={plan.id === 'pro' ? triggerProOffer : undefined}>
               <h3 className="font-gowun text-xl font-bold text-ink">{plan.name}</h3>
               <div className="mt-5 flex items-end gap-2">
-                <span className="font-gowun text-4xl font-bold leading-none text-ink">${price}</span>
+                <AnimatedPrice value={price} />
                 <span className="pb-1 text-sm text-ink-muted">per month</span>
               </div>
               <p className="mt-2 min-h-5 text-xs text-ink-muted">
@@ -564,7 +672,7 @@ function InterviewPlans() {
               </p>
               <p className="mt-5 text-sm font-semibold leading-6 text-ink">{plan.credits}</p>
               <p className="mt-2 min-h-20 text-sm leading-6 text-ink-muted">{plan.description}</p>
-              <Button variant="secondary" className="my-5 w-full" onClick={() => navigate('/v3/auth/choose-plan')}>
+              <Button variant="secondary" className={OPTION_ACTION_CLASS} onClick={() => navigate('/v3/auth/choose-plan')}>
                 Get started
               </Button>
               <FeatureList items={plan.features} />
@@ -572,6 +680,7 @@ function InterviewPlans() {
           )
         })}
       </div>
+      {showProOffer ? <ProOfferWidget onDismiss={() => setShowProOffer(false)} onClaim={() => navigate('/v3/auth/choose-plan?plan=pro&offer=welcome-60')} /> : null}
     </section>
   )
 }
@@ -587,12 +696,12 @@ function JobSearchCredits() {
       />
       <div className="grid divide-y divide-border md:grid-cols-2 md:divide-x md:divide-y-0">
         {CREDIT_PRODUCTS.map((product) => (
-          <article key={product.id} className="flex min-w-0 flex-col p-5 sm:p-7">
+          <article key={product.id} className={OPTION_CARD_CLASS}>
             <h3 className="font-gowun text-xl font-bold text-ink">{product.name}</h3>
             <p className="mt-5 font-gowun text-3xl font-bold leading-tight text-ink">{product.price}</p>
             <p className="mt-2 text-sm leading-6 text-ink-muted">{product.charge}</p>
             <p className="mt-5 min-h-16 text-sm leading-6 text-ink-muted">{product.description}</p>
-            <Button variant="secondary" className="my-5 w-full" onClick={() => navigate('/v3/billing')}>
+            <Button variant="secondary" className={OPTION_ACTION_CLASS} onClick={() => navigate('/v3/billing')}>
               Buy credits
             </Button>
             <FeatureList items={product.features} />
@@ -614,14 +723,14 @@ function DoneForYou() {
       />
       <div className="grid divide-y divide-border md:grid-cols-2 md:divide-x md:divide-y-0">
         {MANAGED_PACKAGES.map((managedPackage) => (
-          <article key={managedPackage.id} className="flex min-w-0 flex-col p-5 sm:p-7">
+          <article key={managedPackage.id} className={OPTION_CARD_CLASS}>
             <h3 className="font-gowun text-xl font-bold text-ink">{managedPackage.name}</h3>
             <div className="mt-5 flex items-end gap-2">
               <span className="font-gowun text-4xl font-bold leading-none text-ink">${managedPackage.price}</span>
               <span className="pb-1 text-sm text-ink-muted">one time</span>
             </div>
             <p className="mt-5 min-h-16 text-sm leading-6 text-ink-muted">{managedPackage.description}</p>
-            <Button variant="secondary" className="my-5 w-full" onClick={() => navigate('/v3/billing/done-for-you')}>
+            <Button variant="secondary" className={OPTION_ACTION_CLASS} onClick={() => navigate('/v3/billing/done-for-you')}>
               Sign up
             </Button>
             <FeatureList items={managedPackage.features} />
@@ -742,7 +851,7 @@ export function PricingPage() {
     <div className="min-h-screen bg-canvas font-rethink text-ink">
       <PricingHeader />
       <main>
-        <PageShell className="pb-8 pt-12 sm:pt-16">
+        <PageShell className="pb-8 pt-28 sm:pt-36">
           <h1 className="max-w-3xl font-gowun text-4xl font-bold leading-tight text-ink sm:text-5xl">
             Pricing that follows how you use Jobwhisper
           </h1>
@@ -758,9 +867,9 @@ export function PricingPage() {
               <TabsTrigger value="job-search" className="min-h-11 pb-3 text-sm sm:text-base">Job-search credits</TabsTrigger>
               <TabsTrigger value="done-for-you" className="min-h-11 pb-3 text-sm sm:text-base">Done for you</TabsTrigger>
             </TabsList>
-            <TabsContent value="interview" className="mt-0"><InterviewPlans /></TabsContent>
-            <TabsContent value="job-search" className="mt-0"><JobSearchCredits /></TabsContent>
-            <TabsContent value="done-for-you" className="mt-0"><DoneForYou /></TabsContent>
+            <TabsContent value="interview" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><InterviewPlans /></TabsContent>
+            <TabsContent value="job-search" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><JobSearchCredits /></TabsContent>
+            <TabsContent value="done-for-you" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><DoneForYou /></TabsContent>
           </Tabs>
         </PageShell>
 

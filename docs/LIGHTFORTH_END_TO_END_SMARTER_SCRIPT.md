@@ -349,7 +349,7 @@ While you browse the Jobs page, you may also see the Done For You option. It con
 
 ### How pricing works
 
-The billing page introduces the three ways Lightforth charges. Interview plans are recurring subscriptions, and live Interview Prep and Copilot usage is measured in minutes, with one credit representing one minute. Auto Apply and Resume Builder use prepaid credits without a subscription: Auto Apply charges for each successful application, while Resume Builder charges for each AI prompt. Done For You is a separate, one-time managed service with an interview guarantee. Users can replay this explanation at any time from **How it works** in the Your Plan section.
+The billing page introduces the three ways Lightforth charges. Interview plans are recurring subscriptions, and live Interview Prep and Copilot usage is measured in minutes, with one credit representing one minute. Auto Apply and Resume Builder use prepaid credits without a subscription: Auto Apply charges for each successful application, while Resume Builder charges for each AI prompt. Both prepaid credit balances remain valid for 30 days from purchase. Done For You is a separate, one-time managed service with an interview guarantee. Users can replay this explanation at any time from **How it works** in the Your Plan section.
 
 ### Tailor — Prepares Your Resume
 

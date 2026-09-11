@@ -131,3 +131,11 @@ Run the focused test first, then the full Vitest suite, TypeScript/Vite producti
 - Make all supporting content contextual to the selected pricing tab. Interview shows minute-based subscription guidance and interview FAQs; Job-search shows prepaid Resume Builder and Auto Apply usage guidance and FAQs; Done For You shows fulfillment, guarantee, and success-manager guidance and FAQs. The closing action also follows the selected model.
 - Provide exactly 20 focused FAQ questions for each pricing tab. Questions must remain within the verified product behavior in this script and must not invent refund, rollover, timing, or outcome promises.
 - Present the 20 questions as two balanced groups of 10 on desktop to control page length, stacking them into one column on mobile.
+- Label the managed packages as “10 interviews guaranteed” and “20 interviews guaranteed.”
+- Reuse the homepage floating navigation structure on `/pricing`, rendered as a light surface with dark text and a blue Download action.
+- Give every pricing option a hover and keyboard-focus state: the panel receives a restrained surface/shadow transition and its CTA becomes primary blue. Use the existing tab entrance animation and disable all added motion when reduced motion is requested.
+- Keep prepaid credit validity at 30 days, and describe Interview Copilot as available on desktop and web.
+- Animate the prominent interview-plan price when users switch between monthly and annual billing, with a reduced-motion fallback.
+- Use the existing bottom-right nurture pattern for a first-time Pro welcome offer. Trigger it on the first Pro-card hover or after one minute, make it dismissible, and send the claim action to Pro plan selection.
+- Use the homepage's exported logo wordmark asset in the public nav. Do not recreate the logo with separate text and mark elements.
+- On plan hover/focus, use a 2px accent stroke, a subtle scale-down, and a blue CTA so the active option is clear without a hover-only affordance.

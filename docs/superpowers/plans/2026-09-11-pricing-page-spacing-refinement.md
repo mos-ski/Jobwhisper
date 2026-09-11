@@ -105,3 +105,58 @@ Commit the pricing page, test, updated design spec, and this implementation plan
 - [x] **Step 4: Run focused and full verification plus a dense-layout browser review**
 
 - [x] **Step 5: Commit the scoped FAQ expansion**
+
+### Task 5: Align managed-package copy, navigation, and card feedback
+
+**Files:**
+- Modify: `src/apps/web/pages/pricing-page.tsx`
+- Modify: `src/apps/web/pages/pricing-page.test.tsx`
+
+**Interfaces:**
+- Consumes: the homepage navigation structure and existing semantic motion tokens.
+- Produces: guaranteed package labels, a light floating public nav, and accessible animated option states.
+
+- [x] **Step 1: Add failing assertions for package labels, public navigation, and card interaction classes**
+
+- [x] **Step 2: Run the focused test and confirm the new assertions fail**
+
+- [x] **Step 3: Implement the light homepage-style nav and update main content offset**
+
+- [x] **Step 4: Add restrained hover/focus transitions and reduced-motion-safe tab animation**
+
+- [x] **Step 5: Run focused/full tests, build, and browser review before committing scoped files**
+
+### Task 6: Keep billing copy and price transitions current
+
+**Files:**
+- Modify: `src/apps/web/pages/pricing-page.tsx`
+- Modify: `src/apps/web/pages/pricing-page.test.tsx`
+- Modify: `docs/LIGHTFORTH_END_TO_END_SMARTER_SCRIPT.md`
+
+**Interfaces:**
+- Consumes: current product billing rules and plan availability.
+- Produces: 30-day prepaid validity, desktop-and-web interview copilot copy, and animated monthly/annual price changes.
+
+- [x] **Step 1: Update prepaid validity and product-surface copy**
+
+- [x] **Step 2: Add a reduced-motion-safe animated price counter with a regression test**
+
+- [x] **Step 3: Run focused/full tests, build, and browser review before committing scoped files**
+
+### Task 7: Add the Pro welcome offer and refine card focus
+
+**Files:**
+- Modify: `src/apps/web/pages/pricing-page.tsx`
+- Modify: `src/apps/web/pages/pricing-page.test.tsx`
+
+**Interfaces:**
+- Consumes: the existing pricing option cards and public navigation assets.
+- Produces: a dismissible first-time Pro offer, stronger 2px hover/focus treatment, and the canonical logo wordmark.
+
+- [x] **Step 1: Add regression coverage for the Pro hover offer and logo asset**
+
+- [x] **Step 2: Implement the bottom-right welcome offer with hover and timeout triggers**
+
+- [x] **Step 3: Add the 2px accent card focus state and verify focused controls remain keyboard accessible**
+
+- [x] **Step 4: Run focused/full tests, build, and browser review before committing scoped files**
