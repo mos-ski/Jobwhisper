@@ -29,7 +29,8 @@ describe('PricingPage', () => {
     renderPricingPage()
 
     const faqPanel = screen.getByRole('region', { name: 'Questions about pricing' })
-    expect(faqPanel).toHaveClass('bg-surface', 'border-border', 'rounded-panel')
+    expect(faqPanel).toHaveClass('bg-surface', 'border-border', 'rounded-sm')
+    expect(faqPanel).not.toHaveClass('rounded-panel')
   })
 
   it('updates interview prices when monthly billing is selected', async () => {

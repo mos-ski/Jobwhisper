@@ -257,7 +257,7 @@ function InterviewPlans() {
   const navigate = useNavigate()
 
   return (
-    <section className="overflow-hidden rounded-panel border border-border bg-surface shadow-panel">
+    <section className="overflow-hidden rounded-sm border border-border bg-surface shadow-panel">
       <PanelHeader
         title="Interview plans"
         description="Recurring access for Interview Prep and live copilots. Included credits are measured in minutes."
@@ -294,7 +294,7 @@ function JobSearchCredits() {
   const navigate = useNavigate()
 
   return (
-    <section className="overflow-hidden rounded-panel border border-border bg-surface shadow-panel">
+    <section className="overflow-hidden rounded-sm border border-border bg-surface shadow-panel">
       <PanelHeader
         title="Job-search credits"
         description="Prepaid usage for tailoring resumes and submitting applications. Buy credits once and use them without a subscription."
@@ -321,7 +321,7 @@ function DoneForYou() {
   const navigate = useNavigate()
 
   return (
-    <section className="overflow-hidden rounded-panel border border-border bg-surface shadow-panel">
+    <section className="overflow-hidden rounded-sm border border-border bg-surface shadow-panel">
       <PanelHeader
         title="Done for you"
         description="A one-time managed service. A success manager handles the search, tailoring, and applications until your interview target is reached."
@@ -348,7 +348,7 @@ function DoneForYou() {
 
 function CreditGuide() {
   return (
-    <section className="overflow-hidden rounded-panel border border-border bg-surface shadow-panel">
+    <section className="overflow-hidden rounded-sm border border-border bg-surface shadow-panel">
       <PanelHeader
         title="How credits work"
         description="Each Jobwhisper product uses a unit that matches the work it completes."
@@ -381,7 +381,7 @@ function PricingFaq() {
         <div
           role="region"
           aria-labelledby="pricing-faq-title"
-          className="grid overflow-hidden rounded-panel border border-border bg-surface shadow-panel lg:grid-cols-[18rem_minmax(0,1fr)]"
+          className="grid overflow-hidden rounded-sm border border-border bg-surface shadow-panel lg:grid-cols-[18rem_minmax(0,1fr)]"
         >
           <div className="px-5 py-6 sm:px-7 sm:py-7">
             <h2 id="pricing-faq-title" className="font-gowun text-3xl font-bold leading-tight text-ink">
@@ -414,7 +414,7 @@ function ClosingPanel() {
   return (
     <section className="pb-16 sm:pb-20">
       <PageShell>
-        <div className="flex flex-col gap-6 rounded-panel border border-border bg-surface px-5 py-7 shadow-panel sm:flex-row sm:items-center sm:justify-between sm:px-8">
+        <div className="flex flex-col gap-6 rounded-sm border border-border bg-surface px-5 py-7 shadow-panel sm:flex-row sm:items-center sm:justify-between sm:px-8">
           <div>
             <h2 className="font-gowun text-2xl font-bold text-ink">Ready to choose how you use Jobwhisper?</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-muted">

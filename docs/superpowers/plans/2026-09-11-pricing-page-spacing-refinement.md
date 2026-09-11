@@ -45,3 +45,23 @@ Run `npx vitest run src/apps/web/pages/pricing-page.test.tsx --reporter=dot`, `n
 - [x] **Step 5: Commit only the refinement files**
 
 Commit the pricing page, test, updated design spec, and this implementation plan without staging unrelated working-tree changes.
+
+### Task 2: Square the major pricing surfaces
+
+**Files:**
+- Modify: `src/apps/web/pages/pricing-page.tsx`
+- Modify: `src/apps/web/pages/pricing-page.test.tsx`
+
+**Interfaces:**
+- Consumes: the existing semantic panel surfaces.
+- Produces: restrained 2px outer corners without changing control shapes.
+
+- [x] **Step 1: Update the FAQ regression assertion to require `rounded-sm` and reject `rounded-panel`**
+
+- [x] **Step 2: Run the focused test and confirm the assertion fails**
+
+- [x] **Step 3: Replace `rounded-panel` with `rounded-sm` on every major pricing surface**
+
+- [x] **Step 4: Run the focused test, full suite, production build, and visual check**
+
+- [x] **Step 5: Commit only the scoped refinement files**
