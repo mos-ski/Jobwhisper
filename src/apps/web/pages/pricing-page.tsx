@@ -376,24 +376,32 @@ function CreditGuide() {
 
 function PricingFaq() {
   return (
-    <section id="pricing-faq" className="border-t border-border py-14 sm:py-20">
-      <PageShell className="grid gap-8 lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-14">
-        <div>
-          <h2 className="font-gowun text-3xl font-bold leading-tight text-ink">Questions about pricing</h2>
-          <p className="mt-3 text-sm leading-6 text-ink-muted">
-            The short answers to billing, credits, and managed-service questions.
-          </p>
-        </div>
-        <div className="border-y border-border">
-          {FAQ_ITEMS.map((item) => (
-            <details key={item.question} className="group border-b border-border last:border-b-0">
-              <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 text-sm font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-                {item.question}
-                <ChevronDown aria-hidden="true" className="size-4 shrink-0 text-ink-muted transition-transform group-open:rotate-180" />
-              </summary>
-              <p className="max-w-2xl pb-5 text-sm leading-6 text-ink-muted">{item.answer}</p>
-            </details>
-          ))}
+    <section id="pricing-faq" className="pb-6">
+      <PageShell>
+        <div
+          role="region"
+          aria-labelledby="pricing-faq-title"
+          className="grid overflow-hidden rounded-panel border border-border bg-surface shadow-panel lg:grid-cols-[18rem_minmax(0,1fr)]"
+        >
+          <div className="px-5 py-6 sm:px-7 sm:py-7">
+            <h2 id="pricing-faq-title" className="font-gowun text-3xl font-bold leading-tight text-ink">
+              Questions about pricing
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-ink-muted">
+              The short answers to billing, credits, and managed-service questions.
+            </p>
+          </div>
+          <div className="border-t border-border px-5 sm:px-7 lg:border-s lg:border-t-0">
+            {FAQ_ITEMS.map((item) => (
+              <details key={item.question} className="group border-b border-border last:border-b-0">
+                <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 text-sm font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                  {item.question}
+                  <ChevronDown aria-hidden="true" className="size-4 shrink-0 text-ink-muted transition-transform group-open:rotate-180" />
+                </summary>
+                <p className="max-w-2xl pb-5 text-sm leading-6 text-ink-muted">{item.answer}</p>
+              </details>
+            ))}
+          </div>
         </div>
       </PageShell>
     </section>
@@ -447,7 +455,7 @@ export function PricingPage() {
     <div className="min-h-screen bg-canvas font-rethink text-ink">
       <PricingHeader />
       <main>
-        <PageShell className="pb-10 pt-12 sm:pb-12 sm:pt-16">
+        <PageShell className="pb-8 pt-12 sm:pt-16">
           <h1 className="max-w-3xl font-gowun text-4xl font-bold leading-tight text-ink sm:text-5xl">
             Pricing that follows how you use Jobwhisper
           </h1>
@@ -456,7 +464,7 @@ export function PricingPage() {
           </p>
         </PageShell>
 
-        <PageShell className="pb-10 sm:pb-14">
+        <PageShell className="pb-6">
           <Tabs value={activeTab} onValueChange={handleTabChange}>
             <TabsList className="mb-6 gap-7" aria-label="Pricing models">
               <TabsTrigger value="interview" className="min-h-11 pb-3 text-sm sm:text-base">Interview plans</TabsTrigger>
@@ -469,7 +477,7 @@ export function PricingPage() {
           </Tabs>
         </PageShell>
 
-        <PageShell className="pb-14 sm:pb-20">
+        <PageShell className="pb-6">
           <CreditGuide />
         </PageShell>
         <PricingFaq />

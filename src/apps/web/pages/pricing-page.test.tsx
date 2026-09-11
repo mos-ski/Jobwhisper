@@ -25,6 +25,13 @@ describe('PricingPage', () => {
     expect(screen.getByText('1 interview credit = 1 minute')).toBeInTheDocument()
   })
 
+  it('presents pricing questions inside the shared surface treatment', () => {
+    renderPricingPage()
+
+    const faqPanel = screen.getByRole('region', { name: 'Questions about pricing' })
+    expect(faqPanel).toHaveClass('bg-surface', 'border-border', 'rounded-panel')
+  })
+
   it('updates interview prices when monthly billing is selected', async () => {
     const user = userEvent.setup()
     renderPricingPage()

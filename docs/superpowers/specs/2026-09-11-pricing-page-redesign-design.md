@@ -121,3 +121,9 @@ Run the focused test first, then the full Vitest suite, TypeScript/Vite producti
 - Changing the underlying prices or package entitlements.
 - Redesigning `/v3/billing` or account settings.
 - Adding testimonials, urgency, discounts beyond the existing annual saving, or a recommended package.
+
+## Approved visual refinement
+
+- Place the pricing FAQ inside the same white, bordered, rounded panel treatment used by the pricing and credit sections.
+- Reduce the vertical gaps between the tabbed pricing panel, credit guide, FAQ, and closing action so the page reads as one compact settings-style stack.
+- Preserve clear internal padding and section boundaries; only the empty canvas space between sections becomes smaller.
