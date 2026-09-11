@@ -1580,6 +1580,8 @@ export function ResumeEditorView({ homeHref, document, session, templates, tab, 
 }
 
 export function ResumeHistoryView({ homeHref, createHref, editorHref, rows }: ResumeHistoryViewProps) {
+  const [showInterviewPrepWidget, setShowInterviewPrepWidget] = useState(true)
+
   return (
     <Workspace>
       <ShellBar homeHref={homeHref} current="History" closeHref={homeHref} closeLabel="Close resume builder" />
@@ -1608,6 +1610,13 @@ export function ResumeHistoryView({ homeHref, createHref, editorHref, rows }: Re
           ]}
         />
       </section>
+      {showInterviewPrepWidget ? (
+        <InterviewPrepFeatureWidget
+          href="/v3/interview-prep/history"
+          previewSrc="/v3-assets/figma/form-screen-preview.png"
+          onDismiss={() => setShowInterviewPrepWidget(false)}
+        />
+      ) : null}
     </Workspace>
   )
 }
