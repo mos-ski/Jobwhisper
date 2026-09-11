@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+
 import { Button } from '@/ui'
 
 export type ProOfferWidgetProps = {
@@ -6,7 +8,18 @@ export type ProOfferWidgetProps = {
 }
 
 export function ProOfferWidget({ onDismiss, onClaim }: ProOfferWidgetProps) {
+  const [secondsRemaining, setSecondsRemaining] = useState(10 * 60)
   const offerFeatures = ['Unlimited Auto Apply', '60Hrs Interview Copilot Session', '1000+ Resume Messages', '40Hrs Interview Preps']
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setSecondsRemaining((value) => Math.max(value - 1, 0))
+    }, 1000)
+    return () => window.clearInterval(timer)
+  }, [])
+
+  const minutes = Math.floor(secondsRemaining / 60).toString().padStart(2, '0')
+  const seconds = (secondsRemaining % 60).toString().padStart(2, '0')
 
   return (
     <aside
@@ -28,6 +41,7 @@ export function ProOfferWidget({ onDismiss, onClaim }: ProOfferWidgetProps) {
         <div className="absolute inset-x-0 top-24 text-center font-gowun leading-tight">
           <h2 className="text-4xl font-normal tracking-[-0.2rem]">First Month Pro Offer</h2>
           <p className="mt-1 text-2xl tracking-[-0.08rem]">Get 60% off your first month</p>
+          <p className="mt-2 text-sm font-rethink tracking-normal" aria-live="polite">Offer ends in {minutes}:{seconds}</p>
         </div>
       </div>
       <div className="px-7 pb-6 pt-8">

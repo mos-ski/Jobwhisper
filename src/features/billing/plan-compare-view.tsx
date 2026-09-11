@@ -85,7 +85,7 @@ function PlanCard({ plan, annual, index, onProHover }: { readonly plan: BillingP
       style={{ animationDelay: `${index * 70}ms`, animationFillMode: 'backwards' }}
       onMouseEnter={plan.id === 'pro' && !plan.current ? onProHover : undefined}
       className={cn(
-        'flex animate-ease-in-bottom flex-col rounded-panel border p-6 transition-all duration-normal ease-default hover:-translate-y-0.5 hover:shadow-control',
+        'group flex animate-ease-in-bottom flex-col rounded-panel border-2 border-transparent p-6 outline outline-2 outline-transparent transition-[background-color,outline-color,box-shadow,transform] duration-normal ease-default hover:scale-[0.99] hover:bg-accent-subtle hover:outline-accent hover:shadow-control focus-within:scale-[0.99] focus-within:bg-accent-subtle focus-within:outline-accent focus-within:shadow-control motion-reduce:transform-none motion-reduce:transition-none',
         plan.current ? 'border-positive' : 'border-border',
       )}
     >
@@ -122,7 +122,7 @@ function PlanCard({ plan, annual, index, onProHover }: { readonly plan: BillingP
             Upgrade
           </Button>
         ) : (
-          <Button variant="secondary" className="w-full" onClick={() => navigate('/v3/billing')}>
+          <Button variant="secondary" className="w-full group-hover:bg-accent group-hover:text-on-accent" onClick={() => navigate('/v3/billing')}>
             Downgrade
           </Button>
         )}
