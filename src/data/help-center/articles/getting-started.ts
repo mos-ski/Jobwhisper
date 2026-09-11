@@ -48,7 +48,7 @@ export const gettingStartedArticles: readonly HelpArticle[] = [
         'Free — 5 credits/month. Good for trying the platform.',
         'Starter — $27/month. 20 credits/month. Resume Builder + Auto-Apply.',
         'Pro — $49/month. 50 credits/month. All features including Interview Copilot.',
-        'Premium — $79/month. 100 credits/month. Everything in Pro plus priority support.',
+        'Premium — $497/month. About 4,000 credits/month. Everything in Pro plus priority support.',
       ]},
       { type: 'heading', text: 'What counts as a credit?', level: 2 },
       { type: 'paragraph', text: 'Each major action — tailoring a resume, running an interview prep session, or submitting an auto-apply batch — costs credits. You see the cost before each action and can top up at any time.' },

@@ -79,8 +79,8 @@ const INTERVIEW_PLANS: readonly InterviewPlan[] = [
   {
     id: 'premium',
     name: 'Premium',
-    monthlyPrice: 197,
-    annualMonthlyPrice: 158,
+    monthlyPrice: 497,
+    annualMonthlyPrice: 398,
     credits: 'About 4,000 interview credits each month',
     description: 'High-volume interview and meeting support with more context and priority help.',
     features: ['Everything in Pro', 'Priority support', 'Knowledge Base with 10 documents'],
@@ -127,7 +127,7 @@ const MANAGED_PACKAGES: readonly ManagedPackage[] = [
   {
     id: 'twenty-interviews',
     name: '20 interviews guaranteed',
-    price: 997,
+    price: 1990,
     description: 'The same managed service for a longer search, continuing until 20 invitations are delivered.',
     features: [
       'Job scouting and match review',

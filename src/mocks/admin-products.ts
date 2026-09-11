@@ -242,7 +242,7 @@ export const adminProducts: readonly AdminProductRow[] = [
     status: 'live',
     saleModel: 'package',
     includedTiers: [],
-    tierNote: 'One-time packages, $497 for 10 interviews and $997 for 20',
+    tierNote: 'One-time packages, $497 for 10 interviews and $1,990 for 20',
     activeUsers: 214,
     sessionsInRange: 642,
     creditsConsumed: 0,

@@ -143,7 +143,7 @@ export const adminProductMix: readonly AdminProductMixRow[] = [
 export const adminPlanMix: readonly AdminPlanMixRow[] = [
   { id: 'pro', label: 'Pro · $99/mo', subscribers: 2_648, mrrCents: 26_215_200, sharePercent: 52 },
   { id: 'starter', label: 'Starter · $47/mo', subscribers: 1_809, mrrCents: 8_502_300, sharePercent: 35 },
-  { id: 'premium', label: 'Premium · $197/mo', subscribers: 671, mrrCents: 13_218_700, sharePercent: 13 },
+  { id: 'premium', label: 'Premium · $497/mo', subscribers: 671, mrrCents: 33_348_700, sharePercent: 13 },
   { id: 'unsubscribed', label: 'Unsubscribed · free 50 min/mo', subscribers: 18_402, mrrCents: 0, sharePercent: 0 },
 ]
 

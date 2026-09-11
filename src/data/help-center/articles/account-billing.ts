@@ -31,7 +31,7 @@ export const accountBillingArticles: readonly HelpArticle[] = [
         'Free — $0/month. 5 credits. Basic Resume Builder.',
         'Starter — $27/month. 20 credits. Resume Builder + Auto-Apply.',
         'Pro — $49/month. 50 credits. All features including Interview Copilot.',
-        'Premium — $79/month. 100 credits. Everything in Pro plus priority support.',
+        'Premium — $497/month. About 4,000 credits. Everything in Pro plus priority support.',
       ]},
       { type: 'heading', text: 'Upgrading', level: 2 },
       { type: 'list', ordered: true, items: [

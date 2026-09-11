@@ -84,8 +84,8 @@ export const adminPlanConfigs: readonly AdminPlanConfig[] = [
     id: 'premium',
     name: 'Premium',
     positioning: 'Same features as Pro. Sold on volume, four times the Pro allowance.',
-    monthlyPriceCents: 19_700,
-    annualPriceCents: 197_000,
+    monthlyPriceCents: 49_700,
+    annualPriceCents: 497_000,
     monthlyCredits: 4_000,
     knowledgeBaseDocumentLimit: 10,
     features: {
@@ -116,7 +116,7 @@ export const adminDoneForYouPackages: readonly AdminDoneForYouPackageConfig[] = 
   {
     id: 'dfy-large',
     name: 'Done For You, 20 interviews guaranteed',
-    priceCents: 99_700,
+    priceCents: 199_000,
     interviewsGuaranteed: 20,
     inCheckoutCart: false,
   },

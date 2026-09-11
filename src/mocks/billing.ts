@@ -65,7 +65,7 @@ export const authPlanFixtures: readonly BillingPlanFixture[] = [
   {
     id: 'premium',
     name: 'Premium',
-    priceMonthly: 197,
+    priceMonthly: 497,
     includedUsageCents: 4000 * 40,
     description: 'Everything Pro has, at 2x the size — for power users who live in interviews.',
     features: [

@@ -178,6 +178,6 @@ export const adminAnalyticsUsage: AdminAnalyticsUsage = {
   rows: [
     { planId: 'starter', planLabel: 'Starter', subscriberCount: 1_809, grantedCreditsPerSubscriber: 500, averageUsedCreditsPerSubscriber: 381, utilizationPercent: 76, priceCents: 4_700 },
     { planId: 'pro', planLabel: 'Pro', subscriberCount: 2_648, grantedCreditsPerSubscriber: 1_000, averageUsedCreditsPerSubscriber: 647, utilizationPercent: 65, priceCents: 9_900 },
-    { planId: 'premium', planLabel: 'Premium', subscriberCount: 671, grantedCreditsPerSubscriber: 4_000, averageUsedCreditsPerSubscriber: 2_212, utilizationPercent: 55, priceCents: 19_700 },
+    { planId: 'premium', planLabel: 'Premium', subscriberCount: 671, grantedCreditsPerSubscriber: 4_000, averageUsedCreditsPerSubscriber: 2_212, utilizationPercent: 55, priceCents: 49_700 },
   ],
 }

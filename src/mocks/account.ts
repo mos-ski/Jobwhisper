@@ -105,7 +105,7 @@ export const billingPlans: readonly BillingPlanCard[] = [
   {
     id: 'premium',
     name: 'PREMIUM',
-    price: '$197',
+    price: '$497',
     cadence: 'per month',
     annualPrice: '$1,576',
     annualCadence: 'per year',
@@ -147,7 +147,7 @@ export const billingStandalonePurchases: readonly BillingStandalonePurchase[] = 
 export const creditUsageRows: readonly CreditUsageRow[] = [
   { feature: 'Resume Builder', trigger: 'One prompt sent to the AI', deducted: '1 credit / prompt ($0.10)' },
   { feature: 'Auto Apply (self-serve)', trigger: 'One successful job application', deducted: '1 credit / application ($1)' },
-  { feature: 'Done-For-You', trigger: 'Package purchase, not per application', deducted: '10 or 20 interviews guaranteed ($497 / $997, one-time)' },
+  { feature: 'Done-For-You', trigger: 'Package purchase, not per application', deducted: '10 or 20 interviews guaranteed ($497 / $1,990, one-time)' },
   { feature: 'Interview Prep', trigger: 'Metered per minute of the live session', deducted: '1 credit / min ($0.10)' },
   { feature: 'Interview Copilot', trigger: 'Metered per minute of the live session', deducted: '1 credit / min ($0.10)' },
   { feature: 'Coding Copilot', trigger: 'Metered per minute of the live session', deducted: '1 credit / min ($0.10)' },
@@ -265,7 +265,7 @@ export const accountFaqs: readonly AccountFaqEntry[] = [
 
   // Ace Your Interview — plans
   { category: 'Plans & subscription', question: 'What is Ace Your Interview?', answer: "Ace Your Interview is Jobwhisper's subscription: Interview Prep and Interview Copilot, with Coding Copilot and Meeting Copilot on Pro and Premium. It's the only recurring subscription Jobwhisper sells." },
-  { category: 'Plans & subscription', question: 'What are the plan tiers and prices?', answer: 'Starter is $47/month with about 500 minutes of Copilot. Pro is $99/month with about 1,000 minutes, plus the desktop app, Coding Copilot, and Meeting Copilot. Premium is $197/month with about 4,000 minutes, same features as Pro.' },
+  { category: 'Plans & subscription', question: 'What are the plan tiers and prices?', answer: 'Starter is $47/month with about 500 minutes of Copilot. Pro is $99/month with about 1,000 minutes, plus the desktop app, Coding Copilot, and Meeting Copilot. Premium is $497/month with about 4,000 minutes, same features as Pro.' },
   { category: 'Plans & subscription', question: "What's the difference between Pro and Premium?", answer: "Nothing feature-wise, both include the desktop app, Coding Copilot, and Meeting Copilot. Premium's difference is volume, about four times Pro's monthly minutes for people running a heavier search." },
   { category: 'Plans & subscription', question: 'What does Starter not include?', answer: 'Starter has Interview Prep and web Copilot only, no desktop app, Coding Copilot, or Meeting Copilot. Upgrade to Pro for those.' },
   { category: 'Plans & subscription', question: 'Is there a free trial of Pro or Premium?', answer: "First-time subscribers get a $40 first month of Pro, renewing at $99/month after that. It's available once per account." },
@@ -326,7 +326,7 @@ export const accountFaqs: readonly AccountFaqEntry[] = [
 
   // Done-For-You
   { category: 'Done-For-You', question: 'What is Done-For-You?', answer: 'A white-glove package where a real success manager applies to jobs on your behalf until you land a guaranteed number of interviews, resume tailoring and job scouting included.' },
-  { category: 'Done-For-You', question: 'What are the Done-For-You packages and prices?', answer: 'The small package is $497, one-time, guaranteeing 10 interviews. The large package is $997, one-time, guaranteeing 20 interviews. Both include a success manager and Jobwhisper product access until the guarantee is fulfilled.' },
+  { category: 'Done-For-You', question: 'What are the Done-For-You packages and prices?', answer: 'The small package is $497, one-time, guaranteeing 10 interviews. The large package is $1,990, one-time, guaranteeing 20 interviews. Both include a success manager and Jobwhisper product access until the guarantee is fulfilled.' },
   { category: 'Done-For-You', question: 'Is Done-For-You a subscription?', answer: "No, it's a one-time purchase, not a recurring charge. You pay once for the package and the guarantee." },
   { category: 'Done-For-You', question: 'What exactly is guaranteed?', answer: 'Interviews landed through applications your success manager submits on your behalf, not just applications sent. We keep applying until the guaranteed count is reached.' },
   { category: 'Done-For-You', question: 'How long does Jobwhisper access last with a Done-For-You package?', answer: "Access continues for as long as it takes to deliver your guarantee, it's not capped to a fixed number of months." },
@@ -336,7 +336,7 @@ export const accountFaqs: readonly AccountFaqEntry[] = [
   { category: 'Done-For-You', question: 'Can I update my target roles after signing up?', answer: 'Yes, any time in Auto Apply setup, your success manager always works from whatever is current there.' },
   { category: 'Done-For-You', question: "What's the Done-For-You refund policy?", answer: 'Full refund if no applications have been submitted yet. After that, refunds are prorated against the interviews already delivered.' },
   { category: 'Done-For-You', question: 'Can I exclude specific companies from Done-For-You applications?', answer: "Yes, tell us during signup, for example your current employer or a company you're under NDA with, and your success manager will skip them." },
-  { category: 'Done-For-You', question: "What's the difference between the small and large packages?", answer: 'The interview guarantee, 10 versus 20, and the price, $497 versus $997. Everything else, the success manager, tailoring, and until-fulfilled access, is the same.' },
+  { category: 'Done-For-You', question: "What's the difference between the small and large packages?", answer: 'The interview guarantee, 10 versus 20, and the price, $497 versus $1,990. Everything else, the success manager, tailoring, and until-fulfilled access, is the same.' },
 
   // Marketplace
   { category: 'Marketplace', question: 'What is the Marketplace?', answer: 'A catalog of one-time career content, swipe files, resume templates, scripts, and checklists, priced between $9 and $29 each with no subscription attached.' },

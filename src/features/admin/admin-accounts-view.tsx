@@ -64,6 +64,7 @@ import {
   TabsList,
   TabsTrigger,
   TextField,
+  toast,
   type BadgeVariant,
   type DataTableColumn,
 } from '@/ui'
@@ -389,7 +390,7 @@ const planFilterOptions = [
   { value: 'all', label: 'Any plan' },
   { value: 'starter', label: 'Starter · $47/mo' },
   { value: 'pro', label: 'Pro · $99/mo' },
-  { value: 'premium', label: 'Premium · $197/mo' },
+  { value: 'premium', label: 'Premium · $497/mo' },
   { value: 'unsubscribed', label: 'Unsubscribed' },
 ]
 
@@ -888,6 +889,12 @@ const creditReasonOptions = [
   { value: 'migration', label: 'Migration adjustment' },
 ]
 
+const creditTypeOptions = [
+  { value: 'copilot', label: 'Interviews (Copilot)' },
+  { value: 'auto-apply', label: 'Auto Apply' },
+  { value: 'resume-builder', label: 'Resume Builder' },
+]
+
 function Panel({ title, description, children, action }: {
   readonly title: string
   readonly description?: string
@@ -960,11 +967,14 @@ export function AdminAccountDetailView({
 }: AdminAccountDetailViewProps) {
   const [statusOverride, setStatusOverride] = useState<AdminAccountStatus | null>(null)
   const [creditDelta, setCreditDelta] = useState(0)
+  const [autoApplyCreditDelta, setAutoApplyCreditDelta] = useState(0)
+  const [resumeBuilderCreditDelta, setResumeBuilderCreditDelta] = useState(0)
   const [addedCreditEntries, setAddedCreditEntries] = useState<readonly AdminCreditEntry[]>([])
   const [addedAuditEntries, setAddedAuditEntries] = useState<readonly AdminAccountAuditEntry[]>([])
   const [statusDialogOpen, setStatusDialogOpen] = useState(false)
   const [impersonateDialogOpen, setImpersonateDialogOpen] = useState(false)
   const [creditsDialogOpen, setCreditsDialogOpen] = useState(false)
+  const [creditType, setCreditType] = useState<'copilot' | 'auto-apply' | 'resume-builder'>('copilot')
   const [creditAmount, setCreditAmount] = useState('')
   const [creditReason, setCreditReason] = useState('goodwill')
   const [creditNote, setCreditNote] = useState('')
@@ -980,6 +990,8 @@ export function AdminAccountDetailView({
   const isSuspended = status === 'suspended'
   const isPaused = status === 'paused'
   const creditsRemaining = (account?.creditsRemaining ?? 0) + creditDelta
+  const autoApplyCreditsRemaining = (account?.autoApplyCreditsRemaining ?? 0) + autoApplyCreditDelta
+  const resumeBuilderCreditsRemaining = (account?.resumeBuilderCreditsRemaining ?? 0) + resumeBuilderCreditDelta
   const creditHistory = account ? [...addedCreditEntries, ...account.creditHistory] : []
   const auditLog = account ? [...addedAuditEntries, ...account.auditLog] : []
 
@@ -1015,20 +1027,34 @@ export function AdminAccountDetailView({
       setCreditError('Enter a whole number of credits. Use a negative number to remove credits.')
       return
     }
-    if (creditsRemaining + parsed < 0) {
-      setCreditError(`This would take the balance below zero. The account holds ${countFormatter.format(creditsRemaining)} credits.`)
+    const currentBalance = creditType === 'copilot'
+      ? creditsRemaining
+      : creditType === 'auto-apply'
+        ? autoApplyCreditsRemaining
+        : resumeBuilderCreditsRemaining
+    const typeLabel = creditTypeOptions.find((o) => o.value === creditType)?.label ?? 'Credits'
+    if (currentBalance + parsed < 0) {
+      setCreditError(`This would take the ${typeLabel} balance below zero. The account holds ${countFormatter.format(currentBalance)} credits.`)
       return
     }
     const reasonLabel = creditReasonOptions.find((option) => option.value === creditReason)?.label ?? 'Adjustment'
-    const nextBalance = creditsRemaining + parsed
-    setCreditDelta((prev) => prev + parsed)
+    const nextBalance = currentBalance + parsed
+    const productMap: Record<string, { product: AdminProductId; productLabel: string }> = {
+      'copilot': { product: 'interview-copilot', productLabel: 'Interview Copilot' },
+      'auto-apply': { product: 'auto-apply', productLabel: 'Auto Apply' },
+      'resume-builder': { product: 'resume-builder', productLabel: 'Resume Builder' },
+    }
+    const { product, productLabel } = productMap[creditType]
+    if (creditType === 'copilot') setCreditDelta((prev) => prev + parsed)
+    else if (creditType === 'auto-apply') setAutoApplyCreditDelta((prev) => prev + parsed)
+    else setResumeBuilderCreditDelta((prev) => prev + parsed)
     setAddedCreditEntries((prev) => [
       {
         id: `cr_local_${prev.length + 1}`,
         kind: parsed > 0 ? 'grant' : 'spend',
         description: creditNote.trim() ? `${reasonLabel}, ${creditNote.trim()}` : reasonLabel,
-        product: null,
-        productLabel: 'Wallet',
+        product,
+        productLabel,
         amountCredits: parsed,
         balanceAfter: nextBalance,
         occurredAt: 'Just now',
@@ -1040,14 +1066,14 @@ export function AdminAccountDetailView({
       {
         id: `aud_local_credit_${prev.length + 1}`,
         adminName: user.name,
-        action: parsed > 0 ? `granted ${countFormatter.format(parsed)} credits` : `removed ${countFormatter.format(Math.abs(parsed))} credits`,
+        action: `${parsed > 0 ? 'granted' : 'removed'} ${countFormatter.format(Math.abs(parsed))} ${typeLabel} credits`,
         detail: creditNote.trim() ? `${reasonLabel}. ${creditNote.trim()}` : reasonLabel,
         occurredAt: 'Just now',
       },
       ...prev,
     ])
     setActionNotice(
-      `Balance adjusted by ${parsed > 0 ? '+' : ''}${countFormatter.format(parsed)} credits. New balance ${countFormatter.format(nextBalance)}.`,
+      `${typeLabel} balance adjusted by ${parsed > 0 ? '+' : ''}${countFormatter.format(parsed)} credits. New balance ${countFormatter.format(nextBalance)}.`,
     )
     setCreditAmount('')
     setCreditNote('')
@@ -1099,6 +1125,12 @@ export function AdminAccountDetailView({
         : `${account.name}'s plan is active again.`,
     )
     setPauseDialogOpen(false)
+    toast.success(
+      next === 'paused' ? 'Plan paused' : 'Plan resumed',
+      { description: next === 'paused'
+        ? `Billing stops after ${account.subscription.renewsOn ?? 'the current period'}.`
+        : `Billing resumes on ${account.subscription.renewsOn ?? 'the next billing date'}.` },
+    )
   }
 
   if (isLoading) {
@@ -1384,17 +1416,17 @@ export function AdminAccountDetailView({
                   <p className="text-sm font-semibold text-ink">Auto Apply</p>
                   <p className="text-sm text-ink-muted">Pay-as-you-go</p>
                 </div>
-                <p className="mt-1 font-gowun text-2xl font-bold leading-8 text-ink">{countFormatter.format(account.autoApplyCreditsRemaining)}</p>
+                <p className="mt-1 font-gowun text-2xl font-bold leading-8 text-ink">{countFormatter.format(autoApplyCreditsRemaining)}</p>
                 <p className="text-xs text-ink-muted">
                   of {countFormatter.format(account.autoApplyCreditsAllowance)} credits purchased
                 </p>
                 <ProgressBar
                   className="mt-2"
-                  value={account.autoApplyCreditsRemaining}
+                  value={autoApplyCreditsRemaining}
                   max={account.autoApplyCreditsAllowance}
                   label="Auto Apply credits remaining"
                   showValue
-                  color={account.autoApplyCreditsRemaining / account.autoApplyCreditsAllowance < 0.15 ? 'warning' : 'accent'}
+                  color={autoApplyCreditsRemaining / account.autoApplyCreditsAllowance < 0.15 ? 'warning' : 'accent'}
                 />
               </div>
 
@@ -1404,17 +1436,17 @@ export function AdminAccountDetailView({
                   <p className="text-sm font-semibold text-ink">Resume Builder</p>
                   <p className="text-sm text-ink-muted">Pay-as-you-go</p>
                 </div>
-                <p className="mt-1 font-gowun text-2xl font-bold leading-8 text-ink">{countFormatter.format(account.resumeBuilderCreditsRemaining)}</p>
+                <p className="mt-1 font-gowun text-2xl font-bold leading-8 text-ink">{countFormatter.format(resumeBuilderCreditsRemaining)}</p>
                 <p className="text-xs text-ink-muted">
                   of {countFormatter.format(account.resumeBuilderCreditsAllowance)} credits purchased
                 </p>
                 <ProgressBar
                   className="mt-2"
-                  value={account.resumeBuilderCreditsRemaining}
+                  value={resumeBuilderCreditsRemaining}
                   max={account.resumeBuilderCreditsAllowance}
                   label="Resume Builder credits remaining"
                   showValue
-                  color={account.resumeBuilderCreditsRemaining / account.resumeBuilderCreditsAllowance < 0.15 ? 'warning' : 'accent'}
+                  color={resumeBuilderCreditsRemaining / account.resumeBuilderCreditsAllowance < 0.15 ? 'warning' : 'accent'}
                 />
               </div>
             </div>
@@ -1612,16 +1644,18 @@ export function AdminAccountDetailView({
         open={creditsDialogOpen}
         onOpenChange={(open) => {
           setCreditsDialogOpen(open)
-          if (!open) setCreditError(undefined)
+          if (!open) {
+            setCreditError(undefined)
+            setCreditType('copilot')
+          }
         }}
       >
         <DialogPopup aria-labelledby="account-credits-dialog-title">
           <DialogClose aria-label="Cancel" />
           <DialogTitle id="account-credits-dialog-title">Adjust credit balance</DialogTitle>
           <DialogDescription>
-            {account.name} holds {countFormatter.format(creditsRemaining)} credits. A positive number adds credits, a
-            negative number removes them. The change is applied immediately and written to the credit history and the
-            audit log under your name.
+            Select the credit type and enter a positive number to add credits or a negative number to remove them. The
+            change is applied immediately and written to the credit history and the audit log under your name.
           </DialogDescription>
           <form
             className="mt-4 grid gap-4"
@@ -1630,6 +1664,22 @@ export function AdminAccountDetailView({
               confirmCreditAdjustment()
             }}
           >
+            <SelectField
+              id="credit-adjust-type"
+              label="Credit type"
+              options={creditTypeOptions}
+              value={creditType}
+              onValueChange={(value) => setCreditType(value as 'copilot' | 'auto-apply' | 'resume-builder')}
+            />
+            <p className="text-sm text-ink-muted">
+              Current balance: <span className="font-semibold text-ink">{countFormatter.format(
+                creditType === 'copilot'
+                  ? creditsRemaining
+                  : creditType === 'auto-apply'
+                    ? autoApplyCreditsRemaining
+                    : resumeBuilderCreditsRemaining
+              )} credits</span>
+            </p>
             <TextField
               id="credit-adjust-amount"
               label="Credits to add or remove"
@@ -1703,7 +1753,7 @@ export function AdminAccountDetailView({
                     <span className="block text-xs text-ink-muted">
                       {planId === 'starter' && '$47/mo · 500 credits'}
                       {planId === 'pro' && '$99/mo · 1,500 credits'}
-                      {planId === 'premium' && '$197/mo · 5,000 credits'}
+                      {planId === 'premium' && '$497/mo · 4,000 credits'}
                     </span>
                   </span>
                 </label>
