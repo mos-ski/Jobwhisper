@@ -245,7 +245,6 @@ function LandingHero() {
             className="flex items-center gap-2 bg-white rounded-[10px] h-12 px-8 text-landing-btn-text text-lg font-semibold whitespace-nowrap hover:bg-white/90 transition-colors"
           >
             See Pricing
-            <img src="/landing-arrow.svg" alt="" className="h-4 w-4" />
           </button>
         </div>
       </div>
