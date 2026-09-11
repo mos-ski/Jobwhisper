@@ -65,3 +65,43 @@ Commit the pricing page, test, updated design spec, and this implementation plan
 - [x] **Step 4: Run the focused test, full suite, production build, and visual check**
 
 - [x] **Step 5: Commit only the scoped refinement files**
+
+### Task 3: Make supporting content follow the selected tab
+
+**Files:**
+- Modify: `src/apps/web/pages/pricing-page.tsx`
+- Modify: `src/apps/web/pages/pricing-page.test.tsx`
+
+**Interfaces:**
+- Consumes: the URL-derived `PricingTab` value.
+- Produces: tab-specific explainer rows, FAQs, and closing actions without introducing additional state.
+
+- [x] **Step 1: Add failing assertions for tab-specific supporting content**
+
+- [x] **Step 2: Run the focused test and confirm the assertions fail**
+
+- [x] **Step 3: Define typed content for each pricing model and pass `activeTab` into the supporting sections**
+
+- [x] **Step 4: Verify tab interactions, full tests, production build, and desktop/mobile rendering**
+
+- [x] **Step 5: Commit only the scoped pricing refinement files**
+
+### Task 4: Expand each contextual FAQ to 20 questions
+
+**Files:**
+- Modify: `src/apps/web/pages/pricing-page.tsx`
+- Modify: `src/apps/web/pages/pricing-page.test.tsx`
+
+**Interfaces:**
+- Consumes: `SUPPORTING_CONTENT` and the canonical product script.
+- Produces: exactly 20 product-specific `FaqItem` entries for each `PricingTab`.
+
+- [x] **Step 1: Add failing per-tab FAQ count assertions**
+
+- [x] **Step 2: Run the focused test and confirm all three counts fail**
+
+- [x] **Step 3: Add concise, non-repetitive answers grounded in verified product behavior**
+
+- [x] **Step 4: Run focused and full verification plus a dense-layout browser review**
+
+- [x] **Step 5: Commit the scoped FAQ expansion**

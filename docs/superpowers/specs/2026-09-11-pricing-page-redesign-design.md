@@ -128,3 +128,6 @@ Run the focused test first, then the full Vitest suite, TypeScript/Vite producti
 - Reduce the vertical gaps between the tabbed pricing panel, credit guide, FAQ, and closing action so the page reads as one compact settings-style stack.
 - Preserve clear internal padding and section boundaries; only the empty canvas space between sections becomes smaller.
 - Use a restrained 2px radius on the large pricing, credit, FAQ, and closing panels instead of visibly curved container edges. Keep the existing control radii for buttons, tabs, and switches.
+- Make all supporting content contextual to the selected pricing tab. Interview shows minute-based subscription guidance and interview FAQs; Job-search shows prepaid Resume Builder and Auto Apply usage guidance and FAQs; Done For You shows fulfillment, guarantee, and success-manager guidance and FAQs. The closing action also follows the selected model.
+- Provide exactly 20 focused FAQ questions for each pricing tab. Questions must remain within the verified product behavior in this script and must not invent refund, rollover, timing, or outcome promises.
+- Present the 20 questions as two balanced groups of 10 on desktop to control page length, stacking them into one column on mobile.

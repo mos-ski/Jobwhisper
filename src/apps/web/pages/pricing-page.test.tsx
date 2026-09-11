@@ -28,9 +28,10 @@ describe('PricingPage', () => {
   it('presents pricing questions inside the shared surface treatment', () => {
     renderPricingPage()
 
-    const faqPanel = screen.getByRole('region', { name: 'Questions about pricing' })
+    const faqPanel = screen.getByRole('region', { name: 'Interview plan questions' })
     expect(faqPanel).toHaveClass('bg-surface', 'border-border', 'rounded-sm')
     expect(faqPanel).not.toHaveClass('rounded-panel')
+    expect(faqPanel.querySelectorAll('details')).toHaveLength(20)
   })
 
   it('updates interview prices when monthly billing is selected', async () => {
@@ -49,9 +50,17 @@ describe('PricingPage', () => {
     await user.click(screen.getByRole('tab', { name: 'Job-search credits' }))
     expect(screen.getByText('$0.10 per AI prompt')).toBeInTheDocument()
     expect(screen.getByText('$1 per successful application')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'How job-search credits work' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'Job-search credit questions' })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Job-search credit questions' }).querySelectorAll('details')).toHaveLength(20)
+    expect(screen.queryByText('How are interview plans billed?')).not.toBeInTheDocument()
 
     await user.click(screen.getByRole('tab', { name: 'Done for you' }))
     expect(screen.getByRole('heading', { level: 3, name: '10 interviews' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: '20 interviews' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'How Done For You works' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'Done For You questions' })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Done For You questions' }).querySelectorAll('details')).toHaveLength(20)
+    expect(screen.queryByText('How long do prepaid credits last?')).not.toBeInTheDocument()
   })
 })
