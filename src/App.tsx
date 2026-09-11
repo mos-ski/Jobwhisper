@@ -9,6 +9,8 @@ import { VslLandingPage } from '@/apps/web/pages/vsl-landing-page'
 import { BrandingGuidePage } from '@/apps/web/pages/branding-guide-page'
 import { EmailsIndexPage } from '@/apps/web/pages/emails-index-page'
 import { EmailPreviewPage } from '@/apps/web/pages/email-preview-page'
+import { HelpCenterApp } from '@/apps/web/pages/help-center-page'
+import { LegalPage } from '@/apps/web/pages/legal-page'
 import DesktopApp from '@/apps/desktop/App'
 
 const queryClient = new QueryClient({
@@ -29,6 +31,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/privacy" element={<LegalPage kind="privacy" />} />
+          <Route path="/terms" element={<LegalPage kind="terms" />} />
           <Route path="/vsl" element={<VslLandingPage />} />
           <Route path="/brand-guide" element={<BrandingGuidePage />} />
           <Route path="/emails" element={<EmailsIndexPage />} />
@@ -36,6 +40,7 @@ export default function App() {
           <Route path="/v3/*" element={<Suspense fallback={null}><WebRoutes /></Suspense>} />
           <Route path="/admin/*" element={<Suspense fallback={null}><WebRoutes /></Suspense>} />
           <Route path="/desktop/*" element={<DesktopApp />} />
+          <Route path="/help/*" element={<HelpCenterApp />} />
           <Route path="*" element={<Navigate to="/v3" replace />} />
         </Routes>
         <Toaster position="top-right" richColors />
