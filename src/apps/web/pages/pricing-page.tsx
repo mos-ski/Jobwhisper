@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Check, ChevronDown } from 'lucide-react'
 
+import { ProOfferWidget } from '@/features/billing/pro-offer-widget'
 import { Button, JobwhisperMark, Tabs, TabsContent, TabsList, TabsTrigger, cn } from '@/ui'
 
 type PricingTab = 'interview' | 'job-search' | 'done-for-you'
@@ -114,9 +115,9 @@ const CREDIT_PRODUCTS: readonly CreditProduct[] = [
 const MANAGED_PACKAGES: readonly ManagedPackage[] = [
   {
     id: 'ten-interviews',
-    name: '10 interviews guaranteed',
+    name: '5 interviews guaranteed',
     price: 497,
-    description: 'A dedicated success manager runs your search until you receive 10 interview invitations.',
+    description: 'A dedicated success manager runs your search until you receive 5 interview invitations.',
     features: [
       'Job scouting and match review',
       'Resume tailoring for each role',
@@ -344,7 +345,7 @@ const SUPPORTING_CONTENT: Readonly<Record<PricingTab, SupportingContent>> = {
     guideTitle: 'How Done For You works',
     guideDescription: 'A success manager runs the search until your package target is reached.',
     guideItems: [
-      { label: 'Your target', value: 'Choose 10 or 20 interview invitations' },
+      { label: 'Your target', value: 'Choose 5 or 20 interview invitations' },
       { label: 'Job search', value: 'We scout and review matched roles' },
       { label: 'Applications', value: 'We tailor and submit each application' },
       { label: 'Jobwhisper access', value: 'Full access during package fulfillment' },
@@ -371,7 +372,7 @@ const SUPPORTING_CONTENT: Readonly<Record<PricingTab, SupportingContent>> = {
       },
       {
         question: 'What is the difference between the two packages?',
-        answer: 'One package targets 10 interview invitations and the other targets 20. The 20-interview package also includes priority scheduling.',
+        answer: 'One package targets 5 interview invitations and the other targets 20. The 20-interview package also includes priority scheduling.',
       },
       {
         question: 'What counts toward my package target?',
@@ -431,7 +432,7 @@ const SUPPORTING_CONTENT: Readonly<Record<PricingTab, SupportingContent>> = {
       },
       {
         question: 'How do I choose the right interview target?',
-        answer: 'Choose based on how broad and long you expect your search to be. Contact support if you want help comparing the 10- and 20-interview packages.',
+        answer: 'Choose based on how broad and long you expect your search to be. Contact support if you want help comparing the 5- and 20-interview packages.',
       },
     ],
     closingTitle: 'Want a success manager to run your search?',
@@ -489,53 +490,6 @@ function useAnimatedNumber(target: number) {
 function AnimatedPrice({ value }: { readonly value: number }) {
   const displayValue = useAnimatedNumber(value)
   return <span className="font-gowun text-4xl font-bold leading-none text-ink">${displayValue}</span>
-}
-
-function ProOfferWidget({ onDismiss, onClaim }: { readonly onDismiss: () => void; readonly onClaim: () => void }) {
-  const offerFeatures = ['Unlimited Auto Apply', '60Hrs Interview Copilot Session', '1000+ Resume Messages', '40Hrs Interview Preps']
-
-  return (
-    <aside
-      role="region"
-      aria-label="Pro plan offer"
-      className="fixed bottom-4 end-4 z-sticky w-[min(27rem,calc(100vw-2rem))] overflow-hidden rounded-panel border border-border bg-surface shadow-panel animate-ease-in-bottom motion-reduce:animate-none"
-    >
-      <div className="relative h-52 overflow-hidden bg-accent px-6 pt-7 text-on-accent">
-        <img src="/v3-assets/figma/dfy-widget-background.svg" alt="" className="pointer-events-none absolute inset-0 size-full object-cover" />
-        <img src="/v3-assets/figma/dfy-widget-wordmark.svg" alt="Jobwhisper" className="absolute inset-x-0 top-7 mx-auto h-6 w-auto" />
-        <button
-          type="button"
-          onClick={onDismiss}
-          aria-label="Close Pro plan offer"
-          className="absolute end-2 top-2 grid size-11 place-items-center rounded-soft text-on-accent transition-colors hover:bg-on-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-        >
-          <span aria-hidden="true" className="text-2xl leading-none">×</span>
-        </button>
-        <div className="absolute inset-x-0 top-24 text-center font-gowun leading-tight">
-          <h2 className="text-4xl font-normal tracking-[-0.2rem]">First Month Pro Offer</h2>
-          <p className="mt-1 text-2xl tracking-[-0.08rem]">Get 60% off your first month</p>
-        </div>
-      </div>
-      <div className="px-7 pb-6 pt-8">
-        <div className="flex items-end gap-2 font-gowun leading-none whitespace-nowrap">
-          <span className="text-4xl text-ink-muted line-through">$99</span>
-          <span className="text-4xl text-accent">$39.60</span>
-          <span className="pb-1 text-lg text-ink">/Month</span>
-        </div>
-        <ul className="mt-5 grid gap-3 text-base leading-6 text-ink-muted">
-          {offerFeatures.map((feature) => (
-            <li key={feature} className="flex items-center gap-2">
-              <span aria-hidden="true" className="flex h-3 w-5 items-center justify-end rounded-sm bg-accent p-0.5">
-                <span className="block h-2 w-2 rounded-sm bg-surface" />
-              </span>
-              <span>{feature}</span>
-            </li>
-          ))}
-        </ul>
-        <Button className="mt-6 w-full" onClick={onClaim}>Take offer now!</Button>
-      </div>
-    </aside>
-  )
 }
 
 function PricingHeader() {

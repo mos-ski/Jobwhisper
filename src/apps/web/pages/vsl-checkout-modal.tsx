@@ -59,9 +59,9 @@ const ADDONS: Addon[] = [
   },
   {
     id: 'dfy',
-    name: 'Done-For-You: 10 Interviews Guaranteed',
+    name: 'Done-For-You: 5 Interviews Guaranteed',
     price: 497,
-    desc: 'A real success manager applies on your behalf until you land 10 interviews, resume tailoring and job scouting included. One-time price, not a subscription — Jobwhisper access continues until the guarantee is fulfilled.',
+    desc: 'A real success manager applies on your behalf until you land 5 interviews, resume tailoring and job scouting included. One-time price, not a subscription — Jobwhisper access continues until the guarantee is fulfilled.',
     tag: 'White-glove service',
   },
 ]

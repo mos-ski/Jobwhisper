@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Check, Minus } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 import type { BillingPlanCard } from '@/contracts/account.draft'
 import { AppShell } from '@/features/dashboard/app-nav'
 import { Badge, Button, cn, ShellBar, Switch } from '@/ui'
+import { ProOfferWidget } from './pro-offer-widget'
 
 type FeatureRow = {
   readonly capability: string
@@ -76,12 +77,13 @@ export type PlanCompareViewProps = {
   readonly backHref: string
 }
 
-function PlanCard({ plan, annual, index }: { readonly plan: BillingPlanCard; readonly annual: boolean; readonly index: number }) {
+function PlanCard({ plan, annual, index, onProHover }: { readonly plan: BillingPlanCard; readonly annual: boolean; readonly index: number; readonly onProHover?: () => void }) {
   const navigate = useNavigate()
 
   return (
     <article
       style={{ animationDelay: `${index * 70}ms`, animationFillMode: 'backwards' }}
+      onMouseEnter={plan.id === 'pro' && !plan.current ? onProHover : undefined}
       className={cn(
         'flex animate-ease-in-bottom flex-col rounded-panel border p-6 transition-all duration-normal ease-default hover:-translate-y-0.5 hover:shadow-control',
         plan.current ? 'border-positive' : 'border-border',
@@ -141,7 +143,26 @@ function PlanCard({ plan, annual, index }: { readonly plan: BillingPlanCard; rea
 }
 
 export function PlanCompareView({ homeHref, plans, backHref }: PlanCompareViewProps) {
+  const navigate = useNavigate()
   const [annual, setAnnual] = useState(true)
+  const [showProOffer, setShowProOffer] = useState(false)
+  const proOfferTriggeredRef = useRef(false)
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      if (!proOfferTriggeredRef.current) {
+        proOfferTriggeredRef.current = true
+        setShowProOffer(true)
+      }
+    }, 60_000)
+    return () => window.clearTimeout(timer)
+  }, [])
+
+  const triggerProOffer = () => {
+    if (proOfferTriggeredRef.current) return
+    proOfferTriggeredRef.current = true
+    setShowProOffer(true)
+  }
 
   return (
     <AppShell>
@@ -164,12 +185,13 @@ export function PlanCompareView({ homeHref, plans, backHref }: PlanCompareViewPr
           </div>
           <div className="grid gap-5 p-4 sm:p-6 lg:p-8 md:grid-cols-3">
             {plans.map((plan, index) => (
-              <PlanCard key={plan.id} plan={plan} annual={annual} index={index} />
+              <PlanCard key={plan.id} plan={plan} annual={annual} index={index} onProHover={triggerProOffer} />
             ))}
           </div>
         </article>
         <FeatureAccessMatrix />
       </section>
+      {showProOffer ? <ProOfferWidget onDismiss={() => setShowProOffer(false)} onClaim={() => navigate('/v3/billing?plan=pro&offer=welcome-60')} /> : null}
     </AppShell>
   )
 }

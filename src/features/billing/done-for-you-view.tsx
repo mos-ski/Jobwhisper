@@ -16,7 +16,7 @@ export type DoneForYouViewProps = {
 }
 
 const DFY_PACKAGES = [
-  { id: 'dfy-small', guarantee: '10 Interviews Guaranteed', price: 497, access: 'Access to Jobwhisper until fulfillment', recommended: false },
+  { id: 'dfy-small', guarantee: '5 Interviews Guaranteed', price: 497, access: 'Access to Jobwhisper until fulfillment', recommended: false },
   { id: 'dfy-large', guarantee: '20 Interviews Guaranteed', price: 1990, access: 'Access to Jobwhisper until fulfillment', recommended: true },
 ] as const
 
@@ -30,7 +30,7 @@ type PackageDetail = {
 const PACKAGE_DETAILS: readonly PackageDetail[] = [
   {
     name: 'Small',
-    guarantee: '10 interviews',
+    guarantee: '5 interviews',
     price: '$497',
     includes: 'Resume tailoring, job scouting/filtering, applying, a success manager, and Jobwhisper product access until the guarantee is fulfilled',
   },

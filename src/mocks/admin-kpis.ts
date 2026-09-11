@@ -62,7 +62,7 @@ const CARD_SPECS: readonly CardSpec[] = [
       },
       {
         id: 'dfy-small',
-        label: 'Small — 10 interviews guaranteed',
+        label: 'Small — 5 interviews guaranteed',
         shortLabel: 'small',
         kind: 'flow',
         unitNoun: 'sale',

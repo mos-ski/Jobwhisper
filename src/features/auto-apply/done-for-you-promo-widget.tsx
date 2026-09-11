@@ -38,7 +38,7 @@ export function DoneForYouPromoWidget({ signupHref, onDismiss }: DoneForYouPromo
             data-testid="done-for-you-guarantee"
             className="mb-[-0.08rem] w-full text-[2.53rem] tracking-[-0.2rem]"
           >
-            5-10 Interviews
+            5 Interviews
           </p>
           <p className="w-full text-[1.43rem] tracking-[-0.07rem]">Guaranteed!</p>
         </div>

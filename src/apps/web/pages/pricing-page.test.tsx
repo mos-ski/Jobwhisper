@@ -76,7 +76,7 @@ describe('PricingPage', () => {
     expect(screen.getByText('$0.10 per AI prompt').closest('[data-slot="tabs-content"]')).toHaveClass('animate-ease-in-bottom')
 
     await user.click(screen.getByRole('tab', { name: 'Done for you' }))
-    expect(screen.getByRole('heading', { level: 3, name: '10 interviews guaranteed' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 3, name: '5 interviews guaranteed' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: '20 interviews guaranteed' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'How Done For You works' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Done For You questions' })).toBeInTheDocument()

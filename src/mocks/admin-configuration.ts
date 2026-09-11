@@ -108,7 +108,7 @@ export const adminCreditEconomics: AdminCreditEconomicsConfig = {
 export const adminDoneForYouPackages: readonly AdminDoneForYouPackageConfig[] = [
   {
     id: 'dfy-small',
-    name: 'Done For You, 10 interviews guaranteed',
+    name: 'Done For You, 5 interviews guaranteed',
     priceCents: 49_700,
     interviewsGuaranteed: 10,
     inCheckoutCart: true,
@@ -145,7 +145,7 @@ export const adminCouponScopeOptions: readonly AdminCouponScopeOption[] = [
   { id: 'product-interview-prep', kind: 'product', label: 'Interview Prep' },
   { id: 'product-auto-apply', kind: 'product', label: 'Auto Apply credits' },
   { id: 'product-resume-builder', kind: 'product', label: 'Resume Builder credits' },
-  { id: 'product-dfy-small', kind: 'product', label: 'Done For You, 10 interviews guaranteed' },
+  { id: 'product-dfy-small', kind: 'product', label: 'Done For You, 5 interviews guaranteed' },
   { id: 'product-marketplace', kind: 'product', label: 'Marketplace items' },
 ]
 
@@ -261,7 +261,7 @@ export const adminCoupons: readonly AdminCoupon[] = [
     type: 'fixed-amount-off',
     value: 10_000,
     scopeId: 'product-dfy-small',
-    scopeLabel: 'Done For You, 10 interviews guaranteed',
+    scopeLabel: 'Done For You, 5 interviews guaranteed',
     redemptions: 43,
     redemptionCap: 200,
     startsOn: 'Jul 15, 2026',
