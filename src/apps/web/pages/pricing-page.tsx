@@ -449,8 +449,7 @@ function PageShell({ children, className }: { readonly children: ReactNode; read
   return <div className={cn('mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8', className)}>{children}</div>
 }
 
-const OPTION_CARD_CLASS = 'group flex min-w-0 flex-col p-5 transition-[background-color,box-shadow] duration-normal ease-default hover:bg-surface-subtle hover:shadow-control focus-within:bg-surface-subtle focus-within:shadow-control motion-reduce:transition-none sm:p-7'
-const PLAN_CARD_CLASS = 'group flex min-w-0 flex-col p-5 outline outline-2 outline-transparent transition-[background-color,outline-color,box-shadow,transform] duration-normal ease-default hover:scale-[0.99] hover:outline-accent hover:bg-accent-subtle hover:shadow-control focus-within:scale-[0.99] focus-within:outline-accent focus-within:bg-accent-subtle focus-within:shadow-control motion-reduce:transform-none motion-reduce:transition-none sm:p-7'
+const OPTION_CARD_CLASS = 'group flex min-w-0 flex-col p-5 outline outline-2 outline-transparent transition-[background-color,outline-color,box-shadow,transform] duration-normal ease-default hover:scale-[0.99] hover:outline-accent hover:bg-accent-subtle hover:shadow-control focus-within:scale-[0.99] focus-within:outline-accent focus-within:bg-accent-subtle focus-within:shadow-control motion-reduce:transform-none motion-reduce:transition-none sm:p-7'
 const OPTION_ACTION_CLASS = 'my-5 w-full transition-colors duration-normal ease-default group-hover:border-accent group-hover:bg-accent group-hover:text-on-accent group-focus-within:border-accent group-focus-within:bg-accent group-focus-within:text-on-accent motion-reduce:transition-none'
 
 function useAnimatedNumber(target: number) {
@@ -672,7 +671,7 @@ function InterviewPlans() {
         {INTERVIEW_PLANS.map((plan) => {
           const price = annual ? plan.annualMonthlyPrice : plan.monthlyPrice
           return (
-            <article key={plan.id} className={PLAN_CARD_CLASS} onMouseEnter={plan.id === 'pro' ? triggerProOffer : undefined}>
+            <article key={plan.id} className={OPTION_CARD_CLASS} onMouseEnter={plan.id === 'pro' ? triggerProOffer : undefined}>
               <h3 className="font-gowun text-xl font-bold text-ink">{plan.name}</h3>
               <div className="mt-5 flex items-end gap-2">
                 <AnimatedPrice value={price} />
