@@ -466,7 +466,7 @@ function LandingFooter() {
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-white/60 text-sm">
           <span>© 2026 Jobwhisper.ai</span>
           <span aria-hidden="true">·</span>
-          <button className="hover:text-white transition-colors">Download</button>
+          <a href="/v3/downloads" className="hover:text-white transition-colors">Download</a>
           <span aria-hidden="true">·</span>
           <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
           <span aria-hidden="true">·</span>
