@@ -568,6 +568,9 @@ function PricingHeader() {
           <a className="inline-flex min-h-11 items-center rounded-soft text-base font-medium text-ink-muted transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus" href="#pricing-faq">
             FAQ
           </a>
+          <a className="inline-flex min-h-11 items-center rounded-soft text-base font-medium text-ink-muted transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus" href="/help">
+            Help Center
+          </a>
         </div>
         <div className="ms-4 flex items-center gap-3.5 md:ms-14">
           <button
@@ -682,7 +685,7 @@ function InterviewPlans() {
               </p>
               <p className="mt-5 text-sm font-semibold leading-6 text-ink">{plan.credits}</p>
               <p className="mt-2 min-h-20 text-sm leading-6 text-ink-muted">{plan.description}</p>
-              <Button variant="secondary" className={OPTION_ACTION_CLASS} onClick={() => navigate('/v3/auth/choose-plan')}>
+              <Button variant="secondary" className={OPTION_ACTION_CLASS} onClick={() => navigate(`/v3/auth/create-account?plan=${plan.id}`)}>
                 Get started
               </Button>
               <FeatureList items={plan.features} />
