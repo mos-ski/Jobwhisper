@@ -20,6 +20,9 @@
   --color-info-surface: var(--lf-info-surface);
   --color-accent-secondary: var(--lf-accent-secondary);
   --color-accent-tertiary: var(--lf-accent-tertiary);
+  --color-feature-announcement: var(--lf-feature-announcement);
+  --color-feature-announcement-label: var(--lf-feature-announcement-label);
+  --color-on-feature-announcement: var(--lf-on-feature-announcement);
   --color-paper: var(--lf-paper);
   --color-paper-ink: var(--lf-paper-ink);
   --color-paper-muted: var(--lf-paper-muted);
@@ -59,6 +62,7 @@
   --shadow-popover: var(--lf-shadow-popover);
   --shadow-lg: var(--lf-shadow-lg);
   --shadow-xl: var(--lf-shadow-xl);
+  --shadow-announcement: var(--lf-shadow-announcement);
   --color-landing-bg: var(--lf-landing-bg);
   --color-landing-nav: var(--lf-landing-nav);
   --color-landing-btn: var(--lf-landing-btn);
@@ -122,6 +126,9 @@
     --lf-info-surface: #f0f5ff;
     --lf-accent-secondary: #7c3aed;
     --lf-accent-tertiary: #db2777;
+    --lf-feature-announcement: #ff7680;
+    --lf-feature-announcement-label: #0f1729;
+    --lf-on-feature-announcement: #ffffff;
     --lf-paper: #fefefe;
     --lf-paper-ink: #18181b;
     --lf-paper-muted: #52525b;
@@ -161,6 +168,7 @@
     --lf-shadow-popover: 0 4px 6.3px rgba(0, 0, 0, 0.15);
     --lf-shadow-lg: 0 8px 16px rgba(16, 24, 40, 0.08);
     --lf-shadow-xl: 0 12px 32px rgba(16, 24, 40, 0.12);
+    --lf-shadow-announcement: 0 4px 36px -2px rgba(0, 0, 0, 0.25);
     --lf-z-shell: 10;
     --lf-z-dropdown: 20;
     --lf-z-sticky: 30;
@@ -222,6 +230,9 @@
     --lf-info-surface: #101d37;
     --lf-accent-secondary: #a78bfa;
     --lf-accent-tertiary: #f472b6;
+    --lf-feature-announcement: #ff7680;
+    --lf-feature-announcement-label: #0f1729;
+    --lf-on-feature-announcement: #ffffff;
     --lf-paper: #fefefe;
     --lf-paper-ink: #18181b;
     --lf-paper-muted: #52525b;
@@ -261,6 +272,7 @@
     --lf-shadow-popover: 0 4px 6.3px rgba(0, 0, 0, 0.42);
     --lf-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.36);
     --lf-shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.48);
+    --lf-shadow-announcement: 0 4px 36px -2px rgba(0, 0, 0, 0.25);
     --lf-z-shell: 10;
     --lf-z-dropdown: 20;
     --lf-z-sticky: 30;
@@ -323,6 +335,9 @@
       --lf-info-surface: #101d37;
       --lf-accent-secondary: #a78bfa;
       --lf-accent-tertiary: #f472b6;
+      --lf-feature-announcement: #ff7680;
+      --lf-feature-announcement-label: #0f1729;
+      --lf-on-feature-announcement: #ffffff;
       --lf-paper: #fefefe;
       --lf-paper-ink: #18181b;
       --lf-paper-muted: #52525b;
@@ -362,6 +377,7 @@
       --lf-shadow-popover: 0 4px 6.3px rgba(0, 0, 0, 0.42);
       --lf-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.36);
       --lf-shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.48);
+      --lf-shadow-announcement: 0 4px 36px -2px rgba(0, 0, 0, 0.25);
       --lf-z-shell: 10;
       --lf-z-dropdown: 20;
       --lf-z-sticky: 30;

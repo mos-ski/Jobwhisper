@@ -35,6 +35,9 @@ const config: Config = {
         'on-accent': 'var(--lf-on-accent)',
         'accent-secondary': 'var(--lf-accent-secondary)',
         'accent-tertiary': 'var(--lf-accent-tertiary)',
+        'feature-announcement': 'var(--lf-feature-announcement)',
+        'feature-announcement-label': 'var(--lf-feature-announcement-label)',
+        'on-feature-announcement': 'var(--lf-on-feature-announcement)',
         paper: 'var(--lf-paper)',
         'paper-ink': 'var(--lf-paper-ink)',
         'paper-muted': 'var(--lf-paper-muted)',
@@ -101,6 +104,7 @@ const config: Config = {
         popover: 'var(--lf-shadow-popover)',
         lg: 'var(--lf-shadow-lg)',
         xl: 'var(--lf-shadow-xl)',
+        announcement: 'var(--lf-shadow-announcement)',
       },
       zIndex: {
         shell: 'var(--lf-z-shell)',
