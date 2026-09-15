@@ -109,8 +109,8 @@ const DOWNLOAD_VERSIONS: Record<string, string> = {
   'windows': 'Windows 10+',
   'linux': 'x64',
   'extension': '',
-  'ios': '',
-  'android': '',
+  'ios': 'Coming soon',
+  'android': 'Coming soon',
 }
 
 const FEATURE_CARD_STYLES = [
