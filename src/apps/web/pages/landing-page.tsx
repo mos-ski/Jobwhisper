@@ -328,7 +328,7 @@ function LandingHero() {
             </MenuContent>
           </Menu>
           <button
-            onClick={() => navigate('/pricing')}
+            onClick={() => navigate('/v3/auth/create-account')}
             className="flex items-center gap-2 bg-white rounded-[10px] h-12 px-8 text-landing-btn-text text-lg font-semibold whitespace-nowrap hover:bg-white/90 transition-colors"
           >
             Get Started
