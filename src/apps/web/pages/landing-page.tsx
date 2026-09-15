@@ -4,7 +4,6 @@ import { Play, ChevronDown, Check, Bot, FileText, Code2, Headphones, Wallet, Lay
 import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger, JobwhisperIcon, Menu, MenuTrigger, MenuContent, MenuItem } from '@/ui'
 import { downloadItems } from '@/mocks/account'
 import { useInView } from '@/hooks/useInView'
-import { DemoModal } from './demo-modal'
 
 const MOBILE_QUERY = '(max-width: 639px)'
 
@@ -339,19 +338,20 @@ function LandingHero() {
   )
 }
 
-function LandingDemo({ onOpenDemo }: { readonly onOpenDemo: () => void }) {
+function LandingDemo() {
   const isMobile = useIsMobileViewport()
+  const navigate = useNavigate()
 
   return (
     <section
-      onClick={isMobile ? undefined : onOpenDemo}
+      onClick={isMobile ? undefined : () => navigate('/v3/auth/create-account')}
       onKeyDown={
         isMobile
           ? undefined
           : (event) => {
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault()
-                onOpenDemo()
+                navigate('/v3/auth/create-account')
               }
             }
       }
@@ -373,10 +373,10 @@ function LandingDemo({ onOpenDemo }: { readonly onOpenDemo: () => void }) {
           <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20" />
           <div className="absolute bottom-0 left-0 right-0 h-[540px] bg-gradient-to-b from-transparent to-landing-bg" />
           <div className="absolute bottom-[70px] left-0 right-0 flex flex-col items-center">
-            <span className="flex items-center gap-2 rounded-full bg-white h-10 px-4 border border-transparent transition-colors group-hover:bg-white/90">
-              <Play size={14} fill="black" className="text-black" />
-              <span className="text-black text-sm font-normal leading-5 tracking-[-0.13px]">Start demo</span>
-            </span>
+              <span className="flex items-center gap-2 rounded-full bg-white h-10 px-4 border border-transparent transition-colors group-hover:bg-white/90">
+                <Play size={14} fill="black" className="text-black" />
+                <span className="text-black text-sm font-normal leading-5 tracking-[-0.13px]">Get Started</span>
+              </span>
           </div>
         </>
       )}
@@ -562,18 +562,15 @@ function LandingFooter() {
 }
 
 export function LandingPage() {
-  const [demoOpen, setDemoOpen] = useState(false)
-
   return (
     <div className="min-h-screen bg-landing-bg font-rethink">
-      {demoOpen ? null : <LandingNav />}
+      <LandingNav />
       <LandingHero />
-      <LandingDemo onOpenDemo={() => setDemoOpen(true)} />
+      <LandingDemo />
       <LandingTimeline />
       <LandingFeatures />
       <LandingFAQ />
       <LandingFooter />
-      <DemoModal open={demoOpen} onClose={() => setDemoOpen(false)} />
     </div>
   )
 }
