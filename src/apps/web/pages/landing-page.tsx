@@ -361,7 +361,7 @@ function LandingDemo() {
       className={`group relative mt-16 sm:mt-24 lg:mt-[160px] mx-4 sm:mx-8 lg:mx-[113px] aspect-[1728/1080] rounded-xl overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${isMobile ? '' : 'cursor-pointer'}`}
     >
       <video
-        src="/MacBook-Pro-14-25.mp4"
+        src="/landing-demo.mp4"
         autoPlay
         muted
         loop
