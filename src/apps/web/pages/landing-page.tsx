@@ -1,7 +1,8 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Play, ChevronDown, Check, Bot, FileText, Code2, Headphones, Wallet, LayoutGrid } from 'lucide-react'
-import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger, JobwhisperIcon } from '@/ui'
+import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger, JobwhisperIcon, Menu, MenuTrigger, MenuContent, MenuItem } from '@/ui'
+import { downloadItems } from '@/mocks/account'
 import { useInView } from '@/hooks/useInView'
 import { DemoModal } from './demo-modal'
 
@@ -91,6 +92,26 @@ const FEATURES = [
     href: '#',
   },
 ]
+
+const DOWNLOAD_LABELS: Record<string, string> = {
+  'mac-apple-silicon': 'Apple Silicon',
+  'mac-intel': 'Apple Intel',
+  'windows': 'Windows',
+  'linux': 'Linux',
+  'extension': 'Chrome Extension',
+  'ios': 'iOS',
+  'android': 'Android',
+}
+
+const DOWNLOAD_VERSIONS: Record<string, string> = {
+  'mac-apple-silicon': 'M-series',
+  'mac-intel': 'macOS 13+',
+  'windows': 'Windows 10+',
+  'linux': 'x64',
+  'extension': '',
+  'ios': '',
+  'android': '',
+}
 
 const FEATURE_CARD_STYLES = [
   { bg: 'bg-white', text: 'text-black' },
@@ -208,10 +229,42 @@ function LandingNav() {
           >
             Log in
           </button>
-          <button className="flex items-center gap-1.5 bg-landing-bg rounded-[16px] px-4 h-[42px] overflow-hidden">
-            <img src="/landing-logo-icon.svg" alt="" className="h-[18px] w-4 object-contain" />
-            <span className="text-white text-base font-medium tracking-[-0.3px] leading-6">Download</span>
-          </button>
+          <Menu>
+            <MenuTrigger
+              render={
+                <button className="flex items-center gap-1.5 bg-landing-bg rounded-[16px] px-4 h-[42px] overflow-hidden hover:bg-white/10 transition-colors cursor-pointer" />
+              }
+            >
+              <img src="/landing-logo-icon.svg" alt="" className="h-[18px] w-4 object-contain" />
+              <span className="text-white text-base font-medium tracking-[-0.3px] leading-6">Download</span>
+              <ChevronDown size={10} className="mt-px text-white/60" />
+            </MenuTrigger>
+            <MenuContent align="end" sideOffset={8} className="bg-[#1a1a2e] border border-white/10 rounded-xl shadow-2xl min-w-[220px] p-1.5">
+              {downloadItems.map((item) => (
+                  <MenuItem
+                    key={item.id}
+                    render={
+                      <a
+                        href={item.href}
+                        target={item.href.startsWith('http') ? '_blank' : undefined}
+                        rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors text-sm no-underline"
+                      />
+                    }
+                  >
+                    {(item.id === 'mac-apple-silicon' || item.id === 'mac-intel' || item.id === 'ios') ? (
+                      <img src="/landing-apple.svg" alt="" className="h-4 w-4 shrink-0" />
+                    ) : (
+                      <img src={item.imageSrc} alt="" className="h-4 w-4 shrink-0" />
+                    )}
+                    <span>{DOWNLOAD_LABELS[item.id] ?? item.support}</span>
+                    {DOWNLOAD_VERSIONS[item.id] ? (
+                      <span className="text-white/40 text-xs ml-auto">{DOWNLOAD_VERSIONS[item.id]}</span>
+                    ) : null}
+                  </MenuItem>
+                ))}
+            </MenuContent>
+          </Menu>
         </div>
       </div>
     </nav>
@@ -236,18 +289,49 @@ function LandingHero() {
           Rehearse against a role-aware AI, then bring a live copilot into the actual conversation.
         </p>
         <div className="flex flex-wrap items-center gap-3">
-          <button className="flex items-center gap-2 bg-landing-btn rounded-[10px] h-12 px-8 text-white text-lg font-semibold whitespace-nowrap">
-            Download Now
-            <span className="flex items-center gap-1.5">
-              <img src="/landing-apple.svg" alt="Apple" className="h-4 w-4" />
-              <img src="/landing-windows.svg" alt="Windows" className="h-4 w-4" />
-            </span>
-          </button>
+          <Menu>
+            <MenuTrigger
+              render={
+                <button className="flex items-center gap-2 bg-landing-btn rounded-[10px] h-12 px-8 text-white text-lg font-semibold whitespace-nowrap hover:bg-landing-btn/90 transition-colors cursor-pointer" />
+              }
+            >
+              Download Now
+              <span className="flex items-center gap-1.5">
+                <img src="/landing-apple.svg" alt="Apple" className="h-4 w-4" />
+                <img src="/landing-windows.svg" alt="Windows" className="h-4 w-4" />
+              </span>
+            </MenuTrigger>
+            <MenuContent align="start" sideOffset={8} className="bg-[#1a1a2e] border border-white/10 rounded-xl shadow-2xl min-w-[220px] p-1.5">
+              {downloadItems.map((item) => (
+                  <MenuItem
+                    key={item.id}
+                    render={
+                      <a
+                        href={item.href}
+                        target={item.href.startsWith('http') ? '_blank' : undefined}
+                        rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors text-sm no-underline"
+                      />
+                    }
+                  >
+                    {(item.id === 'mac-apple-silicon' || item.id === 'mac-intel' || item.id === 'ios') ? (
+                      <img src="/landing-apple.svg" alt="" className="h-4 w-4 shrink-0" />
+                    ) : (
+                      <img src={item.imageSrc} alt="" className="h-4 w-4 shrink-0" />
+                    )}
+                    <span>{DOWNLOAD_LABELS[item.id] ?? item.support}</span>
+                    {DOWNLOAD_VERSIONS[item.id] ? (
+                      <span className="text-white/40 text-xs ml-auto">{DOWNLOAD_VERSIONS[item.id]}</span>
+                    ) : null}
+                  </MenuItem>
+                ))}
+            </MenuContent>
+          </Menu>
           <button
             onClick={() => navigate('/pricing')}
             className="flex items-center gap-2 bg-white rounded-[10px] h-12 px-8 text-landing-btn-text text-lg font-semibold whitespace-nowrap hover:bg-white/90 transition-colors"
           >
-            See Pricing
+            Get Started
           </button>
         </div>
       </div>
