@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Play, ChevronDown, Check, Bot, FileText, Code2, Headphones, Wallet, LayoutGrid } from 'lucide-react'
+import { ChevronDown, Check, Bot, FileText, Code2, Headphones, Wallet, LayoutGrid } from 'lucide-react'
 import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger, JobwhisperIcon, Menu, MenuTrigger, MenuContent, MenuItem } from '@/ui'
 import { downloadItems } from '@/mocks/account'
 import { useInView } from '@/hooks/useInView'
@@ -344,14 +344,14 @@ function LandingDemo() {
 
   return (
     <section
-      onClick={isMobile ? undefined : () => navigate('/v3/auth/create-account')}
+      onClick={isMobile ? undefined : () => navigate('/pricing')}
       onKeyDown={
         isMobile
           ? undefined
           : (event) => {
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault()
-                navigate('/v3/auth/create-account')
+                navigate('/pricing')
               }
             }
       }
@@ -374,8 +374,8 @@ function LandingDemo() {
           <div className="absolute bottom-0 left-0 right-0 h-[540px] bg-gradient-to-b from-transparent to-landing-bg" />
           <div className="absolute bottom-[70px] left-0 right-0 flex flex-col items-center">
               <span className="flex items-center gap-2 rounded-full bg-white h-10 px-4 border border-transparent transition-colors group-hover:bg-white/90">
-                <Play size={14} fill="black" className="text-black" />
-                <span className="text-black text-sm font-normal leading-5 tracking-[-0.13px]">Get Started</span>
+                <span className="text-black text-sm font-normal leading-5 tracking-[-0.13px]">See Pricing</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
               </span>
           </div>
         </>
