@@ -248,7 +248,7 @@ function LandingNav() {
                         href={item.href}
                         target={item.href.startsWith('http') ? '_blank' : undefined}
                         rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors text-sm no-underline"
+                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/80 data-[highlighted]:bg-white/5 data-[highlighted]:text-white transition-colors text-sm no-underline"
                       />
                     }
                   >
@@ -310,7 +310,7 @@ function LandingHero() {
                         href={item.href}
                         target={item.href.startsWith('http') ? '_blank' : undefined}
                         rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors text-sm no-underline"
+                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/80 data-[highlighted]:bg-white/5 data-[highlighted]:text-white transition-colors text-sm no-underline"
                       />
                     }
                   >
