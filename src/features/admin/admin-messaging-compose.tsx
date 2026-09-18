@@ -22,6 +22,7 @@ type ComposeForm = {
   channel: BroadcastChannel
   sendTiming: SendTiming
   scheduledDate: string
+  sender: string
   _openChannel?: boolean
 }
 
@@ -38,6 +39,13 @@ const audienceOptions: readonly { readonly value: AudienceSegment; readonly labe
   { value: 'used-not-subscribed', label: 'Used Credit, Not Subscribed', description: 'Tried a feature but hasn\'t upgraded.' },
   { value: 'renewed-30d', label: 'Renewed in Last 30 Days', description: 'Active subscribers who recently renewed.' },
   { value: 'custom', label: 'Custom Contacts', description: 'Search users or upload a CSV.' },
+]
+
+const senderOptions: readonly { readonly id: string; readonly name: string; readonly initials: string; readonly color: string }[] = [
+  { id: 'priya', name: 'Priya Raghunathan', initials: 'PR', color: 'bg-accent text-on-accent' },
+  { id: 'support', name: 'Jobwhisper Support', initials: 'JS', color: 'bg-positive text-on-accent' },
+  { id: 'system', name: 'Jobwhisper Team', initials: 'JW', color: 'bg-ink text-surface' },
+  { id: 'billing', name: 'Billing Team', initials: 'BT', color: 'bg-warning text-ink' },
 ]
 
 /* ── Mini calendar ────────────────────────────────────────────────────────── */
@@ -118,6 +126,8 @@ function MiniCalendar({ selected, onSelect }: { readonly selected: string; reado
 
 function StepContent({ form, setForm, touched }: { readonly form: ComposeForm; readonly setForm: React.Dispatch<React.SetStateAction<ComposeForm>>; readonly touched: boolean }) {
   const titleError = touched && !form.title.trim() ? 'Title is required.' : undefined
+  const [openSender, setOpenSender] = useState(false)
+  const selectedSender = senderOptions.find((s) => s.id === form.sender) ?? senderOptions[0]
 
   return (
     <div className="grid gap-4">
@@ -125,6 +135,35 @@ function StepContent({ form, setForm, touched }: { readonly form: ComposeForm; r
       <div className="grid gap-2">
         <label className="text-sm font-medium text-ink">Body</label>
         <RichTextEditor value={form.body} onChange={(html) => setForm((prev) => ({ ...prev, body: html }))} placeholder="Write your broadcast message..." />
+      </div>
+      <div className="grid gap-2">
+        <label className="text-sm font-medium text-ink">Sender (select avatar)</label>
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setOpenSender(!openSender)}
+            className="flex min-h-10 w-full items-center gap-3 rounded-lg border border-input bg-surface px-3 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          >
+            <span className={cn('grid size-8 shrink-0 place-items-center rounded-full text-xs font-bold', selectedSender.color)}>{selectedSender.initials}</span>
+            <span className="flex-1 text-left">{selectedSender.name}</span>
+            <svg className="size-4 text-ink-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
+          {openSender && (
+            <div className="absolute z-dropdown mt-1 w-full rounded-lg border border-border bg-surface shadow-panel">
+              {senderOptions.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => { setForm((prev) => ({ ...prev, sender: s.id })); setOpenSender(false) }}
+                  className={cn('flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm hover:bg-surface-subtle', form.sender === s.id && 'bg-accent-subtle')}
+                >
+                  <span className={cn('grid size-8 shrink-0 place-items-center rounded-full text-xs font-bold', s.color)}>{s.initials}</span>
+                  <span>{s.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -337,12 +376,13 @@ export function AdminMessagingCompose({ open, onOpenChange, onSave }: AdminMessa
     channel: 'both',
     sendTiming: 'now',
     scheduledDate: '',
+    sender: 'priya',
   })
 
   function reset() {
     setStep(1)
     setTouched(false)
-    setForm({ title: '', body: '', audience: 'all', channel: 'both', sendTiming: 'now', scheduledDate: '' })
+    setForm({ title: '', body: '', audience: 'all', channel: 'both', sendTiming: 'now', scheduledDate: '', sender: 'priya' })
   }
 
   function handleClose(v: boolean) {
