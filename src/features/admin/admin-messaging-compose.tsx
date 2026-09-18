@@ -7,8 +7,6 @@ import {
   Button,
   Checkbox,
   DialogClose,
-  RadioGroup,
-  RadioGroupItem,
   TextField,
   cn,
 } from '@/ui'
@@ -133,26 +131,42 @@ function StepContent({ form, setForm, touched }: { readonly form: ComposeForm; r
 }
 
 function StepAudience({ form, setForm }: { readonly form: ComposeForm; readonly setForm: React.Dispatch<React.SetStateAction<ComposeForm>> }) {
+  const [openDropdown, setOpenDropdown] = useState(false)
+
   return (
-    <RadioGroup value={form.audience} onValueChange={(v) => setForm((prev) => ({ ...prev, audience: v as AudienceSegment }))} label="Select audience">
-      <div className="grid gap-3">
-        {audienceOptions.map((opt) => (
-          <label
-            key={opt.value}
-            className={cn(
-              'flex cursor-pointer items-start gap-3 rounded-lg border-2 p-4 transition-colors',
-              form.audience === opt.value ? 'border-accent bg-accent-subtle' : 'border-border hover:border-accent/40 hover:bg-surface-subtle',
-            )}
-          >
-            <RadioGroupItem value={opt.value} itemLabel="" className="mt-0.5" />
-            <div>
-              <span className="text-sm font-semibold text-ink">{opt.label}</span>
-              <p className="mt-0.5 text-xs text-ink-muted">{opt.description}</p>
-            </div>
-          </label>
-        ))}
+    <div className="grid gap-4">
+      <p className="text-sm text-ink-muted">Select target audience</p>
+
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setOpenDropdown(!openDropdown)}
+          className="flex min-h-10 w-full items-center justify-between rounded-lg border border-input bg-surface px-3 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+        >
+          <span>{audienceSegmentLabels[form.audience]}</span>
+          <svg className="size-4 text-ink-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 9 6 6 6-6" /></svg>
+        </button>
+
+        {openDropdown && (
+          <div className="absolute z-dropdown mt-1 w-full rounded-lg border border-border bg-surface shadow-panel">
+            {audienceOptions.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => { setForm((prev) => ({ ...prev, audience: opt.value })); setOpenDropdown(false) }}
+                className={cn(
+                  'flex w-full flex-col items-start px-3 py-2.5 text-left hover:bg-surface-subtle',
+                  form.audience === opt.value && 'bg-accent-subtle',
+                )}
+              >
+                <span className="text-sm font-medium text-ink">{opt.label}</span>
+                <span className="mt-0.5 text-xs text-ink-muted">{opt.description}</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
-    </RadioGroup>
+    </div>
   )
 }
 
