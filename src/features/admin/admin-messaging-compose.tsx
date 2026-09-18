@@ -5,7 +5,6 @@ import type { AdminBroadcast, AudienceSegment, BroadcastChannel } from '@/contra
 import { audienceSegmentLabels } from '@/contracts/admin-messaging.draft'
 import {
   Button,
-  Checkbox,
   DialogClose,
   TextField,
   cn,
@@ -23,6 +22,7 @@ type ComposeForm = {
   channel: BroadcastChannel
   sendTiming: SendTiming
   scheduledDate: string
+  _openChannel?: boolean
 }
 
 type AdminMessagingComposeProps = {
@@ -226,14 +226,29 @@ function StepScheduling({ form, setForm }: { readonly form: ComposeForm; readonl
 
       {/* Channel selection */}
       <div className="mt-2 border-t border-border pt-4">
-        <p className="mb-3 text-sm font-medium text-ink">Delivery channel</p>
-        <div className="grid gap-3">
-          {(['email', 'in-app', 'both'] as const).map((ch) => (
-            <label key={ch} className={cn('flex cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-colors', form.channel === ch ? 'border-accent bg-accent-subtle' : 'border-border hover:border-accent/40')}>
-              <Checkbox checked={form.channel === ch} onCheckedChange={() => setForm((prev) => ({ ...prev, channel: ch }))} label="" />
-              <span className="text-sm font-medium text-ink capitalize">{ch === 'both' ? 'Email + In-App' : ch === 'in-app' ? 'In-App Notification' : 'Email'}</span>
-            </label>
-          ))}
+        <p className="mb-2 text-sm font-medium text-ink">Delivery channel</p>
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setForm((prev) => ({ ...prev, _openChannel: !prev._openChannel }))}
+            className="flex min-h-10 w-full items-center justify-between rounded-lg border border-input bg-surface px-3 text-sm text-ink capitalize focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          >
+            <span>{form.channel === 'both' ? 'Email + In-App' : form.channel === 'in-app' ? 'In-App Notification' : 'Email'}</span>
+            <svg className="size-4 text-ink-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
+          {form._openChannel && (
+            <div className="absolute z-dropdown mt-1 w-full rounded-lg border border-border bg-surface shadow-panel">
+              {([
+                { value: 'email' as const, label: 'Email' },
+                { value: 'in-app' as const, label: 'In-App Notification' },
+                { value: 'both' as const, label: 'Email + In-App' },
+              ]).map((ch) => (
+                <button key={ch.value} type="button" onClick={() => { setForm((prev) => ({ ...prev, channel: ch.value, _openChannel: false })); }} className={cn('flex w-full items-center px-3 py-2.5 text-sm text-left hover:bg-surface-subtle', form.channel === ch.value && 'bg-accent-subtle')}>
+                  {ch.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
