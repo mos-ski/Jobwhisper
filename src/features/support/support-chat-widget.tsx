@@ -52,7 +52,10 @@ function SupportFab({ onClick }: { readonly onClick: () => void }) {
       type="button"
       onClick={onClick}
       aria-label="Open support menu"
-      className="group fixed bottom-4 end-4 z-sticky flex items-center gap-2.5 rounded-full bg-blue-800 px-4 py-3 text-sm font-semibold text-white shadow-xl transition-all duration-200 hover:bg-blue-900 hover:shadow-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+      className="group fixed bottom-4 end-4 z-sticky flex items-center gap-2.5 rounded-full px-4 py-3 text-sm font-semibold text-white shadow-xl transition-all duration-200 hover:shadow-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+      style={{ backgroundColor: '#1E1E1F' }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#2A2A2B' }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#1E1E1F' }}
     >
       <Headphones aria-hidden="true" className="size-5" />
       <span className="hidden sm:inline">Support</span>
