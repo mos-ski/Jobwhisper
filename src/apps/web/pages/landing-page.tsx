@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, Mic, Play, Plus, Search, Send, SlidersHorizontal, Video } from 'lucide-react'
+import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, Play, Plus } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger, Menu, MenuContent, MenuItem, MenuTrigger } from '@/ui'
 import { downloadItems } from '@/mocks/account'
@@ -57,10 +57,9 @@ function MomentCards() {
 }
 
 function JourneyPreview({ active }: { readonly active: number }) {
-  if (active === 1) return <div className="journey-product journey-jobs"><div className="journey-toolbar"><span><Search />Search by title or company</span><button><SlidersHorizontal />Filter</button></div><aside><strong>Apply with our Auto Apply Extension</strong><p>Apply directly from LinkedIn, Glassdoor, Indeed, and Workable.</p><a href="/v3/downloads">Download ↗</a></aside><div className="journey-job-list">{[['FI','Immigration Program Manager','Figma','65% MATCH'],['CA','Senior Product Manager','Canva','91% MATCH'],['NO','Product Operations Lead','Notion','84% MATCH'],['LI','Program Manager','Linear','78% MATCH']].map(([mark,role,company,match]) => <article key={role}><b>{mark}</b><span><strong>{role}</strong><small>{company} · Remote</small></span><em>{match}</em></article>)}</div></div>
-  if (active === 2) return <div className="journey-product journey-live"><header><strong>Senior Product Manager · GitLab</strong><span>08:21</span><button>End Session</button></header><div className="journey-status"><span>▮▮▮▮ Connected</span><em>Listening</em></div><h3>Live Response <i /></h3><div className="journey-transcript"><article><small>Interviewer</small><p>Let’s simulate pressure. Here’s the first one.</p></article><article><small>Interviewer</small><p>Describe a program you’ve had that was failing.</p></article><article className="answer"><small>Jobwhisper</small><p>I inherited a rollout that was two quarters behind. In the first 72 hours, I rebuilt the risk map, aligned owners, and reset the launch plan around measurable milestones.</p></article></div><footer><Mic /><span>Ask Jobwhisper anything…</span><Send /></footer></div>
-  if (active === 3) return <div className="journey-product journey-simulator"><header><strong>Live Simulator</strong><i /></header><div className="journey-people"><figure><div className="journey-person journey-interviewer"><Video /></div><figcaption><strong>Zahra Christensen</strong><span>Backend Developer</span></figcaption></figure><figure><div className="journey-person journey-candidate"><Mic /></div><figcaption><strong>You</strong><span>Candidate</span></figcaption></figure></div><div className="journey-question"><small>Interview question</small><p>Tell me about a time you changed direction after receiving difficult feedback.</p></div></div>
-  return <div className="journey-product journey-resume"><div className="journey-chat-user">Put the bullets on my “Lightforth Technologies” role into the present tense — for example “Developed” becomes “Develop”.</div><div className="journey-chat-ai">I propose updating the bullet points under the “Lightforth Technologies” role to present tense as requested. This change reflects your current responsibilities more accurately since the role is ongoing.</div><div className="journey-chat-actions"><button>Reject All</button><button>Accept All</button></div><div className="journey-chat-input">Message Jobwhisper AI… <Send /></div></div>
+  const images = ['/figma-landing/journey-resume.png', '/figma-landing/journey-jobs.png', '/figma-landing/journey-copilot.png', '/figma-landing/journey-simulator.png']
+  const labels = ['AI Resume Builder preview', 'AI Job Application preview', 'Interview Copilot preview', 'Interview Prep preview']
+  return <div className="journey-product"><img src={images[active]} alt={labels[active]} style={{width:'100%',height:'100%',objectFit:'contain'}} /></div>
 }
 
 function Journey() {
@@ -77,9 +76,15 @@ function Testimonial() {
 }
 
 const COPILOT_TABS = ['Interviews', 'Meetings', 'Coding', 'Practice'] as const
+const COPILOT_IMAGES: Record<(typeof COPILOT_TABS)[number], string> = {
+  Interviews: '/figma-landing/copilot-interviews.png',
+  Meetings: '/figma-landing/copilot-meetings.png',
+  Coding: '/figma-landing/copilot-coding.png',
+  Practice: '/figma-landing/copilot-practice.png',
+}
 function CopilotShowcase() {
   const [activeTab, setActiveTab] = useState<(typeof COPILOT_TABS)[number]>('Interviews')
-  return <section className="landing-copilot"><div className="landing-section-intro"><h2>Your copilot.<br />Always within reach.</h2><p>Jobwhisper gives you real-time AI support while the conversation is happening, so you can focus on the person in front of you instead of scrambling for what to say next.</p></div><div className="landing-copilot-tabs" role="tablist" aria-label="Copilot use cases">{COPILOT_TABS.map((tab) => <button key={tab} role="tab" aria-selected={activeTab === tab} onClick={() => setActiveTab(tab)}>{tab}</button>)}</div><div className="landing-copilot-image"><img src="/figma-landing/copilot-window.png" alt={`Jobwhisper ${activeTab.toLowerCase()} copilot desktop preview`} /></div></section>
+  return <section className="landing-copilot"><div className="landing-section-intro"><h2>Your copilot.<br />Always within reach.</h2><p>Jobwhisper gives you real-time AI support while the conversation is happening, so you can focus on the person in front of you instead of scrambling for what to say next.</p></div><div className="landing-copilot-tabs" role="tablist" aria-label="Copilot use cases">{COPILOT_TABS.map((tab) => <button key={tab} role="tab" aria-selected={activeTab === tab} onClick={() => setActiveTab(tab)}>{tab}</button>)}</div><div className="landing-copilot-image"><img src={COPILOT_IMAGES[activeTab]} alt={`Jobwhisper ${activeTab.toLowerCase()} copilot desktop preview`} /></div></section>
 }
 
 function PlatformCards() {
