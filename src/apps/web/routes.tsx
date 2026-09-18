@@ -8,6 +8,7 @@ import { AdminConfigurationPage } from './pages/admin-configuration-page'
 import { AdminContentPage } from './pages/admin-content-page'
 import { AdminMessagingPage } from './pages/admin-messaging-page'
 import { AdminDashboardPage } from './pages/admin-dashboard-page'
+import { AdminKBPage } from './pages/admin-kb-page'
 import { AdminKpisPage } from './pages/admin-kpis-page'
 import { AdminProductDetailPage } from './pages/admin-product-detail-page'
 import { AdminProductsPage } from './pages/admin-products-page'
@@ -142,6 +143,10 @@ export function WebRoutes() {
 
   if (routePath.startsWith('/admin/support/')) {
     return <AdminSupportTicketPage ticketId={routePath.replace('/admin/support/', '')} />
+  }
+
+  if (routePath === '/admin/support/kb') {
+    return <AdminKBPage />
   }
 
   if (routePath === '/auth/sign-in') {

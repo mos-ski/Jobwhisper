@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { useLocation } from 'react-router-dom'
 
+import { SupportChatShell } from '@/features/support/support-chat-shell'
 import { SideMenu, Workspace, type SideMenuItem, type WorkspaceProps } from '@/ui'
 
 import {
@@ -71,6 +72,7 @@ export function AppShell({ children, className, ...props }: AppShellProps) {
         <AppSideNav />
         <div className="min-w-0 flex-1">{children}</div>
       </div>
+      <SupportChatShell />
     </Workspace>
   )
 }

@@ -1,3 +1,4 @@
+import { SupportChatShell } from '@/features/support/support-chat-shell'
 import { ArrowUpRight, ChevronRight, CircleHelp, ExternalLink, Lock, LogOut, Mail, Menu, Monitor, PanelLeftClose, PanelLeftOpen, Play, Settings, User, X } from 'lucide-react'
 import { FaApple } from 'react-icons/fa'
 import { SiGoogleplay } from 'react-icons/si'
@@ -657,6 +658,7 @@ export function DashboardView({
 
       <DashboardUpgradeDialog action={upgradeAction} onOpenChange={(open) => { if (!open) setUpgradeAction(null) }} />
       <HelpModal open={helpModalOpen} onOpenChange={setHelpModalOpen} />
+      <SupportChatShell />
     </main>
   )
 }

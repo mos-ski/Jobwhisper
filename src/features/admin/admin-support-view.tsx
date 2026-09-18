@@ -311,9 +311,17 @@ export function AdminSupportView({
   return (
     <AdminShell user={user} navItems={navItems} activeModule={'support' as AdminModuleId} notifications={notifications} searchResults={searchResults}>
       <div className="grid gap-6 p-4 sm:p-6">
-        <div>
-          <h1 className="font-gowun text-3xl font-bold leading-tight text-ink">Support</h1>
-          <p className="mt-1 text-sm text-ink-muted">Customer ticket queue. {summary.totalOpen} open tickets, {summary.resolvedToday} resolved today.</p>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h1 className="font-gowun text-3xl font-bold leading-tight text-ink">Support</h1>
+            <p className="mt-1 text-sm text-ink-muted">Customer ticket queue. {summary.totalOpen} open tickets, {summary.resolvedToday} resolved today.</p>
+          </div>
+          <a
+            href="/admin/support/kb"
+            className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-border bg-surface px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          >
+            Knowledge Base
+          </a>
         </div>
 
         {isLoading ? (
