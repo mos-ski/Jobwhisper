@@ -205,6 +205,21 @@
     --lf-landing-footer-frame: #262320;
     --lf-landing-btn-text: #2052eb;
     --lf-landing-ink: #262320;
+    --lf-landing-paper: #ffffff;
+    --lf-landing-surface: #f5f5f7;
+    --lf-landing-muted: #6e6e73;
+    --lf-landing-orange: #ff571f;
+    --lf-landing-green: #00a984;
+    --lf-landing-violet: #7b4de8;
+    --lf-landing-sky: #74d4ff;
+    --lf-landing-dark-chip: rgba(42, 42, 45, 0.82);
+    --lf-landing-transparent: rgba(0, 82, 255, 0);
+    --lf-landing-nav-text: rgba(255, 255, 255, 0.72);
+    --lf-landing-nav-border: rgba(255, 255, 255, 0.12);
+    --lf-landing-border: rgba(20, 20, 20, 0.14);
+    --lf-landing-control: #d2d2d7;
+    --lf-landing-footer: #000000;
+    --lf-landing-footer-text: rgba(255, 255, 250, 0.62);
   }
 
   [data-theme='dark'] {
@@ -309,6 +324,21 @@
     --lf-landing-footer-frame: #262320;
     --lf-landing-btn-text: #2052eb;
     --lf-landing-ink: #262320;
+    --lf-landing-paper: #ffffff;
+    --lf-landing-surface: #f5f5f7;
+    --lf-landing-muted: #6e6e73;
+    --lf-landing-orange: #ff571f;
+    --lf-landing-green: #00a984;
+    --lf-landing-violet: #7b4de8;
+    --lf-landing-sky: #74d4ff;
+    --lf-landing-dark-chip: rgba(42, 42, 45, 0.82);
+    --lf-landing-transparent: rgba(0, 82, 255, 0);
+    --lf-landing-nav-text: rgba(255, 255, 255, 0.72);
+    --lf-landing-nav-border: rgba(255, 255, 255, 0.12);
+    --lf-landing-border: rgba(20, 20, 20, 0.14);
+    --lf-landing-control: #d2d2d7;
+    --lf-landing-footer: #000000;
+    --lf-landing-footer-text: rgba(255, 255, 250, 0.62);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -414,6 +444,21 @@
       --lf-landing-footer-frame: #262320;
       --lf-landing-btn-text: #2052eb;
       --lf-landing-ink: #262320;
+      --lf-landing-paper: #ffffff;
+      --lf-landing-surface: #f5f5f7;
+      --lf-landing-muted: #6e6e73;
+      --lf-landing-orange: #ff571f;
+      --lf-landing-green: #00a984;
+      --lf-landing-violet: #7b4de8;
+      --lf-landing-sky: #74d4ff;
+      --lf-landing-dark-chip: rgba(42, 42, 45, 0.82);
+      --lf-landing-transparent: rgba(0, 82, 255, 0);
+      --lf-landing-nav-text: rgba(255, 255, 255, 0.72);
+      --lf-landing-nav-border: rgba(255, 255, 255, 0.12);
+      --lf-landing-border: rgba(20, 20, 20, 0.14);
+      --lf-landing-control: #d2d2d7;
+      --lf-landing-footer: #000000;
+      --lf-landing-footer-text: rgba(255, 255, 250, 0.62);
     }
   }
 }

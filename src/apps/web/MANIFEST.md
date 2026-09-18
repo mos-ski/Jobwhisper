@@ -1,6 +1,6 @@
 | Route | View file | Props type | States covered | Notes |
 | ----- | --------- | ---------- | -------------- | ----- |
-| `/` | `src/apps/web/pages/landing-page.tsx` | Local marketing content arrays | Public-site hero, interactive demo, interview-stage timeline, stacked product cards, FAQ, footer, responsive desktop/mobile | Restored from the last known-good public homepage implementation; `/vsl` remains the separate long-form sales page. |
+| `/` | `src/apps/web/pages/landing-page.tsx` | Local marketing content arrays | Figma-matched hero, product demo, journey tabs, product facts, testimonial, copilot showcase, platform cards, service choice, FAQ, closing CTA, footer, responsive desktop/mobile | Replaces the previous homepage with Figma node `1051:3701`; `/vsl` remains the separate long-form sales page. |
 | `/pricing` | `src/apps/web/pages/pricing-page.tsx` | Local pricing catalog and URL-backed tab state | Informational Interview, Job-search credits, and Done For You views; monthly/annual pricing; credit guide; FAQ; responsive desktop/mobile | All options have equal visual treatment with no recommended plan. The `tab` query parameter preserves the selected pricing model. |
 | `/privacy` | `src/apps/web/pages/legal-page.tsx` | `LegalPageProps` | Privacy policy content, responsive legal navigation, footer links | Shared legal page rendered with `kind="privacy"`. |
 | `/terms` | `src/apps/web/pages/legal-page.tsx` | `LegalPageProps` | Terms content, responsive legal navigation, footer links | Shared legal page rendered with `kind="terms"`. |

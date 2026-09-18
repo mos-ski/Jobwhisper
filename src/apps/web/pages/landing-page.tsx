@@ -1,576 +1,109 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useState } from 'react'
+import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, Mic, Play, Plus, Search, Send, SlidersHorizontal, Video } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronDown, Check, Bot, FileText, Code2, Headphones, Wallet, LayoutGrid } from 'lucide-react'
-import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger, JobwhisperIcon, Menu, MenuTrigger, MenuContent, MenuItem } from '@/ui'
+import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger, Menu, MenuContent, MenuItem, MenuTrigger } from '@/ui'
 import { downloadItems } from '@/mocks/account'
-import { useInView } from '@/hooks/useInView'
+import './landing-page.css'
 
-const MOBILE_QUERY = '(max-width: 639px)'
+const JOURNEY = [
+  ['AI Resume Builder', 'Start with a resume built for the job you want. Tell us the role you are going after. Jobwhisper helps you build or tailor your resume around it, highlighting the experience and skills that matter most.'],
+  ['AI Job Application', 'Find roles that match your experience, compare fit at a glance, and move the applications you choose into one focused workflow.'],
+  ['Interview Copilot', 'Bring real-time, resume-aware answers into the live conversation, privately and exactly when you need them.'],
+  ['Interview Prep', 'Practice realistic questions with an AI interviewer before the real conversation begins.'],
+] as const
 
-function useIsMobileViewport() {
-  const [isMobile, setIsMobile] = useState(() => window.matchMedia(MOBILE_QUERY).matches)
-
-  useEffect(() => {
-    const mql = window.matchMedia(MOBILE_QUERY)
-    const handleChange = (event: MediaQueryListEvent) => setIsMobile(event.matches)
-    mql.addEventListener('change', handleChange)
-    return () => mql.removeEventListener('change', handleChange)
-  }, [])
-
-  return isMobile
-}
-
-function RevealOnScroll({
-  children,
-  delayMs = 0,
-  className = '',
-}: {
-  readonly children: ReactNode
-  readonly delayMs?: number
-  readonly className?: string
-}) {
-  const { ref, inView } = useInView<HTMLDivElement>()
-  return (
-    <div
-      ref={ref}
-      className={`${inView ? 'animate-ease-in-bottom' : 'opacity-0'} ${className}`}
-      style={inView ? { animationDelay: `${delayMs}ms`, animationFillMode: 'backwards' } : undefined}
-    >
-      {children}
-    </div>
-  )
-}
-
-const FEATURES = [
-  {
-    Icon: Bot,
-    title: 'Auto Apply AI Agents',
-    subtitle: 'Apply to hundreds of jobs while you sleep',
-    description:
-      'Our agents browse job boards, match your profile to open roles, and submit tailored applications on your behalf, 24/7, no manual effort required.',
-    href: '/v3/auto-apply',
-  },
-  {
-    Icon: FileText,
-    title: 'AI Resume Builders',
-    subtitle: 'Tailored for every role, in seconds',
-    description:
-      'Paste a job description and get a resume instantly rewritten to match, right keywords, right achievements, right format, every time.',
-    href: '/v3/resume',
-  },
-  {
-    Icon: Code2,
-    title: 'Coding Copilot',
-    subtitle: 'Real-time help during technical screens',
-    description:
-      'Whispers hints, patterns, and solutions as the interviewer talks. Stay sharp and confident through any coding challenge, completely live.',
-    href: '#',
-  },
-  {
-    Icon: Headphones,
-    title: 'Meeting Copilots',
-    subtitle: 'Live AI support in any video call',
-    description:
-      'Get real-time talking points, answers, and context surfaced during interviews or meetings, without the other side ever knowing.',
-    href: '#',
-  },
-  {
-    Icon: Wallet,
-    title: 'Top Up credits anytime',
-    subtitle: 'Pay only for what you use',
-    description:
-      'No subscriptions or surprise charges. Buy credits to power any Jobwhisper feature and use them at your own pace, whenever you need them.',
-    href: '/v3/billing',
-  },
-  {
-    Icon: LayoutGrid,
-    title: 'Other Applications',
-    subtitle: 'Desktop, mobile, and browser',
-    description:
-      'Take Jobwhisper everywhere, available as a Chrome extension, a macOS or Windows desktop app, and a mobile app on iOS and Android.',
-    href: '#',
-  },
-]
-
-const DOWNLOAD_LABELS: Record<string, string> = {
-  'mac-apple-silicon': 'Apple Silicon',
-  'mac-intel': 'Apple Intel',
-  'windows': 'Windows',
-  'linux': 'Linux',
-  'extension': 'Chrome Extension',
-  'ios': 'iOS',
-  'android': 'Android',
-}
-
-const DOWNLOAD_VERSIONS: Record<string, string> = {
-  'mac-apple-silicon': 'M-series',
-  'mac-intel': 'macOS 13+',
-  'windows': 'Windows 10+',
-  'linux': 'x64',
-  'extension': '',
-  'ios': 'Coming soon',
-  'android': 'Coming soon',
-}
-
-const FEATURE_CARD_STYLES = [
-  { bg: 'bg-white', text: 'text-black' },
-  { bg: 'bg-[#E4ECFF]', text: 'text-black' },
-  { bg: 'bg-landing-nav', text: 'text-white' },
-]
+const PLATFORMS = [
+  ['Desktop App', 'Stealth. Completely Undetectable', 'Take Jobwhisper into interviews, coding sessions and meetings with our desktop app, including Stealth Mode for a private, distraction-free Copilot experience.', '/v3/downloads', 'Download now', '/landing-feature-autoapply.svg'],
+  ['Browser Extension', 'Turn job boards into your job-search workspace.', 'Find and apply to roles directly across supported job sites, with Jobwhisper helping automate the repetitive parts of applying.', '/v3/downloads', 'Download from store', '/landing-feature-other.svg'],
+  ['Mobile App', 'Your job search on the go.', 'Keep Jobwhisper close for job search, preparation and career support right from your phone.', '#', 'Coming soon', '/landing-feature-coding.svg'],
+  ['Done For You', 'Or let a real person handle the search.', 'Our team can find relevant roles, tailor your resume and apply for you, with a dedicated success manager supporting your search.', '/v3/done-for-you', 'Explore Done For You', '/landing-feature-meeting.svg'],
+] as const
 
 const FAQS = [
-  {
-    question: 'What is Jobwhisper?',
-    answer:
-      'Jobwhisper is an AI interview copilot. Rehearse against a role-aware AI before the interview, then bring a live copilot into the actual conversation for real-time talking points and answers.',
-  },
-  {
-    question: 'How does the live copilot work during an interview?',
-    answer:
-      'Jobwhisper listens in alongside you, over screen share or your microphone, and surfaces suggested talking points and answers on your screen as the conversation happens, without the other side ever knowing.',
-  },
-  {
-    question: 'What do I need to use Jobwhisper?',
-    answer:
-      'Just a Jobwhisper account and either the desktop app or the Chrome extension. No special hardware, it works with whatever video call or in-person setup you already use.',
-  },
-  {
-    question: 'Is my interview data kept private?',
-    answer:
-      "Yes. Your resumes, transcripts, and session recordings are only visible to you, and you can delete them at any time from your account. We don't share your data with employers or third parties.",
-  },
-  {
-    question: 'Can I review past interview sessions?',
-    answer:
-      'Every session is saved to your history with a summary, talk-time breakdown, and what went well or needs work, so you can review and improve before your next interview.',
-  },
-  {
-    question: 'Does it work for coding interviews and meetings too?',
-    answer:
-      'Yes, Coding Copilot gives real-time hints during technical screens, and Meeting Copilot brings the same live support to client calls and stakeholder meetings, not just interviews.',
-  },
-  {
-    question: 'What happens if I run out of credits mid-session?',
-    answer:
-      "You'll get a low-balance warning first, and can top up without losing your place, your session resumes right where you left off once you add more credits.",
-  },
-]
+  ['Is Jobwhisper free?', 'You can create an account with free monthly credits. Paid usage depends on the feature and the amount of support you use.'],
+  ['What happens if I fail an interview?', 'Eligible offers include the interview guarantee described at checkout. The exact terms are shown before purchase.'],
+  ['Is Jobwhisper the same company as FanBasis?', 'No. Jobwhisper is an AI career companion built for resumes, applications, interview preparation and live interview support.'],
+  ['Where do existing Jobwhisper users log in?', 'Use the Log in link at the top of this page to access your Jobwhisper account.'],
+  ['Do I need to create a new account?', 'New users can create an account in a few steps. Existing users can keep using their current account.'],
+  ['What happened to the Lightforth website?', 'Lightforth is now Jobwhisper. The product continues with the same goal: helping you move from job search to job offer.'],
+  ['Why did Lightforth become Jobwhisper?', 'The new name reflects the product more clearly: practical AI help throughout your job search, including live support when answers matter.'],
+  ['How do I contact the Jobwhisper team?', 'Open the help center from your account or use the contact options in the footer.'],
+] as const
 
-const TIMELINE_STAGES = [
-  {
-    label: 'Today',
-    title: 'Get interview-ready',
-    items: [
-      'Upload your resume and get instant feedback on gaps',
-      'Run your first AI mock interview, role-aware from question one',
-      'See exactly what to work on before you walk in',
-    ],
-  },
-  {
-    label: 'Before the call',
-    title: "Rehearse until it's natural",
-    items: [
-      'Practice the questions your specific role gets asked',
-      'Get real answers scored against what strong candidates say',
-      'Walk in knowing your story, not reciting it',
-    ],
-  },
-  {
-    label: 'The real interview',
-    title: 'Never freeze up again',
-    items: [
-      'The live copilot listens in and feeds you talking points',
-      "Real-time answers to questions you didn't prep for",
-      'Invisible to everyone else on the call',
-    ],
-  },
-  {
-    label: 'After the call',
-    title: 'Walk into round two stronger',
-    items: [
-      'Every session saved with a summary and talk-time breakdown',
-      "See exactly what went well and what didn't, no guessing",
-      'Only spend credits on the sessions you actually run',
-    ],
-  },
-]
+function DownloadMenu({ compact = false }: { readonly compact?: boolean }) {
+  return <Menu><MenuTrigger render={<button className={compact ? 'landing-nav-download' : 'landing-primary-button'} aria-label={compact ? 'Download Jobwhisper' : undefined} />}>
+    {compact ? <img src="/landing-logo-icon.svg" alt="" /> : <span>Download Now</span>}
+    {compact ? <span>Download</span> : <span className="landing-platform-icons" aria-hidden="true"><img src="/landing-apple.svg" alt="" /><img src="/landing-windows.svg" alt="" /></span>}
+  </MenuTrigger><MenuContent align="end" sideOffset={8} className="landing-download-menu">{downloadItems.map((item) => <MenuItem key={item.id} render={<a href={item.href} className="landing-download-item" />}><img src={item.imageSrc} alt="" /><span>{item.support}</span></MenuItem>)}</MenuContent></Menu>
+}
 
 function LandingNav() {
   const navigate = useNavigate()
-  return (
-    <nav className="fixed top-4 sm:top-9 left-0 right-0 z-50 flex justify-center px-4">
-      <div className="flex items-center h-[54px] bg-landing-nav rounded-[22px] pl-4 pr-2 shadow-[0px_2px_40px_rgba(0,0,0,0.25)] w-full max-w-fit">
-        <img src="/landing-logo.svg" alt="Jobwhisper" className="h-6 w-auto" />
-
-        <div className="hidden md:flex items-center gap-5 ml-10">
-          <button className="flex items-center gap-1.5 text-white/60 text-base font-medium tracking-[-0.3px] leading-6 hover:text-white transition-colors">
-            Features
-            <ChevronDown size={10} className="mt-px" />
-          </button>
-          <button
-            onClick={() => navigate('/pricing')}
-            className="text-white/60 text-base font-medium tracking-[-0.3px] leading-6 hover:text-white transition-colors"
-          >
-            Pricing
-          </button>
-          <a
-            href="#faq"
-            className="text-white/60 text-base font-medium tracking-[-0.3px] leading-6 hover:text-white transition-colors"
-          >
-            FAQ
-          </a>
-        </div>
-
-        <div className="flex items-center gap-3.5 ml-4 md:ml-14">
-          <button
-            onClick={() => navigate('/v3/auth/sign-in')}
-            className="hidden sm:block text-white/60 text-base font-medium tracking-[-0.3px] leading-6 hover:text-white transition-colors"
-          >
-            Log in
-          </button>
-          <Menu>
-            <MenuTrigger
-              render={
-                <button className="flex items-center gap-1.5 bg-landing-bg rounded-[16px] px-4 h-[42px] overflow-hidden hover:bg-white/10 transition-colors cursor-pointer" />
-              }
-            >
-              <img src="/landing-logo-icon.svg" alt="" className="h-[18px] w-4 object-contain" />
-              <span className="text-white text-base font-medium tracking-[-0.3px] leading-6">Download</span>
-              <ChevronDown size={10} className="mt-px text-white/60" />
-            </MenuTrigger>
-            <MenuContent align="end" sideOffset={8} className="bg-[#1a1a2e] border border-white/10 rounded-xl shadow-2xl min-w-[220px] p-1.5">
-              {downloadItems.map((item) => (
-                  <MenuItem
-                    key={item.id}
-                    render={
-                      <a
-                        href={item.href}
-                        target={item.href.startsWith('http') ? '_blank' : undefined}
-                        rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/80 data-[highlighted]:bg-white/5 data-[highlighted]:text-white transition-colors text-sm no-underline"
-                      />
-                    }
-                  >
-                    {(item.id === 'mac-apple-silicon' || item.id === 'mac-intel' || item.id === 'ios') ? (
-                      <img src="/landing-apple.svg" alt="" className="h-4 w-4 shrink-0" />
-                    ) : (
-                      <img src={item.imageSrc} alt="" className="h-4 w-4 shrink-0" />
-                    )}
-                    <span>{DOWNLOAD_LABELS[item.id] ?? item.support}</span>
-                    {DOWNLOAD_VERSIONS[item.id] ? (
-                      <span className="text-white/40 text-xs ml-auto">{DOWNLOAD_VERSIONS[item.id]}</span>
-                    ) : null}
-                  </MenuItem>
-                ))}
-            </MenuContent>
-          </Menu>
-        </div>
-      </div>
-    </nav>
-  )
+  return <nav className="landing-nav" aria-label="Main navigation"><img src="/landing-logo.svg" alt="Jobwhisper" className="landing-nav-logo" /><div className="landing-nav-links"><a href="#features">Features <ChevronDown aria-hidden="true" /></a><button onClick={() => navigate('/pricing')}>Pricing</button><a href="#faq">FAQ</a></div><div className="landing-nav-actions"><button className="landing-login" onClick={() => navigate('/v3/auth/sign-in')}>Log in</button><DownloadMenu compact /></div></nav>
 }
 
-function LandingHero() {
+function Hero() {
   const navigate = useNavigate()
-  return (
-    <section className="px-4 sm:px-8 lg:px-[113px] pt-[140px] sm:pt-[180px] lg:pt-[220px] pb-0">
-      <div className="flex flex-col gap-6 lg:gap-8 max-w-[813px]">
-        <h1
-          className="text-white font-normal font-gowun"
-          style={{ fontSize: 'clamp(40px, 6vw, 70.732px)', lineHeight: '1.112', letterSpacing: '-0.05em' }}
-        >
-          Never leave an interview wishing you'd said something different.
-        </h1>
-        <p
-          className="text-white font-normal max-w-[504px]"
-          style={{ fontSize: 'clamp(16px, 2vw, 24px)', letterSpacing: '-0.02em' }}
-        >
-          Rehearse against a role-aware AI, then bring a live copilot into the actual conversation.
-        </p>
-        <div className="flex flex-wrap items-center gap-3">
-          <Menu>
-            <MenuTrigger
-              render={
-                <button className="flex items-center gap-2 bg-landing-btn rounded-[10px] h-12 px-8 text-white text-lg font-semibold whitespace-nowrap hover:bg-landing-btn/90 transition-colors cursor-pointer" />
-              }
-            >
-              Download Now
-              <span className="flex items-center gap-1.5">
-                <img src="/landing-apple.svg" alt="Apple" className="h-4 w-4" />
-                <img src="/landing-windows.svg" alt="Windows" className="h-4 w-4" />
-              </span>
-            </MenuTrigger>
-            <MenuContent align="start" sideOffset={8} className="bg-[#1a1a2e] border border-white/10 rounded-xl shadow-2xl min-w-[220px] p-1.5">
-              {downloadItems.map((item) => (
-                  <MenuItem
-                    key={item.id}
-                    render={
-                      <a
-                        href={item.href}
-                        target={item.href.startsWith('http') ? '_blank' : undefined}
-                        rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/80 data-[highlighted]:bg-white/5 data-[highlighted]:text-white transition-colors text-sm no-underline"
-                      />
-                    }
-                  >
-                    {(item.id === 'mac-apple-silicon' || item.id === 'mac-intel' || item.id === 'ios') ? (
-                      <img src="/landing-apple.svg" alt="" className="h-4 w-4 shrink-0" />
-                    ) : (
-                      <img src={item.imageSrc} alt="" className="h-4 w-4 shrink-0" />
-                    )}
-                    <span>{DOWNLOAD_LABELS[item.id] ?? item.support}</span>
-                    {DOWNLOAD_VERSIONS[item.id] ? (
-                      <span className="text-white/40 text-xs ml-auto">{DOWNLOAD_VERSIONS[item.id]}</span>
-                    ) : null}
-                  </MenuItem>
-                ))}
-            </MenuContent>
-          </Menu>
-          <button
-            onClick={() => navigate('/v3/auth/create-account')}
-            className="flex items-center gap-2 bg-white rounded-[10px] h-12 px-8 text-landing-btn-text text-lg font-semibold whitespace-nowrap hover:bg-white/90 transition-colors"
-          >
-            Get Started
-          </button>
-        </div>
-      </div>
-    </section>
-  )
+  return <section className="landing-hero"><LandingNav /><div className="landing-hero-copy"><h1>Pass Your <span>Next Interview.</span><br />Land the Job. Or Don’t Pay!</h1><p>JobWhisper Copilot listens to every interview question and instantly gives you a tailored answer using your resume and the job description, so you always know what to say. No guessing. No delay. No memorizing scripts. No freezing under pressure.</p><div className="landing-hero-actions"><DownloadMenu /><button className="landing-secondary-button" onClick={() => navigate('/v3/auth/create-account')}>Get Started <ArrowUpRight aria-hidden="true" /></button></div><div className="landing-hero-notes"><span><Check aria-hidden="true" />Includes free credits</span><span>No card required</span></div></div></section>
 }
 
-function LandingDemo() {
-  const isMobile = useIsMobileViewport()
+function Demo() {
   const navigate = useNavigate()
-
-  return (
-    <section
-      onClick={isMobile ? undefined : () => navigate('/pricing')}
-      onKeyDown={
-        isMobile
-          ? undefined
-          : (event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault()
-                navigate('/pricing')
-              }
-            }
-      }
-      role={isMobile ? undefined : 'button'}
-      tabIndex={isMobile ? undefined : 0}
-      aria-label={isMobile ? undefined : 'Open the interactive Jobwhisper demo'}
-      className={`group relative mt-16 sm:mt-24 lg:mt-[160px] mx-4 sm:mx-8 lg:mx-[113px] aspect-[1728/1080] rounded-xl overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${isMobile ? '' : 'cursor-pointer'}`}
-    >
-      <video
-        src="/landing-demo.mp4"
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-      />
-      {isMobile ? null : (
-        <>
-          <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20" />
-          <div className="absolute bottom-0 left-0 right-0 h-[540px] bg-gradient-to-b from-transparent to-landing-bg" />
-          <div className="absolute bottom-[70px] left-0 right-0 flex flex-col items-center">
-              <span className="flex items-center gap-2 rounded-full bg-white h-10 px-4 border border-transparent transition-colors group-hover:bg-white/90">
-                <span className="text-black text-sm font-normal leading-5 tracking-[-0.13px]">See Pricing</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-              </span>
-          </div>
-        </>
-      )}
-    </section>
-  )
+  return <section className="landing-demo" aria-label="Jobwhisper live copilot demo"><video src="/landing-demo.mp4" autoPlay muted loop playsInline /><div className="landing-demo-fade" /><button onClick={() => navigate('/pricing')}><Play aria-hidden="true" />Start demo</button><p>Land the role, or pay nothing</p></section>
 }
 
-function LandingTimeline() {
-  return (
-    <section className="px-4 sm:px-8 lg:px-[113px] pt-24 sm:pt-32 lg:pt-40 pb-16 sm:pb-24">
-      <div className="flex flex-col items-center text-center gap-4">
-        <h2
-          className="text-white font-normal font-gowun max-w-[700px]"
-          style={{ fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: '1.2', letterSpacing: '-0.02em' }}
-        >
-          Every stage of the interview, covered.
-        </h2>
-      </div>
-
-      <div className="mt-12 sm:mt-16 hidden md:grid md:grid-cols-4 md:gap-2">
-        {TIMELINE_STAGES.map((stage, index) => {
-          const isLast = index === TIMELINE_STAGES.length - 1
-          return (
-            <div key={stage.label} className="flex flex-col items-center gap-3">
-              <span
-                className={`shrink-0 rounded-lg border px-4 h-9 inline-flex items-center text-sm font-medium whitespace-nowrap ${
-                  isLast ? 'border-white bg-white text-landing-btn-text' : 'border-white/15 text-white/70'
-                }`}
-              >
-                {stage.label}
-              </span>
-              <span className="relative flex h-2.5 w-full items-center justify-center">
-                {index !== 0 ? (
-                  <span className="absolute right-1/2 h-px w-full bg-white/15" aria-hidden="true" />
-                ) : null}
-                {!isLast ? (
-                  <span className="absolute left-1/2 h-px w-full bg-white/15" aria-hidden="true" />
-                ) : null}
-                <span
-                  className={`relative z-10 size-2.5 rounded-full ${
-                    isLast ? 'bg-white' : 'border border-white/30 bg-landing-bg'
-                  }`}
-                />
-              </span>
-            </div>
-          )
-        })}
-      </div>
-
-      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {TIMELINE_STAGES.map((stage, index) => {
-          const isLast = index === TIMELINE_STAGES.length - 1
-          return (
-            <RevealOnScroll key={stage.title} delayMs={index * 90} className="h-full">
-              <div
-                className={`h-full rounded-xl p-6 transition-all duration-300 ease-out hover:-translate-y-1 ${
-                  isLast ? 'bg-white hover:shadow-xl' : 'bg-white/[0.06] hover:bg-white/[0.1]'
-                }`}
-              >
-                <p className={`text-xs font-semibold uppercase tracking-[0.06em] mb-2 md:hidden ${isLast ? 'text-landing-btn-text' : 'text-white/50'}`}>
-                  {stage.label}
-                </p>
-                <p className={`font-semibold text-base mb-4 ${isLast ? 'text-landing-btn-text' : 'text-white'}`}>
-                  {stage.title}
-                </p>
-                <ul className="flex flex-col gap-3">
-                  {stage.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2.5">
-                      <Check
-                        size={16}
-                        className={`shrink-0 mt-0.5 ${isLast ? 'text-landing-btn-text' : 'text-white/50'}`}
-                      />
-                      <span className={`text-sm leading-[1.5] ${isLast ? 'text-landing-ink' : 'text-white/70'}`}>
-                        {item}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </RevealOnScroll>
-          )
-        })}
-      </div>
-    </section>
-  )
+function MomentCards() {
+  return <section className="landing-moments" id="features"><h2>Built for the moment that matters.</h2><div><article><p>Built with <strong>Real-time answers.</strong> Say them in your own words.</p><Plus aria-hidden="true" /></article><article><p><strong>Personalized to your resume,</strong> grounded in your experience.</p><Plus aria-hidden="true" /></article><article><p><strong>Built around the job you want.</strong> Get closer to the offer.</p><Plus aria-hidden="true" /></article></div></section>
 }
 
-function LandingFeatures() {
+function JourneyPreview({ active }: { readonly active: number }) {
+  if (active === 1) return <div className="journey-product journey-jobs"><div className="journey-toolbar"><span><Search />Search by title or company</span><button><SlidersHorizontal />Filter</button></div><aside><strong>Apply with our Auto Apply Extension</strong><p>Apply directly from LinkedIn, Glassdoor, Indeed, and Workable.</p><a href="/v3/downloads">Download ↗</a></aside><div className="journey-job-list">{[['FI','Immigration Program Manager','Figma','65% MATCH'],['CA','Senior Product Manager','Canva','91% MATCH'],['NO','Product Operations Lead','Notion','84% MATCH'],['LI','Program Manager','Linear','78% MATCH']].map(([mark,role,company,match]) => <article key={role}><b>{mark}</b><span><strong>{role}</strong><small>{company} · Remote</small></span><em>{match}</em></article>)}</div></div>
+  if (active === 2) return <div className="journey-product journey-live"><header><strong>Senior Product Manager · GitLab</strong><span>08:21</span><button>End Session</button></header><div className="journey-status"><span>▮▮▮▮ Connected</span><em>Listening</em></div><h3>Live Response <i /></h3><div className="journey-transcript"><article><small>Interviewer</small><p>Let’s simulate pressure. Here’s the first one.</p></article><article><small>Interviewer</small><p>Describe a program you’ve had that was failing.</p></article><article className="answer"><small>Jobwhisper</small><p>I inherited a rollout that was two quarters behind. In the first 72 hours, I rebuilt the risk map, aligned owners, and reset the launch plan around measurable milestones.</p></article></div><footer><Mic /><span>Ask Jobwhisper anything…</span><Send /></footer></div>
+  if (active === 3) return <div className="journey-product journey-simulator"><header><strong>Live Simulator</strong><i /></header><div className="journey-people"><figure><div className="journey-person journey-interviewer"><Video /></div><figcaption><strong>Zahra Christensen</strong><span>Backend Developer</span></figcaption></figure><figure><div className="journey-person journey-candidate"><Mic /></div><figcaption><strong>You</strong><span>Candidate</span></figcaption></figure></div><div className="journey-question"><small>Interview question</small><p>Tell me about a time you changed direction after receiving difficult feedback.</p></div></div>
+  return <div className="journey-product journey-resume"><div className="journey-chat-user">Put the bullets on my “Lightforth Technologies” role into the present tense — for example “Developed” becomes “Develop”.</div><div className="journey-chat-ai">I propose updating the bullet points under the “Lightforth Technologies” role to present tense as requested. This change reflects your current responsibilities more accurately since the role is ongoing.</div><div className="journey-chat-actions"><button>Reject All</button><button>Accept All</button></div><div className="journey-chat-input">Message Jobwhisper AI… <Send /></div></div>
+}
+
+function Journey() {
+  const [active, setActive] = useState(0)
+  return <section className="landing-journey"><div className="landing-section-intro"><p>Your entire job search</p><h2>Start to finish.</h2><p>Jobwhisper is built to help you through every stage of <strong>landing your next role.</strong> Start by creating or <strong>tailoring a resume</strong> for the job you want. Let Auto Apply find <strong>relevant opportunities</strong> without spending hours searching job boards. Prepare for the interview with realistic <strong>AI simulations</strong>, then take <strong>Interview Copilot</strong> with you when it is time for the real conversation.</p></div><div className="landing-journey-viewer"><div className="landing-journey-nav" role="tablist" aria-label="Job search stages">{JOURNEY.map(([title], index) => <button key={title} role="tab" aria-selected={active === index} aria-controls="journey-panel" onClick={() => setActive(index)}><Plus aria-hidden="true" />{title}</button>)}<div className="landing-journey-description">{JOURNEY[active][1]}</div></div><div className="landing-journey-stage" id="journey-panel" role="tabpanel"><JourneyPreview active={active} /></div></div></section>
+}
+
+function ProductFacts() {
+  return <section className="landing-facts"><p>Meet the <strong>AI copilot built for the moments when the right answer matters.</strong> Jobwhisper combines leading AI models with your resume, job description and personal context to give you relevant answers in real time. Setup takes just a few steps, and once you are ready, your Copilot stays with you across interviews, coding sessions, meetings and practice.</p><div className="landing-facts-grid"><div className="landing-stat"><span>Up to</span><strong>4,000</strong><span>minutes included</span></div><div className="landing-fact-copy"><strong>Multiple AI models</strong><span>Choose the model that fits the conversation, question, or task.</span><ul><li>OpenAI</li><li>Anthropic</li><li>Google</li><li>Kimi</li><li>Qwen</li></ul></div><div className="landing-stat"><span>Starting from</span><strong>$0.10</strong><span>per minute</span></div><div className="landing-fact-copy"><strong>Personalized context</strong><span>Your resume<br />Your job description<br />Multiple knowledge bases</span><strong>Simple setup</strong><span>Add your context<br />Choose your preferences<br />Start your Copilot</span></div></div></section>
+}
+
+function Testimonial() {
+  return <section className="landing-testimonial"><div className="landing-testimonial-media"><img src="/figma-landing/testimonial-photo.png" alt="Jay holding a phone" /><span><Play aria-hidden="true" /></span></div><blockquote>Nothing lives rent-free in your mind quite like an interview that went horribly wrong<footer><strong>Jay</strong><span>Project Manager</span></footer></blockquote></section>
+}
+
+const COPILOT_TABS = ['Interviews', 'Meetings', 'Coding', 'Practice'] as const
+function CopilotShowcase() {
+  const [activeTab, setActiveTab] = useState<(typeof COPILOT_TABS)[number]>('Interviews')
+  return <section className="landing-copilot"><div className="landing-section-intro"><h2>Your copilot.<br />Always within reach.</h2><p>Jobwhisper gives you real-time AI support while the conversation is happening, so you can focus on the person in front of you instead of scrambling for what to say next.</p></div><div className="landing-copilot-tabs" role="tablist" aria-label="Copilot use cases">{COPILOT_TABS.map((tab) => <button key={tab} role="tab" aria-selected={activeTab === tab} onClick={() => setActiveTab(tab)}>{tab}</button>)}</div><div className="landing-copilot-image"><img src="/figma-landing/copilot-window.png" alt={`Jobwhisper ${activeTab.toLowerCase()} copilot desktop preview`} /></div></section>
+}
+
+function PlatformCards() {
+  const scroll = (direction: number) => document.getElementById('landing-platform-scroller')?.scrollBy({ left: direction * 392, behavior: 'smooth' })
+  return <section className="landing-platforms"><h2>Jobwhisper,<br />wherever you need it.</h2><div className="landing-platform-scroller" id="landing-platform-scroller">{PLATFORMS.map(([label, title, body, href, action, image]) => <article key={label}><span>{label}</span><h3>{title}</h3><p>{body}</p><a href={href}>{action}</a><img src={image} alt="" /></article>)}</div><div className="landing-scroll-controls"><button aria-label="Previous platform" onClick={() => scroll(-1)}><ChevronLeft /></button><button aria-label="Next platform" onClick={() => scroll(1)}><ChevronRight /></button></div></section>
+}
+
+function ServiceChoice() {
   const navigate = useNavigate()
-  return (
-    <section className="flex flex-col items-center gap-4 sm:gap-8 px-4 sm:px-8 lg:px-[113px] pt-16 sm:pt-24 pb-20 sm:pb-32">
-      <div className="w-full">
-        <p
-          className="text-white font-normal font-gowun text-center"
-          style={{ fontSize: '28px', lineHeight: '36px', letterSpacing: '-0.84px' }}
-        >
-          More ways Jobwhisper helps
-        </p>
-      </div>
-
-      <div className="w-full max-w-[340px] mx-auto">
-        {FEATURES.map((feature, index) => {
-          const style = FEATURE_CARD_STYLES[index % FEATURE_CARD_STYLES.length]
-          const rotate = index % 2 === 0 ? '-rotate-3' : 'rotate-3'
-          return (
-            <div key={feature.title} className="sticky top-24 sm:top-28 pb-2" style={{ zIndex: index + 1 }}>
-              <a
-                href={feature.href}
-                className={`flex flex-col rounded-lg p-8 sm:p-10 min-h-[420px] sm:min-h-[460px] shadow-2xl no-underline transition-transform duration-300 ease-out hover:scale-[1.02] ${style.bg} ${rotate} hover:rotate-0`}
-              >
-                <feature.Icon aria-hidden="true" strokeWidth={1.25} className={`size-11 opacity-80 ${style.text}`} />
-                <div className="mt-auto">
-                  <p className={`font-gowun font-normal text-4xl mb-3 ${style.text}`}>{feature.title}</p>
-                  <p className={`text-base opacity-70 mb-2 ${style.text}`}>{feature.subtitle}</p>
-                  <p className={`text-sm opacity-50 ${style.text}`}>{feature.description}</p>
-                </div>
-              </a>
-            </div>
-          )
-        })}
-      </div>
-
-      <button
-        onClick={() => navigate('/pricing')}
-        className="flex items-center gap-2 bg-white rounded-[10px] h-12 px-8 text-landing-btn-text text-lg font-semibold whitespace-nowrap hover:bg-white/90 transition-colors"
-      >
-        See Pricing
-        <img src="/landing-arrow.svg" alt="" className="h-4 w-4" />
-      </button>
-    </section>
-  )
+  return <section className="landing-service-choice"><article><span>Do yourself</span><h2>We find you<br />Apply yourself.</h2><button onClick={() => navigate('/pricing')}>View Pricing</button><img src="/figma-landing/self-serve-person.png" alt="Job seeker using Jobwhisper self-service" /></article><article><span>Done for you</span><h2>Our success manager supports your search.</h2><div><button onClick={() => navigate('/v3/done-for-you')}>Get Started</button><button onClick={() => navigate('/pricing')}>View Pricing</button></div><img src="/figma-landing/managed-person.png" alt="Jobwhisper success manager" /></article></section>
 }
 
-function LandingFAQ() {
-  return (
-    <section id="faq" className="bg-landing-footer-frame px-4 sm:px-8 lg:px-[113px] pt-24 sm:pt-32 lg:pt-40 pb-16 sm:pb-20">
-      <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
-        <h2
-          className="text-white font-normal font-gowun"
-          style={{ fontSize: 'clamp(32px, 4vw, 44px)', lineHeight: '1.15', letterSpacing: '-0.02em' }}
-        >
-          Frequently
-          <br />
-          asked questions.
-        </h2>
-
-        <Accordion className="w-full">
-          {FAQS.map((faq, index) => (
-            <AccordionItem key={faq.question} value={String(index)} className="border-b border-white/10">
-              <AccordionHeader>
-                <AccordionTrigger className="text-white text-base sm:text-lg font-medium tracking-[-0.16px] hover:text-white/80 [&>svg]:text-white/50">
-                  {faq.question}
-                </AccordionTrigger>
-              </AccordionHeader>
-              <AccordionPanel className="text-white/60 text-sm sm:text-base leading-6">{faq.answer}</AccordionPanel>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </div>
-    </section>
-  )
+function Faq() {
+  return <section className="landing-faq" id="faq"><h2>Frequently asked questions</h2><Accordion className="landing-faq-list">{FAQS.map(([question, answer], index) => <AccordionItem key={question} value={String(index)}><AccordionHeader><AccordionTrigger>{question}</AccordionTrigger></AccordionHeader><AccordionPanel>{answer}</AccordionPanel></AccordionItem>)}</Accordion></section>
 }
 
-function LandingFooter() {
-  return (
-    <footer className="bg-landing-footer-frame px-4 sm:px-8 lg:px-[113px] pb-12 sm:pb-16">
-      <div className="flex flex-col items-center gap-6 text-center">
-        <span className="grid size-12 place-items-center rounded-2xl border border-white/10">
-          <JobwhisperIcon className="size-5 text-white" />
-        </span>
-        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-white/60 text-sm">
-          <span>© 2026 Jobwhisper.ai</span>
-          <span aria-hidden="true">·</span>
-          <a href="/v3/downloads" className="hover:text-white transition-colors">Download</a>
-          <span aria-hidden="true">·</span>
-          <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
-          <span aria-hidden="true">·</span>
-          <a href="/terms" className="hover:text-white transition-colors">Terms of Service</a>
-        </div>
-      </div>
-    </footer>
-  )
+function Closing() {
+  return <section className="landing-closing"><span>Your next role</span><h2>Ready when you are.<br />Let’s get you hired.</h2><p>Your next opportunity could start with a better resume, the right application, stronger preparation, or simply knowing what to say when the interview begins. <strong>Jobwhisper brings it all together,</strong> helping you find the right roles, prepare for the moments that matter, and show up with support when it counts.</p></section>
+}
+
+function Footer() {
+  return <footer className="landing-footer"><div><img src="/landing-logo.svg" alt="Jobwhisper" /><h2>From job search<br />to <span>job offer.</span></h2><p>© 2026 Jobwhisper</p></div><div><strong>Product</strong><a href="/v3/resume">Resume Builder</a><a href="/v3/auto-apply">Auto Apply</a><a href="/v3/interview-prep">Interview Prep</a><a href="/v3/copilot">Interview Copilot</a></div><div><strong>Company</strong><a href="/pricing">Pricing</a><a href="/help">Help Center</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div><div><strong>Download</strong><a href="/v3/downloads">Desktop App</a><a href="/v3/downloads">Browser Extension</a><a href="/v3/downloads">Mobile App</a></div></footer>
 }
 
 export function LandingPage() {
-  return (
-    <div className="min-h-screen bg-landing-bg font-rethink">
-      <LandingNav />
-      <LandingHero />
-      <LandingDemo />
-      <LandingTimeline />
-      <LandingFeatures />
-      <LandingFAQ />
-      <LandingFooter />
-    </div>
-  )
+  return <main className="figma-landing-page"><Hero /><Demo /><MomentCards /><Journey /><ProductFacts /><Testimonial /><CopilotShowcase /><PlatformCards /><ServiceChoice /><Faq /><Closing /><Footer /></main>
 }

@@ -74,6 +74,28 @@ All colors are defined in `src/tokens/theme.css` and `src/tokens/tokens.ts` with
 | `brand-mark` | `text-brand-mark` | Logo mark color |
 | `brand-mark-accent` | `text-brand-mark-accent` | Logo mark accent |
 
+### Public Landing Page
+
+These fixed roles reproduce the approved Figma marketing art direction in both theme modes. They are intentionally theme-stable because the page is a composed brand surface rather than application chrome.
+
+| Token | Light / dark value | Purpose |
+|---|---|---|
+| `landing-paper` | `#ffffff` | Primary editorial page surface |
+| `landing-surface` | `#f5f5f7` | Secondary section and card surface |
+| `landing-muted` | `#6e6e73` | Supporting landing-page copy |
+| `landing-orange` | `#ff571f` | Interview-preparation feature accent |
+| `landing-green` | `#00a984` | Auto-apply feature accent |
+| `landing-violet` | `#7b4de8` | Interview-copilot feature accent |
+| `landing-sky` | `#74d4ff` | Decorative copilot illustration accent |
+| `landing-dark-chip` | `rgba(42, 42, 45, 0.82)` | Dark translucent product-demo chip |
+| `landing-transparent` | `rgba(0, 82, 255, 0)` | Transparent edge of branded fades |
+| `landing-nav-text` | `rgba(255, 255, 255, 0.72)` | Secondary text on the landing navigation |
+| `landing-nav-border` | `rgba(255, 255, 255, 0.12)` | Dividers on dark landing navigation surfaces |
+| `landing-border` | `rgba(20, 20, 20, 0.14)` | Hairline borders on light landing surfaces |
+| `landing-control` | `#d2d2d7` | Neutral control and inactive indicator surface |
+| `landing-footer` | `#000000` | Closing footer canvas |
+| `landing-footer-text` | `rgba(255, 255, 250, 0.62)` | Secondary footer copy |
+
 ### Live Canvas (Interview/Copilot)
 
 | Token | Tailwind | Purpose |
