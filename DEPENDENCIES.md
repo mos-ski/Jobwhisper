@@ -24,6 +24,12 @@
 | `swiper` | ^14.0.5 | Carousel (marketing) |
 | `tailwind-merge` | ^3.5.0 | Merge Tailwind classes |
 | `tailwind-variants` | ^3.2.2 | Variant utilities |
+| `@tiptap/react` | ^2.x | Headless rich text editor (React bindings) |
+| `@tiptap/starter-kit` | ^2.x | TipTap default extensions bundle |
+| `@tiptap/extension-link` | ^2.x | Link formatting for TipTap |
+| `@tiptap/extension-image` | ^2.x | Inline image embedding for TipTap |
+| `@tiptap/extension-placeholder` | ^2.x | Placeholder text for TipTap |
+| `@tiptap/extension-underline` | ^2.x | Underline formatting for TipTap |
 | `tw-animate-css` | ^1.4.0 | Tailwind animation utilities |
 
 ## Dev Dependencies

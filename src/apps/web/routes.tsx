@@ -6,6 +6,7 @@ import { AdminActivityPage } from './pages/admin-activity-page'
 import { AdminAnalyticsPage } from './pages/admin-analytics-page'
 import { AdminConfigurationPage } from './pages/admin-configuration-page'
 import { AdminContentPage } from './pages/admin-content-page'
+import { AdminMessagingPage } from './pages/admin-messaging-page'
 import { AdminDashboardPage } from './pages/admin-dashboard-page'
 import { AdminKpisPage } from './pages/admin-kpis-page'
 import { AdminProductDetailPage } from './pages/admin-product-detail-page'
@@ -129,6 +130,10 @@ export function WebRoutes() {
 
   if (routePath === '/admin/content') {
     return <AdminContentPage />
+  }
+
+  if (routePath === '/admin/messaging') {
+    return <AdminMessagingPage />
   }
 
   if (routePath === '/admin/support') {

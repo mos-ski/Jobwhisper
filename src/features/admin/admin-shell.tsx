@@ -7,6 +7,7 @@ import {
   CreditCard,
   FileText,
   HeadphonesIcon,
+  MessageSquare,
   LayoutDashboard,
   LineChart,
   Menu,
@@ -48,6 +49,7 @@ const moduleIcons: Record<AdminModuleId, ReactNode> = {
   systems: <Server />,
   analytics: <BarChart3 />,
   content: <FileText />,
+  messaging: <MessageSquare />,
   support: <HeadphonesIcon />,
   kpis: <LineChart />,
 }
