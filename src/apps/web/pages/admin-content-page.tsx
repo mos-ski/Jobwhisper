@@ -4,9 +4,9 @@ import type { AdminContentTab } from '@/contracts/admin-content.draft'
 import { AdminContentView } from '@/features/admin/admin-content-view'
 import { adminNavItems, adminNotifications, adminSearchResults, adminSession } from '@/mocks/admin'
 import { adminMarketplacePricing } from '@/mocks/admin-configuration'
-import { adminDownloadItems, adminFaqItems, adminMarketplaceItems, adminTutorialItems } from '@/mocks/admin-content'
+import { adminDownloadItems, adminFaqItems, adminMarketplaceItems, adminPopupWidgets, adminTutorialItems } from '@/mocks/admin-content'
 
-const CONTENT_TABS: readonly AdminContentTab[] = ['marketplace', 'downloads', 'tutorials', 'faq']
+const CONTENT_TABS: readonly AdminContentTab[] = ['marketplace', 'downloads', 'tutorials', 'faq', 'popups']
 
 export function AdminContentPage() {
   const [params, setParams] = useSearchParams()
@@ -33,6 +33,7 @@ export function AdminContentPage() {
       downloadItems={adminDownloadItems}
       tutorialItems={adminTutorialItems}
       faqItems={adminFaqItems}
+      popupWidgets={adminPopupWidgets}
     />
   )
 }

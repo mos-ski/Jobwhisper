@@ -3,6 +3,7 @@ import type {
   AdminDownloadItem,
   AdminFaqItem,
   AdminMarketplaceItem,
+  AdminPopupWidget,
   AdminTutorialItem,
 } from '@/contracts/admin-content.draft'
 
@@ -11,6 +12,7 @@ export const adminContentTabs: readonly { readonly id: AdminContentTab; readonly
   { id: 'downloads', label: 'Downloads' },
   { id: 'tutorials', label: 'Tutorials' },
   { id: 'faq', label: 'FAQ' },
+  { id: 'popups', label: 'Popup Widgets' },
 ]
 
 /* -------------------------------------------------------------------------- */
@@ -70,4 +72,60 @@ export const adminFaqItems: readonly AdminFaqItem[] = [
   { id: 'faq-9', question: 'Do you offer refunds?', answer: "We don't offer refunds for partial billing periods, but you can cancel at any time to stop future charges, you'll keep access through the end of the period you already paid for." },
   { id: 'faq-10', question: 'Can I add more balance without upgrading my plan?', answer: "Yes. Use Buy credits on any balance above to top up mid-cycle ($5\u2013$10 minimum depending on the feature), it stays on your account until you spend it, on top of what your plan already includes." },
   { id: 'faq-11', question: 'Do Resume Builder and Auto Apply require a subscription?', answer: "No. Both are sold separately from Starter, Pro, and Premium, buy credits once in the Pay-as-you-go section below and spend them at your own pace. They work the same whether or not you have an active plan." },
+]
+
+/* -------------------------------------------------------------------------- */
+/* Popup widgets — in-app promotional modals, toasts, and banners              */
+/* -------------------------------------------------------------------------- */
+
+export const adminPopupWidgets: readonly AdminPopupWidget[] = [
+  {
+    id: 'popup-1',
+    name: 'Welcome Popup',
+    category: 'popup',
+    displayType: 'modal',
+    active: true,
+    headline: 'Welcome to Jobwhisper',
+    subHeadline: 'Your AI interview copilot',
+    title: 'Ace every interview',
+    body: 'Practice with AI, get real-time coaching during live interviews, and land your dream job faster.',
+    ctaLabel: 'Get Started',
+    ctaUrl: '/v3/auth/create-account',
+  },
+  {
+    id: 'popup-2',
+    name: 'Job Twin Offer — 50% Off',
+    category: 'offer',
+    displayType: 'modal',
+    active: true,
+    headline: 'Job Twin Offer!',
+    subHeadline: 'Get 50% off Today',
+    price: 47,
+    discount: 50,
+    offerList: ['Unlimited Auto Apply', '60Hrs Interview Copilot Session', '1000+ Resume Messages', '40Hrs Interview Preps'],
+    ctaLabel: 'Take offer now!',
+    ctaUrl: '/v3/billing/plans',
+    timerEnabled: true,
+    timerExpiry: '2026-09-30T23:59:59',
+  },
+  {
+    id: 'popup-3',
+    name: 'Interview Copilot Launch',
+    category: 'feature-release',
+    displayType: 'modal',
+    active: true,
+    title: 'Interview Copilot is here',
+    body: 'Get real-time talking points and answers during your live interviews. The copilot listens in and feeds you suggestions as the conversation happens—completely invisible to the other side.',
+    tag: 'Product',
+  },
+  {
+    id: 'popup-4',
+    name: 'Resume Builder Update',
+    category: 'feature-release',
+    displayType: 'toast',
+    active: false,
+    title: 'AI Resume Tailoring',
+    body: 'Paste any job description and get your resume instantly rewritten to match—keywords, achievements, format, all optimized.',
+    tag: 'Update',
+  },
 ]
