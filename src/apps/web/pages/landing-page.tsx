@@ -10,6 +10,8 @@ const JOURNEY = [
   ['AI Job Application', 'Find roles that match your experience, compare fit at a glance, and move the applications you choose into one focused workflow.'],
   ['Interview Copilot', 'Bring real-time, resume-aware answers into the live conversation, privately and exactly when you need them.'],
   ['Interview Prep', 'Practice realistic questions with an AI interviewer before the real conversation begins.'],
+  ['Meeting Copilot', 'Get real-time notes, talking points and summaries during meetings, so you stay focused on the conversation instead of scrambling to take notes.'],
+  ['Coding Interview', 'Live AI assistance during coding interviews. Real-time hints as you work through the problem.'],
 ] as const
 
 const PLATFORMS = [
@@ -57,9 +59,9 @@ function MomentCards() {
 }
 
 function JourneyPreview({ active }: { readonly active: number }) {
-  const images = ['/figma-landing/journey-resume.png', '/figma-landing/journey-jobs.png', '/figma-landing/journey-copilot.png', '/figma-landing/journey-simulator.png']
-  const labels = ['AI Resume Builder preview', 'AI Job Application preview', 'Interview Copilot preview', 'Interview Prep preview']
-  return <div className="journey-product"><img src={images[active]} alt={labels[active]} style={{width:'100%',height:'100%',objectFit:'contain'}} /></div>
+  const images = ['/figma-landing/journey-resume.png', '/figma-landing/journey-jobs.png', '/figma-landing/journey-copilot.png', '/figma-landing/journey-simulator.png', '/figma-landing/journey-meeting.png', '/figma-landing/journey-coding.png']
+  const labels = ['AI Resume Builder preview', 'AI Job Application preview', 'Interview Copilot preview', 'Interview Prep preview', 'Meeting Copilot preview', 'Coding Interview preview']
+  return <div className="journey-product"><img src={images[active]} alt={labels[active]} /></div>
 }
 
 function Journey() {
