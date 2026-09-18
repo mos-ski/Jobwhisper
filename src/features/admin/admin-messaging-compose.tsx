@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, Upload, X } from 'lucide-react'
+import { Check } from 'lucide-react'
 
 import type { AdminBroadcast, AudienceSegment, BroadcastChannel } from '@/contracts/admin-messaging.draft'
 import { audienceSegmentLabels } from '@/contracts/admin-messaging.draft'
@@ -14,14 +14,11 @@ import {
 } from '@/ui'
 import { RichTextEditor } from '@/ui/rich-text-editor'
 
-import { BroadcastPreview } from './broadcast-preview'
-
 type ComposeStep = 1 | 2 | 3 | 4
 
 type ComposeForm = {
   title: string
   body: string
-  coverImage: string
   audience: AudienceSegment
   channel: BroadcastChannel
 }
@@ -59,26 +56,6 @@ function StepContent({ form, setForm, touched }: { readonly form: ComposeForm; r
       <div className="grid gap-2">
         <label className="text-sm font-medium text-ink">Body</label>
         <RichTextEditor value={form.body} onChange={(html) => setForm((prev) => ({ ...prev, body: html }))} placeholder="Write your broadcast message..." />
-      </div>
-      <div className="grid gap-2">
-        <label className="text-sm font-medium text-ink">Cover Image (optional)</label>
-        {form.coverImage ? (
-          <div className="relative inline-block w-fit overflow-hidden rounded-lg border border-border">
-            <img src={form.coverImage} alt="Cover" className="h-32 object-cover" />
-            <button type="button" onClick={() => setForm((prev) => ({ ...prev, coverImage: '' }))} className="absolute end-2 top-2 grid size-7 place-items-center rounded-full bg-black/50 text-white hover:bg-black/70">
-              <X aria-hidden="true" className="size-3.5" />
-            </button>
-          </div>
-        ) : (
-          <label className="flex min-h-[5rem] cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-input text-sm text-ink-muted hover:border-accent hover:text-accent transition-colors">
-            <Upload aria-hidden="true" className="size-4" />
-            Choose image
-            <input type="file" accept="image/*" className="sr-only" onChange={(e) => {
-              const file = e.target.files?.[0]
-              if (file) setForm((prev) => ({ ...prev, coverImage: URL.createObjectURL(file) }))
-            }} />
-          </label>
-        )}
       </div>
     </div>
   )
@@ -216,7 +193,6 @@ export function AdminMessagingCompose({ open, onOpenChange, onSave }: AdminMessa
   const [form, setForm] = useState<ComposeForm>({
     title: '',
     body: '',
-    coverImage: '',
     audience: 'all',
     channel: 'both',
   })
@@ -224,7 +200,7 @@ export function AdminMessagingCompose({ open, onOpenChange, onSave }: AdminMessa
   function reset() {
     setStep(1)
     setTouched(false)
-    setForm({ title: '', body: '', coverImage: '', audience: 'all', channel: 'both' })
+    setForm({ title: '', body: '', audience: 'all', channel: 'both' })
   }
 
   function handleClose(v: boolean) {
@@ -245,7 +221,6 @@ export function AdminMessagingCompose({ open, onOpenChange, onSave }: AdminMessa
       id: `bc-${Date.now()}`,
       title: form.title.trim(),
       body: form.body,
-      coverImageUrl: form.coverImage || undefined,
       audience: form.audience,
       channel: form.channel,
       status: 'sent',
@@ -264,10 +239,8 @@ export function AdminMessagingCompose({ open, onOpenChange, onSave }: AdminMessa
   }
 
   return (
-    <div className="flex flex-col gap-6 lg:flex-row">
-      {/* Left: vertical stepper */}
-      <div className="min-w-0 flex-1">
-        <VerticalStep stepNum={1} status={statusFor(1)} label="Content" onGoTo={setStep}>
+    <div className="grid gap-4">
+      <VerticalStep stepNum={1} status={statusFor(1)} label="Content" onGoTo={setStep}>
           <div className="mt-4 grid gap-4">
             <StepContent form={form} setForm={setForm} touched={touched} />
             <div className="flex justify-start pt-2">
@@ -304,19 +277,5 @@ export function AdminMessagingCompose({ open, onOpenChange, onSave }: AdminMessa
           </div>
         </VerticalStep>
       </div>
-
-      {/* Right: preview */}
-      <div className="flex flex-col items-center gap-3 lg:w-[26rem] lg:shrink-0 lg:border-l lg:border-border lg:ps-6">
-        <p className="text-xs font-semibold uppercase tracking-wider text-ink-muted">Preview</p>
-        <div className="w-full">
-          <BroadcastPreview
-            title={form.title}
-            body={form.body}
-            showEmail={form.channel === 'email' || form.channel === 'both'}
-            showInApp={form.channel === 'in-app' || form.channel === 'both'}
-          />
-        </div>
-      </div>
-    </div>
   )
 }
