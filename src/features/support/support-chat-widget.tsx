@@ -1,14 +1,11 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Bot,
   ChevronRight,
-  FileText,
   Headphones,
   Mail,
-  MessageSquare,
   Minus,
   Send,
-  Sparkles,
   User,
   X,
 } from 'lucide-react'
@@ -113,25 +110,21 @@ function MenuPanel({
   readonly onClose: () => void
 }) {
   const items: readonly {
-    readonly icon: ReactNode
     readonly label: string
     readonly description: string
     readonly onClick: () => void
   }[] = [
     {
-      icon: <FileText aria-hidden="true" className="size-5 text-accent" />,
       label: 'Find answers',
       description: 'Browse our help articles',
       onClick: onFindAnswers,
     },
     {
-      icon: <MessageSquare aria-hidden="true" className="size-5 text-accent" />,
       label: 'Contact us',
       description: 'Send an email or chat with us',
       onClick: onContactUs,
     },
     {
-      icon: <Sparkles aria-hidden="true" className="size-5 text-accent" />,
       label: 'Suggest improvement',
       description: 'Help us make Jobwhisper better',
       onClick: onSuggestImprovement,
@@ -150,7 +143,6 @@ function MenuPanel({
               onClick={item.onClick}
               className="flex items-center gap-3 rounded-lg border border-border bg-surface p-3 text-left transition-colors hover:border-accent hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
             >
-              <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-accent/10">{item.icon}</span>
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold text-ink">{item.label}</span>
                 <span className="block text-xs text-ink-muted">{item.description}</span>
