@@ -93,7 +93,7 @@
    stage is open at a time, so the row always reads as pills on one baseline with a single
    card standing in place of one of them, and the baseline never moves as you switch. */
 @media(max-width:900px){
-.landing-journey-viewer{padding:24px 0 28px;gap:18px}
+.landing-journey-viewer{--journey-inset:24px;padding:24px 0 28px;gap:18px}
 .landing-journey-stage{order:1;width:calc(100% - 36px);height:auto;aspect-ratio:1/1;justify-self:center}
 .journey-product{transform:none}
 /* Inset past the paddles: the first and last cards cannot be scrolled off their own edge,
@@ -103,7 +103,7 @@
 .landing-journey-nav::-webkit-scrollbar{display:none}
 /* The base rule sets width:100%, which in a row resolves against the track and makes every
    collapsed pill as wide as the card. Each item sizes to its own content instead. */
-.landing-journey-item{flex:0 0 auto;width:auto;max-width:none;justify-content:flex-end;scroll-snap-align:start}
+.landing-journey-item{flex:0 0 auto;width:auto;max-width:none;justify-content:flex-end;scroll-snap-align:center}
 .landing-journey-description-shell:not([data-open='true']){width:0}
 .landing-journey-nav button{white-space:nowrap}
 /* The open card takes the pill's place on the baseline instead of sitting under it, so it
@@ -111,10 +111,18 @@
 .landing-journey-item:has(.landing-journey-description-shell[data-open='true'])>button{display:none}
 .landing-journey-description-shell{width:100%}
 /* Sized so the next stage's pill breaks the panel edge by exactly one chevron: a 44px round
-   tap target with none of its label showing. The row is 100vw - 36px of panel inset, and the
-   pill starts a 10px gap past the card, so 100vw - 90px leaves that 44px lane at any width.
-   A vw fraction cannot: at 76vw the lane was 44px at 375 but 31px at 320. */
-.landing-journey-description-shell[data-open='true']{width:calc(100vw - 90px)}
+   tap target with none of its label showing. The row spans the viewport less the section's
+   inset on each side, and the pill starts a 10px gap past the card, so the card takes what
+   is left of that minus the 44px lane. A vw fraction cannot hold the lane steady — at 76vw
+   it was 44px on a 375 screen but 31px on a 320 one — and nor can a fixed subtraction,
+   since the section's inset is 18px only below 560px and 24px above it. */
+.landing-journey-description-shell[data-open='true']{width:calc(100vw - 2*var(--journey-inset) - 108px)}
+/* The first and last stage have a neighbour on one side only, so their card takes the lane
+   the missing one would have used rather than leaving a gap the row cannot scroll into.
+   Their scroll also clamps, which leaves the row's own 18px padding showing on that side —
+   the extra 18px here is what keeps their one lane the same 44px as everyone else's. */
+.landing-journey-item:first-child .landing-journey-description-shell[data-open='true'],
+.landing-journey-item:last-child .landing-journey-description-shell[data-open='true']{width:calc(100vw - 2*var(--journey-inset) - 72px)}
 .landing-journey-description-shell[data-open='true'] .landing-journey-description{margin-top:0}
 /* Padding only while open: applied unconditionally it gave every collapsed pill a 40px
    phantom box below it, floating the pills 40px above the open card's baseline. */
@@ -137,3 +145,6 @@
    row you swipe. Advancing is swipe, then tap. */
 .landing-journey-controls{display:none}
 }
+/* Below 560px the section's own padding drops to 18px (see its padding rule above), which
+   the open card's width has to track or the chevron lane comes out 12px narrow. */
+@media(max-width:560px){.landing-journey-viewer{--journey-inset:18px}}

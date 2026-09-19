@@ -212,15 +212,16 @@ function Journey() {
   const navRef = useRef<HTMLDivElement>(null)
   const cycleFeature = (direction: -1 | 1) => setActive((current) => (current + direction + JOURNEY.length) % JOURNEY.length)
 
-  // Where the stages are a horizontal row (mobile), pull the card a tap opened to the start
-  // of the row, which leaves the next stage's pill breaking the far edge. Centring it
-  // instead peeks the previous pill too, and that one shows its tail rather than its icon.
-  // The overflow check keeps this off the desktop column, which does not scroll sideways.
+  // Where the stages are a horizontal row (mobile), centre the card a tap opened so the
+  // stages either side of it break the panel edges as chevrons. The scroll clamps at the
+  // ends on its own, which is what leaves the first and last stage with only one neighbour
+  // showing. The overflow check keeps this off the desktop column, which never scrolls
+  // sideways and would otherwise jump the page on every change.
   useEffect(() => {
     const nav = navRef.current
     if (!nav || nav.scrollWidth <= nav.clientWidth) return
     const item = nav.children[active]
-    if (item instanceof HTMLElement) item.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' })
+    if (item instanceof HTMLElement) item.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
   }, [active])
 
   return <section className="landing-journey"><div className="landing-section-intro"><p>Your entire job search</p><h2>Start to finish.</h2><JourneyRevealText /></div><div className="landing-journey-viewer"><div className="landing-journey-controls"><button aria-label="Previous feature" onClick={() => cycleFeature(-1)}><ChevronUp aria-hidden="true" /></button><button aria-label="Next feature" onClick={() => cycleFeature(1)}><ChevronDown aria-hidden="true" /></button></div><div className="landing-journey-nav" ref={navRef} aria-label="Job search stages">{JOURNEY.map(([title, description, shortDescription], index) => <div className="landing-journey-item" key={title}><button aria-expanded={active === index} aria-controls={`journey-description-${index}`} onClick={() => setActive(index)}><Plus aria-hidden="true" className="landing-journey-icon-expand" />{index > active ? <ChevronRight aria-hidden="true" className="landing-journey-icon-step" /> : null}{title}{index < active ? <ChevronLeft aria-hidden="true" className="landing-journey-icon-step" /> : null}</button><div className="landing-journey-description-shell" data-open={active === index}><div className="landing-journey-description" id={`journey-description-${index}`} role="region" aria-label={`${title} details`} aria-hidden={active !== index}><strong className="landing-journey-description-title">{title}.</strong> <span className="landing-journey-description-full">{description}</span><span className="landing-journey-description-short">{shortDescription}</span></div></div></div>)}</div><div className="landing-journey-stage" role="region" aria-label={`${JOURNEY[active][0]} preview`}><JourneyPreview active={active} /></div></div></section>
