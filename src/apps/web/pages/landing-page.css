@@ -45,3 +45,35 @@
 .figma-landing-page .landing-footer-meta>div{grid-column:2/-1;display:flex;justify-content:space-between}
 .figma-landing-page .landing-footer-meta a{color:var(--lf-landing-footer-text);font-size:14px;font-weight:400}
 @media(max-width:800px){.figma-landing-page .landing-closing{border-radius:0 0 28px 28px}.figma-landing-page .landing-footer{height:auto;min-height:610px;margin-top:-28px;padding:100px 24px 28px}.figma-landing-page .landing-footer>.landing-footer-inner{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto auto;gap:64px 24px}.figma-landing-page .landing-footer-brand{grid-column:1/-1}.figma-landing-page .landing-footer .landing-footer-logo{width:170px}.figma-landing-page .landing-footer-meta{grid-column:1/-1;grid-template-columns:1fr;gap:18px;margin-top:40px}.figma-landing-page .landing-footer-meta>div{grid-column:1;justify-content:flex-start;gap:28px}}
+
+/* ---- Mobile corrections ---- */
+/* The nav's Features/Pricing/FAQ links are display:none below 900px; the menu button
+   carries the same destinations so they stay reachable on a phone. */
+.landing-nav-menu{display:none;width:44px;height:42px;border:0;border-radius:16px;padding:0;align-items:center;justify-content:center;background:var(--lf-landing-nav-border);color:var(--lf-landing-paper);cursor:pointer}
+.landing-nav-menu svg{width:20px;height:20px}
+@media(max-width:900px){.landing-nav-menu{display:flex}}
+@media(max-width:700px){
+/* Heading was pinned to its 471px Figma width at every viewport, so ~120px of it sat
+   outside a 375px screen (175px at 320px), clipped by the page's overflow:hidden. */
+.landing-platforms>h2{width:auto;max-width:100%;height:auto;font-size:clamp(30px,8vw,44px);line-height:1.12}
+/* Card copy carried the same fixed 308px width as the desktop card, overflowing the
+   narrower mobile card and losing the end of every line. */
+.landing-platform-scroller h3,.landing-platform-scroller p{width:auto;max-width:100%}
+/* Button and caption were both percentage-anchored to the bottom and overlapped once
+   the section got short; pixel offsets keep them clear of each other at any height. */
+.landing-demo button{bottom:56px}
+.landing-demo>p{bottom:24px}
+/* The photo was absolutely positioned at a fixed top offset, which the taller mobile
+   heading pushed the buttons down into. It now flows under the copy as a fixed band. */
+.landing-service-choice article{height:auto;display:flex;flex-direction:column}
+.landing-service-copy{padding:48px 18px 36px}
+.landing-service-choice article:first-child .landing-service-image,
+.landing-service-choice article:last-child .landing-service-image{position:relative;left:auto;right:auto;top:auto;width:100%;height:280px;margin-top:auto}
+.landing-service-choice article:last-child .landing-service-image img{position:static;left:auto;top:auto;width:100%;height:100%;max-width:100%}
+.landing-service-choice article:first-child .landing-service-image img,
+.landing-service-choice article:last-child .landing-service-image img{object-position:center 22%}
+}
+/* The shared MenuItem highlight is a light surface, which erases the white text these
+   items use on the dark landing menu. */
+.landing-download-menu .landing-download-item[data-highlighted]{background:var(--lf-landing-nav-border);color:var(--lf-landing-paper)}
+.landing-download-menu .landing-download-item>a{flex:1;color:inherit;text-decoration:none}

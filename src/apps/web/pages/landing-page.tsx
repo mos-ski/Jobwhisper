@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Play, Plus } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Menu as MenuIcon, Play, Plus } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger, Menu, MenuContent, MenuItem, MenuTrigger } from '@/ui'
 import { downloadItems } from '@/mocks/account'
@@ -39,9 +39,20 @@ function DownloadMenu({ compact = false }: { readonly compact?: boolean }) {
   </MenuTrigger><MenuContent align="end" sideOffset={8} className="landing-download-menu">{downloadItems.map((item) => <MenuItem key={item.id} render={<a href={item.href} className="landing-download-item" />}><img src={item.imageSrc} alt="" /><span>{item.support}</span></MenuItem>)}</MenuContent></Menu>
 }
 
+/** The inline Features/Pricing/FAQ links are hidden below 900px, so the same destinations
+ *  move into this menu rather than being unreachable from a phone. */
+function NavLinksMenu() {
+  const navigate = useNavigate()
+  return <Menu><MenuTrigger render={<button className="landing-nav-menu" aria-label="Open menu" />}><MenuIcon aria-hidden="true" /></MenuTrigger><MenuContent align="end" className="landing-download-menu">
+    <MenuItem className="landing-download-item"><a href="#features">Features</a></MenuItem>
+    <MenuItem className="landing-download-item" onClick={() => navigate('/pricing')}>Pricing</MenuItem>
+    <MenuItem className="landing-download-item"><a href="#faq">FAQ</a></MenuItem>
+  </MenuContent></Menu>
+}
+
 function LandingNav() {
   const navigate = useNavigate()
-  return <nav className="landing-nav" aria-label="Main navigation"><img src="/landing-logo.svg" alt="Jobwhisper" className="landing-nav-logo" /><div className="landing-nav-links"><a href="#features">Features <ChevronDown aria-hidden="true" /></a><button onClick={() => navigate('/pricing')}>Pricing</button><a href="#faq">FAQ</a></div><div className="landing-nav-actions"><button className="landing-login" onClick={() => navigate('/v3/auth/sign-in')}>Log in</button><DownloadMenu compact /></div></nav>
+  return <nav className="landing-nav" aria-label="Main navigation"><img src="/landing-logo.svg" alt="Jobwhisper" className="landing-nav-logo" /><div className="landing-nav-links"><a href="#features">Features <ChevronDown aria-hidden="true" /></a><button onClick={() => navigate('/pricing')}>Pricing</button><a href="#faq">FAQ</a></div><div className="landing-nav-actions"><button className="landing-login" onClick={() => navigate('/v3/auth/sign-in')}>Log in</button><DownloadMenu compact /><NavLinksMenu /></div></nav>
 }
 
 function Hero() {
