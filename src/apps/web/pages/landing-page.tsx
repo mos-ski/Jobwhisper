@@ -17,10 +17,10 @@ const JOURNEY = [
 ] as const
 
 const PLATFORMS = [
-  { label: 'Desktop App', title: 'Stealth. Completely Undetectable', body: 'Take Jobwhisper into interviews, coding sessions and meetings with our desktop app, including Stealth Mode for a private, distraction-free Copilot experience.', href: '/v3/downloads', action: 'Download Now →', image: '/figma-landing/platform-desktop.svg', icon: 'arrow' },
-  { label: 'Browser Extension', title: 'Turn job boards into your job-search workspace.', body: 'Find and apply to roles directly across LinkedIn, Glassdoor, Workable and supported job sites, with Jobwhisper helping automate the repetitive parts of applying.', href: '/v3/downloads', action: 'Download From Store →', image: '/figma-landing/platform-browser.svg', icon: 'arrow' },
-  { label: 'Mobile App', title: 'Your job search on the go.', body: 'Keep Jobwhisper close for job search, preparation and career support right from your phone.', action: 'Coming soon', image: '/figma-landing/platform-mobile.svg', icon: 'plus' },
-  { label: 'Done For You', title: 'Or let a real person handle the search.', body: 'Want to skip the applications entirely? Our team can find relevant roles, tailor your resume and apply for you, with a dedicated success manager supporting your search.', href: '/v3/done-for-you', action: 'Explore Done For You →', image: '/figma-landing/platform-managed.svg', icon: 'plus' },
+  { label: 'Desktop App', title: 'Stealth. Completely Undetectable', body: 'Take Jobwhisper into interviews, coding sessions and meetings with our desktop app, including Stealth Mode for a private, distraction-free Copilot experience.', href: '/v3/downloads', action: 'Download Now →', image: '/figma-landing/platform-desktop.svg' },
+  { label: 'Browser Extension', title: 'Turn job boards into your job-search workspace.', body: 'Find and apply to roles directly across LinkedIn, Glassdoor, Workable and supported job sites, with Jobwhisper helping automate the repetitive parts of applying.', href: '/v3/downloads', action: 'Download From Store →', image: '/figma-landing/platform-browser.svg' },
+  { label: 'Mobile App', title: 'Your job search on the go.', body: 'Keep Jobwhisper close for job search, preparation and career support right from your phone.', action: 'Coming soon', image: '/figma-landing/platform-mobile.svg' },
+  { label: 'Done For You', title: 'Or let a real person handle the search.', body: 'Want to skip the applications entirely? Our team can find relevant roles, tailor your resume and apply for you, with a dedicated success manager supporting your search.', href: '/v3/done-for-you', action: 'Explore Done For You →', image: '/figma-landing/platform-managed.svg' },
 ] as const
 
 const FAQS = [
@@ -249,8 +249,30 @@ function CopilotShowcase() {
 }
 
 function PlatformCards() {
-  const scroll = (direction: number) => document.getElementById('landing-platform-scroller')?.scrollBy({ left: direction * 392, behavior: 'smooth' })
-  return <section className="landing-platforms"><h2>Jobwhisper,<br />wherever you need it.</h2><div className="landing-platform-scroller" id="landing-platform-scroller">{PLATFORMS.map((platform, index) => <article key={platform.label} data-platform={index}><div className="landing-platform-copy"><span>{platform.label}</span><h3>{platform.title}</h3><p>{platform.body}</p>{'href' in platform ? <a className="landing-platform-action" href={platform.href}>{platform.action}</a> : <span className="landing-platform-action landing-platform-coming">{platform.action}</span>}</div><img src={platform.image} alt="" /><span className="landing-platform-card-control" aria-hidden="true">{platform.icon === 'arrow' ? <ChevronRight /> : <Plus />}</span>{'href' in platform && <a className="landing-platform-card-link" href={platform.href} aria-label={`${platform.action.replace(' →', '')}: ${platform.label}`} />}</article>)}</div><div className="landing-scroll-controls"><button aria-label="Previous platform" onClick={() => scroll(-1)}><ChevronLeft /></button><button aria-label="Next platform" onClick={() => scroll(1)}><ChevronRight /></button></div></section>
+  // One card plus the gap, measured rather than assumed: the card is 372px on desktop and
+  // 340px at mobile widths, so a fixed step overshot by a card every time on a phone.
+  const scroll = (direction: number) => {
+    const scroller = document.getElementById('landing-platform-scroller')
+    if (!scroller) return
+    const card = scroller.firstElementChild
+    const step = card ? card.getBoundingClientRect().width + 20 : 392
+    scroller.scrollBy({ left: direction * step, behavior: 'smooth' })
+  }
+  return <section className="landing-platforms"><h2>Jobwhisper,<br />wherever you need it.</h2><div className="landing-platform-scroller" id="landing-platform-scroller">{PLATFORMS.map((platform, index) => {
+    const isLast = index === PLATFORMS.length - 1
+    return <article key={platform.label} data-platform={index}><div className="landing-platform-copy"><span>{platform.label}</span><h3>{platform.title}</h3><p>{platform.body}</p>{'href' in platform ? <a className="landing-platform-action" href={platform.href}>{platform.action}</a> : <span className="landing-platform-action landing-platform-coming">{platform.action}</span>}</div><img src={platform.image} alt="" />
+      {/* Moves the row itself rather than going anywhere, so it sits above the card-wide
+          link and stops the click from reaching it. The last card steps back instead. */}
+      <button
+        type="button"
+        className="landing-platform-card-control"
+        aria-label={isLast ? 'Previous platform' : 'Next platform'}
+        onClick={(event) => { event.preventDefault(); event.stopPropagation(); scroll(isLast ? -1 : 1) }}
+      >
+        {isLast ? <ChevronLeft aria-hidden="true" /> : <ChevronRight aria-hidden="true" />}
+      </button>
+      {'href' in platform && <a className="landing-platform-card-link" href={platform.href} aria-label={`${platform.action.replace(' →', '')}: ${platform.label}`} />}</article>
+  })}</div><div className="landing-scroll-controls"><button aria-label="Previous platform" onClick={() => scroll(-1)}><ChevronLeft /></button><button aria-label="Next platform" onClick={() => scroll(1)}><ChevronRight /></button></div></section>
 }
 
 function ServiceChoice() {
