@@ -148,3 +148,15 @@
 /* Below 560px the section's own padding drops to 18px (see its padding rule above), which
    the open card's width has to track or the chevron lane comes out 12px narrow. */
 @media(max-width:560px){.landing-journey-viewer{--journey-inset:18px}}
+
+/* Platform carousel, mobile: let the neighbouring cards show at the edges the way the
+   reference carousel does. The section's 24px inset plus the 20px gap left no room for a
+   sliver, so the scroller runs to the viewport edges and carries the inset itself as
+   padding; the card then centres on its snap with the cards either side breaking both
+   edges by about 23px. The heading and the paddles keep the section's own inset. */
+@media(max-width:700px){
+.landing-platforms{padding-inline:0}
+.landing-platforms>h2,.landing-platforms .landing-scroll-controls{margin-inline:24px}
+.landing-platform-scroller{padding-inline:43px;grid-auto-columns:calc(100vw - 86px)}
+.landing-platform-scroller article{scroll-snap-align:center}
+}
