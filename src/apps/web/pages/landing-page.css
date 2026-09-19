@@ -158,3 +158,25 @@
 .landing-platforms{height:auto}
 .landing-platforms .landing-scroll-controls{display:none}
 }
+
+/* Footer reveal. The footer is pinned to the bottom of the viewport behind the page, and
+   the content sheet — opaque, with the closing section's rounded bottom corners — slides
+   off it at the end of the scroll. The page element takes a spacer standing in for the
+   pinned footer's place in the flow, so there is that much left to scroll once the sheet
+   ends.
+
+   Gated on viewport height, not on the footer's measured height: pinning widens the footer
+   to the full viewport, which rewraps it taller, so a measured decision would flip as soon
+   as it was applied. The thresholds clear the pinned footer at each width — about 600px
+   from 801px up, about 700px below it — because a footer pinned taller than the viewport
+   can never have its last rows scrolled to. */
+@media(min-width:801px) and (min-height:660px){
+.figma-landing-page{padding-bottom:var(--landing-footer-h,600px)}
+.landing-content{position:relative;z-index:1;background:var(--lf-landing-paper);border-radius:0 0 36px 36px}
+.figma-landing-page .landing-footer{position:fixed;inset-inline:0;bottom:0;margin-top:0;z-index:0}
+}
+@media(max-width:800px) and (min-height:760px){
+.figma-landing-page{padding-bottom:var(--landing-footer-h,700px)}
+.landing-content{position:relative;z-index:1;background:var(--lf-landing-paper);border-radius:0 0 28px 28px}
+.figma-landing-page .landing-footer{position:fixed;inset-inline:0;bottom:0;margin-top:0;z-index:0}
+}

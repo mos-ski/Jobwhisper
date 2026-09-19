@@ -308,6 +308,35 @@ function Footer() {
   </footer>
 }
 
+/**
+ * Publishes the footer's height, which the stylesheet uses as the spacer standing in for
+ * the pinned footer's place in the flow. Measured rather than written down because it runs
+ * 600px to 700px depending on how the columns wrap.
+ *
+ * Deliberately does NOT decide whether to pin — the stylesheet does, from viewport height.
+ * Pinning widens the footer to the full viewport, which rewraps it taller, so a decision
+ * taken from its measured height would flip the moment it was applied and oscillate.
+ */
+function useFooterHeight() {
+  useEffect(() => {
+    const footer = document.querySelector('.landing-footer')
+    if (!(footer instanceof HTMLElement)) return
+    const root = document.documentElement
+
+    const sync = () => root.style.setProperty('--landing-footer-h', `${footer.offsetHeight}px`)
+    sync()
+    const observer = 'ResizeObserver' in window ? new ResizeObserver(sync) : null
+    observer?.observe(footer)
+    return () => {
+      observer?.disconnect()
+      root.style.removeProperty('--landing-footer-h')
+    }
+  }, [])
+}
+
 export function LandingPage() {
-  return <main className="figma-landing-page"><Hero /><Demo /><MomentCards /><Journey /><ProductFacts /><Testimonial /><CopilotShowcase /><PlatformCards /><ServiceChoice /><Faq /><Closing /><Footer /></main>
+  useFooterHeight()
+  // The sections are wrapped so they can carry the opaque sheet that covers the pinned
+  // footer — on the page element itself the background paints under the footer instead.
+  return <main className="figma-landing-page"><div className="landing-content"><Hero /><Demo /><MomentCards /><Journey /><ProductFacts /><Testimonial /><CopilotShowcase /><PlatformCards /><ServiceChoice /><Faq /><Closing /></div><Footer /></main>
 }
