@@ -111,8 +111,18 @@
 .landing-journey-description-shell{width:100%}
 /* Wide enough to read, narrow enough that its padding clears the paddles at the edges. */
 .landing-journey-description-shell[data-open='true']{width:min(68vw,300px)}
+/* Clears the neighbours past the paddles. Without it their rounded ends sit under the
+   paddles half-faded by the mask and read as a folded corner, not as more content. */
+.landing-journey-item:has(.landing-journey-description-shell[data-open='true']){margin-inline:64px}
 .landing-journey-description-shell[data-open='true'] .landing-journey-description{margin-top:0}
-.landing-journey-description{width:100%;padding:20px 22px;font-size:15px;line-height:1.5}
+/* Padding only while open: applied unconditionally it gave every collapsed pill a 40px
+   phantom box below it, floating the pills 40px above the open card's baseline. */
+.landing-journey-description{width:100%;font-size:15px;line-height:1.5;transition:none}
+.landing-journey-description-shell[data-open='true'] .landing-journey-description{padding:20px 22px}
+/* The card replaces its pill inside a fixed-height row, so there is no height to animate —
+   doing it anyway reflowed the copy line by line on the way open. Cross-fades instead. */
+.landing-journey-description-shell{transition:opacity 160ms ease-out}
+.landing-journey-description-shell[data-open='true']{grid-template-rows:1fr}
 .landing-journey-description-title,.landing-journey-description-short{display:inline}
 .landing-journey-description-title{font-weight:700}
 .landing-journey-description-full{display:none}
@@ -123,7 +133,7 @@
 .landing-journey-controls{display:contents}
 /* The row's mask makes it a stacking context, which otherwise paints a passing pill
    over the paddle it is scrolling behind. */
-.landing-journey-controls button{position:absolute;z-index:3;top:auto;bottom:calc(28px + var(--journey-card-h,130px)/2 - 17px);width:34px;height:34px;background:var(--lf-landing-paper);color:var(--lf-landing-ink);border-radius:50%;box-shadow:0 0 0 7px var(--lf-landing-bg)}
+.landing-journey-controls button{position:absolute;z-index:3;top:auto;bottom:calc(28px + var(--journey-card-h,130px)/2 - 17px);width:34px;height:34px;background:var(--lf-landing-paper);color:var(--lf-landing-ink);border-radius:50%;box-shadow:var(--lf-shadow-announcement)}
 .landing-journey-controls button:first-child{inset-inline-start:4px}
 .landing-journey-controls button:last-child{inset-inline-end:4px}
 .landing-journey-controls svg{width:18px;height:18px;transform:rotate(-90deg)}
