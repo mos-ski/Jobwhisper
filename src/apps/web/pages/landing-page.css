@@ -110,10 +110,11 @@
    carries the stage name as a lead-in — the pill it replaced was the only thing naming it. */
 .landing-journey-item:has(.landing-journey-description-shell[data-open='true'])>button{display:none}
 .landing-journey-description-shell{width:100%}
-/* Sized so the next stage's pill always breaks the panel edge by about 48px — its rounded
-   end and chevron, which is both the affordance that the row continues and the tap target
-   that opens it. */
-.landing-journey-description-shell[data-open='true']{width:min(70vw,300px)}
+/* Sized so the next stage's pill breaks the panel edge by exactly one chevron: a 44px round
+   tap target with none of its label showing. The row is 100vw - 36px of panel inset, and the
+   pill starts a 10px gap past the card, so 100vw - 90px leaves that 44px lane at any width.
+   A vw fraction cannot: at 76vw the lane was 44px at 375 but 31px at 320. */
+.landing-journey-description-shell[data-open='true']{width:calc(100vw - 90px)}
 .landing-journey-description-shell[data-open='true'] .landing-journey-description{margin-top:0}
 /* Padding only while open: applied unconditionally it gave every collapsed pill a 40px
    phantom box below it, floating the pills 40px above the open card's baseline. */
