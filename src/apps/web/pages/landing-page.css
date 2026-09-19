@@ -165,18 +165,29 @@
    pinned footer's place in the flow, so there is that much left to scroll once the sheet
    ends.
 
-   Gated on viewport height, not on the footer's measured height: pinning widens the footer
-   to the full viewport, which rewraps it taller, so a measured decision would flip as soon
-   as it was applied. The thresholds clear the pinned footer at each width — about 600px
-   from 801px up, about 700px below it — because a footer pinned taller than the viewport
-   can never have its last rows scrolled to. */
+   The spacer and the footer's height are one value. Measuring it instead went stale: the
+   measurement sets padding-bottom, which can toggle the page scrollbar, which resizes the
+   footer — a resize loop the browser drops notifications out of, leaving the var reading
+   1062px against a 600px footer.
+
+   Gated on viewport height rather than that height anyway: pinning widens the footer to the
+   full viewport, which rewraps it taller, so a measured decision would flip as applied.
+
+   Pointer widths only. A footer pinned taller than the viewport can never have its last
+   rows scrolled to, and once the links stack into narrow columns the footer runs to about
+   1100px — taller than any phone — so below 801px it stays in the flow. */
 @media(min-width:801px) and (min-height:660px){
-.figma-landing-page{padding-bottom:var(--landing-footer-h,600px)}
+.figma-landing-page{--landing-footer-h:600px;padding-bottom:var(--landing-footer-h)}
 .landing-content{position:relative;z-index:1;background:var(--lf-landing-paper);border-radius:0 0 36px 36px}
-.figma-landing-page .landing-footer{position:fixed;inset-inline:0;bottom:0;margin-top:0;z-index:0}
+.figma-landing-page .landing-footer{position:fixed;inset-inline:0;bottom:0;height:var(--landing-footer-h);margin-top:0;z-index:0}
 }
-@media(max-width:800px) and (min-height:760px){
-.figma-landing-page{padding-bottom:var(--landing-footer-h,700px)}
-.landing-content{position:relative;z-index:1;background:var(--lf-landing-paper);border-radius:0 0 28px 28px}
-.figma-landing-page .landing-footer{position:fixed;inset-inline:0;bottom:0;margin-top:0;z-index:0}
+
+/* Footer links: three columns rather than two, and half the vertical pitch. It was 58px —
+   a 44px tap-target minimum plus a 14px gap — which with these longer lists read as a
+   column of loose, unrelated lines. 29px on a pointer, where 44px targets buy nothing;
+   touch keeps its 44px. */
+@media(min-width:801px){
+.figma-landing-page .landing-footer>.landing-footer-inner,.figma-landing-page .landing-footer-meta{grid-template-columns:minmax(0,1fr) repeat(3,200px)}
+.figma-landing-page .landing-footer-column a{min-height:0}
+.figma-landing-page .landing-footer-column{gap:9px}
 }
