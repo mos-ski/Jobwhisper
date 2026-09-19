@@ -191,3 +191,17 @@
 .figma-landing-page .landing-footer-column a{min-height:0}
 .figma-landing-page .landing-footer-column{gap:9px}
 }
+
+/* Keep these after the desktop nav refinements above. Those refinements also set
+   display:flex and a 40px gap, which otherwise win the cascade on phone widths. */
+@media(max-width:560px){
+.figma-landing-page,.landing-content,.landing-hero{width:100%;max-width:100%;min-width:0}
+.landing-hero{min-height:680px;padding:20px 12px 64px}
+.landing-nav{width:100%;max-width:100%;min-width:0;gap:8px;padding:6px 6px 6px 12px;justify-content:space-between}
+.landing-nav-logo{width:120px;flex:0 0 auto}
+.landing-nav-actions{min-width:0;gap:8px}
+.landing-nav-actions .landing-login{display:none}
+.landing-hero-copy{margin-top:48px;gap:24px}
+.landing-hero h1{font-size:34px;line-height:1.08;font-weight:700;letter-spacing:-.04em}
+.landing-hero-copy>p{font-size:16px;line-height:1.4}
+}
