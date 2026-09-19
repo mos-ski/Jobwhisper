@@ -210,12 +210,11 @@ const FACTS_COPY = [
 function Journey() {
   const [active, setActive] = useState(0)
   const navRef = useRef<HTMLDivElement>(null)
-  const viewerRef = useRef<HTMLDivElement>(null)
   const cycleFeature = (direction: -1 | 1) => setActive((current) => (current + direction + JOURNEY.length) % JOURNEY.length)
 
-  // Where the stages are a horizontal row (mobile), keep the open card in view when it is
-  // opened from a paddle rather than by tapping. The overflow check keeps this off the
-  // desktop column, which does not scroll sideways.
+  // Where the stages are a horizontal row (mobile), bring the card a tap opened fully into
+  // view. The overflow check keeps this off the desktop column, which does not scroll
+  // sideways and would otherwise have the page jump on every change.
   useEffect(() => {
     const nav = navRef.current
     if (!nav || nav.scrollWidth <= nav.clientWidth) return
@@ -223,24 +222,7 @@ function Journey() {
     if (item instanceof HTMLElement) item.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
   }, [active])
 
-  // Publishes the open card's height so the paddles can sit on its centre line. Cards run
-  // 144px to 231px, so a fixed offset leaves them floating in space above the short ones.
-  // Observed rather than measured once, to track the card through its open transition.
-  useEffect(() => {
-    const nav = navRef.current
-    const viewer = viewerRef.current
-    if (!nav || !viewer) return
-    const card = nav.querySelector('.landing-journey-description-shell[data-open="true"]')
-    if (!(card instanceof HTMLElement)) return
-    const sync = () => viewer.style.setProperty('--journey-card-h', `${Math.round(card.getBoundingClientRect().height)}px`)
-    sync()
-    if (!('ResizeObserver' in window)) return
-    const observer = new ResizeObserver(sync)
-    observer.observe(card)
-    return () => observer.disconnect()
-  }, [active])
-
-  return <section className="landing-journey"><div className="landing-section-intro"><p>Your entire job search</p><h2>Start to finish.</h2><JourneyRevealText /></div><div className="landing-journey-viewer" ref={viewerRef}><div className="landing-journey-controls"><button aria-label="Previous feature" onClick={() => cycleFeature(-1)}><ChevronUp aria-hidden="true" /></button><button aria-label="Next feature" onClick={() => cycleFeature(1)}><ChevronDown aria-hidden="true" /></button></div><div className="landing-journey-nav" ref={navRef} aria-label="Job search stages">{JOURNEY.map(([title, description, shortDescription], index) => <div className="landing-journey-item" key={title}><button aria-expanded={active === index} aria-controls={`journey-description-${index}`} onClick={() => setActive(index)}><Plus aria-hidden="true" />{title}</button><div className="landing-journey-description-shell" data-open={active === index}><div className="landing-journey-description" id={`journey-description-${index}`} role="region" aria-label={`${title} details`} aria-hidden={active !== index}><strong className="landing-journey-description-title">{title}.</strong> <span className="landing-journey-description-full">{description}</span><span className="landing-journey-description-short">{shortDescription}</span></div></div></div>)}</div><div className="landing-journey-stage" role="region" aria-label={`${JOURNEY[active][0]} preview`}><JourneyPreview active={active} /></div></div></section>
+  return <section className="landing-journey"><div className="landing-section-intro"><p>Your entire job search</p><h2>Start to finish.</h2><JourneyRevealText /></div><div className="landing-journey-viewer"><div className="landing-journey-controls"><button aria-label="Previous feature" onClick={() => cycleFeature(-1)}><ChevronUp aria-hidden="true" /></button><button aria-label="Next feature" onClick={() => cycleFeature(1)}><ChevronDown aria-hidden="true" /></button></div><div className="landing-journey-nav" ref={navRef} aria-label="Job search stages">{JOURNEY.map(([title, description, shortDescription], index) => <div className="landing-journey-item" key={title}><button aria-expanded={active === index} aria-controls={`journey-description-${index}`} onClick={() => setActive(index)}><Plus aria-hidden="true" />{title}</button><div className="landing-journey-description-shell" data-open={active === index}><div className="landing-journey-description" id={`journey-description-${index}`} role="region" aria-label={`${title} details`} aria-hidden={active !== index}><strong className="landing-journey-description-title">{title}.</strong> <span className="landing-journey-description-full">{description}</span><span className="landing-journey-description-short">{shortDescription}</span></div></div></div>)}</div><div className="landing-journey-stage" role="region" aria-label={`${JOURNEY[active][0]} preview`}><JourneyPreview active={active} /></div></div></section>
 }
 
 function ProductFacts() {

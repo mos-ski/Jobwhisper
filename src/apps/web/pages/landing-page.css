@@ -98,7 +98,7 @@
 /* Inset past the paddles: the first and last cards cannot be scrolled off their own edge,
    so without this the paddle sits on their copy. The mask fades the pills either side of the
    open card into the panel, so the row reads as more content rather than a clipped pill. */
-.landing-journey-nav{order:2;width:100%;min-height:180px;margin-inline:0;padding-inline:44px;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 22px,#000 calc(100% - 22px),transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 22px,#000 calc(100% - 22px),transparent 100%);flex-direction:row;flex-wrap:nowrap;align-items:flex-end;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:none}
+.landing-journey-nav{order:2;width:100%;min-height:180px;margin-inline:0;padding-inline:18px;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 22px,#000 calc(100% - 22px),transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 22px,#000 calc(100% - 22px),transparent 100%);flex-direction:row;flex-wrap:nowrap;align-items:flex-end;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:none}
 .landing-journey-nav::-webkit-scrollbar{display:none}
 /* The base rule sets width:100%, which in a row resolves against the track and makes every
    collapsed pill as wide as the card. Each item sizes to its own content instead. */
@@ -109,11 +109,10 @@
    carries the stage name as a lead-in — the pill it replaced was the only thing naming it. */
 .landing-journey-item:has(.landing-journey-description-shell[data-open='true'])>button{display:none}
 .landing-journey-description-shell{width:100%}
-/* Wide enough to read, narrow enough that its padding clears the paddles at the edges. */
-.landing-journey-description-shell[data-open='true']{width:min(68vw,300px)}
-/* Clears the neighbours past the paddles. Without it their rounded ends sit under the
-   paddles half-faded by the mask and read as a folded corner, not as more content. */
-.landing-journey-item:has(.landing-journey-description-shell[data-open='true']){margin-inline:64px}
+.landing-journey-description-shell[data-open='true']{width:min(80vw,340px)}
+/* A little air either side of the open card so the neighbours read as the next stage
+   rather than as something attached to it. */
+.landing-journey-item:has(.landing-journey-description-shell[data-open='true']){margin-inline:14px}
 .landing-journey-description-shell[data-open='true'] .landing-journey-description{margin-top:0}
 /* Padding only while open: applied unconditionally it gave every collapsed pill a 40px
    phantom box below it, floating the pills 40px above the open card's baseline. */
@@ -126,15 +125,8 @@
 .landing-journey-description-title,.landing-journey-description-short{display:inline}
 .landing-journey-description-title{font-weight:700}
 .landing-journey-description-full{display:none}
-/* Paddles sit at the viewer's edges on the open card's centre line, like the product
-   viewer's — display:contents drops the flex row so each one positions against the viewer,
-   and --journey-card-h (published from the open card) keeps them on that line whichever
-   stage is open instead of parked at a fixed offset over empty space. */
-.landing-journey-controls{display:contents}
-/* The row's mask makes it a stacking context, which otherwise paints a passing pill
-   over the paddle it is scrolling behind. */
-.landing-journey-controls button{position:absolute;z-index:3;top:auto;bottom:calc(28px + var(--journey-card-h,130px)/2 - 17px);width:34px;height:34px;background:var(--lf-landing-paper);color:var(--lf-landing-ink);border-radius:50%;box-shadow:var(--lf-shadow-announcement)}
-.landing-journey-controls button:first-child{inset-inline-start:4px}
-.landing-journey-controls button:last-child{inset-inline-end:4px}
-.landing-journey-controls svg{width:18px;height:18px;transform:rotate(-90deg)}
+/* No paddles here: at this width they can only sit flush against the panel's edges, where
+   a white circle on a white page notches the blue card, and they are redundant next to a
+   row you swipe. Advancing is swipe, then tap. */
+.landing-journey-controls{display:none}
 }
