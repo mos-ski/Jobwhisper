@@ -156,7 +156,15 @@
    edges by about 23px. The heading and the paddles keep the section's own inset. */
 @media(max-width:700px){
 .landing-platforms{padding-inline:0}
-.landing-platforms>h2,.landing-platforms .landing-scroll-controls{margin-inline:24px}
+.landing-platforms>h2{margin-inline:24px}
+/* The cards either side now break both edges, which says the row scrolls, and it swipes —
+   the paddles were saying the same thing a second time. */
+.landing-platforms .landing-scroll-controls{display:none}
 .landing-platform-scroller{padding-inline:43px;grid-auto-columns:calc(100vw - 86px)}
-.landing-platform-scroller article{scroll-snap-align:center}
+/* The card was a fixed 516px with its illustration absolutely placed at a top offset tuned
+   for the 372px desktop card. On a narrower card the copy wraps taller, ran past that
+   height and the illustration landed on top of the action link. The card now grows with its
+   copy and the illustration sits in flow at the bottom of it. */
+.landing-platform-scroller article{height:auto;min-height:516px;display:flex;flex-direction:column;scroll-snap-align:center}
+.landing-platform-scroller article[data-platform]>img{position:relative;left:auto;top:auto;margin:24px 0 0 -24px;align-self:flex-start}
 }
