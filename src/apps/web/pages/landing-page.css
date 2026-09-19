@@ -79,8 +79,8 @@
 .landing-download-menu .landing-download-item>a{flex:1;color:inherit;text-decoration:none}
 
 /* Desktop keeps the stage name on the pill above the open card, so the card's own lead-in
-   would just repeat it there. */
-.landing-journey-description-title{display:none}
+   would just repeat it there, and has room for the full description. */
+.landing-journey-description-title,.landing-journey-description-short{display:none}
 
 /* Journey viewer, mobile: follow the product-viewer pattern — the preview leads at full
    width and the feature pills sit under it in a row you swipe. Previously the stack ran
@@ -92,16 +92,13 @@
    stage is open at a time, so the row always reads as pills on one baseline with a single
    card standing in place of one of them, and the baseline never moves as you switch. */
 @media(max-width:900px){
-/* Full-bleed like the product viewer it copies: 92px of a 375px screen goes to the two
-   paddles, which an inset card cannot spare without pushing them onto the copy. */
-.landing-journey{padding-inline:0}
-.landing-journey>.landing-section-intro{padding-inline:18px}
-.landing-journey-viewer{width:100%;border-radius:0;padding:24px 0 28px;gap:18px}
+.landing-journey-viewer{padding:24px 0 28px;gap:18px}
 .landing-journey-stage{order:1;width:calc(100% - 36px);height:auto;aspect-ratio:1/1;justify-self:center}
 .journey-product{transform:none}
 /* Inset past the paddles: the first and last cards cannot be scrolled off their own edge,
-   so without this the paddle sits on their copy. */
-.landing-journey-nav{order:2;width:100%;min-height:264px;margin-inline:0;padding-inline:52px;flex-direction:row;flex-wrap:nowrap;align-items:flex-end;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:none}
+   so without this the paddle sits on their copy. The mask fades the pills either side of the
+   open card into the panel, so the row reads as more content rather than a clipped pill. */
+.landing-journey-nav{order:2;width:100%;min-height:180px;margin-inline:0;padding-inline:44px;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 22px,#000 calc(100% - 22px),transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 22px,#000 calc(100% - 22px),transparent 100%);flex-direction:row;flex-wrap:nowrap;align-items:flex-end;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:none}
 .landing-journey-nav::-webkit-scrollbar{display:none}
 /* The base rule sets width:100%, which in a row resolves against the track and makes every
    collapsed pill as wide as the card. Each item sizes to its own content instead. */
@@ -113,17 +110,21 @@
 .landing-journey-item:has(.landing-journey-description-shell[data-open='true'])>button{display:none}
 .landing-journey-description-shell{width:100%}
 /* Wide enough to read, narrow enough that its padding clears the paddles at the edges. */
-.landing-journey-description-shell[data-open='true']{width:min(70vw,330px)}
+.landing-journey-description-shell[data-open='true']{width:min(68vw,300px)}
 .landing-journey-description-shell[data-open='true'] .landing-journey-description{margin-top:0}
 .landing-journey-description{width:100%;padding:20px 22px;font-size:15px;line-height:1.5}
-.landing-journey-description-title{display:inline;font-weight:700}
+.landing-journey-description-title,.landing-journey-description-short{display:inline}
+.landing-journey-description-title{font-weight:700}
+.landing-journey-description-full{display:none}
 /* Paddles sit at the viewer's edges on the open card's centre line, like the product
    viewer's — display:contents drops the flex row so each one positions against the viewer,
    and --journey-card-h (published from the open card) keeps them on that line whichever
    stage is open instead of parked at a fixed offset over empty space. */
 .landing-journey-controls{display:contents}
-.landing-journey-controls button{position:absolute;top:auto;bottom:calc(28px + var(--journey-card-h,200px)/2 - 20px);width:40px;height:40px;background:var(--lf-landing-paper);color:var(--lf-landing-ink);box-shadow:var(--lf-shadow-announcement)}
-.landing-journey-controls button:first-child{inset-inline-start:6px}
-.landing-journey-controls button:last-child{inset-inline-end:6px}
-.landing-journey-controls svg{width:22px;height:22px;transform:rotate(-90deg)}
+/* The row's mask makes it a stacking context, which otherwise paints a passing pill
+   over the paddle it is scrolling behind. */
+.landing-journey-controls button{position:absolute;z-index:3;top:auto;bottom:calc(28px + var(--journey-card-h,130px)/2 - 17px);width:34px;height:34px;background:var(--lf-landing-paper);color:var(--lf-landing-ink);border-radius:50%;box-shadow:0 0 0 7px var(--lf-landing-bg)}
+.landing-journey-controls button:first-child{inset-inline-start:4px}
+.landing-journey-controls button:last-child{inset-inline-end:4px}
+.landing-journey-controls svg{width:18px;height:18px;transform:rotate(-90deg)}
 }

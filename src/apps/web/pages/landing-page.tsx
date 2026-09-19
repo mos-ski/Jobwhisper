@@ -5,13 +5,15 @@ import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTri
 import { downloadItems } from '@/mocks/account'
 import './landing-page.css'
 
+/** [title, full description, short description]. The short one runs on mobile, where the
+ *  card opens in place of its own pill and a paragraph this long stops reading as a tab. */
 const JOURNEY = [
-  ['AI Resume Builder', 'Start with a resume built for the job you want. Tell us the role you are going after. Jobwhisper helps you build or tailor your resume around it, highlighting the experience and skills that matter most.'],
-  ['AI Job Application', 'Find roles that match your experience, compare fit at a glance, and move the applications you choose into one focused workflow.'],
-  ['Interview Copilot', 'Bring real-time, resume-aware answers into the live conversation, privately and exactly when you need them.'],
-  ['Interview Prep', 'Practice realistic questions with an AI interviewer before the real conversation begins.'],
-  ['Meeting Copilot', 'Get real-time notes, talking points and summaries during meetings, so you stay focused on the conversation instead of scrambling to take notes.'],
-  ['Coding Interview', 'Live AI assistance during coding interviews. Real-time hints as you work through the problem.'],
+  ['AI Resume Builder', 'Start with a resume built for the job you want. Tell us the role you are going after. Jobwhisper helps you build or tailor your resume around it, highlighting the experience and skills that matter most.', 'Start with a resume built for the job you want, tailored around the role you are going after.'],
+  ['AI Job Application', 'Find roles that match your experience, compare fit at a glance, and move the applications you choose into one focused workflow.', 'Find roles that match your experience and move the ones you choose into one focused workflow.'],
+  ['Interview Copilot', 'Bring real-time, resume-aware answers into the live conversation, privately and exactly when you need them.', 'Real-time, resume-aware answers in the live conversation, exactly when you need them.'],
+  ['Interview Prep', 'Practice realistic questions with an AI interviewer before the real conversation begins.', 'Practice realistic questions with an AI interviewer before the real conversation begins.'],
+  ['Meeting Copilot', 'Get real-time notes, talking points and summaries during meetings, so you stay focused on the conversation instead of scrambling to take notes.', 'Real-time notes, talking points and summaries, so you stay in the conversation.'],
+  ['Coding Interview', 'Live AI assistance during coding interviews. Real-time hints as you work through the problem.', 'Live AI assistance during coding interviews, with hints as you work through the problem.'],
 ] as const
 
 const PLATFORMS = [
@@ -238,7 +240,7 @@ function Journey() {
     return () => observer.disconnect()
   }, [active])
 
-  return <section className="landing-journey"><div className="landing-section-intro"><p>Your entire job search</p><h2>Start to finish.</h2><JourneyRevealText /></div><div className="landing-journey-viewer" ref={viewerRef}><div className="landing-journey-controls"><button aria-label="Previous feature" onClick={() => cycleFeature(-1)}><ChevronUp aria-hidden="true" /></button><button aria-label="Next feature" onClick={() => cycleFeature(1)}><ChevronDown aria-hidden="true" /></button></div><div className="landing-journey-nav" ref={navRef} aria-label="Job search stages">{JOURNEY.map(([title, description], index) => <div className="landing-journey-item" key={title}><button aria-expanded={active === index} aria-controls={`journey-description-${index}`} onClick={() => setActive(index)}><Plus aria-hidden="true" />{title}</button><div className="landing-journey-description-shell" data-open={active === index}><div className="landing-journey-description" id={`journey-description-${index}`} role="region" aria-label={`${title} details`} aria-hidden={active !== index}><strong className="landing-journey-description-title">{title}.</strong> {description}</div></div></div>)}</div><div className="landing-journey-stage" role="region" aria-label={`${JOURNEY[active][0]} preview`}><JourneyPreview active={active} /></div></div></section>
+  return <section className="landing-journey"><div className="landing-section-intro"><p>Your entire job search</p><h2>Start to finish.</h2><JourneyRevealText /></div><div className="landing-journey-viewer" ref={viewerRef}><div className="landing-journey-controls"><button aria-label="Previous feature" onClick={() => cycleFeature(-1)}><ChevronUp aria-hidden="true" /></button><button aria-label="Next feature" onClick={() => cycleFeature(1)}><ChevronDown aria-hidden="true" /></button></div><div className="landing-journey-nav" ref={navRef} aria-label="Job search stages">{JOURNEY.map(([title, description, shortDescription], index) => <div className="landing-journey-item" key={title}><button aria-expanded={active === index} aria-controls={`journey-description-${index}`} onClick={() => setActive(index)}><Plus aria-hidden="true" />{title}</button><div className="landing-journey-description-shell" data-open={active === index}><div className="landing-journey-description" id={`journey-description-${index}`} role="region" aria-label={`${title} details`} aria-hidden={active !== index}><strong className="landing-journey-description-title">{title}.</strong> <span className="landing-journey-description-full">{description}</span><span className="landing-journey-description-short">{shortDescription}</span></div></div></div>)}</div><div className="landing-journey-stage" role="region" aria-label={`${JOURNEY[active][0]} preview`}><JourneyPreview active={active} /></div></div></section>
 }
 
 function ProductFacts() {
