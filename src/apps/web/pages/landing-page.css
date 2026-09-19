@@ -78,22 +78,44 @@
 .landing-download-menu .landing-download-item[data-highlighted]{background:var(--lf-landing-nav-border);color:var(--lf-landing-paper)}
 .landing-download-menu .landing-download-item>a{flex:1;color:inherit;text-decoration:none}
 
+/* Desktop keeps the stage name on the pill above the open card, so the card's own lead-in
+   would just repeat it there. */
+.landing-journey-description-title{display:none}
+
 /* Journey viewer, mobile: follow the product-viewer pattern — the preview leads at full
    width and the feature pills sit under it in a row you swipe. Previously the stack ran
    arrows, six stacked pills, then the preview last, scaled to 64% into a 194px thumbnail
-   at the bottom of the section whose product screenshot nobody could read. */
+   at the bottom of the section whose product screenshot nobody could read.
+
+   The row is bottom-aligned inside a fixed height, so the open card grows upward into the
+   reserved space and replaces its own pill rather than hanging off the row. Exactly one
+   stage is open at a time, so the row always reads as pills on one baseline with a single
+   card standing in place of one of them, and the baseline never moves as you switch. */
 @media(max-width:900px){
 .landing-journey-viewer{padding:24px 18px 28px;gap:18px}
 .landing-journey-stage{order:1;width:100%;height:auto;aspect-ratio:1/1;justify-self:stretch}
 .journey-product{transform:none}
-/* The paddle arrows duplicate the swipe row they now sit above. */
-.landing-journey-controls{display:none}
-.landing-journey-nav{order:2;width:calc(100% + 36px);margin-inline:-18px;padding-inline:18px;flex-direction:row;flex-wrap:nowrap;align-items:flex-start;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:none}
+.landing-journey-nav{order:2;width:calc(100% + 36px);min-height:264px;margin-inline:-18px;padding-inline:18px;flex-direction:row;flex-wrap:nowrap;align-items:flex-end;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:none}
 .landing-journey-nav::-webkit-scrollbar{display:none}
-.landing-journey-item{flex:0 0 auto;max-width:none;scroll-snap-align:center}
+/* The base rule sets width:100%, which in a row resolves against the track and makes every
+   collapsed pill as wide as the card. Each item sizes to its own content instead. */
+.landing-journey-item{flex:0 0 auto;width:auto;max-width:none;justify-content:flex-end;scroll-snap-align:center}
+.landing-journey-description-shell:not([data-open='true']){width:0}
 .landing-journey-nav button{white-space:nowrap}
-/* Tapping a pill opens it into a card in place, the way the viewer's controls expand. */
+/* The open card takes the pill's place on the baseline instead of sitting under it, so it
+   carries the stage name as a lead-in — the pill it replaced was the only thing naming it. */
+.landing-journey-item:has(.landing-journey-description-shell[data-open='true'])>button{display:none}
 .landing-journey-description-shell{width:100%}
-.landing-journey-description-shell[data-open='true']{width:min(78vw,360px)}
-.landing-journey-description{width:100%;padding-inline:22px}
+/* Leaves the next control its own lane at the end of the row rather than sitting on the
+   card's last few characters. */
+.landing-journey-description-shell[data-open='true']{width:min(68vw,320px)}
+.landing-journey-description-shell[data-open='true'] .landing-journey-description{margin-top:0}
+.landing-journey-description{width:100%;padding:22px;font-size:15px;line-height:1.46}
+.landing-journey-description-title{display:inline;font-weight:700}
+/* Steps to the next stage from the end of the row, the way the product viewer's control
+   group does; the previous control is redundant next to a row you can also swipe back. */
+.landing-journey-controls{display:flex;position:absolute;inset-inline-start:auto;inset-inline-end:8px;top:auto;bottom:136px;transform:none;flex-direction:row;gap:0}
+.landing-journey-controls button:first-child{display:none}
+.landing-journey-controls button:last-child{width:44px;height:44px;background:var(--lf-landing-paper);color:var(--lf-landing-ink);box-shadow:var(--lf-shadow-announcement)}
+.landing-journey-controls button:last-child svg{transform:rotate(-90deg)}
 }
