@@ -15,15 +15,15 @@ The pages explain how each product helps a job seeker achieve a concrete outcome
 
 Each desktop page uses a two-column composition inspired by the supplied reference while retaining Jobwhisper's visual system.
 
-- The left column occupies roughly 38% of the viewport and remains pinned while the user reads the page. It contains the Jobwhisper navigation, product name, outcome-led headline, concise explanation, primary action, and section progress.
+- The left column occupies roughly 38% of the viewport and remains pinned while the user reads the page. It contains the Jobwhisper navigation, product name, outcome-led headline, the complete end-to-end product explanation, a short workflow, the expected outcome, a primary action, and a product-specific FAQ.
 - A quiet divider separates the columns.
-- The right column occupies roughly 62% and contains the scroll narrative. Each section combines an outcome, a short explanation, a small sequence of steps or capabilities, and a product image.
-- The active right-hand section updates the left-hand progress indicator. Content remains readable and usable if JavaScript is unavailable; active-state enhancement is optional rather than structural.
+- The right column occupies roughly 62% and contains the scroll narrative. Each section represents one module or stage, with a short module name, one outcome-led sentence, and a dominant product screenshot.
+- Right-hand modules appear sequentially and visibly combine into the complete product workflow. Content remains readable and usable if JavaScript is unavailable.
 - The shared landing-page footer closes every page.
 
 ## Responsive behavior
 
-At tablet and phone widths, the page becomes one natural document flow. The left introduction is no longer sticky and appears before the feature narrative. The right column loses its independent-scroll treatment, sections stack vertically, images remain inside the viewport, and every action retains a minimum 44px target. No information is hidden behind hover.
+At tablet and phone widths, the page becomes one natural document flow: product explanation, module screenshots, FAQ, and CTA. The left introduction is no longer sticky, images remain inside the viewport, and every action retains a minimum 44px target. No information is hidden behind hover.
 
 ## Product narratives
 
@@ -53,14 +53,14 @@ Narrative sections: set role preferences; review matched jobs; choose applicatio
 
 ## Content and visual rules
 
-- Copy leads with user outcomes, not internal feature names.
+- Copy leads with user outcomes, not internal feature names. The left column is comprehensive; right-side captions are deliberately brief.
 - Pages reuse the landing navigation, typography, semantic color tokens, controls, spacing rhythm, and rounded media treatment.
 - Product screenshots use existing local artwork where it accurately represents the described step. Missing views use composed interface demonstrations built from existing app patterns rather than generic decorative illustrations.
-- Motion is limited to the active-section transition and image entrance. Reduced-motion users receive an immediate state change.
+- Motion is limited to subtle image entrance. Reduced-motion users receive an immediate state change.
 
 ## Architecture
 
-- A pure feature view receives product title, outcome copy, CTA, sections, active section, and callbacks through props.
+- A pure feature view receives product title, outcome copy, workflow, FAQ, CTA, sections, and callbacks through props.
 - Product content is typed and stored outside the reusable view.
 - The marketing app page wires routing and active-section behavior.
 - Footer links point to stable public routes for each product.

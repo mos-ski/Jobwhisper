@@ -33,6 +33,9 @@ describe('LandingPage', () => {
         name: /Pass Your Next Interview\.\s*Land the Job\. Or Don’t Pay!/,
       }),
     ).toBeInTheDocument()
+    expect(screen.getByText(/We’ve moved on from Lightforth/)).toBeInTheDocument()
+    expect(screen.getByText(/Join 57,000\+ job seekers/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Sign Up' })).toBeInTheDocument()
     expect(
       screen.getByText(
         /JobWhisper Copilot listens to every interview question and instantly gives you a tailored answer/,

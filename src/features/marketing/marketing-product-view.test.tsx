@@ -9,6 +9,19 @@ const product: MarketingProduct = {
   label: 'AI Resume Builder',
   headline: 'Turn your experience into the resume this role needs.',
   summary: 'Build a focused resume around the job you want.',
+  overview: [
+    'Jobwhisper turns your existing experience into a resume shaped around a specific opportunity.',
+    'You stay in control of every change before exporting the finished document.',
+  ],
+  workflow: [
+    { title: 'Choose the role', body: 'Paste the job description you want to target.' },
+    { title: 'Review the draft', body: 'Keep only the suggestions that sound like you.' },
+  ],
+  outcome: 'A focused resume that makes your fit easier to understand.',
+  faqs: [
+    { question: 'Will Jobwhisper invent experience?', answer: 'No. Suggestions stay grounded in the information you provide.' },
+    { question: 'Can I edit the result?', answer: 'Yes. Every section remains editable before export.' },
+  ],
   ctaLabel: 'Build my resume',
   ctaHref: '/v3/resume',
   sections: [
@@ -46,9 +59,13 @@ describe('MarketingProductView', () => {
     )
 
     expect(screen.getByRole('heading', { level: 1, name: product.headline })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: product.ctaLabel })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Go to Jobwhisper home' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Choose the role you want next.' })).toHaveAttribute('aria-current', 'step')
+    expect(screen.getByRole('button', { name: 'Get Started' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Jobwhisper home' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'How it works' })).toBeInTheDocument()
+    expect(screen.getByText(product.outcome, { exact: false })).toBeInTheDocument()
+    expect(screen.getByText('Will Jobwhisper invent experience?')).toBeInTheDocument()
+    expect(screen.getAllByRole('navigation', { name: 'Main navigation' })).toHaveLength(1)
+    expect(screen.getByRole('link', { name: 'Download Now' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Leave with a stronger application.' })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'Finished resume ready to export' })).toBeInTheDocument()
   })

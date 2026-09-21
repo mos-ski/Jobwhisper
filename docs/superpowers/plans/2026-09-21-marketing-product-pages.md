@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build four responsive public product pages with a pinned outcome summary on the left and a scroll-led product narrative on the right.
+**Goal:** Build four responsive public product pages with complete outcome-based product education and FAQ on the pinned left, plus a sequential module screenshot narrative on the right.
 
-**Architecture:** A pure `MarketingProductView` in `src/features/marketing/` renders a typed product model and exposes active-section callbacks. A page-level wrapper in `src/apps/web/pages/` owns active-section state and supplies one of four static product definitions. The root router exposes stable public URLs, and the landing footer links to them.
+**Architecture:** A pure `MarketingProductView` in `src/features/marketing/` renders a typed product model containing overview, workflow, outcome, FAQ, and visual modules. A page-level wrapper in `src/apps/web/pages/` supplies one of four static product definitions. The root router exposes stable public URLs, and the landing footer links to them.
 
 **Tech Stack:** React 18, TypeScript strict mode, React Router, CSS with semantic tokens, Vitest, Testing Library.
 

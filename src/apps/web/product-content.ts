@@ -8,6 +8,22 @@ export const PRODUCTS: Readonly<Record<ProductSlug, MarketingProduct>> = {
     label: 'AI Resume Builder',
     headline: 'A resume that makes the fit obvious.',
     summary: 'Turn the experience you already have into a focused resume built around the role you want next.',
+    overview: [
+      'Jobwhisper reads the role alongside your real experience, then helps you shape a resume around what that employer needs to see.',
+      'Nothing is sent automatically. You review the language, keep what sounds like you, and export only when the document is ready.',
+    ],
+    workflow: [
+      { title: 'Set the target', body: 'Paste the job description or describe the role you want.' },
+      { title: 'Bring your experience', body: 'Upload an existing resume or build your history from scratch.' },
+      { title: 'Tailor the story', body: 'Review focused suggestions for your summary, skills, and experience.' },
+      { title: 'Finish and export', body: 'Choose a layout, make final edits, and download the result.' },
+    ],
+    outcome: 'A credible, role-specific resume that helps a recruiter understand your fit faster.',
+    faqs: [
+      { question: 'Will Jobwhisper invent experience?', answer: 'No. Suggestions stay grounded in the experience and context you provide.' },
+      { question: 'Can I edit every suggestion?', answer: 'Yes. You can accept, reject, rewrite, or ignore every change before export.' },
+      { question: 'Can I create more than one version?', answer: 'Yes. Create a separate tailored version for each role you want to pursue.' },
+    ],
     ctaLabel: 'Build my resume',
     ctaHref: '/v3/resume',
     sections: [
@@ -54,6 +70,23 @@ export const PRODUCTS: Readonly<Record<ProductSlug, MarketingProduct>> = {
     label: 'Interview Copilot',
     headline: 'Know what to say when the question lands.',
     summary: 'Get relevant, real-time answer support grounded in your resume, the role, and the conversation happening now.',
+    overview: [
+      'Interview Copilot listens during a live conversation and turns each question into useful talking points grounded in your own background.',
+      'The support stays beside the call, so you can focus on the interviewer instead of searching notes or memorizing scripts.',
+    ],
+    workflow: [
+      { title: 'Add your context', body: 'Upload your resume and the job description before the interview.' },
+      { title: 'Choose your response style', body: 'Set the tone, length, and level of detail you can use naturally.' },
+      { title: 'Start the session', body: 'Share the conversation and keep Copilot visible beside your call.' },
+      { title: 'Use the talking points', body: 'Read the response, then answer in your own words.' },
+      { title: 'Review afterward', body: 'Return to difficult moments and improve for the next conversation.' },
+    ],
+    outcome: 'More relevant answers, fewer blank moments, and the confidence to stay present in the interview.',
+    faqs: [
+      { question: 'Does Copilot answer for me?', answer: 'No. It gives you relevant talking points that you express in your own words.' },
+      { question: 'What information does it use?', answer: 'Your resume, the job description, your preferences, and the live conversation.' },
+      { question: 'Can the interviewer see it?', answer: 'Copilot is designed to stay in your own workspace while you remain on the call.' },
+    ],
     ctaLabel: 'Set up my Copilot',
     ctaHref: '/v3/interview-copilot',
     sections: [
@@ -100,6 +133,23 @@ export const PRODUCTS: Readonly<Record<ProductSlug, MarketingProduct>> = {
     label: 'Interview Prep',
     headline: 'Practice until the real interview feels familiar.',
     summary: 'Rehearse realistic questions for the role, get specific feedback, and walk into the conversation knowing what to improve.',
+    overview: [
+      'Interview Prep recreates the kind of conversation you are preparing for instead of giving you a static list of generic questions.',
+      'You answer out loud, handle follow-ups, and receive specific coaching you can use in the next practice round.',
+    ],
+    workflow: [
+      { title: 'Describe the interview', body: 'Add the role, company, interview type, and difficulty.' },
+      { title: 'Choose an interviewer', body: 'Select a voice and conversation style that feels natural.' },
+      { title: 'Practice out loud', body: 'Answer realistic questions and adaptive follow-ups.' },
+      { title: 'Review your feedback', body: 'See where the answer was clear and where it lost impact.' },
+      { title: 'Repeat the weak spots', body: 'Retry difficult questions until the response feels natural.' },
+    ],
+    outcome: 'A calmer, clearer interview performance built through realistic repetition and specific feedback.',
+    faqs: [
+      { question: 'Are the questions tailored to my role?', answer: 'Yes. The session uses the role, company, difficulty, and context you provide.' },
+      { question: 'Do I have to use my microphone?', answer: 'Voice practice gives the most realistic session, because it helps you rehearse the answer out loud.' },
+      { question: 'What does the report cover?', answer: 'It highlights answer quality, clarity, structure, delivery, and opportunities to improve.' },
+    ],
     ctaLabel: 'Start practicing',
     ctaHref: '/v3/interview-prep',
     sections: [
@@ -146,6 +196,23 @@ export const PRODUCTS: Readonly<Record<ProductSlug, MarketingProduct>> = {
     label: 'Auto Apply',
     headline: 'Spend your time on the right applications.',
     summary: 'Find roles that fit, review them in one place, and move the applications you choose forward without rebuilding the process every time.',
+    overview: [
+      'Auto Apply turns your preferences into a focused job-search workflow, from finding relevant openings to tracking what was submitted.',
+      'You choose how much control to keep. Review matches yourself or let Jobwhisper move approved applications forward for you.',
+    ],
+    workflow: [
+      { title: 'Set your preferences', body: 'Define the roles, salary, location, seniority, and work style you want.' },
+      { title: 'Review your matches', body: 'See the strongest opportunities and why they fit your profile.' },
+      { title: 'Prepare the application', body: 'Tailor your resume and confirm the information that will be submitted.' },
+      { title: 'Choose your control level', body: 'Apply yourself or allow approved applications to move forward automatically.' },
+      { title: 'Track every result', body: 'Follow found, tailored, submitted, and completed applications in one place.' },
+    ],
+    outcome: 'A focused pipeline of relevant applications without repeating the same search and setup work every day.',
+    faqs: [
+      { question: 'Does Auto Apply send every application automatically?', answer: 'No. You choose the application method and how much review you want before submission.' },
+      { question: 'How are jobs matched?', answer: 'Matches use your target roles, experience, salary, location, seniority, and work preferences.' },
+      { question: 'Can I see what was submitted?', answer: 'Yes. The application timeline shows the role, materials, status, and recorded activity.' },
+    ],
     ctaLabel: 'Find matching roles',
     ctaHref: '/v3/auto-apply',
     sections: [

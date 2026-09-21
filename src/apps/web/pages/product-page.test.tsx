@@ -24,7 +24,7 @@ describe('ProductPage', () => {
       )
 
       expect(screen.getByRole('heading', { level: 1, name: product.headline })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: product.ctaLabel })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Get Started' })).toBeInTheDocument()
       for (const section of product.sections) {
         expect(screen.getByRole('heading', { name: section.title })).toBeInTheDocument()
       }
