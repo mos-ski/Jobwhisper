@@ -1,10 +1,13 @@
-/* The section the cards live in. The frame has no panel around them, so the heading and
-   the billing toggle are centred over bare paper instead. */
+/* The tab strip shares its row with the billing toggle, so on a phone it has little room
+   left. It swipes instead of wrapping: snapping per tab, and with no scrollbar drawn over
+   the rule beneath it. */
+.pricing-tabs{scroll-snap-type:x proximity;scroll-padding-inline-start:2px;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.pricing-tabs::-webkit-scrollbar{display:none}
+.pricing-tabs>*{scroll-snap-align:start}
+
+/* The cards sit straight on the page per 1130:20394 — no panel, no heading of their
+   own, since the tab strip above already names this tab. */
 .pricing-plans{display:block}
-.pricing-plans-head{max-width:640px;margin:0 auto;padding:8px 32px 0;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
-.pricing-plans-head h2{margin:0;font-family:'Gowun Batang',serif;font-size:28px;line-height:1.25;font-weight:700;color:var(--lf-ink)}
-.pricing-plans-head p{margin:0;font-size:14px;line-height:22px;color:var(--lf-ink-muted)}
-@media(max-width:900px){.pricing-plans-head{padding-inline:18px}.pricing-plans-head h2{font-size:22px}}
 
 /* Interview plan cards — Figma 1130:20394.
    Three 330px cards on a 16px gap, each a 16px-radius panel with a radial colour wash
@@ -83,14 +86,13 @@
 
 .pricing-plan-price{margin:0;display:flex;align-items:baseline;gap:6px;font-size:32px;font-weight:700;color:var(--lf-ink)}
 .pricing-plan-cadence{font-size:14px;font-weight:400;color:var(--lf-ink-muted)}
-.pricing-plan-billing{margin:-16px 0 0;min-height:20px;color:var(--lf-ink-muted);font-size:12px;line-height:20px}
 
 .pricing-plan-cta{
   min-height:44px;
   border:0;
   border-radius:8px;
-  background:var(--lf-ink);
-  color:var(--lf-surface);
+  background:var(--lf-accent);
+  color:var(--lf-on-accent);
   font:inherit;
   font-size:14px;
   font-weight:600;
@@ -109,9 +111,28 @@
 .pricing-plan-features li{display:flex;align-items:flex-start;gap:10px;font-size:14px;line-height:20px;color:var(--lf-ink)}
 .pricing-plan-features svg{width:16px;height:16px;flex:0 0 16px;margin-top:2px;color:var(--lf-ink-muted)}
 
+/* Dashes under the carousel: the only thing on a phone that says the row keeps going. */
+.pricing-plan-dots{display:none;justify-content:center;gap:6px;padding:0 18px 40px}
+.pricing-plan-dots span{width:18px;height:3px;border-radius:2px;background:var(--lf-border);transition:width .2s,background .2s}
+.pricing-plan-dots span[data-active='true']{width:28px;background:var(--lf-accent)}
+
+/* Phones swipe the cards rather than stacking them: three full-height cards in a column
+   is a lot of scrolling before the third price. */
 @media(max-width:900px){
-.pricing-plan-grid{grid-template-columns:1fr;max-width:420px;padding:32px 18px 40px}
-.pricing-plan[data-featured]{margin-top:0}
+.pricing-plan-grid{
+  display:flex;
+  max-width:none;
+  gap:12px;
+  padding:56px 18px 24px;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  overscroll-behavior-x:contain;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+.pricing-plan-grid::-webkit-scrollbar{display:none}
+.pricing-plan{flex:0 0 min(84vw,340px);scroll-snap-align:center}
+.pricing-plan-dots{display:flex}
 }
 
 /* Models strip — Figma 1130:20587. One centred row: title, a rule-and-sparkle flanked

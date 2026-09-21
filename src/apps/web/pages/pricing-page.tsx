@@ -568,9 +568,37 @@ function FeatureList({ items }: { readonly items: readonly string[] }) {
   )
 }
 
-function InterviewPlans() {
-  const [annual, setAnnual] = useState(true)
+const FEATURED_PLAN_INDEX = INTERVIEW_PLANS.findIndex((plan) => plan.featured)
+
+function InterviewPlans({ annual }: { readonly annual: boolean }) {
   const [showProOffer, setShowProOffer] = useState(false)
+  const gridRef = useRef<HTMLDivElement>(null)
+  const [activeCard, setActiveCard] = useState(Math.max(FEATURED_PLAN_INDEX, 0))
+
+  // The phone carousel opens on the featured plan, so the recommendation is what you see
+  // and both neighbours are one swipe away. scrollLeft rather than scrollIntoView: the
+  // latter would drag the whole page down to the carousel on load.
+  useEffect(() => {
+    const grid = gridRef.current
+    const featured = grid?.querySelector<HTMLElement>('[data-featured]')
+    if (!grid || !featured) return
+    grid.scrollLeft += featured.getBoundingClientRect().left - grid.getBoundingClientRect().left
+      - (grid.clientWidth - featured.clientWidth) / 2
+  }, [])
+
+  const handleCarouselScroll = () => {
+    const grid = gridRef.current
+    if (!grid) return
+    const middle = grid.scrollLeft + grid.clientWidth / 2
+    const cards = [...grid.children] as HTMLElement[]
+    let nearest = 0
+    cards.forEach((card, index) => {
+      const cardMiddle = card.offsetLeft + card.offsetWidth / 2
+      if (Math.abs(cardMiddle - middle) < Math.abs(cards[nearest].offsetLeft + cards[nearest].offsetWidth / 2 - middle)) nearest = index
+    })
+    setActiveCard(nearest)
+  }
+
   const proOfferTriggeredRef = useRef(false)
   const navigate = useNavigate()
 
@@ -589,12 +617,7 @@ function InterviewPlans() {
   // bordered box around them would read as a card inside a card.
   return (
     <section className="pricing-plans">
-      <div className="pricing-plans-head">
-        <h2>Interview plans</h2>
-        <p>Recurring access for Interview Prep, desktop Copilot, and web Copilot. Included credits are measured in minutes.</p>
-        <BillingToggle annual={annual} onChange={() => setAnnual((value) => !value)} />
-      </div>
-      <div className="pricing-plan-grid">
+      <div className="pricing-plan-grid" ref={gridRef} onScroll={handleCarouselScroll}>
         {INTERVIEW_PLANS.map((plan) => {
           const price = annual ? plan.annualMonthlyPrice : plan.monthlyPrice
           return (
@@ -607,7 +630,6 @@ function InterviewPlans() {
                 </div>
                 <p className="pricing-plan-tagline">{plan.tagline}</p>
                 <p className="pricing-plan-price"><AnimatedPrice value={price} /><span className="pricing-plan-cadence">/month</span></p>
-                <p className="pricing-plan-billing">{annual ? `$${price * 12} billed once a year` : 'Billed monthly'}</p>
                 <button type="button" className="pricing-plan-cta" onClick={() => navigate(`/v3/auth/create-account?plan=${plan.id}`)}>
                   Unlock {plan.name}
                 </button>
@@ -622,6 +644,9 @@ function InterviewPlans() {
             </article>
           )
         })}
+      </div>
+      <div className="pricing-plan-dots" aria-hidden="true">
+        {INTERVIEW_PLANS.map((plan, index) => <span key={plan.id} data-active={index === activeCard ? 'true' : undefined} />)}
       </div>
       {showProOffer ? <ProOfferWidget onDismiss={() => setShowProOffer(false)} onClaim={() => navigate('/v3/auth/choose-plan?plan=pro&offer=welcome-60')} /> : null}
     </section>
@@ -806,6 +831,7 @@ export function PricingPage() {
   const requestedTab = searchParams.get('tab')
   const activeTab: PricingTab = isPricingTab(requestedTab) ? requestedTab : 'interview'
   const supportingContent = SUPPORTING_CONTENT[activeTab]
+  const [annual, setAnnual] = useState(true)
 
   const handleTabChange = (value: string) => {
     if (!isPricingTab(value)) return
@@ -830,21 +856,28 @@ export function PricingPage() {
 
         <PageShell className="pb-6">
           <Tabs value={activeTab} onValueChange={handleTabChange}>
-            <TabsList className="mb-6 gap-7" aria-label="Pricing models">
-              <TabsTrigger value="interview" className="min-h-11 pb-3 text-sm sm:text-base">Interview plans</TabsTrigger>
-              <TabsTrigger value="job-search" className="min-h-11 pb-3 text-sm sm:text-base">Job-search credits</TabsTrigger>
-              <TabsTrigger value="done-for-you" className="min-h-11 pb-3 text-sm sm:text-base">Done for you</TabsTrigger>
-            </TabsList>
-            <TabsContent value="interview" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><InterviewPlans /></TabsContent>
+            {/* The rule moves to the wrapper so it runs under the toggle too, rather than
+                stopping where the tabs do. */}
+            <div className="mb-6 flex items-end gap-4 border-b border-border">
+              <TabsList className="pricing-tabs min-w-0 flex-1 gap-7 border-b-0" aria-label="Pricing models">
+                <TabsTrigger value="interview" className="min-h-11 pb-3 text-sm sm:text-base">Interview plans</TabsTrigger>
+                <TabsTrigger value="job-search" className="min-h-11 pb-3 text-sm sm:text-base">Job-search credits</TabsTrigger>
+                <TabsTrigger value="done-for-you" className="min-h-11 pb-3 text-sm sm:text-base">Done for you</TabsTrigger>
+              </TabsList>
+              {activeTab === 'interview' ? (
+                <div className="shrink-0 pb-2"><BillingToggle annual={annual} onChange={() => setAnnual((value) => !value)} /></div>
+              ) : null}
+            </div>
+            <TabsContent value="interview" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><InterviewPlans annual={annual} /></TabsContent>
             <TabsContent value="job-search" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><JobSearchCredits /></TabsContent>
             <TabsContent value="done-for-you" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><DoneForYou /></TabsContent>
           </Tabs>
         </PageShell>
 
+        <PoweredByModels />
         <PageShell className="pb-6">
           <CreditGuide content={supportingContent} />
         </PageShell>
-        <PoweredByModels />
         <PricingFaq content={supportingContent} />
         <ClosingPanel content={supportingContent} />
       </main>
