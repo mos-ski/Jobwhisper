@@ -245,7 +245,7 @@ const COPILOT_IMAGES: Record<(typeof COPILOT_TABS)[number], string> = {
 }
 function CopilotShowcase() {
   const [activeTab, setActiveTab] = useState<(typeof COPILOT_TABS)[number]>('Interviews')
-  return <section className="landing-copilot"><div className="landing-section-intro"><h2>Your copilot.<br />Always within reach.</h2><p>Jobwhisper gives you real-time AI support while the conversation is happening, so you can focus on the person in front of you instead of scrambling for what to say next. Whether you’re answering an interview question, working through a coding challenge, leading an important meeting, or practicing before the real thing, your Copilot listens, understands the context, and helps you respond with confidence.</p></div><div className="landing-copilot-tabs" role="tablist" aria-label="Copilot use cases">{COPILOT_TABS.map((tab) => <button key={tab} role="tab" aria-selected={activeTab === tab} aria-controls="copilot-preview" onClick={() => setActiveTab(tab)}>{tab}</button>)}</div><div className="landing-copilot-image" id="copilot-preview" role="tabpanel"><img src={COPILOT_IMAGES[activeTab]} alt={`Jobwhisper ${activeTab.toLowerCase()} copilot desktop preview`} /></div></section>
+  return <section className="landing-copilot"><div className="landing-section-intro"><h2>Your copilot.<br />Always within reach.</h2><p>Jobwhisper gives you real-time AI support while the conversation is happening, so you can focus on the person in front of you instead of scrambling for what to say next. Whether you’re answering an interview question, working through a coding challenge, leading an important meeting, or practicing before the real thing, your Copilot listens, understands the context, and helps you respond with confidence.</p></div><div className="landing-copilot-tabs" role="tablist" aria-label="Copilot use cases">{COPILOT_TABS.map((tab) => <button key={tab} role="tab" aria-selected={activeTab === tab} aria-controls="copilot-preview" onClick={() => setActiveTab(tab)}>{tab}</button>)}</div><div className="landing-copilot-image" data-copilot-tab={activeTab.toLowerCase()} id="copilot-preview" role="tabpanel"><img src={COPILOT_IMAGES[activeTab]} alt={`Jobwhisper ${activeTab.toLowerCase()} copilot desktop preview`} /></div></section>
 }
 
 function PlatformCards() {
@@ -290,10 +290,10 @@ function Closing() {
 
 /** [label, href]. '#' where the page does not exist yet, as the footer already was. */
 const FOOTER_PRODUCT = [
-  ['AI Resume Builder', '#'],
-  ['Interview Copilot', '#'],
-  ['Interview Prep', '#'],
-  ['Auto Apply', '#'],
+  ['AI Resume Builder', '/products/resume-builder'],
+  ['Interview Copilot', '/products/interview-copilot'],
+  ['Interview Prep', '/products/interview-prep'],
+  ['Auto Apply', '/products/auto-apply'],
   ['Pricing', '/pricing'],
   ['FAQ', '#faq'],
 ] as const
@@ -308,8 +308,10 @@ const FOOTER_DOWNLOAD = [
 const FOOTER_COMPANY = [
   ['Contact', '#'],
   ['Help center', '#'],
-  ['Careers', '#'],
   ['LinkedIn', '#'],
+  ['Twitter', '#'],
+  ['TikTok', '#'],
+  ['Instagram', '#'],
 ] as const
 
 function Footer() {

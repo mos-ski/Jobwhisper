@@ -11,6 +11,7 @@ import { EmailsIndexPage } from '@/apps/web/pages/emails-index-page'
 import { EmailPreviewPage } from '@/apps/web/pages/email-preview-page'
 import { HelpCenterApp } from '@/apps/web/pages/help-center-page'
 import { LegalPage } from '@/apps/web/pages/legal-page'
+import { ProductPage } from '@/apps/web/pages/product-page'
 import DesktopApp from '@/apps/desktop/App'
 
 const queryClient = new QueryClient({
@@ -33,6 +34,10 @@ export default function App() {
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/privacy" element={<LegalPage kind="privacy" />} />
           <Route path="/terms" element={<LegalPage kind="terms" />} />
+          <Route path="/products/resume-builder" element={<ProductPage slug="resume-builder" />} />
+          <Route path="/products/interview-copilot" element={<ProductPage slug="interview-copilot" />} />
+          <Route path="/products/interview-prep" element={<ProductPage slug="interview-prep" />} />
+          <Route path="/products/auto-apply" element={<ProductPage slug="auto-apply" />} />
           <Route path="/vsl" element={<VslLandingPage />} />
           <Route path="/brand-guide" element={<BrandingGuidePage />} />
           <Route path="/emails" element={<EmailsIndexPage />} />

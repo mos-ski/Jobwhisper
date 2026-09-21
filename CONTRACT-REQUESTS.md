@@ -1,5 +1,15 @@
 # Contract Requests
 
+## Marketing Product Draft Contract
+
+`src/contracts/marketing-product.draft.ts` defines the flat, readonly content model used by the four public product education pages:
+
+- `MarketingProductSlug` identifies AI Resume Builder, Interview Copilot, Interview Prep, and Auto Apply pages.
+- `MarketingProduct` contains the outcome headline, summary, CTA destination, and ordered narrative sections.
+- `MarketingProductSection` contains the section copy, short step list, and local media references.
+
+These values are static marketing content in this UI studio. Production should decide whether they remain versioned with the frontend or move to a managed content contract; the current shape is serializable and does not contain callbacks or runtime objects.
+
 ## Billing Plan Catalog
 
 The existing `Plan` contract only identifies plan ids: `free`, `pro`, and `business`. The Auth plan chooser also needs display and purchase fields:
