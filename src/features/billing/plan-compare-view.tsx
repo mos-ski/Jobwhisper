@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom'
 
 import type { BillingPlanCard } from '@/contracts/account.draft'
 import { AppShell } from '@/features/dashboard/app-nav'
-import { Badge, Button, cn, ShellBar, Switch } from '@/ui'
+import { Badge, ShellBar, Switch } from '@/ui'
+import { PlanAmount, PlanCard, PlanCarousel } from '@/features/pricing/plan-card'
 import { ProOfferWidget } from './pro-offer-widget'
 
 type FeatureRow = {
@@ -77,68 +78,33 @@ export type PlanCompareViewProps = {
   readonly backHref: string
 }
 
-function PlanCard({ plan, annual, index, onProHover }: { readonly plan: BillingPlanCard; readonly annual: boolean; readonly index: number; readonly onProHover?: () => void }) {
+/**
+ * Maps a billing plan onto the shared pricing card, so the in-app picker and the public
+ * pricing page show the same thing. `current` replaces the badge and locks the CTA.
+ */
+function BillingPlanCardView({ plan, annual, onProHover }: { readonly plan: BillingPlanCard; readonly annual: boolean; readonly onProHover?: () => void }) {
   const navigate = useNavigate()
+  const showsDiscount = annual && Boolean(plan.annualDiscountPrice)
+  // In the picker, which plan you are on outranks which is popular, so it takes the banner.
+  const banner = plan.current ? 'Current plan' : plan.popular ? 'Most Popular' : undefined
 
   return (
-    <article
-      style={{ animationDelay: `${index * 70}ms`, animationFillMode: 'backwards' }}
+    <PlanCard
+      name={plan.name}
+      badge={banner ? undefined : plan.tag}
+      banner={banner}
+      tagline={plan.description}
+      amount={<PlanAmount>{showsDiscount ? plan.annualDiscountPrice : annual ? plan.annualPrice : plan.price}</PlanAmount>}
+      unit={showsDiscount || !annual ? plan.cadence : plan.annualCadence}
+      terms={[['Included credits', plan.credits], ['Billing', annual ? 'Billed yearly' : 'Billed monthly']]}
+      features={plan.features}
+      ctaLabel={plan.current ? 'Current Plan' : plan.id === 'premium' ? 'Upgrade' : 'Downgrade'}
+      onCta={plan.current ? undefined : () => navigate('/v3/billing')}
+      ctaDisabled={plan.current}
+      note={plan.note}
+      plan={plan.id}
       onMouseEnter={plan.id === 'pro' ? onProHover : undefined}
-      className={cn(
-        'group flex animate-ease-in-bottom flex-col rounded-panel border-2 border-transparent p-6 outline outline-2 outline-transparent transition-[background-color,outline-color,box-shadow,transform] duration-normal ease-default hover:scale-[0.99] hover:bg-accent-subtle hover:outline-accent hover:shadow-control focus-within:scale-[0.99] focus-within:bg-accent-subtle focus-within:outline-accent focus-within:shadow-control motion-reduce:transform-none motion-reduce:transition-none',
-        plan.current ? 'border-positive' : 'border-border',
-      )}
-    >
-      <div className="flex items-center gap-2">
-        <h2 className="font-gowun text-sm font-bold tracking-wide text-ink">{plan.name}</h2>
-        {plan.tag ? <span className="text-sm font-medium text-ink-muted">{plan.tag}</span> : null}
-        {plan.current ? <Badge variant="positive">Current</Badge> : null}
-      </div>
-
-      <p className="mt-4 flex items-baseline gap-1.5">
-        {annual && plan.annualDiscountPrice ? (
-          <>
-            <span className="font-gowun text-3xl font-bold text-ink">{plan.annualDiscountPrice}</span>
-            <span className="text-sm text-ink-muted">{plan.cadence}</span>
-          </>
-        ) : (
-          <>
-            <span className="font-gowun text-3xl font-bold text-ink">{annual ? plan.annualPrice : plan.price}</span>
-            <span className="text-sm text-ink-muted">{annual ? plan.annualCadence : plan.cadence}</span>
-          </>
-        )}
-      </p>
-
-      <p className="mt-4 text-sm font-bold text-ink">{plan.credits}</p>
-      <p className="mt-2 text-sm leading-5 text-ink-muted">{plan.description}</p>
-
-      <div className="mt-5">
-        {plan.current ? (
-          <Button variant="secondary" className="w-full" disabled>
-            Current Plan
-          </Button>
-        ) : plan.id === 'premium' ? (
-          <Button className="w-full" onClick={() => navigate('/v3/billing')}>
-            Upgrade
-          </Button>
-        ) : (
-          <Button variant="secondary" className="w-full group-hover:bg-accent group-hover:text-on-accent" onClick={() => navigate('/v3/billing')}>
-            Downgrade
-          </Button>
-        )}
-      </div>
-
-      <ul className="mt-5 grid gap-2.5 border-t border-border pt-5 text-sm leading-5 text-ink-muted">
-        {plan.features.map((feature) => (
-          <li key={feature} className="flex items-start gap-2">
-            <Check aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-ink-muted" />
-            <span>{feature}</span>
-          </li>
-        ))}
-      </ul>
-
-      <p className="mt-4 text-sm italic leading-5 text-accent-text">{plan.note}</p>
-    </article>
+    />
   )
 }
 
@@ -183,11 +149,11 @@ export function PlanCompareView({ homeHref, plans, backHref }: PlanCompareViewPr
               <Badge variant="positive" size="sm">(save 20%)</Badge>
             </div>
           </div>
-          <div className="grid gap-5 p-4 sm:p-6 lg:p-8 md:grid-cols-3">
-            {plans.map((plan, index) => (
-              <PlanCard key={plan.id} plan={plan} annual={annual} index={index} onProHover={triggerProOffer} />
+          <PlanCarousel count={plans.length}>
+            {plans.map((plan) => (
+              <BillingPlanCardView key={plan.id} plan={plan} annual={annual} onProHover={triggerProOffer} />
             ))}
-          </div>
+          </PlanCarousel>
         </article>
         <FeatureAccessMatrix />
       </section>

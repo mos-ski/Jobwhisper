@@ -105,15 +105,18 @@
   cursor:pointer;
 }
 .pricing-plan-cta:hover{opacity:.9}
-/* Only the featured plan gets the filled blue; its neighbours go ghost so the row has one
-   obvious primary. Keyed on data-plan, which only the interview tab's cards carry — the
-   two-card tabs have no featured card to contrast against, so they stay filled. */
-.pricing-plan[data-plan]:not([data-featured]) .pricing-plan-cta{
+/* A disabled CTA (the plan you are already on) must not read as pressable. */
+.pricing-plan-cta:disabled{background:var(--lf-surface-subtle);color:var(--lf-ink-muted);box-shadow:inset 0 0 0 1px var(--lf-border);cursor:default}
+.pricing-plan-cta:disabled:hover{opacity:1}
+/* A ghost CTA steps back so a sibling card's filled one is the obvious primary. The caller
+   decides which: on the public plans that is the featured card, while the in-app picker
+   wants every plan you can actually switch to filled. */
+.pricing-plan-cta[data-variant='ghost']{
   background:var(--lf-surface-subtle);
   color:var(--lf-ink);
   box-shadow:inset 0 0 0 1px var(--lf-border);
 }
-.pricing-plan[data-plan]:not([data-featured]) .pricing-plan-cta:hover{opacity:1;background:var(--lf-border)}
+.pricing-plan-cta[data-variant='ghost']:hover{opacity:1;background:var(--lf-border)}
 
 .pricing-plan-credits{margin:0;padding-top:20px;border-top:1px solid var(--lf-border);display:flex;flex-direction:column;gap:8px}
 .pricing-plan-credits>div{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:14px;line-height:20px}
@@ -124,6 +127,7 @@
 
 .pricing-plan-features{margin:0;padding:20px 0 0;border-top:1px solid var(--lf-border);list-style:none;display:flex;flex-direction:column;gap:10px}
 .pricing-plan-features li{display:flex;align-items:flex-start;gap:10px;font-size:14px;line-height:20px;color:var(--lf-ink)}
+.pricing-plan-note{margin:0;font-size:13px;font-style:italic;line-height:18px;color:var(--lf-accent-text)}
 .pricing-plan-features svg{width:16px;height:16px;flex:0 0 16px;margin-top:2px;color:var(--lf-ink-muted)}
 
 /* Dashes under the carousel: the only thing on a phone that says the row keeps going. */
@@ -155,14 +159,22 @@
    subtitle, then five equal-width logo+name cells at half opacity. */
 .pricing-models{max-width:1024px;margin-inline:auto;padding:16px 32px 48px;display:flex;flex-direction:column;align-items:center}
 .pricing-models h2{margin:0;font-family:'Gowun Batang',serif;font-size:18px;line-height:28px;font-weight:700;letter-spacing:-.45px;color:var(--lf-ink);text-align:center}
-.pricing-models-subtitle{margin:8px 0 0;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;line-height:19.5px;color:rgba(23,23,23,.7);text-align:center}
-.pricing-models-rule{width:20px;height:1px;background:rgba(23,23,23,.3)}
+.pricing-models-subtitle{margin:8px 0 0;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;line-height:19.5px;color:var(--lf-ink-muted);text-align:center}
+.pricing-models-rule{width:20px;height:1px;background:var(--lf-border)}
 .pricing-models-spark{color:#a3d3ff}
 .pricing-models-list{margin:32px 0 0;padding:0 28px;list-style:none;display:flex;align-items:center;justify-content:center}
 /* The frame gives each cell the same 149.75px, so the names sit on a regular rhythm
    rather than bunching around the short ones. */
 .pricing-models-list li{flex:0 0 149.75px;display:flex;align-items:center;gap:10px;opacity:.5;font-size:17px;line-height:25.5px;font-weight:600;color:var(--lf-ink)}
-.pricing-models-list img{width:28px;height:28px;flex:0 0 28px}
+/* The marks are black-on-transparent SVGs, so painting them as images leaves them
+   invisible on a dark background. Masking instead makes each one take currentColor and
+   follow the theme, in both this page and the in-app picker. */
+.pricing-models-mark{
+  width:28px;height:28px;flex:0 0 28px;
+  background:currentColor;
+  -webkit-mask:var(--model-mark) center/contain no-repeat;
+  mask:var(--model-mark) center/contain no-repeat;
+}
 
 @media(max-width:900px){
 .pricing-models{padding:8px 18px 40px}

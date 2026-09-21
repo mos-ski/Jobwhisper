@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Check, ChevronDown } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 
 import { MarketingFooter, MarketingNav } from '@/features/marketing/marketing-chrome'
-import './pricing-plans.css'
+import { PlanAmount, PlanCard, PlanCarousel, type PlanTerms } from '@/features/pricing/plan-card'
 import { ProOfferWidget } from '@/features/billing/pro-offer-widget'
 import { Button, Tabs, TabsContent, TabsList, TabsTrigger, cn } from '@/ui'
 
@@ -24,9 +24,6 @@ type InterviewPlan = {
   readonly description: string
   readonly features: readonly string[]
 }
-
-/** The two rows of the card's ruled-off table, as [label, value]. */
-type PlanTerms = readonly (readonly [string, string])[]
 
 type CreditProduct = {
   readonly id: string
@@ -521,7 +518,7 @@ function useAnimatedNumber(target: number) {
 
 function AnimatedPrice({ value }: { readonly value: number }) {
   const displayValue = useAnimatedNumber(value)
-  return <span className="font-gowun text-[32px] font-bold leading-none text-ink">${displayValue}</span>
+  return <PlanAmount>${displayValue}</PlanAmount>
 }
 
 
@@ -591,32 +588,24 @@ function InterviewPlans({ annual }: { readonly annual: boolean }) {
   return (
     <section className="pricing-plans">
       <PlanCarousel count={INTERVIEW_PLANS.length}>
-        {INTERVIEW_PLANS.map((plan) => {
-          const price = annual ? plan.annualMonthlyPrice : plan.monthlyPrice
-          return (
-            <article key={plan.id} className="pricing-plan" data-featured={plan.featured ? 'true' : undefined} data-plan={plan.id} onMouseEnter={plan.id === 'pro' ? triggerProOffer : undefined}>
-              {plan.featured ? <p className="pricing-plan-banner">{plan.badge}</p> : null}
-              <div className="pricing-plan-body">
-                <div className="pricing-plan-head">
-                  <h3>{plan.name}</h3>
-                  {plan.featured ? null : <span className="pricing-plan-badge">{plan.badge}</span>}
-                </div>
-                <p className="pricing-plan-tagline">{plan.tagline}</p>
-                <p className="pricing-plan-price"><AnimatedPrice value={price} /><span className="pricing-plan-cadence">/month</span></p>
-                <button type="button" className="pricing-plan-cta" onClick={() => navigate(`/v3/auth/create-account?plan=${plan.id}`)}>
-                  Unlock {plan.name}
-                </button>
-                <dl className="pricing-plan-credits">
-                  <div><dt>Monthly credits</dt><dd>{plan.creditsPerMonth.toLocaleString('en-US')}</dd></div>
-                  <div className="pricing-plan-credits-total"><dt>1 credit</dt><dd>1 interview minute</dd></div>
-                </dl>
-                <ul className="pricing-plan-features">
-                  {plan.features.map((feature) => <li key={feature}><Check aria-hidden="true" />{feature}</li>)}
-                </ul>
-              </div>
-            </article>
-          )
-        })}
+        {INTERVIEW_PLANS.map((plan) => (
+          <PlanCard
+            key={plan.id}
+            name={plan.name}
+            badge={plan.featured ? undefined : plan.badge}
+            banner={plan.featured ? plan.badge : undefined}
+            tagline={plan.tagline}
+            amount={<AnimatedPrice value={annual ? plan.annualMonthlyPrice : plan.monthlyPrice} />}
+            unit="/month"
+            terms={[['Monthly credits', plan.creditsPerMonth.toLocaleString('en-US')], ['1 credit', '1 interview minute']]}
+            features={plan.features}
+            ctaLabel={`Unlock ${plan.name}`}
+            onCta={() => navigate(`/v3/auth/create-account?plan=${plan.id}`)}
+            ctaVariant={plan.featured ? 'primary' : 'ghost'}
+            plan={plan.id}
+            onMouseEnter={plan.id === 'pro' ? triggerProOffer : undefined}
+          />
+        ))}
       </PlanCarousel>
       {showProOffer ? <ProOfferWidget onDismiss={() => setShowProOffer(false)} onClaim={() => navigate('/v3/auth/choose-plan?plan=pro&offer=welcome-60')} /> : null}
     </section>
@@ -643,83 +632,9 @@ function PoweredByModels() {
       <span className="pricing-models-rule" aria-hidden="true" />
     </p>
     <ul className="pricing-models-list">
-      {PRICING_MODELS.map((model) => <li key={model.name}><img src={model.logo} alt="" width={28} height={28} />{model.name}</li>)}
+      {PRICING_MODELS.map((model) => <li key={model.name}><span className="pricing-models-mark" style={{ '--model-mark': `url(${model.logo})` } as CSSProperties} aria-hidden="true" />{model.name}</li>)}
     </ul>
   </section>
-}
-
-/** The card row. On phones it is a snap carousel, opening on the featured card if there is
- *  one, with dashes underneath — a snap scroller draws no scrollbar, so nothing else says
- *  the row continues. On wider screens it is just the grid and the dashes are hidden. */
-function PlanCarousel({ count, children }: { readonly count: number; readonly children: ReactNode }) {
-  const gridRef = useRef<HTMLDivElement>(null)
-  const [activeCard, setActiveCard] = useState(0)
-
-  // scrollLeft rather than scrollIntoView: the latter would drag the whole page down to
-  // the carousel on load.
-  useEffect(() => {
-    const grid = gridRef.current
-    const featured = grid?.querySelector<HTMLElement>('[data-featured]')
-    if (!grid || !featured) return
-    setActiveCard([...grid.children].indexOf(featured))
-    grid.scrollLeft += featured.getBoundingClientRect().left - grid.getBoundingClientRect().left
-      - (grid.clientWidth - featured.clientWidth) / 2
-  }, [])
-
-  const handleScroll = () => {
-    const grid = gridRef.current
-    if (!grid) return
-    const middle = grid.scrollLeft + grid.clientWidth / 2
-    const cards = [...grid.children] as HTMLElement[]
-    const distance = (card: HTMLElement) => Math.abs(card.offsetLeft + card.offsetWidth / 2 - middle)
-    let nearest = 0
-    cards.forEach((card, index) => { if (distance(card) < distance(cards[nearest])) nearest = index })
-    setActiveCard(nearest)
-  }
-
-  return (
-    <>
-      <div className="pricing-plan-grid" data-cards={count} ref={gridRef} onScroll={handleScroll}>{children}</div>
-      <div className="pricing-plan-dots" aria-hidden="true">
-        {Array.from({ length: count }, (_, index) => <span key={index} data-active={index === activeCard ? 'true' : undefined} />)}
-      </div>
-    </>
-  )
-}
-
-/** The card the interview plans use, filled by any of the three tabs. */
-function PlanCard({
-  name, tagline, amount, unit, terms, features, ctaLabel, onCta,
-}: {
-  readonly name: string
-  readonly tagline: string
-  readonly amount: ReactNode
-  readonly unit: string
-  readonly terms: PlanTerms
-  readonly features: readonly string[]
-  readonly ctaLabel: string
-  readonly onCta: () => void
-}) {
-  return (
-    <article className="pricing-plan">
-      <div className="pricing-plan-body">
-        <div className="pricing-plan-head"><h3>{name}</h3></div>
-        <p className="pricing-plan-tagline">{tagline}</p>
-        <p className="pricing-plan-price">{amount}<span className="pricing-plan-cadence">{unit}</span></p>
-        <button type="button" className="pricing-plan-cta" onClick={onCta}>{ctaLabel}</button>
-        <dl className="pricing-plan-credits">
-          {terms.map(([label, value], index) => (
-            <div key={label} className={index === terms.length - 1 ? 'pricing-plan-credits-total' : undefined}>
-              <dt>{label}</dt><dd>{value}</dd>
-            </div>
-          ))}
-        </dl>
-        <ul className="pricing-plan-features">
-          {features.map((feature) => <li key={feature}><Check aria-hidden="true" />{feature}</li>)}
-        </ul>
-      </div>
-    </article>
-  )
 }
 
 function JobSearchCredits() {
@@ -733,7 +648,7 @@ function JobSearchCredits() {
             key={product.id}
             name={product.name}
             tagline={product.tagline}
-            amount={<span className="font-gowun text-[32px] font-bold leading-none text-ink">{product.amount}</span>}
+            amount={<PlanAmount>{product.amount}</PlanAmount>}
             unit={product.unit}
             terms={product.terms}
             features={product.features}
@@ -757,7 +672,7 @@ function DoneForYou() {
             key={managedPackage.id}
             name={managedPackage.name}
             tagline={managedPackage.tagline}
-            amount={<span className="font-gowun text-[32px] font-bold leading-none text-ink">${managedPackage.price.toLocaleString('en-US')}</span>}
+            amount={<PlanAmount>${managedPackage.price.toLocaleString('en-US')}</PlanAmount>}
             unit="one time"
             terms={managedPackage.terms}
             features={managedPackage.features}

@@ -567,8 +567,10 @@ function DashboardLoadingView() {
 }
 
 function InstallPrompt({ installPrompt }: { readonly installPrompt: DashboardInstallPrompt }) {
+  // Centred rather than pinned to the end: the right corner belongs to the Support button,
+  // which this used to sit underneath.
   return (
-    <section className="w-fit max-w-full rounded-panel bg-accent-subtle p-3 lg:absolute lg:bottom-14 lg:end-8" aria-label="Install apps">
+    <section className="w-fit max-w-full rounded-panel bg-accent-subtle p-3 lg:absolute lg:bottom-14 lg:left-1/2 lg:-translate-x-1/2" aria-label="Install apps">
       <div className="flex items-center gap-3">
         <img src={installPrompt.qrSrc} alt="QR code to install Jobwhisper apps" className="size-16 shrink-0 rounded-soft object-cover" />
         <div className="grid gap-2">
