@@ -1,0 +1,134 @@
+/* The section the cards live in. The frame has no panel around them, so the heading and
+   the billing toggle are centred over bare paper instead. */
+.pricing-plans{display:block}
+.pricing-plans-head{max-width:640px;margin:0 auto;padding:8px 32px 0;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.pricing-plans-head h2{margin:0;font-family:'Gowun Batang',serif;font-size:28px;line-height:1.25;font-weight:700;color:var(--lf-ink)}
+.pricing-plans-head p{margin:0;font-size:14px;line-height:22px;color:var(--lf-ink-muted)}
+@media(max-width:900px){.pricing-plans-head{padding-inline:18px}.pricing-plans-head h2{font-size:22px}}
+
+/* Interview plan cards — Figma 1130:20394.
+   Three 330px cards on a 16px gap, each a 16px-radius panel with a radial colour wash
+   rising from its foot. The featured plan wears its badge as a banner across the top and
+   takes an accent border; the others carry it as a pill beside the plan name. */
+
+.pricing-plan-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:16px;
+  max-width:1088px;
+  margin-inline:auto;
+  padding:72px 32px 48px;
+}
+
+.pricing-plan{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  border:1px solid var(--lf-border);
+  border-radius:16px;
+  background:var(--lf-surface);
+  overflow:hidden;
+}
+
+/* The wash is the card's own foot, not an image: a soft radial bloom per plan. */
+.pricing-plan::after{
+  content:'';
+  position:absolute;
+  inset:auto 0 0;
+  height:45%;
+  pointer-events:none;
+  background:linear-gradient(to top, var(--pricing-plan-wash, transparent) 0%, transparent 100%);
+}
+.pricing-plan[data-plan='starter']{--pricing-plan-wash:rgba(238,140,222,.20)}
+.pricing-plan[data-plan='pro']{--pricing-plan-wash:rgba(110,225,195,.22)}
+.pricing-plan[data-plan='premium']{--pricing-plan-wash:rgba(150,160,240,.20)}
+
+.pricing-plan[data-featured]{border-color:var(--lf-accent);box-shadow:0 0 0 1px var(--lf-accent);margin-top:-33px}
+
+.pricing-plan-banner{
+  margin:0;
+  padding:8px 16px;
+  background:linear-gradient(90deg,#3b82f6,var(--lf-accent));
+  color:var(--lf-on-accent);
+  font-size:12px;
+  line-height:16px;
+  font-weight:600;
+  text-align:center;
+}
+
+.pricing-plan-body{
+  position:relative;
+  z-index:1;
+  display:flex;
+  flex:1;
+  flex-direction:column;
+  gap:20px;
+  padding:20px 24px;
+}
+
+.pricing-plan-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pricing-plan-head h3{margin:0;font-family:'Gowun Batang',serif;font-size:24px;line-height:1.2;font-weight:700;color:var(--lf-ink)}
+
+.pricing-plan-badge{
+  padding:4px 10px;
+  border-radius:6px;
+  background:var(--lf-accent-subtle);
+  color:var(--lf-accent-text);
+  font-size:12px;
+  font-weight:600;
+  white-space:nowrap;
+}
+
+.pricing-plan-tagline{margin:-14px 0 0;color:var(--lf-ink-muted);font-size:14px;line-height:20px}
+
+.pricing-plan-price{margin:0;display:flex;align-items:baseline;gap:6px;font-size:32px;font-weight:700;color:var(--lf-ink)}
+.pricing-plan-cadence{font-size:14px;font-weight:400;color:var(--lf-ink-muted)}
+.pricing-plan-billing{margin:-16px 0 0;min-height:20px;color:var(--lf-ink-muted);font-size:12px;line-height:20px}
+
+.pricing-plan-cta{
+  min-height:44px;
+  border:0;
+  border-radius:8px;
+  background:var(--lf-ink);
+  color:var(--lf-surface);
+  font:inherit;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+}
+.pricing-plan-cta:hover{opacity:.9}
+
+.pricing-plan-credits{margin:0;padding-top:20px;border-top:1px solid var(--lf-border);display:flex;flex-direction:column;gap:8px}
+.pricing-plan-credits>div{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:14px;line-height:20px}
+.pricing-plan-credits dt{color:var(--lf-ink-muted)}
+.pricing-plan-credits dd{margin:0;color:var(--lf-ink);font-variant-numeric:tabular-nums}
+.pricing-plan-credits-total{padding-top:8px;border-top:1px solid var(--lf-border)}
+.pricing-plan-credits-total dt,.pricing-plan-credits-total dd{color:var(--lf-ink);font-weight:600}
+
+.pricing-plan-features{margin:0;padding:20px 0 0;border-top:1px solid var(--lf-border);list-style:none;display:flex;flex-direction:column;gap:10px}
+.pricing-plan-features li{display:flex;align-items:flex-start;gap:10px;font-size:14px;line-height:20px;color:var(--lf-ink)}
+.pricing-plan-features svg{width:16px;height:16px;flex:0 0 16px;margin-top:2px;color:var(--lf-ink-muted)}
+
+@media(max-width:900px){
+.pricing-plan-grid{grid-template-columns:1fr;max-width:420px;padding:32px 18px 40px}
+.pricing-plan[data-featured]{margin-top:0}
+}
+
+/* Models strip — Figma 1130:20587. One centred row: title, a rule-and-sparkle flanked
+   subtitle, then five equal-width logo+name cells at half opacity. */
+.pricing-models{max-width:1024px;margin-inline:auto;padding:16px 32px 48px;display:flex;flex-direction:column;align-items:center}
+.pricing-models h2{margin:0;font-family:'Gowun Batang',serif;font-size:18px;line-height:28px;font-weight:700;letter-spacing:-.45px;color:var(--lf-ink);text-align:center}
+.pricing-models-subtitle{margin:8px 0 0;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;line-height:19.5px;color:rgba(23,23,23,.7);text-align:center}
+.pricing-models-rule{width:20px;height:1px;background:rgba(23,23,23,.3)}
+.pricing-models-spark{color:#a3d3ff}
+.pricing-models-list{margin:32px 0 0;padding:0 28px;list-style:none;display:flex;align-items:center;justify-content:center}
+/* The frame gives each cell the same 149.75px, so the names sit on a regular rhythm
+   rather than bunching around the short ones. */
+.pricing-models-list li{flex:0 0 149.75px;display:flex;align-items:center;gap:10px;opacity:.5;font-size:17px;line-height:25.5px;font-weight:600;color:var(--lf-ink)}
+.pricing-models-list img{width:28px;height:28px;flex:0 0 28px}
+
+@media(max-width:900px){
+.pricing-models{padding:8px 18px 40px}
+.pricing-models-list{padding:0;flex-wrap:wrap;justify-content:center;gap:16px 24px}
+.pricing-models-list li{flex:0 0 auto;font-size:15px}
+}

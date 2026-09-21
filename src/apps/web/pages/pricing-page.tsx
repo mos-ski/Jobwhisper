@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Check, ChevronDown } from 'lucide-react'
 
 import { MarketingFooter, MarketingNav } from '@/features/marketing/marketing-chrome'
+import './pricing-plans.css'
 import { ProOfferWidget } from '@/features/billing/pro-offer-widget'
 import { Button, Tabs, TabsContent, TabsList, TabsTrigger, cn } from '@/ui'
 
@@ -11,6 +12,12 @@ type PricingTab = 'interview' | 'job-search' | 'done-for-you'
 type InterviewPlan = {
   readonly id: string
   readonly name: string
+  /** Pill beside the plan name, per design 1130:20394. */
+  readonly badge: string
+  /** The featured plan wears the badge as a banner across the top instead. */
+  readonly featured?: boolean
+  readonly tagline: string
+  readonly creditsPerMonth: number
   readonly monthlyPrice: number
   readonly annualMonthlyPrice: number
   readonly credits: string
@@ -57,6 +64,9 @@ const INTERVIEW_PLANS: readonly InterviewPlan[] = [
   {
     id: 'starter',
     name: 'Starter',
+    badge: 'Great to Start',
+    tagline: 'The essentials, on the web',
+    creditsPerMonth: 500,
     monthlyPrice: 47,
     annualMonthlyPrice: 38,
     credits: 'About 500 interview credits each month',
@@ -66,6 +76,10 @@ const INTERVIEW_PLANS: readonly InterviewPlan[] = [
   {
     id: 'pro',
     name: 'Pro',
+    badge: 'Most Popular',
+    featured: true,
+    tagline: 'More time, every surface',
+    creditsPerMonth: 1000,
     monthlyPrice: 99,
     annualMonthlyPrice: 79,
     credits: 'About 1,000 interview credits each month',
@@ -81,6 +95,9 @@ const INTERVIEW_PLANS: readonly InterviewPlan[] = [
   {
     id: 'premium',
     name: 'Premium',
+    badge: 'Best Value',
+    tagline: 'For heavy interview weeks',
+    creditsPerMonth: 4000,
     monthlyPrice: 497,
     annualMonthlyPrice: 398,
     credits: 'About 4,000 interview credits each month',
@@ -490,7 +507,7 @@ function useAnimatedNumber(target: number) {
 
 function AnimatedPrice({ value }: { readonly value: number }) {
   const displayValue = useAnimatedNumber(value)
-  return <span className="font-gowun text-4xl font-bold leading-none text-ink">${displayValue}</span>
+  return <span className="font-gowun text-[32px] font-bold leading-none text-ink">${displayValue}</span>
 }
 
 
@@ -568,32 +585,40 @@ function InterviewPlans() {
     setShowProOffer(true)
   }
 
+  // No panel chrome here: per 1130:20394 the cards sit straight on the page, so a
+  // bordered box around them would read as a card inside a card.
   return (
-    <section className="overflow-hidden rounded-sm border border-border bg-surface shadow-panel">
-      <PanelHeader
-        title="Interview plans"
-        description="Recurring access for Interview Prep, desktop Copilot, and web Copilot. Included credits are measured in minutes."
-        action={<BillingToggle annual={annual} onChange={() => setAnnual((value) => !value)} />}
-      />
-      <div className="grid divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0">
+    <section className="pricing-plans">
+      <div className="pricing-plans-head">
+        <h2>Interview plans</h2>
+        <p>Recurring access for Interview Prep, desktop Copilot, and web Copilot. Included credits are measured in minutes.</p>
+        <BillingToggle annual={annual} onChange={() => setAnnual((value) => !value)} />
+      </div>
+      <div className="pricing-plan-grid">
         {INTERVIEW_PLANS.map((plan) => {
           const price = annual ? plan.annualMonthlyPrice : plan.monthlyPrice
           return (
-            <article key={plan.id} className={OPTION_CARD_CLASS} onMouseEnter={plan.id === 'pro' ? triggerProOffer : undefined}>
-              <h3 className="font-gowun text-xl font-bold text-ink">{plan.name}</h3>
-              <div className="mt-5 flex items-end gap-2">
-                <AnimatedPrice value={price} />
-                <span className="pb-1 text-sm text-ink-muted">per month</span>
+            <article key={plan.id} className="pricing-plan" data-featured={plan.featured ? 'true' : undefined} data-plan={plan.id} onMouseEnter={plan.id === 'pro' ? triggerProOffer : undefined}>
+              {plan.featured ? <p className="pricing-plan-banner">{plan.badge}</p> : null}
+              <div className="pricing-plan-body">
+                <div className="pricing-plan-head">
+                  <h3>{plan.name}</h3>
+                  {plan.featured ? null : <span className="pricing-plan-badge">{plan.badge}</span>}
+                </div>
+                <p className="pricing-plan-tagline">{plan.tagline}</p>
+                <p className="pricing-plan-price"><AnimatedPrice value={price} /><span className="pricing-plan-cadence">/month</span></p>
+                <p className="pricing-plan-billing">{annual ? `$${price * 12} billed once a year` : 'Billed monthly'}</p>
+                <button type="button" className="pricing-plan-cta" onClick={() => navigate(`/v3/auth/create-account?plan=${plan.id}`)}>
+                  Unlock {plan.name}
+                </button>
+                <dl className="pricing-plan-credits">
+                  <div><dt>Monthly credits</dt><dd>{plan.creditsPerMonth.toLocaleString('en-US')}</dd></div>
+                  <div className="pricing-plan-credits-total"><dt>1 credit</dt><dd>1 interview minute</dd></div>
+                </dl>
+                <ul className="pricing-plan-features">
+                  {plan.features.map((feature) => <li key={feature}><Check aria-hidden="true" />{feature}</li>)}
+                </ul>
               </div>
-              <p className="mt-2 min-h-5 text-xs text-ink-muted">
-                {annual ? `$${price * 12} billed once a year` : 'Billed monthly'}
-              </p>
-              <p className="mt-5 text-sm font-semibold leading-6 text-ink">{plan.credits}</p>
-              <p className="mt-2 min-h-20 text-sm leading-6 text-ink-muted">{plan.description}</p>
-              <Button variant="secondary" className={OPTION_ACTION_CLASS} onClick={() => navigate(`/v3/auth/create-account?plan=${plan.id}`)}>
-                Get started
-              </Button>
-              <FeatureList items={plan.features} />
             </article>
           )
         })}
@@ -601,6 +626,31 @@ function InterviewPlans() {
       {showProOffer ? <ProOfferWidget onDismiss={() => setShowProOffer(false)} onClaim={() => navigate('/v3/auth/choose-plan?plan=pro&offer=welcome-60')} /> : null}
     </section>
   )
+}
+
+/** Figma 1130:20587 — the models the copilot picks between, with their own marks. */
+const PRICING_MODELS = [
+  { name: 'Claude', logo: '/figma-landing/models/claude.svg' },
+  { name: 'Gemini', logo: '/figma-landing/models/gemini.svg' },
+  { name: 'GPT', logo: '/figma-landing/models/gpt.svg' },
+  { name: 'Grok', logo: '/figma-landing/models/grok.svg' },
+  { name: 'ElevenLabs', logo: '/figma-landing/models/elevenlabs.svg' },
+] as const
+
+function PoweredByModels() {
+  return <section className="pricing-models" aria-labelledby="pricing-models-title">
+    <h2 id="pricing-models-title">Powered by Leading AI Models</h2>
+    <p className="pricing-models-subtitle">
+      <span className="pricing-models-rule" aria-hidden="true" />
+      <span className="pricing-models-spark" aria-hidden="true">&#10022;</span>
+      Smart model selection for your scenario
+      <span className="pricing-models-spark" aria-hidden="true">&#10022;</span>
+      <span className="pricing-models-rule" aria-hidden="true" />
+    </p>
+    <ul className="pricing-models-list">
+      {PRICING_MODELS.map((model) => <li key={model.name}><img src={model.logo} alt="" width={28} height={28} />{model.name}</li>)}
+    </ul>
+  </section>
 }
 
 function JobSearchCredits() {
@@ -794,6 +844,7 @@ export function PricingPage() {
         <PageShell className="pb-6">
           <CreditGuide content={supportingContent} />
         </PageShell>
+        <PoweredByModels />
         <PricingFaq content={supportingContent} />
         <ClosingPanel content={supportingContent} />
       </main>

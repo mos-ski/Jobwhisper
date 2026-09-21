@@ -14,11 +14,14 @@ function renderPricingPage() {
 }
 
 describe('PricingPage', () => {
-  it('presents interview plans without recommending one', () => {
+  it('presents the three interview plans with their design badges', () => {
     renderPricingPage()
 
     expect(screen.getByRole('heading', { level: 1, name: 'Pricing that follows how you use Jobwhisper' })).toBeInTheDocument()
-    expect(screen.queryByText(/most popular|recommended|best value/i)).not.toBeInTheDocument()
+    // 1130:20394 badges the plans deliberately — Pro carries the banner, the others a pill.
+    expect(screen.getByText('Most Popular')).toBeInTheDocument()
+    expect(screen.getByText('Great to Start')).toBeInTheDocument()
+    expect(screen.getByText('Best Value')).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: 'Starter' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: 'Pro' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: 'Premium' })).toBeInTheDocument()
