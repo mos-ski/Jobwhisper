@@ -33,7 +33,7 @@ function NavLinksMenu() {
 // Plain anchors rather than navigate() calls: the nav then needs no Router context, so it
 // renders in any page's tests, and the links can be middle-clicked or opened in a new tab.
 export function MarketingNav() {
-  return <nav className="landing-nav" aria-label="Main navigation"><a href="/" aria-label="Jobwhisper home"><img src="/landing-logo.svg" alt="" className="landing-nav-logo" /></a><div className="landing-nav-links"><a href={FEATURES_HREF}>Features <ChevronDown aria-hidden="true" /></a><a href="/pricing">Pricing</a><a href={FAQ_HREF}>FAQ</a></div><div className="landing-nav-actions"><DownloadMenu compact /><a className="landing-nav-auth" href="/v3/auth/sign-in">Log in</a><NavLinksMenu /></div></nav>
+  return <nav className="landing-nav" aria-label="Main navigation"><a className="landing-nav-home" href="/" aria-label="Jobwhisper home"><img src="/landing-logo.svg" alt="" className="landing-nav-logo" /></a><div className="landing-nav-links"><a href={FEATURES_HREF}>Features <ChevronDown aria-hidden="true" /></a><a href="/pricing">Pricing</a><a href={FAQ_HREF}>FAQ</a></div><div className="landing-nav-actions"><DownloadMenu compact /><a className="landing-nav-auth" href="/v3/auth/sign-in">Log in</a><NavLinksMenu /></div></nav>
 }
 
 /** [label, href]. '#' where the page does not exist yet. */
