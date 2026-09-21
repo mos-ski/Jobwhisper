@@ -2,8 +2,9 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Check, ChevronDown } from 'lucide-react'
 
+import { MarketingFooter, MarketingNav } from '@/features/marketing/marketing-chrome'
 import { ProOfferWidget } from '@/features/billing/pro-offer-widget'
-import { Button, JobwhisperMark, Tabs, TabsContent, TabsList, TabsTrigger, cn } from '@/ui'
+import { Button, Tabs, TabsContent, TabsList, TabsTrigger, cn } from '@/ui'
 
 type PricingTab = 'interview' | 'job-search' | 'done-for-you'
 
@@ -492,56 +493,6 @@ function AnimatedPrice({ value }: { readonly value: number }) {
   return <span className="font-gowun text-4xl font-bold leading-none text-ink">${displayValue}</span>
 }
 
-function PricingHeader() {
-  const navigate = useNavigate()
-
-  return (
-    <header className="fixed inset-x-0 top-4 z-shell flex justify-center px-4 sm:top-9">
-      <nav
-        aria-label="Primary"
-        className="flex h-14 w-full max-w-fit items-center rounded-panel border border-border bg-surface pe-2 ps-4 shadow-popover"
-      >
-        <a
-          href="/"
-          aria-label="Jobwhisper home"
-          className="inline-flex min-h-11 items-center rounded-soft text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-        >
-          <JobwhisperMark className="h-6 w-auto text-accent" />
-        </a>
-        <div className="ms-10 hidden items-center gap-5 md:flex">
-          <button
-            type="button"
-            className="inline-flex min-h-11 items-center gap-1.5 rounded-soft text-base font-medium text-ink-muted transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-          >
-            Features
-            <ChevronDown aria-hidden="true" className="size-3" />
-          </button>
-          <a className="inline-flex min-h-11 items-center rounded-soft text-base font-medium text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus" href="/pricing" aria-current="page">
-            Pricing
-          </a>
-          <a className="inline-flex min-h-11 items-center rounded-soft text-base font-medium text-ink-muted transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus" href="#pricing-faq">
-            FAQ
-          </a>
-          <a className="inline-flex min-h-11 items-center rounded-soft text-base font-medium text-ink-muted transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus" href="/help">
-            Help Center
-          </a>
-        </div>
-        <div className="ms-4 flex items-center gap-3.5 md:ms-14">
-          <button
-            type="button"
-            onClick={() => navigate('/v3/auth/sign-in')}
-            className="hidden min-h-11 rounded-soft text-base font-medium text-ink-muted transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:block"
-          >
-            Log in
-          </button>
-          <Button className="min-h-10 px-4" onClick={() => navigate('/v3/downloads')}>
-            Download
-          </Button>
-        </div>
-      </nav>
-    </header>
-  )
-}
 
 function PanelHeader({
   title,
@@ -816,9 +767,9 @@ export function PricingPage() {
 
   return (
     <div className="min-h-screen bg-canvas font-rethink text-ink">
-      <PricingHeader />
+      <div className="flex justify-center px-4 pt-4 sm:pt-9"><MarketingNav /></div>
       <main>
-        <PageShell className="pb-8 pt-28 sm:pt-36">
+        <PageShell className="pb-8 pt-10 sm:pt-14">
           <h1 className="max-w-3xl font-gowun text-4xl font-bold leading-tight text-ink sm:text-5xl">
             Pricing that follows how you use Jobwhisper
           </h1>
@@ -846,6 +797,7 @@ export function PricingPage() {
         <PricingFaq content={supportingContent} />
         <ClosingPanel content={supportingContent} />
       </main>
+      <MarketingFooter />
     </div>
   )
 }

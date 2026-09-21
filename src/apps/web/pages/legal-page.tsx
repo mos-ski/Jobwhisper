@@ -1,6 +1,5 @@
-import { Link } from 'react-router-dom'
 
-import { JobwhisperMark } from '@/ui'
+import { MarketingFooter, MarketingNav } from '@/features/marketing/marketing-chrome'
 
 type LegalPageKind = 'privacy' | 'terms'
 
@@ -55,18 +54,7 @@ export function LegalPage({ kind }: LegalPageProps) {
 
   return (
     <div className="min-h-screen bg-canvas font-rethink text-ink">
-      <header className="border-b border-border bg-surface">
-        <div className="mx-auto flex min-h-16 w-full max-w-6xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
-          <Link to="/" aria-label="Jobwhisper home" className="inline-flex min-h-11 items-center rounded-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-            <JobwhisperMark className="h-6 w-auto text-accent" />
-          </Link>
-          <nav aria-label="Legal navigation" className="flex items-center gap-2 text-sm font-medium sm:gap-5">
-            <Link to="/pricing" className="inline-flex min-h-11 items-center rounded-soft px-2 text-ink-muted transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Pricing</Link>
-            <Link to={kind === 'privacy' ? '/terms' : '/privacy'} className="inline-flex min-h-11 items-center rounded-soft px-2 text-ink-muted transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">{kind === 'privacy' ? 'Terms' : 'Privacy'}</Link>
-            <Link to="/v3/auth/sign-in" className="inline-flex min-h-8 items-center justify-center rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-on-accent shadow-control transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Sign in</Link>
-          </nav>
-        </div>
-      </header>
+      <MarketingNav />
 
       <main className="mx-auto w-full max-w-4xl px-4 pb-20 pt-16 sm:px-6 sm:pt-24 lg:px-8">
         <p className="text-sm font-semibold uppercase tracking-wide text-accent-text">Jobwhisper legal</p>
@@ -86,16 +74,7 @@ export function LegalPage({ kind }: LegalPageProps) {
         </div>
       </main>
 
-      <footer className="border-t border-border bg-surface">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-8 text-sm text-ink-muted sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-          <p>© 2026 Jobwhisper.ai</p>
-          <div className="flex flex-wrap gap-4">
-            <Link to="/pricing" className="transition-colors hover:text-ink">Pricing</Link>
-            <Link to="/privacy" className="transition-colors hover:text-ink">Privacy Policy</Link>
-            <Link to="/terms" className="transition-colors hover:text-ink">Terms of Service</Link>
-          </div>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   )
 }

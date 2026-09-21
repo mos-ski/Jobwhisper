@@ -54,7 +54,6 @@ describe('MarketingProductView', () => {
         activeSectionId="target"
         onSectionVisible={vi.fn()}
         onPrimaryAction={vi.fn()}
-        onHome={vi.fn()}
       />,
     )
 
@@ -74,6 +73,6 @@ describe('MarketingProductView', () => {
     expect(screen.getByRole('heading', { name: 'Leave with a stronger application.' })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'Finished resume ready to export' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute('href', '/privacy')
-    expect(screen.getByRole('link', { name: 'Terms' })).toHaveAttribute('href', '/terms')
+    expect(screen.getByRole('link', { name: 'Terms of Service' })).toHaveAttribute('href', '/terms')
   })
 })

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
-import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Menu as MenuIcon, Plus } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Plus } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger, Menu, MenuContent, MenuItem, MenuTrigger } from '@/ui'
-import { downloadItems } from '@/mocks/account'
+import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger } from '@/ui'
+import { MarketingFooter, MarketingNav } from '@/features/marketing/marketing-chrome'
 import './landing-page.css'
 
 /** [title, full description, short description]. The short one runs on mobile, where the
@@ -27,29 +27,6 @@ const FAQS = [
   ['How do I contact the Jobwhisper team?', 'Open the help center from your account or use the contact options in the footer.'],
 ] as const
 
-function DownloadMenu({ compact = false }: { readonly compact?: boolean }) {
-  return <Menu><MenuTrigger render={<button className={compact ? 'landing-nav-download' : 'landing-primary-button'} aria-label={compact ? 'Download' : undefined} />}>
-    {compact ? null : <span>Download Now</span>}
-    {compact ? <><span>Download</span><ChevronDown aria-hidden="true" /></> : <span className="landing-platform-icons" aria-hidden="true"><img src="/landing-apple.svg" alt="" /><img src="/landing-windows.svg" alt="" /></span>}
-  </MenuTrigger><MenuContent align="end" sideOffset={8} className="landing-download-menu">{downloadItems.map((item) => <MenuItem key={item.id} render={<a href={item.href} className="landing-download-item" />}><img src={item.imageSrc} alt="" /><span>{item.support}</span></MenuItem>)}</MenuContent></Menu>
-}
-
-/** The inline Features/Pricing/FAQ links are hidden below 900px, so the same destinations
- *  move into this menu rather than being unreachable from a phone. */
-function NavLinksMenu() {
-  const navigate = useNavigate()
-  return <Menu><MenuTrigger render={<button className="landing-nav-menu" aria-label="Open menu" />}><MenuIcon aria-hidden="true" /></MenuTrigger><MenuContent align="end" className="landing-download-menu">
-    <MenuItem className="landing-download-item"><a href="#features">Features</a></MenuItem>
-    <MenuItem className="landing-download-item" onClick={() => navigate('/pricing')}>Pricing</MenuItem>
-    <MenuItem className="landing-download-item"><a href="#faq">FAQ</a></MenuItem>
-  </MenuContent></Menu>
-}
-
-function LandingNav() {
-  const navigate = useNavigate()
-  return <nav className="landing-nav" aria-label="Main navigation"><img src="/landing-logo.svg" alt="Jobwhisper" className="landing-nav-logo" /><div className="landing-nav-links"><a href="#features">Features <ChevronDown aria-hidden="true" /></a><button onClick={() => navigate('/pricing')}>Pricing</button><a href="#faq">FAQ</a></div><div className="landing-nav-actions"><DownloadMenu compact /><button className="landing-nav-auth" onClick={() => navigate('/v3/auth/sign-in')}>Log in</button><NavLinksMenu /></div></nav>
-}
-
 function BrandAnnouncement() {
   return <div className="landing-brand-announcement"><p>We’ve moved on from Lightforth. Meet Jobwhisper, built to help you land your next role. <a href="https://lightforth.ai/">Learn more</a></p></div>
 }
@@ -65,7 +42,7 @@ function SocialProofSignup() {
 
 function Hero({ heroRef }: { readonly heroRef: RefObject<HTMLElement | null> }) {
   const navigate = useNavigate()
-  return <section className="landing-hero" ref={heroRef}><LandingNav /><div className="landing-hero-copy"><h1>Pass Your <span>Next Interview.</span><br />Land the Job. Or Don’t Pay!</h1><p>Jobwhisper Copilot listens to every interview question and instantly gives you a tailored answer using your resume and the job description, so you always know what to say. No guessing. No delay. No memorizing scripts. No freezing under pressure.</p><div className="landing-hero-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Ace your Interview <ArrowUpRight aria-hidden="true" /></button></div><div className="landing-hero-notes"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span></div></div></section>
+  return <section className="landing-hero" ref={heroRef}><MarketingNav /><div className="landing-hero-copy"><h1>Pass Your <span>Next Interview.</span><br />Land the Job. Or Don’t Pay!</h1><p>Jobwhisper Copilot listens to every interview question and instantly gives you a tailored answer using your resume and the job description, so you always know what to say. No guessing. No delay. No memorizing scripts. No freezing under pressure.</p><div className="landing-hero-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Ace your Interview <ArrowUpRight aria-hidden="true" /></button></div><div className="landing-hero-notes"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span></div></div></section>
 }
 
 function Demo() {
@@ -255,53 +232,6 @@ function Closing() {
   return <section className="landing-closing"><h2>Ready when you are.<br />Let’s get you hired.</h2><p>Your next opportunity could start with a better resume, the right application, stronger preparation, or simply knowing what to say when the interview begins. <strong>Jobwhisper brings it all together,</strong> helping you find the right roles, prepare for the moments that matter, and show up with support when it counts. You’ve done the hard part getting this far. Now let’s help you turn the next opportunity into an offer.</p><div className="landing-closing-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Get started free <ArrowUpRight aria-hidden="true" /></button><button className="landing-secondary-button" onClick={() => navigate('/pricing')}>See pricing</button></div><div className="landing-hero-notes landing-closing-note"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span><b aria-hidden="true">·</b><span>Plans from $47/month</span></div></section>
 }
 
-/** [label, href]. '#' where the page does not exist yet, as the footer already was. */
-const FOOTER_PRODUCT = [
-  ['AI Resume Builder', '/products/resume-builder'],
-  ['Interview Copilot', '/products/interview-copilot'],
-  ['Interview Prep', '/products/interview-prep'],
-  ['Auto Apply', '/products/auto-apply'],
-  ['Pricing', '/pricing'],
-  ['FAQ', '#faq'],
-] as const
-
-const FOOTER_DOWNLOAD = [
-  ['Download Extension', '/v3/downloads'],
-  ['Download for Mac', '/v3/downloads'],
-  ['Download for Windows', '/v3/downloads'],
-  ['Download for Linux', '/v3/downloads'],
-] as const
-
-const FOOTER_COMPANY = [
-  ['Contact', '#'],
-  ['Help center', '#'],
-  ['LinkedIn', '#'],
-  ['Twitter', '#'],
-  ['TikTok', '#'],
-  ['Instagram', '#'],
-] as const
-
-function Footer() {
-  const links = (items: readonly (readonly [string, string])[]) => items.map(([label, href]) => <a href={href} key={label}>{label}</a>)
-  return <footer className="landing-footer">
-    <div className="landing-footer-inner">
-      <div className="landing-footer-brand">
-        <img className="landing-footer-logo" src="/figma-landing/footer-logo.svg" alt="Jobwhisper" />
-        <p>From job search to job offer, with the right support at every step.</p>
-      </div>
-      <nav className="landing-footer-links" aria-label="Footer navigation">
-        <div className="landing-footer-column">{links(FOOTER_PRODUCT)}</div>
-        <div className="landing-footer-column">{links(FOOTER_DOWNLOAD)}</div>
-        <div className="landing-footer-column">{links(FOOTER_COMPANY)}</div>
-      </nav>
-      <div className="landing-footer-meta">
-        <span>© Jobwhisper 2026</span>
-        <div><a href="/privacy">Privacy Policy</a><a href="/terms">Terms</a></div>
-      </div>
-    </div>
-  </footer>
-}
-
 export function LandingPage() {
   const { hash } = useLocation()
   const heroRef = useRef<HTMLElement>(null)
@@ -322,5 +252,5 @@ export function LandingPage() {
 
   // The sections are wrapped so they can carry the opaque sheet that covers the pinned
   // footer — on the page element itself the background paints under the footer instead.
-  return <main className="figma-landing-page"><div className="landing-content"><BrandAnnouncement /><Hero heroRef={heroRef} /><Demo /><Journey /><ProductFacts /><CopilotShowcase /><Faq /><Closing /></div><Footer />{showSocialProof ? <SocialProofSignup /> : null}</main>
+  return <main className="figma-landing-page"><div className="landing-content"><BrandAnnouncement /><Hero heroRef={heroRef} /><Demo /><Journey /><ProductFacts /><CopilotShowcase /><Faq /><Closing /></div><MarketingFooter />{showSocialProof ? <SocialProofSignup /> : null}</main>
 }

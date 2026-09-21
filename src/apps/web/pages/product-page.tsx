@@ -24,7 +24,6 @@ export function ProductPage({ slug }: ProductPageProps) {
       activeSectionId={activeSectionId}
       onSectionVisible={handleSectionVisible}
       onPrimaryAction={() => navigate(product.ctaHref)}
-      onHome={() => navigate('/')}
     />
   )
 }
