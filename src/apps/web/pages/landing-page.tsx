@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
-import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Menu as MenuIcon, Play, Plus } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Menu as MenuIcon, Plus } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger, Menu, MenuContent, MenuItem, MenuTrigger } from '@/ui'
 import { downloadItems } from '@/mocks/account'
@@ -16,21 +16,14 @@ const JOURNEY = [
   ['Coding Interview', 'Live AI assistance during coding interviews. Real-time hints as you work through the problem.', 'Live AI assistance during coding interviews, with hints as you work through the problem.'],
 ] as const
 
-const PLATFORMS = [
-  { label: 'Desktop App', title: 'Stealth. Completely Undetectable', body: 'Take Jobwhisper into interviews, coding sessions and meetings with our desktop app, including Stealth Mode for a private, distraction-free Copilot experience.', href: '/v3/downloads', action: 'Download Now →', image: '/figma-landing/platform-desktop.svg' },
-  { label: 'Browser Extension', title: 'Turn job boards into your job-search workspace.', body: 'Find and apply to roles directly across LinkedIn, Glassdoor, Workable and supported job sites, with Jobwhisper helping automate the repetitive parts of applying.', href: '/v3/downloads', action: 'Download From Store →', image: '/figma-landing/platform-browser.svg' },
-  { label: 'Mobile App', title: 'Your job search on the go.', body: 'Keep Jobwhisper close for job search, preparation and career support right from your phone.', action: 'Coming soon', image: '/figma-landing/platform-mobile.svg' },
-  { label: 'Done For You', title: 'Or let a real person handle the search.', body: 'Want to skip the applications entirely? Our team can find relevant roles, tailor your resume and apply for you, with a dedicated success manager supporting your search.', href: '/v3/done-for-you', action: 'Explore Done For You →', image: '/figma-landing/platform-managed.svg' },
-] as const
-
 const FAQS = [
-  ['Is Jobwhisper free?', 'You can create an account with free monthly credits. Paid usage depends on the feature and the amount of support you use.'],
-  ['What happens if I fail an interview?', 'Eligible offers include the interview guarantee described at checkout. The exact terms are shown before purchase.'],
-  ['Is Jobwhisper the same company as FanBasis?', 'No. Jobwhisper is an AI career companion built for resumes, applications, interview preparation and live interview support.'],
-  ['Where do existing Jobwhisper users log in?', 'Use the Log in link at the top of this page to access your Jobwhisper account.'],
-  ['Do I need to create a new account?', 'New users can create an account in a few steps. Existing users can keep using their current account.'],
-  ['What happened to the Lightforth website?', 'Lightforth is now Jobwhisper. The product continues with the same goal: helping you move from job search to job offer.'],
-  ['Why did Lightforth become Jobwhisper?', 'The new name reflects the product more clearly: practical AI help throughout your job search, including live support when answers matter.'],
+  ['Is Jobwhisper free to start?', 'Yes. You can create an account and start on free monthly credits, no card required. Paid plans begin at $47 a month.'],
+  ['How does “land the job or don’t pay” work?', 'It is the interview guarantee that comes with a Done-For-You package. A success manager applies on your behalf until you have landed the number of interviews your package guarantees, and your Jobwhisper access continues until that guarantee is fulfilled rather than expiring on a fixed date. It is a one-time price, not a subscription. Subscription plans on their own do not carry the guarantee, and the exact terms for the package you pick are shown before you pay.'],
+  ['What does it cost?', 'Plans start at $47 a month, which includes roughly 500 credits. Metered features run at $0.10 per credit, where one credit is a minute of Copilot time or a single prompt. Done-For-You is priced separately as a one-time package. The pricing page has the full breakdown.'],
+  ['Can the interviewer tell I am using it?', 'Jobwhisper runs in its own desktop app rather than inside the meeting window, and Stealth Mode keeps it out of the way while you are on a call. What it shows you stays on your screen.'],
+  ['What if the answer it gives is not right?', 'Answers are drafted from your resume, the job description and anything you add to your knowledge base, so they stay grounded in your own experience rather than invented. Treat them as a prompt, not a script: say them in your own words, and switch models mid-conversation if one is not landing.'],
+  ['Which conversations does it work in?', 'Live interviews, coding interviews, meetings, and practice sessions with an AI interviewer before the real thing.'],
+  ['Why did Lightforth become Jobwhisper?', 'The new name reflects the product more clearly: practical AI help throughout your job search, including live support when answers matter. Existing accounts keep working, and you can log in at the top of this page.'],
   ['How do I contact the Jobwhisper team?', 'Open the help center from your account or use the contact options in the footer.'],
 ] as const
 
@@ -72,15 +65,11 @@ function SocialProofSignup() {
 
 function Hero({ heroRef }: { readonly heroRef: RefObject<HTMLElement | null> }) {
   const navigate = useNavigate()
-  return <section className="landing-hero" ref={heroRef}><LandingNav /><div className="landing-hero-copy"><h1>Pass Your <span>Next Interview.</span><br />Land the Job. Or Don’t Pay!</h1><p>JobWhisper Copilot listens to every interview question and instantly gives you a tailored answer using your resume and the job description, so you always know what to say. No guessing. No delay. No memorizing scripts. No freezing under pressure.</p><div className="landing-hero-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Ace your Interview <ArrowUpRight aria-hidden="true" /></button></div><div className="landing-hero-notes"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span></div></div></section>
+  return <section className="landing-hero" ref={heroRef}><LandingNav /><div className="landing-hero-copy"><h1>Pass Your <span>Next Interview.</span><br />Land the Job. Or Don’t Pay!</h1><p>Jobwhisper Copilot listens to every interview question and instantly gives you a tailored answer using your resume and the job description, so you always know what to say. No guessing. No delay. No memorizing scripts. No freezing under pressure.</p><div className="landing-hero-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Ace your Interview <ArrowUpRight aria-hidden="true" /></button></div><div className="landing-hero-notes"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span></div></div></section>
 }
 
 function Demo() {
   return <section className="landing-demo" aria-label="Jobwhisper live copilot demo"><video src="/landing-demo.mp4" autoPlay muted loop playsInline /><div className="landing-demo-fade" /></section>
-}
-
-function MomentCards() {
-  return <section className="landing-moments" id="features"><h2>Built for the moment that matters.</h2><div><article><p>Built with <strong>Real-time answers.</strong> Say them in your own words.</p><Plus aria-hidden="true" /></article><article><p><strong>Personalized to your resume,</strong> grounded in your experience.</p><Plus aria-hidden="true" /></article><article><p><strong>Built around the job you want.</strong> Get closer to the offer.</p><Plus aria-hidden="true" /></article></div></section>
 }
 
 function JourneyPreview({ active }: { readonly active: number }) {
@@ -168,7 +157,7 @@ function JourneyRevealText() {
 
 function CountUp({ value, decimals = 0, prefix = '', enabled = true }: { readonly value: number; readonly decimals?: number; readonly prefix?: string; readonly enabled?: boolean }) {
   const valueRef = useRef<HTMLElement>(null)
-  const [displayValue, setDisplayValue] = useState(0)
+  const [displayValue, setDisplayValue] = useState(value)
 
   useEffect(() => {
     if (!enabled) return
@@ -236,16 +225,12 @@ function Journey() {
     if (item instanceof HTMLElement) item.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
   }, [active])
 
-  return <section className="landing-journey"><div className="landing-section-intro"><p>Your entire job search</p><h2>Start to finish.</h2><JourneyRevealText /></div><div className="landing-journey-viewer"><div className="landing-journey-controls"><button aria-label="Previous feature" onClick={() => cycleFeature(-1)}><ChevronUp aria-hidden="true" /></button><button aria-label="Next feature" onClick={() => cycleFeature(1)}><ChevronDown aria-hidden="true" /></button></div><div className="landing-journey-nav" ref={navRef} aria-label="Job search stages">{JOURNEY.map(([title, description, shortDescription], index) => <div className="landing-journey-item" key={title}><button aria-expanded={active === index} aria-controls={`journey-description-${index}`} onClick={() => setActive(index)}><Plus aria-hidden="true" className="landing-journey-icon-expand" />{index > active ? <ChevronRight aria-hidden="true" className="landing-journey-icon-step" /> : null}{title}{index < active ? <ChevronLeft aria-hidden="true" className="landing-journey-icon-step" /> : null}</button><div className="landing-journey-description-shell" data-open={active === index}><div className="landing-journey-description" id={`journey-description-${index}`} role="region" aria-label={`${title} details`} aria-hidden={active !== index}><strong className="landing-journey-description-title">{title}.</strong> <span className="landing-journey-description-full">{description}</span><span className="landing-journey-description-short">{shortDescription}</span></div></div></div>)}</div><div className="landing-journey-stage" role="region" aria-label={`${JOURNEY[active][0]} preview`}><JourneyPreview active={active} /></div></div></section>
+  return <section className="landing-journey" id="features"><div className="landing-section-intro"><p>Your entire job search</p><h2>Start to finish.</h2><JourneyRevealText /></div><div className="landing-journey-viewer"><div className="landing-journey-controls"><button aria-label="Previous feature" onClick={() => cycleFeature(-1)}><ChevronUp aria-hidden="true" /></button><button aria-label="Next feature" onClick={() => cycleFeature(1)}><ChevronDown aria-hidden="true" /></button></div><div className="landing-journey-nav" ref={navRef} aria-label="Job search stages">{JOURNEY.map(([title, description, shortDescription], index) => <div className="landing-journey-item" key={title}><button aria-expanded={active === index} aria-controls={`journey-description-${index}`} onClick={() => setActive(index)}><Plus aria-hidden="true" className="landing-journey-icon-expand" />{index > active ? <ChevronRight aria-hidden="true" className="landing-journey-icon-step" /> : null}{title}{index < active ? <ChevronLeft aria-hidden="true" className="landing-journey-icon-step" /> : null}</button><div className="landing-journey-description-shell" data-open={active === index}><div className="landing-journey-description" id={`journey-description-${index}`} role="region" aria-label={`${title} details`} aria-hidden={active !== index}><strong className="landing-journey-description-title">{title}.</strong> <span className="landing-journey-description-full">{description}</span><span className="landing-journey-description-short">{shortDescription}</span></div></div></div>)}</div><div className="landing-journey-stage" role="region" aria-label={`${JOURNEY[active][0]} preview`}><JourneyPreview active={active} /></div></div></section>
 }
 
 function ProductFacts() {
   const [copyRevealed, setCopyRevealed] = useState(false)
-  return <section className="landing-facts"><ScrollRevealText segments={FACTS_COPY} className="landing-facts-reveal" onComplete={() => setCopyRevealed(true)} /><div className="landing-facts-grid"><div className="landing-stat landing-stat-minutes"><span>Up to</span><CountUp value={4000} enabled={copyRevealed} /><span>minutes Included</span></div><div className="landing-fact-copy"><div><strong>Multiple AI models</strong><span>Choose the model that fits the conversation.</span><ul><li>OpenAI — GPT-5.6 Sol</li><li>Anthropic — Claude Sonnet 5</li><li>Google — Gemini 3.8 Flash</li><li>Kimi — Kimi K3</li><li>Qwen — Qwen3.8 Max</li></ul><span>Switch models depending on the interview, question, or task.</span></div><div><strong>Personalized context</strong><span>Your resume<br />Your job description<br />Upload multiple knowledge base</span></div><div><strong>Simple setup</strong><span>Add your context<br />Choose your preferences<br />Start your Copilot</span></div></div><div className="landing-stat landing-stat-price"><span>Starting from</span><CountUp value={0.1} decimals={2} prefix="$" enabled={copyRevealed} /><span>per minutes</span></div></div></section>
-}
-
-function Testimonial() {
-  return <section className="landing-testimonial"><div className="landing-testimonial-media"><img src="/figma-landing/testimonial-photo.png" alt="Jay holding a phone" /><button aria-label="Play Jay’s story"><Play aria-hidden="true" /></button></div><blockquote>Nothing lives rent-free in your mind quite like an interview that went horribly wrong<footer><strong>Jay</strong><span>Project Manager</span></footer></blockquote></section>
+  return <section className="landing-facts"><ScrollRevealText segments={FACTS_COPY} className="landing-facts-reveal" onComplete={() => setCopyRevealed(true)} /><div className="landing-facts-grid"><div className="landing-stat landing-stat-minutes"><span>Up to</span><CountUp value={4000} enabled={copyRevealed} /><span>minutes Included</span></div><div className="landing-fact-copy"><div><strong>Multiple AI models</strong><span>Choose the model that fits the conversation.</span><ul><li>OpenAI</li><li>Anthropic</li><li>Google Gemini</li><li>Kimi</li><li>Qwen</li></ul><span>Switch models depending on the interview, question, or task.</span></div><div><strong>Personalized context</strong><span>Your resume<br />Your job description<br />Upload multiple knowledge bases</span></div><div><strong>Simple setup</strong><span>Add your context<br />Choose your preferences<br />Start your Copilot</span></div></div><div className="landing-stat landing-stat-price"><span>Starting from</span><CountUp value={0.1} decimals={2} prefix="$" enabled={copyRevealed} /><span>per minute</span></div></div></section>
 }
 
 const COPILOT_TABS = ['Interviews', 'Meetings', 'Coding', 'Practice'] as const
@@ -256,40 +241,9 @@ const COPILOT_IMAGES: Record<(typeof COPILOT_TABS)[number], string> = {
   Practice: '/figma-landing/copilot-practice.png',
 }
 function CopilotShowcase() {
-  const [activeTab, setActiveTab] = useState<(typeof COPILOT_TABS)[number]>('Interviews')
-  return <section className="landing-copilot"><div className="landing-section-intro"><h2>Your copilot.<br />Always within reach.</h2><p>Jobwhisper gives you real-time AI support while the conversation is happening, so you can focus on the person in front of you instead of scrambling for what to say next. Whether you’re answering an interview question, working through a coding challenge, leading an important meeting, or practicing before the real thing, your Copilot listens, understands the context, and helps you respond with confidence.</p></div><div className="landing-copilot-tabs" role="tablist" aria-label="Copilot use cases">{COPILOT_TABS.map((tab) => <button key={tab} role="tab" aria-selected={activeTab === tab} aria-controls="copilot-preview" onClick={() => setActiveTab(tab)}>{tab}</button>)}</div><div className="landing-copilot-image" data-copilot-tab={activeTab.toLowerCase()} id="copilot-preview" role="tabpanel"><img src={COPILOT_IMAGES[activeTab]} alt={`Jobwhisper ${activeTab.toLowerCase()} copilot desktop preview`} /></div></section>
-}
-
-function PlatformCards() {
-  // One card plus the gap, measured rather than assumed: the card is 372px on desktop and
-  // 340px at mobile widths, so a fixed step overshot by a card every time on a phone.
-  const scroll = (direction: number) => {
-    const scroller = document.getElementById('landing-platform-scroller')
-    if (!scroller) return
-    const card = scroller.firstElementChild
-    const step = card ? card.getBoundingClientRect().width + 20 : 392
-    scroller.scrollBy({ left: direction * step, behavior: 'smooth' })
-  }
-  return <section className="landing-platforms"><h2>Jobwhisper,<br />wherever you need it.</h2><div className="landing-platform-scroller" id="landing-platform-scroller">{PLATFORMS.map((platform, index) => {
-    const isLast = index === PLATFORMS.length - 1
-    return <article key={platform.label} data-platform={index}><div className="landing-platform-copy"><span>{platform.label}</span><h3>{platform.title}</h3><p>{platform.body}</p>{'href' in platform ? <a className="landing-platform-action" href={platform.href}>{platform.action}</a> : <span className="landing-platform-action landing-platform-coming">{platform.action}</span>}</div><img src={platform.image} alt="" />
-      {/* Moves the row itself rather than going anywhere, so it sits above the card-wide
-          link and stops the click from reaching it. The last card steps back instead. */}
-      <button
-        type="button"
-        className="landing-platform-card-control"
-        aria-label={isLast ? 'Previous platform' : 'Next platform'}
-        onClick={(event) => { event.preventDefault(); event.stopPropagation(); scroll(isLast ? -1 : 1) }}
-      >
-        {isLast ? <ChevronLeft aria-hidden="true" /> : <ChevronRight aria-hidden="true" />}
-      </button>
-      {'href' in platform && <a className="landing-platform-card-link" href={platform.href} aria-label={`${platform.action.replace(' →', '')}: ${platform.label}`} />}</article>
-  })}</div><div className="landing-scroll-controls"><button aria-label="Previous platform" onClick={() => scroll(-1)}><ChevronLeft /></button><button aria-label="Next platform" onClick={() => scroll(1)}><ChevronRight /></button></div></section>
-}
-
-function ServiceChoice() {
   const navigate = useNavigate()
-  return <section className="landing-service-choice"><article><div className="landing-service-copy"><span>Do it yourself</span><h2>We find the roles.<br />You apply.</h2><button className="landing-service-pricing" onClick={() => navigate('/pricing')}>View Pricing <ChevronRight aria-hidden="true" /></button></div><div className="landing-service-image"><img src="/figma-landing/service-self.png" alt="Job seeker using Jobwhisper self-service" /></div></article><article><div className="landing-service-copy"><span>Done for you</span><h2>A success manager<br />applies for you.</h2><div className="landing-service-actions"><button className="landing-service-start" onClick={() => navigate('/v3/done-for-you')}>Get Started</button><button className="landing-service-pricing" onClick={() => navigate('/pricing')}>View Pricing <ChevronRight aria-hidden="true" /></button></div></div><div className="landing-service-image"><img src="/figma-landing/service-managed.png" alt="Jobwhisper success manager" /></div></article></section>
+  const [activeTab, setActiveTab] = useState<(typeof COPILOT_TABS)[number]>('Interviews')
+  return <section className="landing-copilot"><div className="landing-section-intro"><h2>Your copilot.<br />Always within reach.</h2><p>Jobwhisper gives you real-time AI support while the conversation is happening, so you can focus on the person in front of you instead of scrambling for what to say next. Whether you’re answering an interview question, working through a coding challenge, leading an important meeting, or practicing before the real thing, your Copilot listens, understands the context, and helps you respond with confidence.</p></div><div className="landing-copilot-tabs" role="tablist" aria-label="Copilot use cases">{COPILOT_TABS.map((tab) => <button key={tab} role="tab" aria-selected={activeTab === tab} aria-controls="copilot-preview" onClick={() => setActiveTab(tab)}>{tab}</button>)}</div><div className="landing-copilot-image" data-copilot-tab={activeTab.toLowerCase()} id="copilot-preview" role="tabpanel"><img src={COPILOT_IMAGES[activeTab]} alt={`Jobwhisper ${activeTab.toLowerCase()} copilot desktop preview`} /></div><div className="landing-copilot-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Try Interview Copilot <ArrowUpRight aria-hidden="true" /></button></div></section>
 }
 
 function Faq() {
@@ -297,7 +251,8 @@ function Faq() {
 }
 
 function Closing() {
-  return <section className="landing-closing"><span>Your next role</span><h2>Ready when you are.<br />Let’s get you hired.</h2><p>Your next opportunity could start with a better resume, the right application, stronger preparation, or simply knowing what to say when the interview begins. <strong>Jobwhisper brings it all together,</strong> helping you find the right roles, prepare for the moments that matter, and show up with support when it counts. You’ve done the hard part getting this far. Now let’s help you turn the next opportunity into an offer.</p></section>
+  const navigate = useNavigate()
+  return <section className="landing-closing"><h2>Ready when you are.<br />Let’s get you hired.</h2><p>Your next opportunity could start with a better resume, the right application, stronger preparation, or simply knowing what to say when the interview begins. <strong>Jobwhisper brings it all together,</strong> helping you find the right roles, prepare for the moments that matter, and show up with support when it counts. You’ve done the hard part getting this far. Now let’s help you turn the next opportunity into an offer.</p><div className="landing-closing-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Get started free <ArrowUpRight aria-hidden="true" /></button><button className="landing-secondary-button" onClick={() => navigate('/pricing')}>See pricing</button></div><div className="landing-hero-notes landing-closing-note"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span><b aria-hidden="true">·</b><span>Plans from $47/month</span></div></section>
 }
 
 /** [label, href]. '#' where the page does not exist yet, as the footer already was. */
@@ -367,5 +322,5 @@ export function LandingPage() {
 
   // The sections are wrapped so they can carry the opaque sheet that covers the pinned
   // footer — on the page element itself the background paints under the footer instead.
-  return <main className="figma-landing-page"><div className="landing-content"><BrandAnnouncement /><Hero heroRef={heroRef} /><Demo /><MomentCards /><Journey /><ProductFacts /><Testimonial /><CopilotShowcase /><PlatformCards /><ServiceChoice /><Faq /><Closing /></div><Footer />{showSocialProof ? <SocialProofSignup /> : null}</main>
+  return <main className="figma-landing-page"><div className="landing-content"><BrandAnnouncement /><Hero heroRef={heroRef} /><Demo /><Journey /><ProductFacts /><CopilotShowcase /><Faq /><Closing /></div><Footer />{showSocialProof ? <SocialProofSignup /> : null}</main>
 }

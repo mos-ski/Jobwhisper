@@ -5,10 +5,13 @@ export type DownloadItem = {
   readonly title: string
   readonly platform: string
   readonly extension: string
+  /** Names the build, not the action — "macOS — Apple Silicon" rather than "Download" — so a row of cards reads as a list of targets to pick from. */
   readonly cta: string
   readonly support: string
   readonly imageSrc: string
   readonly href: string
+  /** Not shipping yet: the card shows a disabled control in place of the download link. */
+  readonly comingSoon?: boolean
 }
 
 export type BillingPlanCard = {

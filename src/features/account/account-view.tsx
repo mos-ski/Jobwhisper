@@ -121,7 +121,7 @@ function ContentShell({ children }: { readonly children: ReactNode }) {
   return <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-10">{children}</section>
 }
 
-function TitledPanel({ title, action, children }: { readonly title: string; readonly action?: ReactNode; readonly children: ReactNode }) {
+export function TitledPanel({ title, action, children }: { readonly title: string; readonly action?: ReactNode; readonly children: ReactNode }) {
   return (
     <article className="w-full min-w-0 bg-surface shadow-panel">
       <div className="flex min-h-[5rem] flex-wrap items-center justify-between gap-3 border-b border-border px-4 sm:px-6 lg:px-8">
@@ -139,33 +139,39 @@ export function DownloadsView({ homeHref, downloads }: DownloadsViewProps) {
       <ShellBar homeHref={homeHref} current="Download Apps" closeHref={homeHref} closeLabel="Close downloads" />
       <ContentShell>
         <TitledPanel title="Download Apps">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {downloads.map((item) => (
-              <div key={item.id} className="flex items-start gap-3 border border-border bg-surface p-[18px]">
-                <span className="block h-[87px] w-[100px] shrink-0 overflow-hidden">
-                  <img src={item.imageSrc} alt="" className="size-full object-cover" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="font-gowun text-sm font-bold text-ink">{item.title}</p>
-                  <p className="mt-1 text-sm text-ink-muted">{item.support}</p>
-                  <a
-                    href={item.href}
-                    className="mt-2 inline-flex min-h-9 items-center justify-center rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent shadow-control transition-colors duration-normal hover:bg-accent-hover"
-                  >
-                    {item.cta}
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <p className="mt-8 max-w-3xl text-xs leading-5 text-ink-muted">
-            By downloading a Jobwhisper application, you agree that our Terms of Service apply to your use of that application. If you have entered a different agreement with Jobwhisper that covers our applications, that agreement will apply instead.
-          </p>
+          <DownloadsCatalog downloads={downloads} />
         </TitledPanel>
       </ContentShell>
     </AppWorkspace>
   )
+}
+
+export function DownloadsCatalog({ downloads }: Pick<DownloadsViewProps, 'downloads'>) {
+  return <>
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {downloads.map((item) => (
+        <div key={item.id} className="flex items-start gap-3 border border-border bg-surface p-[18px]">
+          <span className="block h-[87px] w-[100px] shrink-0 overflow-hidden">
+            <img src={item.imageSrc} alt="" className="size-full object-cover" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="font-gowun text-sm font-bold text-ink">{item.title}</p>
+            <p className="mt-1 text-sm text-ink-muted">{item.support}</p>
+            {/* A span rather than a disabled link: there is nothing to go to yet, so it stays out of the tab order entirely. */}
+            {item.comingSoon ? (
+              <span className="mt-2 inline-flex min-h-9 items-center justify-center rounded-lg border border-border bg-surface px-4 text-sm font-semibold text-ink opacity-50 shadow-control">{item.cta}</span>
+            ) : (
+              <a href={item.href} className="mt-2 inline-flex min-h-9 items-center justify-center rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent shadow-control transition-colors duration-normal hover:bg-accent-hover">{item.cta}</a>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+    <p className="mx-auto mt-9 max-w-3xl border-t border-border pt-6 text-center text-xs leading-5 text-ink-muted">
+      By downloading a Jobwhisper application you agree to our{' '}
+      <a href="/terms" className="font-semibold text-accent-text">Terms of Service</a>, unless a separate agreement with Jobwhisper covers it.
+    </p>
+  </>
 }
 
 const tutorialToneClasses: Record<TutorialItem['tone'], string> = {

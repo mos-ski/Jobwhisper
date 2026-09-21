@@ -72,7 +72,7 @@ describe('LandingPage', () => {
     expect(screen.queryByText('Join 57,000+ job seekers landing better roles')).not.toBeInTheDocument()
     expect(
       screen.getByText(
-        /JobWhisper Copilot listens to every interview question and instantly gives you a tailored answer/,
+        /Jobwhisper Copilot listens to every interview question and instantly gives you a tailored answer/,
       ),
     ).toBeInTheDocument()
     const mainNavigation = screen.getByRole('navigation', { name: 'Main navigation' })
@@ -99,7 +99,6 @@ describe('LandingPage', () => {
     const demo = screen.getByLabelText('Jobwhisper live copilot demo')
     expect(within(demo).queryByRole('button', { name: 'Get Started' })).not.toBeInTheDocument()
     expect(within(demo).queryByText('Land the role, or pay nothing')).not.toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Built for the moment that matters.' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Start to finish.' })).toBeInTheDocument()
     const journeyCopy = screen.getByLabelText(/Jobwhisper is built to help you through every stage/)
     expect(journeyCopy.querySelectorAll('[data-reveal-word]').length).toBeGreaterThan(30)
@@ -107,7 +106,6 @@ describe('LandingPage', () => {
     const factsCopy = screen.getByLabelText(/Meet the AI copilot built for the moments/)
     expect(factsCopy.querySelectorAll('[data-reveal-word]').length).toBeGreaterThan(50)
     expect(factsCopy.querySelector('strong')).toHaveTextContent('AI copilot built for the moments when the right answer matters.')
-    expect(screen.getByRole('button', { name: 'Play Jay’s story' })).toBeInTheDocument()
     expect(within(screen.getByLabelText('Job search stages')).getAllByRole('button')).toHaveLength(6)
     fireEvent.click(screen.getByRole('button', { name: 'AI Job Application' }))
     expect(screen.getByRole('img', { name: 'AI Job Application preview' })).toBeInTheDocument()
@@ -116,8 +114,11 @@ describe('LandingPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Interview Prep' }))
     expect(screen.getByRole('img', { name: 'Interview Prep preview' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /Your copilot\.\s*Always within reach\./ })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /Jobwhisper,\s*wherever you need it\./ })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /Ready when you are\.\s*Let’s get you hired\./ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Get started free/ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'See pricing' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Try Interview Copilot/ })).toBeInTheDocument()
+    expect(screen.queryByText('Your next role')).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Frequently asked questions' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'AI Resume Builder' })).toHaveAttribute('href', '/products/resume-builder')
     expect(screen.getByRole('link', { name: 'Interview Copilot' })).toHaveAttribute('href', '/products/interview-copilot')
