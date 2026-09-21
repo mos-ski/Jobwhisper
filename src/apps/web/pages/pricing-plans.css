@@ -23,6 +23,10 @@
   padding:72px 32px 48px;
 }
 
+/* Job-search credits and Done for you run two cards, and neither has a featured one, so
+   the row narrows and drops the banner clearance. */
+.pricing-plan-grid[data-cards="2"]{grid-template-columns:repeat(2,minmax(0,1fr));max-width:740px;padding-top:40px}
+
 .pricing-plan{
   position:relative;
   display:flex;
@@ -45,14 +49,16 @@
 .pricing-plan[data-plan='starter']{--pricing-plan-wash:rgba(238,140,222,.20)}
 .pricing-plan[data-plan='pro']{--pricing-plan-wash:rgba(110,225,195,.22)}
 .pricing-plan[data-plan='premium']{--pricing-plan-wash:rgba(150,160,240,.20)}
+.pricing-plan-grid[data-cards="2"] .pricing-plan:first-child{--pricing-plan-wash:rgba(238,140,222,.20)}
+.pricing-plan-grid[data-cards="2"] .pricing-plan:last-child{--pricing-plan-wash:rgba(150,160,240,.20)}
 
-.pricing-plan[data-featured]{border-color:var(--lf-accent);box-shadow:0 0 0 1px var(--lf-accent);margin-top:-33px}
+.pricing-plan[data-featured]{border-color:var(--lf-ink);box-shadow:0 0 0 1px var(--lf-ink);margin-top:-33px}
 
 .pricing-plan-banner{
   margin:0;
   padding:8px 16px;
-  background:linear-gradient(90deg,#3b82f6,var(--lf-accent));
-  color:var(--lf-on-accent);
+  background:var(--lf-ink);
+  color:var(--lf-surface);
   font-size:12px;
   line-height:16px;
   font-weight:600;
@@ -99,6 +105,15 @@
   cursor:pointer;
 }
 .pricing-plan-cta:hover{opacity:.9}
+/* Only the featured plan gets the filled blue; its neighbours go ghost so the row has one
+   obvious primary. Keyed on data-plan, which only the interview tab's cards carry — the
+   two-card tabs have no featured card to contrast against, so they stay filled. */
+.pricing-plan[data-plan]:not([data-featured]) .pricing-plan-cta{
+  background:var(--lf-surface-subtle);
+  color:var(--lf-ink);
+  box-shadow:inset 0 0 0 1px var(--lf-border);
+}
+.pricing-plan[data-plan]:not([data-featured]) .pricing-plan-cta:hover{opacity:1;background:var(--lf-border)}
 
 .pricing-plan-credits{margin:0;padding-top:20px;border-top:1px solid var(--lf-border);display:flex;flex-direction:column;gap:8px}
 .pricing-plan-credits>div{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:14px;line-height:20px}
@@ -131,6 +146,7 @@
   -webkit-overflow-scrolling:touch;
 }
 .pricing-plan-grid::-webkit-scrollbar{display:none}
+.pricing-plan-grid[data-cards="2"]{padding-top:40px}
 .pricing-plan{flex:0 0 min(84vw,340px);scroll-snap-align:center}
 .pricing-plan-dots{display:flex}
 }

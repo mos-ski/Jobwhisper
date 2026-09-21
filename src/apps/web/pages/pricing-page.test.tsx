@@ -68,18 +68,22 @@ describe('PricingPage', () => {
     renderPricingPage()
 
     await user.click(screen.getByRole('tab', { name: 'Job-search credits' }))
-    expect(screen.getByText('$0.10 per AI prompt')).toBeInTheDocument()
-    expect(screen.getByText('$1 per successful application')).toBeInTheDocument()
-    expect(screen.getAllByText(/30 days/)).toHaveLength(4)
+    // The rate splits across the card's price row: the figure, then its unit.
+    expect(screen.getByText('$0.10')).toBeInTheDocument()
+    expect(screen.getByText('per AI prompt')).toBeInTheDocument()
+    expect(screen.getByText('$1')).toBeInTheDocument()
+    expect(screen.getByText('per successful application')).toBeInTheDocument()
+    expect(screen.getAllByText('30 days')).toHaveLength(2)
     expect(screen.queryByText(/12 months/)).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'How job-search credits work' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Job-search credit questions' })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: 'Job-search credit questions' }).querySelectorAll('details')).toHaveLength(20)
     expect(screen.queryByText('How are interview plans billed?')).not.toBeInTheDocument()
+    // All three tabs share the interview plans' card now.
     const resumeCard = screen.getByRole('heading', { level: 3, name: 'Resume Builder' }).closest('article')
-    expect(resumeCard).toHaveClass('group', 'motion-reduce:transition-none')
-    expect(within(resumeCard as HTMLElement).getByRole('button', { name: 'Buy credits' })).toHaveClass('group-hover:bg-accent')
-    expect(screen.getByText('$0.10 per AI prompt').closest('[data-slot="tabs-content"]')).toHaveClass('animate-ease-in-bottom')
+    expect(resumeCard).toHaveClass('pricing-plan')
+    expect(within(resumeCard as HTMLElement).getByRole('button', { name: 'Buy credits' })).toHaveClass('pricing-plan-cta')
+    expect(screen.getByText('$0.10').closest('[data-slot="tabs-content"]')).toHaveClass('animate-ease-in-bottom')
 
     await user.click(screen.getByRole('tab', { name: 'Done for you' }))
     expect(screen.getByRole('heading', { level: 3, name: '5 interviews guaranteed' })).toBeInTheDocument()

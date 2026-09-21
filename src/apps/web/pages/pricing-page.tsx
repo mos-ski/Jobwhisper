@@ -25,11 +25,17 @@ type InterviewPlan = {
   readonly features: readonly string[]
 }
 
+/** The two rows of the card's ruled-off table, as [label, value]. */
+type PlanTerms = readonly (readonly [string, string])[]
+
 type CreditProduct = {
   readonly id: string
   readonly name: string
-  readonly price: string
-  readonly charge: string
+  readonly tagline: string
+  /** Split from the rate so the figure can carry the card's 32px price style. */
+  readonly amount: string
+  readonly unit: string
+  readonly terms: PlanTerms
   readonly description: string
   readonly features: readonly string[]
 }
@@ -37,7 +43,9 @@ type CreditProduct = {
 type ManagedPackage = {
   readonly id: string
   readonly name: string
+  readonly tagline: string
   readonly price: number
+  readonly terms: PlanTerms
   readonly description: string
   readonly features: readonly string[]
 }
@@ -110,16 +118,20 @@ const CREDIT_PRODUCTS: readonly CreditProduct[] = [
   {
     id: 'resume',
     name: 'Resume Builder',
-    price: '$0.10 per AI prompt',
-    charge: 'Buy from $5. Credits stay valid for 30 days.',
+    tagline: 'Pay for the prompts you use',
+    amount: '$0.10',
+    unit: 'per AI prompt',
+    terms: [['Minimum purchase', '$5'], ['Credits valid for', '30 days']],
     description: 'Tailor a resume to a role, refine individual sections, and download the finished version.',
     features: ['One credit per AI prompt', 'ATS scoring is free', 'Unlimited downloads', 'No subscription required'],
   },
   {
     id: 'auto-apply',
     name: 'Auto Apply',
-    price: '$1 per successful application',
-    charge: 'Buy from $10. Credits stay valid for 30 days.',
+    tagline: 'Pay only when one lands',
+    amount: '$1',
+    unit: 'per successful application',
+    terms: [['Minimum purchase', '$10'], ['Credits valid for', '30 days']],
     description: 'Choose suitable jobs and let Jobwhisper prepare and submit each application for you.',
     features: [
       'Charged only after an application succeeds',
@@ -134,7 +146,9 @@ const MANAGED_PACKAGES: readonly ManagedPackage[] = [
   {
     id: 'ten-interviews',
     name: '5 interviews guaranteed',
+    tagline: 'A managed search, start to offer',
     price: 497,
+    terms: [['Interviews guaranteed', '5'], ['Payment', 'One time']],
     description: 'A dedicated success manager runs your search until you receive 5 interview invitations.',
     features: [
       'Job scouting and match review',
@@ -146,7 +160,9 @@ const MANAGED_PACKAGES: readonly ManagedPackage[] = [
   {
     id: 'twenty-interviews',
     name: '20 interviews guaranteed',
+    tagline: 'The same service, run longer',
     price: 1990,
+    terms: [['Interviews guaranteed', '20'], ['Payment', 'One time']],
     description: 'The same managed service for a longer search, continuing until 20 invitations are delivered.',
     features: [
       'Job scouting and match review',
@@ -468,8 +484,6 @@ function PageShell({ children, className }: { readonly children: ReactNode; read
   return <div className={cn('mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8', className)}>{children}</div>
 }
 
-const OPTION_CARD_CLASS = 'group flex min-w-0 flex-col p-5 outline outline-2 outline-transparent transition-[background-color,outline-color,box-shadow,transform] duration-normal ease-default hover:scale-[0.99] hover:outline-accent hover:bg-accent-subtle hover:shadow-control focus-within:scale-[0.99] focus-within:outline-accent focus-within:bg-accent-subtle focus-within:shadow-control motion-reduce:transform-none motion-reduce:transition-none sm:p-7'
-const OPTION_ACTION_CLASS = 'my-5 w-full transition-colors duration-normal ease-default group-hover:border-accent group-hover:bg-accent group-hover:text-on-accent group-focus-within:border-accent group-focus-within:bg-accent group-focus-within:text-on-accent motion-reduce:transition-none'
 
 function useAnimatedNumber(target: number) {
   const [displayValue, setDisplayValue] = useState(target)
@@ -555,50 +569,9 @@ function BillingToggle({ annual, onChange }: { readonly annual: boolean; readonl
   )
 }
 
-function FeatureList({ items }: { readonly items: readonly string[] }) {
-  return (
-    <ul className="grid gap-3 border-t border-border pt-5 text-sm leading-6 text-ink-muted">
-      {items.map((item) => (
-        <li key={item} className="flex items-start gap-3">
-          <Check aria-hidden="true" className="mt-1 size-4 shrink-0 text-positive" />
-          <span>{item}</span>
-        </li>
-      ))}
-    </ul>
-  )
-}
-
-const FEATURED_PLAN_INDEX = INTERVIEW_PLANS.findIndex((plan) => plan.featured)
 
 function InterviewPlans({ annual }: { readonly annual: boolean }) {
   const [showProOffer, setShowProOffer] = useState(false)
-  const gridRef = useRef<HTMLDivElement>(null)
-  const [activeCard, setActiveCard] = useState(Math.max(FEATURED_PLAN_INDEX, 0))
-
-  // The phone carousel opens on the featured plan, so the recommendation is what you see
-  // and both neighbours are one swipe away. scrollLeft rather than scrollIntoView: the
-  // latter would drag the whole page down to the carousel on load.
-  useEffect(() => {
-    const grid = gridRef.current
-    const featured = grid?.querySelector<HTMLElement>('[data-featured]')
-    if (!grid || !featured) return
-    grid.scrollLeft += featured.getBoundingClientRect().left - grid.getBoundingClientRect().left
-      - (grid.clientWidth - featured.clientWidth) / 2
-  }, [])
-
-  const handleCarouselScroll = () => {
-    const grid = gridRef.current
-    if (!grid) return
-    const middle = grid.scrollLeft + grid.clientWidth / 2
-    const cards = [...grid.children] as HTMLElement[]
-    let nearest = 0
-    cards.forEach((card, index) => {
-      const cardMiddle = card.offsetLeft + card.offsetWidth / 2
-      if (Math.abs(cardMiddle - middle) < Math.abs(cards[nearest].offsetLeft + cards[nearest].offsetWidth / 2 - middle)) nearest = index
-    })
-    setActiveCard(nearest)
-  }
-
   const proOfferTriggeredRef = useRef(false)
   const navigate = useNavigate()
 
@@ -617,7 +590,7 @@ function InterviewPlans({ annual }: { readonly annual: boolean }) {
   // bordered box around them would read as a card inside a card.
   return (
     <section className="pricing-plans">
-      <div className="pricing-plan-grid" ref={gridRef} onScroll={handleCarouselScroll}>
+      <PlanCarousel count={INTERVIEW_PLANS.length}>
         {INTERVIEW_PLANS.map((plan) => {
           const price = annual ? plan.annualMonthlyPrice : plan.monthlyPrice
           return (
@@ -644,10 +617,7 @@ function InterviewPlans({ annual }: { readonly annual: boolean }) {
             </article>
           )
         })}
-      </div>
-      <div className="pricing-plan-dots" aria-hidden="true">
-        {INTERVIEW_PLANS.map((plan, index) => <span key={plan.id} data-active={index === activeCard ? 'true' : undefined} />)}
-      </div>
+      </PlanCarousel>
       {showProOffer ? <ProOfferWidget onDismiss={() => setShowProOffer(false)} onClaim={() => navigate('/v3/auth/choose-plan?plan=pro&offer=welcome-60')} /> : null}
     </section>
   )
@@ -678,29 +648,100 @@ function PoweredByModels() {
   </section>
 }
 
+/** The card row. On phones it is a snap carousel, opening on the featured card if there is
+ *  one, with dashes underneath — a snap scroller draws no scrollbar, so nothing else says
+ *  the row continues. On wider screens it is just the grid and the dashes are hidden. */
+function PlanCarousel({ count, children }: { readonly count: number; readonly children: ReactNode }) {
+  const gridRef = useRef<HTMLDivElement>(null)
+  const [activeCard, setActiveCard] = useState(0)
+
+  // scrollLeft rather than scrollIntoView: the latter would drag the whole page down to
+  // the carousel on load.
+  useEffect(() => {
+    const grid = gridRef.current
+    const featured = grid?.querySelector<HTMLElement>('[data-featured]')
+    if (!grid || !featured) return
+    setActiveCard([...grid.children].indexOf(featured))
+    grid.scrollLeft += featured.getBoundingClientRect().left - grid.getBoundingClientRect().left
+      - (grid.clientWidth - featured.clientWidth) / 2
+  }, [])
+
+  const handleScroll = () => {
+    const grid = gridRef.current
+    if (!grid) return
+    const middle = grid.scrollLeft + grid.clientWidth / 2
+    const cards = [...grid.children] as HTMLElement[]
+    const distance = (card: HTMLElement) => Math.abs(card.offsetLeft + card.offsetWidth / 2 - middle)
+    let nearest = 0
+    cards.forEach((card, index) => { if (distance(card) < distance(cards[nearest])) nearest = index })
+    setActiveCard(nearest)
+  }
+
+  return (
+    <>
+      <div className="pricing-plan-grid" data-cards={count} ref={gridRef} onScroll={handleScroll}>{children}</div>
+      <div className="pricing-plan-dots" aria-hidden="true">
+        {Array.from({ length: count }, (_, index) => <span key={index} data-active={index === activeCard ? 'true' : undefined} />)}
+      </div>
+    </>
+  )
+}
+
+/** The card the interview plans use, filled by any of the three tabs. */
+function PlanCard({
+  name, tagline, amount, unit, terms, features, ctaLabel, onCta,
+}: {
+  readonly name: string
+  readonly tagline: string
+  readonly amount: ReactNode
+  readonly unit: string
+  readonly terms: PlanTerms
+  readonly features: readonly string[]
+  readonly ctaLabel: string
+  readonly onCta: () => void
+}) {
+  return (
+    <article className="pricing-plan">
+      <div className="pricing-plan-body">
+        <div className="pricing-plan-head"><h3>{name}</h3></div>
+        <p className="pricing-plan-tagline">{tagline}</p>
+        <p className="pricing-plan-price">{amount}<span className="pricing-plan-cadence">{unit}</span></p>
+        <button type="button" className="pricing-plan-cta" onClick={onCta}>{ctaLabel}</button>
+        <dl className="pricing-plan-credits">
+          {terms.map(([label, value], index) => (
+            <div key={label} className={index === terms.length - 1 ? 'pricing-plan-credits-total' : undefined}>
+              <dt>{label}</dt><dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+        <ul className="pricing-plan-features">
+          {features.map((feature) => <li key={feature}><Check aria-hidden="true" />{feature}</li>)}
+        </ul>
+      </div>
+    </article>
+  )
+}
+
 function JobSearchCredits() {
   const navigate = useNavigate()
 
   return (
-    <section className="overflow-hidden rounded-sm border border-border bg-surface shadow-panel">
-      <PanelHeader
-        title="Job-search credits"
-        description="Prepaid usage for tailoring resumes and submitting applications. Buy credits once and use them without a subscription."
-      />
-      <div className="grid divide-y divide-border md:grid-cols-2 md:divide-x md:divide-y-0">
+    <section className="pricing-plans">
+      <PlanCarousel count={CREDIT_PRODUCTS.length}>
         {CREDIT_PRODUCTS.map((product) => (
-          <article key={product.id} className={OPTION_CARD_CLASS}>
-            <h3 className="font-gowun text-xl font-bold text-ink">{product.name}</h3>
-            <p className="mt-5 font-gowun text-3xl font-bold leading-tight text-ink">{product.price}</p>
-            <p className="mt-2 text-sm leading-6 text-ink-muted">{product.charge}</p>
-            <p className="mt-5 min-h-16 text-sm leading-6 text-ink-muted">{product.description}</p>
-            <Button variant="secondary" className={OPTION_ACTION_CLASS} onClick={() => navigate('/v3/billing')}>
-              Buy credits
-            </Button>
-            <FeatureList items={product.features} />
-          </article>
+          <PlanCard
+            key={product.id}
+            name={product.name}
+            tagline={product.tagline}
+            amount={<span className="font-gowun text-[32px] font-bold leading-none text-ink">{product.amount}</span>}
+            unit={product.unit}
+            terms={product.terms}
+            features={product.features}
+            ctaLabel="Buy credits"
+            onCta={() => navigate('/v3/billing')}
+          />
         ))}
-      </div>
+      </PlanCarousel>
     </section>
   )
 }
@@ -709,30 +750,26 @@ function DoneForYou() {
   const navigate = useNavigate()
 
   return (
-    <section className="overflow-hidden rounded-sm border border-border bg-surface shadow-panel">
-      <PanelHeader
-        title="Done for you"
-        description="A one-time managed service. A success manager handles the search, tailoring, and applications until your interview target is reached."
-      />
-      <div className="grid divide-y divide-border md:grid-cols-2 md:divide-x md:divide-y-0">
+    <section className="pricing-plans">
+      <PlanCarousel count={MANAGED_PACKAGES.length}>
         {MANAGED_PACKAGES.map((managedPackage) => (
-          <article key={managedPackage.id} className={OPTION_CARD_CLASS}>
-            <h3 className="font-gowun text-xl font-bold text-ink">{managedPackage.name}</h3>
-            <div className="mt-5 flex items-end gap-2">
-              <span className="font-gowun text-4xl font-bold leading-none text-ink">${managedPackage.price}</span>
-              <span className="pb-1 text-sm text-ink-muted">one time</span>
-            </div>
-            <p className="mt-5 min-h-16 text-sm leading-6 text-ink-muted">{managedPackage.description}</p>
-            <Button variant="secondary" className={OPTION_ACTION_CLASS} onClick={() => navigate('/v3/billing/done-for-you')}>
-              Sign up
-            </Button>
-            <FeatureList items={managedPackage.features} />
-          </article>
+          <PlanCard
+            key={managedPackage.id}
+            name={managedPackage.name}
+            tagline={managedPackage.tagline}
+            amount={<span className="font-gowun text-[32px] font-bold leading-none text-ink">${managedPackage.price.toLocaleString('en-US')}</span>}
+            unit="one time"
+            terms={managedPackage.terms}
+            features={managedPackage.features}
+            ctaLabel="Sign up"
+            onCta={() => navigate('/v3/billing/done-for-you')}
+          />
         ))}
-      </div>
+      </PlanCarousel>
     </section>
   )
 }
+
 
 function CreditGuide({ content }: { readonly content: SupportingContent }) {
   return (
@@ -858,14 +895,14 @@ export function PricingPage() {
           <Tabs value={activeTab} onValueChange={handleTabChange}>
             {/* The rule moves to the wrapper so it runs under the toggle too, rather than
                 stopping where the tabs do. */}
-            <div className="mb-6 flex items-end gap-4 border-b border-border">
+            <div className="mb-6 flex flex-col-reverse gap-3 border-b border-border sm:flex-row sm:items-end sm:gap-4">
               <TabsList className="pricing-tabs min-w-0 flex-1 gap-7 border-b-0" aria-label="Pricing models">
                 <TabsTrigger value="interview" className="min-h-11 pb-3 text-sm sm:text-base">Interview plans</TabsTrigger>
                 <TabsTrigger value="job-search" className="min-h-11 pb-3 text-sm sm:text-base">Job-search credits</TabsTrigger>
                 <TabsTrigger value="done-for-you" className="min-h-11 pb-3 text-sm sm:text-base">Done for you</TabsTrigger>
               </TabsList>
               {activeTab === 'interview' ? (
-                <div className="shrink-0 pb-2"><BillingToggle annual={annual} onChange={() => setAnnual((value) => !value)} /></div>
+                <div className="shrink-0 self-end sm:pb-2"><BillingToggle annual={annual} onChange={() => setAnnual((value) => !value)} /></div>
               ) : null}
             </div>
             <TabsContent value="interview" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><InterviewPlans annual={annual} /></TabsContent>
