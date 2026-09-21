@@ -567,10 +567,10 @@ function DashboardLoadingView() {
 }
 
 function InstallPrompt({ installPrompt }: { readonly installPrompt: DashboardInstallPrompt }) {
-  // Centred rather than pinned to the end: the right corner belongs to the Support button,
-  // which this used to sit underneath.
+  // Bottom-left, mirroring the Support widget's bottom-4/end-4 so the two sit on one line
+  // at opposite ends. The end corner is Support's; this used to sit underneath it.
   return (
-    <section className="w-fit max-w-full rounded-panel bg-accent-subtle p-3 lg:absolute lg:bottom-14 lg:left-1/2 lg:-translate-x-1/2" aria-label="Install apps">
+    <section className="w-fit max-w-full rounded-panel bg-accent-subtle p-3 lg:absolute lg:bottom-4 lg:start-4" aria-label="Install apps">
       <div className="flex items-center gap-3">
         <img src={installPrompt.qrSrc} alt="QR code to install Jobwhisper apps" className="size-16 shrink-0 rounded-soft object-cover" />
         <div className="grid gap-2">
@@ -633,7 +633,12 @@ export function DashboardView({
       />
       <div className="flex">
         <DashboardSidebar navItems={navItems} collapsed={collapsed} />
-        <section className="relative min-h-[calc(100vh-3.5rem)] flex-1 px-4 py-10 sm:px-6 sm:py-12 lg:px-16 lg:py-36">
+        {/* py-36 sat inside a box already claiming the full viewport height, so content plus
+            288px of padding overflowed it and the page scrolled ~35px — which also pushed the
+            install prompt below the fold, out of line with the Support button. The bottom
+            padding stays generous because the prompt is absolute over it; without that the
+            cards run underneath it once the viewport is short. */}
+        <section className="relative min-h-[calc(100vh-3.5rem)] flex-1 px-4 py-10 sm:px-6 sm:py-12 lg:px-16 lg:pt-14 lg:pb-28">
           <div className="mx-auto w-full max-w-3xl">
             <h1 className="font-gowun text-xl font-semibold leading-tight text-ink sm:text-2xl">Welcome, what would you like to do today?</h1>
             <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -642,7 +647,7 @@ export function DashboardView({
               ))}
             </div>
           </div>
-          <div className="mx-auto mt-12 w-full max-w-3xl lg:max-w-none">
+          <div className="mx-auto mt-12 w-full max-w-3xl lg:mt-0 lg:max-w-none">
             <InstallPrompt installPrompt={installPrompt} />
           </div>
           <div className="fixed bottom-4 end-4 lg:hidden">
