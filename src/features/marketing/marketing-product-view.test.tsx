@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
 import type { MarketingProduct } from '@/contracts/marketing-product.draft'
@@ -60,13 +60,20 @@ describe('MarketingProductView', () => {
 
     expect(screen.getByRole('heading', { level: 1, name: product.headline })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Get Started' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Jobwhisper home' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Jobwhisper home' })).toHaveAttribute('href', '/')
     expect(screen.getByRole('heading', { name: 'How it works' })).toBeInTheDocument()
     expect(screen.getByText(product.outcome, { exact: false })).toBeInTheDocument()
     expect(screen.getByText('Will Jobwhisper invent experience?')).toBeInTheDocument()
-    expect(screen.getAllByRole('navigation', { name: 'Main navigation' })).toHaveLength(1)
+    const navigation = screen.getByRole('navigation', { name: 'Main navigation' })
+    expect(within(navigation).getByRole('link', { name: 'Features' })).toHaveAttribute('href', '/#features')
+    expect(within(navigation).getByRole('link', { name: 'Pricing' })).toHaveAttribute('href', '/pricing')
+    expect(within(navigation).getByRole('link', { name: 'FAQ' })).toHaveAttribute('href', '/#faq')
+    expect(within(navigation).getByRole('link', { name: 'Log in' })).toHaveAttribute('href', '/v3/auth/sign-in')
+    expect(within(navigation).getByRole('button', { name: 'Download' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Download Now' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Leave with a stronger application.' })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'Finished resume ready to export' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute('href', '/privacy')
+    expect(screen.getByRole('link', { name: 'Terms' })).toHaveAttribute('href', '/terms')
   })
 })

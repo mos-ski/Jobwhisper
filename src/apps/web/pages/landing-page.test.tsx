@@ -1,21 +1,31 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { LandingPage } from './landing-page'
 
-beforeAll(() => {
+const intersectionVisibilityCallbacks = new Map<Element, (isIntersecting: boolean) => void>()
+
+beforeEach(() => {
+  intersectionVisibilityCallbacks.clear()
   vi.stubGlobal(
     'IntersectionObserver',
     class {
-      observe() {}
+      private readonly callback: IntersectionObserverCallback
+
+      constructor(callback: IntersectionObserverCallback) {
+        this.callback = callback
+      }
+      observe(target: Element) {
+        intersectionVisibilityCallbacks.set(target, (isIntersecting) => this.callback(
+          [{ isIntersecting, target } as IntersectionObserverEntry],
+          {} as IntersectionObserver,
+        ))
+      }
       unobserve() {}
       disconnect() {}
     },
   )
-})
-
-beforeEach(() => {
   vi.stubGlobal('scrollTo', vi.fn())
 })
 
@@ -58,8 +68,8 @@ describe('LandingPage', () => {
       }),
     ).toBeInTheDocument()
     expect(screen.getByText(/We’ve moved on from Lightforth/)).toBeInTheDocument()
-    expect(screen.getByText(/Join 57,000\+ job seekers/)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Sign Up' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Learn more' })).toHaveAttribute('href', 'https://lightforth.ai/')
+    expect(screen.queryByText('Join 57,000+ job seekers landing better roles')).not.toBeInTheDocument()
     expect(
       screen.getByText(
         /JobWhisper Copilot listens to every interview question and instantly gives you a tailored answer/,
@@ -68,8 +78,27 @@ describe('LandingPage', () => {
     const mainNavigation = screen.getByRole('navigation', { name: 'Main navigation' })
     expect(within(mainNavigation).getByRole('link', { name: 'Features' })).toBeInTheDocument()
     expect(within(mainNavigation).getByRole('link', { name: 'FAQ' })).toHaveAttribute('href', '#faq')
-    expect(screen.getByRole('button', { name: /Download Now/ })).toBeInTheDocument()
-    expect(within(screen.getByLabelText('Jobwhisper live copilot demo')).getByRole('button', { name: 'Get Started' })).toBeInTheDocument()
+    const navDownload = within(mainNavigation).getByRole('button', { name: 'Download' })
+    expect(navDownload).toBeInTheDocument()
+    expect(navDownload.querySelector('img')).not.toBeInTheDocument()
+    expect(navDownload.querySelectorAll('svg')).toHaveLength(1)
+    expect(within(mainNavigation).getAllByRole('button', { name: 'Log in' })).toHaveLength(1)
+    expect(within(mainNavigation).queryByRole('button', { name: 'Sign up' })).not.toBeInTheDocument()
+    const heroActions = document.querySelector('.landing-hero-actions')
+    expect(heroActions).not.toBeNull()
+    expect(within(heroActions as HTMLElement).getAllByRole('button')).toHaveLength(1)
+    expect(within(heroActions as HTMLElement).getByRole('button', { name: 'Ace your Interview' })).toBeInTheDocument()
+    const hero = document.querySelector('.landing-hero')
+    expect(hero).not.toBeNull()
+    act(() => intersectionVisibilityCallbacks.get(hero as Element)?.(false))
+    const socialProof = screen.getByLabelText('Join Jobwhisper')
+    expect(within(socialProof).getByText('Join 57,000+ job seekers landing better roles')).toBeInTheDocument()
+    const socialDownload = within(socialProof).getByRole('button', { name: 'Download' })
+    expect(socialDownload.querySelector('img[src="/landing-apple.svg"]')).toBeInTheDocument()
+    expect(socialDownload.querySelector('img[src="/landing-windows.svg"]')).toBeInTheDocument()
+    const demo = screen.getByLabelText('Jobwhisper live copilot demo')
+    expect(within(demo).queryByRole('button', { name: 'Get Started' })).not.toBeInTheDocument()
+    expect(within(demo).queryByText('Land the role, or pay nothing')).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Built for the moment that matters.' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Start to finish.' })).toBeInTheDocument()
     const journeyCopy = screen.getByLabelText(/Jobwhisper is built to help you through every stage/)

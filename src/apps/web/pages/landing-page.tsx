@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type RefObject } from 'react'
 import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Menu as MenuIcon, Play, Plus } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger, Menu, MenuContent, MenuItem, MenuTrigger } from '@/ui'
@@ -35,9 +35,9 @@ const FAQS = [
 ] as const
 
 function DownloadMenu({ compact = false }: { readonly compact?: boolean }) {
-  return <Menu><MenuTrigger render={<button className={compact ? 'landing-nav-download' : 'landing-primary-button'} aria-label={compact ? 'Download Jobwhisper' : undefined} />}>
-    {compact ? <img src="/landing-logo-icon.svg" alt="" /> : <span>Download Now</span>}
-    {compact ? <span>Download</span> : <span className="landing-platform-icons" aria-hidden="true"><img src="/landing-apple.svg" alt="" /><img src="/landing-windows.svg" alt="" /></span>}
+  return <Menu><MenuTrigger render={<button className={compact ? 'landing-nav-download' : 'landing-primary-button'} aria-label={compact ? 'Download' : undefined} />}>
+    {compact ? null : <span>Download Now</span>}
+    {compact ? <><span>Download</span><ChevronDown aria-hidden="true" /></> : <span className="landing-platform-icons" aria-hidden="true"><img src="/landing-apple.svg" alt="" /><img src="/landing-windows.svg" alt="" /></span>}
   </MenuTrigger><MenuContent align="end" sideOffset={8} className="landing-download-menu">{downloadItems.map((item) => <MenuItem key={item.id} render={<a href={item.href} className="landing-download-item" />}><img src={item.imageSrc} alt="" /><span>{item.support}</span></MenuItem>)}</MenuContent></Menu>
 }
 
@@ -54,30 +54,29 @@ function NavLinksMenu() {
 
 function LandingNav() {
   const navigate = useNavigate()
-  return <nav className="landing-nav" aria-label="Main navigation"><img src="/landing-logo.svg" alt="Jobwhisper" className="landing-nav-logo" /><div className="landing-nav-links"><a href="#features">Features <ChevronDown aria-hidden="true" /></a><button onClick={() => navigate('/pricing')}>Pricing</button><a href="#faq">FAQ</a></div><div className="landing-nav-actions"><button className="landing-login" onClick={() => navigate('/v3/auth/sign-in')}>Log in</button><DownloadMenu compact /><NavLinksMenu /></div></nav>
+  return <nav className="landing-nav" aria-label="Main navigation"><img src="/landing-logo.svg" alt="Jobwhisper" className="landing-nav-logo" /><div className="landing-nav-links"><a href="#features">Features <ChevronDown aria-hidden="true" /></a><button onClick={() => navigate('/pricing')}>Pricing</button><a href="#faq">FAQ</a></div><div className="landing-nav-actions"><DownloadMenu compact /><button className="landing-nav-auth" onClick={() => navigate('/v3/auth/sign-in')}>Log in</button><NavLinksMenu /></div></nav>
 }
 
 function BrandAnnouncement() {
-  return <div className="landing-brand-announcement"><p>We’ve moved on from Lightforth. Meet Jobwhisper, built to help you land your next role. <a href="#features">Learn more</a></p></div>
+  return <div className="landing-brand-announcement"><p>We’ve moved on from Lightforth. Meet Jobwhisper, built to help you land your next role. <a href="https://lightforth.ai/">Learn more</a></p></div>
 }
 
 function SocialProofSignup() {
   const navigate = useNavigate()
   return <aside className="landing-social-proof" aria-label="Join Jobwhisper">
     <div className="landing-social-proof-avatars" aria-hidden="true"><img src="/figma-landing/social-proof-1.jpg" alt="" /><img src="/figma-landing/social-proof-2.jpg" alt="" /><img src="/figma-landing/social-proof-3.jpg" alt="" /></div>
-    <p>Join 57,000+ job seekers using JobWhisper to interview with more confidence and land better roles</p>
-    <button type="button" onClick={() => navigate('/v3/auth/create-account')}>Sign Up</button>
+    <p><span className="landing-social-proof-copy-desktop">Join 57,000+ job seekers landing better roles</span><span className="landing-social-proof-copy-mobile">57,000+ job seekers</span></p>
+    <button type="button" onClick={() => navigate('/v3/downloads')}><span>Download</span><span className="landing-social-proof-platforms" aria-hidden="true"><img src="/landing-apple.svg" alt="" /><img src="/landing-windows.svg" alt="" /></span></button>
   </aside>
 }
 
-function Hero() {
+function Hero({ heroRef }: { readonly heroRef: RefObject<HTMLElement | null> }) {
   const navigate = useNavigate()
-  return <section className="landing-hero"><LandingNav /><div className="landing-hero-copy"><h1>Pass Your <span>Next Interview.</span><br />Land the Job. Or Don’t Pay!</h1><p>JobWhisper Copilot listens to every interview question and instantly gives you a tailored answer using your resume and the job description, so you always know what to say. No guessing. No delay. No memorizing scripts. No freezing under pressure.</p><div className="landing-hero-actions"><DownloadMenu /><button className="landing-secondary-button" onClick={() => navigate('/v3/auth/create-account')}>Get Started <ArrowUpRight aria-hidden="true" /></button></div><div className="landing-hero-notes"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span></div></div></section>
+  return <section className="landing-hero" ref={heroRef}><LandingNav /><div className="landing-hero-copy"><h1>Pass Your <span>Next Interview.</span><br />Land the Job. Or Don’t Pay!</h1><p>JobWhisper Copilot listens to every interview question and instantly gives you a tailored answer using your resume and the job description, so you always know what to say. No guessing. No delay. No memorizing scripts. No freezing under pressure.</p><div className="landing-hero-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Ace your Interview <ArrowUpRight aria-hidden="true" /></button></div><div className="landing-hero-notes"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span></div></div></section>
 }
 
 function Demo() {
-  const navigate = useNavigate()
-  return <section className="landing-demo" aria-label="Jobwhisper live copilot demo"><video src="/landing-demo.mp4" autoPlay muted loop playsInline /><div className="landing-demo-fade" /><button onClick={() => navigate('/pricing')}>Get Started <ChevronRight aria-hidden="true" /></button><p>Land the role, or pay nothing</p><SocialProofSignup /></section>
+  return <section className="landing-demo" aria-label="Jobwhisper live copilot demo"><video src="/landing-demo.mp4" autoPlay muted loop playsInline /><div className="landing-demo-fade" /></section>
 }
 
 function MomentCards() {
@@ -342,7 +341,7 @@ function Footer() {
       </nav>
       <div className="landing-footer-meta">
         <span>© Jobwhisper 2026</span>
-        <div><a href="#">Privacy policy</a><a href="#">Terms</a></div>
+        <div><a href="/privacy">Privacy Policy</a><a href="/terms">Terms</a></div>
       </div>
     </div>
   </footer>
@@ -350,12 +349,23 @@ function Footer() {
 
 export function LandingPage() {
   const { hash } = useLocation()
+  const heroRef = useRef<HTMLElement>(null)
+  const [showSocialProof, setShowSocialProof] = useState(false)
 
   useEffect(() => {
     if (!hash) window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
   }, [hash])
 
+  useEffect(() => {
+    const hero = heroRef.current
+    if (!hero) return
+
+    const observer = new IntersectionObserver(([entry]) => setShowSocialProof(!entry.isIntersecting))
+    observer.observe(hero)
+    return () => observer.disconnect()
+  }, [])
+
   // The sections are wrapped so they can carry the opaque sheet that covers the pinned
   // footer — on the page element itself the background paints under the footer instead.
-  return <main className="figma-landing-page"><div className="landing-content"><BrandAnnouncement /><Hero /><Demo /><MomentCards /><Journey /><ProductFacts /><Testimonial /><CopilotShowcase /><PlatformCards /><ServiceChoice /><Faq /><Closing /></div><Footer /></main>
+  return <main className="figma-landing-page"><div className="landing-content"><BrandAnnouncement /><Hero heroRef={heroRef} /><Demo /><MomentCards /><Journey /><ProductFacts /><Testimonial /><CopilotShowcase /><PlatformCards /><ServiceChoice /><Faq /><Closing /></div><Footer />{showSocialProof ? <SocialProofSignup /> : null}</main>
 }

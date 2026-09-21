@@ -35,6 +35,12 @@ Paste the Lightforth end-to-end smarter script below this line.
 
 <!-- Script starts here. -->
 
+## Landing-page conversion language
+
+The public landing page uses one primary blue action: **Ace your Interview**. It leads to account creation. Downloads remain available from the text-only navigation dropdown and the product-demo social proof, while **Log in** uses a secondary treatment in the navigation.
+
+The demo has no separate centered call to action. Once the visitor scrolls beyond the hero, a centered floating social-proof control appears with the concise outcome statement **Join 57,000+ job seekers landing better roles** and a blue Download action.
+
 ## Episode 1 — Welcome to Lightforth
 
 Hey, I’m Moski, Product Manager at Lightforth, and welcome to Lightforth.
