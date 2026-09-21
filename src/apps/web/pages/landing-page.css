@@ -32,19 +32,19 @@
 .landing-footer{display:block;grid-template-columns:none;gap:0}.landing-footer>.landing-footer-inner{display:grid;grid-template-columns:358px 1px 742px;align-items:stretch;gap:0}@media(max-width:1200px){.landing-footer>.landing-footer-inner{grid-template-columns:1fr}}
 .landing-footer{height:686px;padding:120px 60px;background:var(--lf-landing-footer);color:var(--lf-landing-paper)}.landing-footer-inner{width:min(1367px,100%);height:446px;margin:0 auto;display:grid;grid-template-columns:358px 1px 742px;justify-content:space-between}.landing-footer-brand{height:446px;display:flex;flex-direction:column;align-items:flex-start}.landing-footer .landing-footer-logo{width:235px;height:46px}.landing-footer h2{margin:20px 0 0;font-size:48px;line-height:48px;letter-spacing:-2px;font-weight:400}.landing-footer h2 span{color:var(--lf-landing-bg)}.landing-footer-socials{display:flex;gap:6px;margin-top:64px}.landing-footer-socials a{width:44px;height:44px;background:var(--lf-landing-paper);display:grid;place-items:center}.landing-footer-socials img{width:19px;max-height:20px}.landing-footer-compliance{margin-top:auto;display:flex;flex-direction:column;gap:11px}.landing-footer-compliance>div{display:flex;gap:24px}.landing-footer-compliance img{width:41px;height:40px}.landing-footer-compliance>span{color:var(--lf-landing-paper);opacity:.6;font-size:18px;line-height:23px;letter-spacing:-1.12px}.landing-footer-divider{width:1px;height:446px;background:var(--lf-landing-footer-frame)}.landing-footer-links{width:742px;display:grid;grid-template-columns:163px 204px 163px 163px;gap:16px}.landing-footer-column{display:flex;flex-direction:column;gap:40px}.landing-footer-column section{display:flex;flex-direction:column;align-items:flex-start}.landing-footer h3,.landing-footer h4{margin:0;color:var(--lf-landing-paper);font-size:12px;line-height:13px;letter-spacing:-.24px;text-transform:uppercase;font-weight:700}.landing-footer h3{margin-bottom:24px}.landing-footer h4{margin-bottom:24px}.landing-footer-solutions>h3{width:100%;height:39px;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--lf-landing-footer-frame)}.landing-footer-link-list{display:flex;flex-direction:column;gap:12px}.landing-footer a{color:var(--lf-landing-paper);opacity:.6;font-size:14px;line-height:20px;letter-spacing:-.14px;text-decoration:none}.landing-footer a:hover,.landing-footer a:focus-visible{opacity:1}.landing-footer-socials a{opacity:1}@media(max-width:1200px){.landing-footer{height:auto}.landing-footer-inner{height:auto;grid-template-columns:1fr}.landing-footer-brand{height:auto;min-height:446px}.landing-footer-divider{width:100%;height:1px;margin-block:64px}.landing-footer-links{width:100%;grid-template-columns:repeat(4,minmax(0,1fr))}}@media(max-width:700px){.landing-footer{padding:80px 24px}.landing-footer-links{grid-template-columns:repeat(2,minmax(0,1fr));gap:48px 24px}.landing-footer-brand{min-height:500px}.landing-footer h2{font-size:42px;line-height:44px}.landing-footer .landing-footer-logo{width:210px;height:auto}}@media(max-width:420px){.landing-footer-links{grid-template-columns:1fr}.landing-footer-compliance>div{gap:16px}}
 .figma-landing-page .landing-closing{position:relative;z-index:1;border-radius:0 0 36px 36px;background:var(--lf-landing-paper)}
-.figma-landing-page .landing-footer{height:600px;margin-top:-36px;padding:116px max(32px,calc((100vw - 1408px)/2)) 30px;display:block;background:var(--lf-landing-footer);color:var(--lf-landing-paper)}
-.figma-landing-page .landing-footer>.landing-footer-inner{width:100%;height:100%;margin:0;display:grid;grid-template-columns:minmax(0,1fr) 220px 220px;grid-template-rows:1fr auto;column-gap:64px;align-items:start}
-.figma-landing-page .landing-footer-brand{height:auto;min-height:0;display:block}
-.figma-landing-page .landing-footer .landing-footer-logo{width:190px;height:auto}
-.figma-landing-page .landing-footer-brand p{max-width:380px;margin:20px 0 0;color:var(--lf-landing-footer-text);font-size:16px;line-height:24px}
-.figma-landing-page .landing-footer-links{width:auto;display:contents}
-.figma-landing-page .landing-footer-column{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
-.figma-landing-page .landing-footer a{color:var(--lf-landing-paper);opacity:1;font-size:17px;line-height:20px;font-weight:600;letter-spacing:-.2px;text-decoration:none}
-.figma-landing-page .landing-footer a:hover,.figma-landing-page .landing-footer a:focus-visible{color:var(--lf-landing-bg)}
-.figma-landing-page .landing-footer-meta{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) 220px 220px;column-gap:64px;color:var(--lf-landing-footer-text);font-size:14px;line-height:20px}
-.figma-landing-page .landing-footer-meta>div{grid-column:2/-1;display:flex;justify-content:space-between}
-.figma-landing-page .landing-footer-meta a{color:var(--lf-landing-footer-text);font-size:14px;font-weight:400}
-@media(max-width:800px){.figma-landing-page .landing-closing{border-radius:0 0 28px 28px}.figma-landing-page .landing-footer{height:auto;min-height:610px;margin-top:-28px;padding:100px 24px 28px}.figma-landing-page .landing-footer>.landing-footer-inner{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto auto;gap:64px 24px}.figma-landing-page .landing-footer-brand{grid-column:1/-1}.figma-landing-page .landing-footer .landing-footer-logo{width:170px}.figma-landing-page .landing-footer-meta{grid-column:1/-1;grid-template-columns:1fr;gap:18px;margin-top:40px}.figma-landing-page .landing-footer-meta>div{grid-column:1;justify-content:flex-start;gap:28px}}
+.landing-footer{height:600px;margin-top:-36px;padding:116px max(32px,calc((100vw - 1408px)/2)) 30px;display:block;background:var(--lf-landing-footer);color:var(--lf-landing-paper)}
+.landing-footer>.landing-footer-inner{width:100%;height:100%;margin:0;display:grid;grid-template-columns:minmax(0,1fr) 220px 220px;grid-template-rows:1fr auto;column-gap:64px;align-items:start}
+.landing-footer-brand{height:auto;min-height:0;display:block}
+.landing-footer .landing-footer-logo{width:190px;height:auto}
+.landing-footer-brand p{max-width:380px;margin:20px 0 0;color:var(--lf-landing-footer-text);font-size:16px;line-height:24px}
+.landing-footer-links{width:auto;display:contents}
+.landing-footer-column{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+.landing-footer a{color:var(--lf-landing-paper);opacity:1;font-size:17px;line-height:20px;font-weight:600;letter-spacing:-.2px;text-decoration:none}
+.landing-footer a:hover,.landing-footer a:focus-visible{color:var(--lf-landing-bg)}
+.landing-footer-meta{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) 220px 220px;column-gap:64px;color:var(--lf-landing-footer-text);font-size:14px;line-height:20px}
+.landing-footer-meta>div{grid-column:2/-1;display:flex;justify-content:space-between}
+.landing-footer-meta a{color:var(--lf-landing-footer-text);font-size:14px;font-weight:400}
+@media(max-width:800px){.figma-landing-page .landing-closing{border-radius:0 0 28px 28px}.landing-footer{height:auto;min-height:610px;margin-top:-28px;padding:100px 24px 28px}.landing-footer>.landing-footer-inner{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto auto;gap:64px 24px}.landing-footer-brand{grid-column:1/-1}.landing-footer .landing-footer-logo{width:170px}.landing-footer-meta{grid-column:1/-1;grid-template-columns:1fr;gap:18px;margin-top:40px}.landing-footer-meta>div{grid-column:1;justify-content:flex-start;gap:28px}}
 
 /* ---- Mobile corrections ---- */
 /* The nav's Features/Pricing/FAQ links are display:none below 900px; the menu button
@@ -166,7 +166,7 @@
 @media(min-width:801px) and (min-height:660px){
 .figma-landing-page{--landing-footer-h:600px;padding-bottom:var(--landing-footer-h)}
 .landing-content{position:relative;z-index:1;background:var(--lf-landing-paper);border-radius:0 0 36px 36px}
-.figma-landing-page .landing-footer{position:fixed;inset-inline:0;bottom:0;height:var(--landing-footer-h);margin-top:0;z-index:0}
+.landing-footer{position:fixed;inset-inline:0;bottom:0;height:var(--landing-footer-h);margin-top:0;z-index:0}
 }
 
 /* Footer links: three columns rather than two, and half the vertical pitch. It was 58px —
@@ -174,9 +174,9 @@
    column of loose, unrelated lines. 29px on a pointer, where 44px targets buy nothing;
    touch keeps its 44px. */
 @media(min-width:801px){
-.figma-landing-page .landing-footer>.landing-footer-inner,.figma-landing-page .landing-footer-meta{grid-template-columns:minmax(0,1fr) repeat(3,200px)}
-.figma-landing-page .landing-footer-column a{min-height:0}
-.figma-landing-page .landing-footer-column{gap:9px}
+.landing-footer>.landing-footer-inner,.landing-footer-meta{grid-template-columns:minmax(0,1fr) repeat(3,200px)}
+.landing-footer-column a{min-height:0}
+.landing-footer-column{gap:9px}
 }
 
 /* Keep these after the desktop nav refinements above. Those refinements also set
