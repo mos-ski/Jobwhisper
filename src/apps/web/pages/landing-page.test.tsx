@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { LandingPage } from './landing-page'
 
@@ -15,11 +15,35 @@ beforeAll(() => {
   )
 })
 
+beforeEach(() => {
+  vi.stubGlobal('scrollTo', vi.fn())
+})
+
 afterAll(() => {
   vi.unstubAllGlobals()
 })
 
 describe('LandingPage', () => {
+  it('starts at the hero when the landing URL opens without a section hash', () => {
+    render(
+      <MemoryRouter initialEntries={['/?review=announcement-overlay']}>
+        <LandingPage />
+      </MemoryRouter>,
+    )
+
+    expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, left: 0, behavior: 'auto' })
+  })
+
+  it('keeps deliberate landing-page section links intact', () => {
+    render(
+      <MemoryRouter initialEntries={['/#features']}>
+        <LandingPage />
+      </MemoryRouter>,
+    )
+
+    expect(window.scrollTo).not.toHaveBeenCalled()
+  })
+
   it('renders the Figma landing-page experience', () => {
     render(
       <MemoryRouter>
