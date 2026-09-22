@@ -99,7 +99,7 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
     const observer = new IntersectionObserver((entries) => {
       const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
       if (visible?.target.id) onSectionVisible(visible.target.id)
-    }, { rootMargin: '-10% 0px -54% 0px', threshold: [0.1, 0.35, 0.65] })
+    }, { root: null, rootMargin: '-10% 0px -54% 0px', threshold: [0.1, 0.35, 0.65] })
     story.querySelectorAll<HTMLElement>('[data-product-section]').forEach((section) => observer.observe(section))
     return () => observer.disconnect()
   }, [onSectionVisible, product.slug])
@@ -117,12 +117,39 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
     let animationFrame = 0
     const update = () => {
       animationFrame = 0
-      const { top, height } = story.getBoundingClientRect()
-      const revealStart = window.innerHeight * 0.72
-      const revealEnd = -(height - window.innerHeight * 0.35)
-      const rawProgress = Math.min(1, Math.max(0, (revealStart - top) / Math.max(1, revealStart - revealEnd)))
+      // Which element is doing the scrolling depends on the layout, so ask the stylesheet
+      // rather than re-testing its breakpoint here — duplicating that 901px in JS is what
+      // let these two drift apart in the first place.
+      const summaryStyle = window.getComputedStyle(summary)
+      const clamp = (value: number) => Math.min(1, Math.max(0, value))
+      let rawProgress: number
+
+      if (summaryStyle.position === 'sticky') {
+        // Two columns: the summary is pinned, so progress runs from the moment it lands at
+        // its sticky offset to the moment the last walkthrough image clears the viewport.
+        // The footer shares this column, so the measurement stops at the last section —
+        // otherwise the text would still be revealing while you read the footer.
+        const sections = story.querySelectorAll<HTMLElement>('[data-product-section]')
+        const lastSection = sections[sections.length - 1]
+        const storyTop = story.getBoundingClientRect().top
+        const storyEnd = (lastSection ?? story).getBoundingClientRect().bottom
+        const pinTop = Number.parseFloat(summaryStyle.top) || 0
+        const extent = Math.max(1, storyEnd - storyTop - Math.max(1, window.innerHeight - pinTop))
+        rawProgress = clamp((pinTop - storyTop) / extent)
+      } else {
+        // One column: the narrative sits above the images and is itself what travels past
+        // the reader, so it is the summary's own trip through the viewport that counts.
+        // Measuring the story here would leave the text frozen until you had already
+        // scrolled past all of it.
+        const { top, height } = summary.getBoundingClientRect()
+        const revealStart = window.innerHeight * 0.72
+        const revealEnd = -(height - window.innerHeight * 0.35)
+        rawProgress = clamp((revealStart - top) / Math.max(1, revealStart - revealEnd))
+      }
       const progress = 0.08 + rawProgress * 0.92
       setRevealedWords(Math.ceil(progress * totalRevealWords))
+      // The summary is taller than its pinned box, so its own text has to advance in step.
+      // Safe inside a window-scroll handler: this scrolls the summary, not the window.
       const availableScroll = Math.max(0, summary.scrollHeight - summary.clientHeight)
       summary.scrollTop = availableScroll * rawProgress
     }
@@ -166,9 +193,9 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
               <figure><img src={imageSrc} alt={`${product.label} walkthrough step ${index + 1}: ${section?.title ?? product.outcome}`} loading={index === 0 ? 'eager' : 'lazy'} /></figure>
             </section>
           )})}
+          <MarketingFooter />
         </div>
       </div>
-      <MarketingFooter />
       <aside className="landing-social-proof" aria-label="Join Jobwhisper">
         <div className="landing-social-proof-avatars" aria-hidden="true"><img src="/figma-landing/social-proof-1.jpg" alt="" /><img src="/figma-landing/social-proof-2.jpg" alt="" /><img src="/figma-landing/social-proof-3.jpg" alt="" /></div>
         <p><span className="landing-social-proof-copy-desktop">Join 57,000+ job seekers landing better roles</span><span className="landing-social-proof-copy-mobile">57,000+ job seekers</span></p>
