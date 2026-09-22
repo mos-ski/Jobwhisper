@@ -193,11 +193,6 @@
 }
 .marketing-product-label {
   margin: 0 0 10px;
-  color: var(--lf-landing-bg);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: .09em;
-  text-transform: uppercase;
 }
 .marketing-product-copy h1 {
   max-width: 620px;
@@ -391,7 +386,6 @@
     padding: 0 20px 72px;
   }
   .marketing-product-label {
-    font-size: 12px;
     margin-bottom: 8px;
   }
   .marketing-product-summary {

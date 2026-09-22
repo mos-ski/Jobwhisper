@@ -244,3 +244,16 @@
     }
   }
 }
+
+/* The feature label above a headline — the same mark on the landing page and on every
+   product page, so a section is named one way across the site. */
+.lf-eyebrow{
+  margin: 0;
+  font-family: 'Gowun Batang', serif;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--lf-landing-bg);
+}

@@ -142,7 +142,7 @@ function ScrollRevealText({ segments, className, onComplete }: { readonly segmen
 }
 
 function JourneyRevealText() {
-  return <ScrollRevealText segments={JOURNEY_COPY} className="landing-journey-reveal" />
+  return <ScrollRevealText segments={JOURNEY_COPY} className="landing-reveal landing-journey-reveal" />
 }
 
 function CountUp({ value, decimals = 0, prefix = '', enabled = true }: { readonly value: number; readonly decimals?: number; readonly prefix?: string; readonly enabled?: boolean }) {
@@ -191,6 +191,20 @@ function CountUp({ value, decimals = 0, prefix = '', enabled = true }: { readonl
   const formatted = displayValue.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
   return <strong ref={valueRef}>{prefix}{formatted}</strong>
 }
+
+const COPILOT_COPY = [
+  { text: 'Jobwhisper gives you', strong: false },
+  { text: 'real-time AI support while the conversation is happening,', strong: true },
+  { text: 'so you can focus on the person in front of you instead of scrambling for what to say next. Whether you’re answering an interview question, working through a coding challenge, leading an important meeting, or practicing before the real thing, your Copilot listens,', strong: false },
+  { text: 'understands the context,', strong: true },
+  { text: 'and helps you respond with confidence.', strong: false },
+] as const
+
+const CLOSING_COPY = [
+  { text: 'Your next opportunity could start with a better resume, the right application, stronger preparation, or simply knowing what to say when the interview begins.', strong: false },
+  { text: 'Jobwhisper brings it all together,', strong: true },
+  { text: 'helping you find the right roles, prepare for the moments that matter, and show up with support when it counts. You’ve done the hard part getting this far. Now let’s help you turn the next opportunity into an offer.', strong: false },
+] as const
 
 const FACTS_COPY = [
   { text: 'Meet the', strong: false },
@@ -264,12 +278,12 @@ function Journey() {
     if (item instanceof HTMLElement) item.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
   }, [active])
 
-  return <section className="landing-journey" id="features"><div className="landing-section-intro"><p>Your entire job search</p><h2>Start to finish.</h2><JourneyRevealText /></div><div className="landing-journey-scroller" ref={runwayRef} style={{ '--steps': JOURNEY.length } as CSSProperties}><div className="landing-journey-pinned"><div className="landing-journey-viewer"><div className="landing-journey-controls"><button aria-label="Previous feature" onClick={() => cycleFeature(-1)}><ChevronUp aria-hidden="true" /></button><button aria-label="Next feature" onClick={() => cycleFeature(1)}><ChevronDown aria-hidden="true" /></button></div><div className="landing-journey-nav" ref={navRef} aria-label="Job search stages">{JOURNEY.map(([title, description, shortDescription], index) => <div className="landing-journey-item" key={title}><button aria-expanded={active === index} aria-controls={`journey-description-${index}`} onClick={() => setActive(index)}><Plus aria-hidden="true" className="landing-journey-icon-expand" />{index > active ? <ChevronRight aria-hidden="true" className="landing-journey-icon-step" /> : null}{title}{index < active ? <ChevronLeft aria-hidden="true" className="landing-journey-icon-step" /> : null}</button><div className="landing-journey-description-shell" data-open={active === index}><div className="landing-journey-description" id={`journey-description-${index}`} role="region" aria-label={`${title} details`} aria-hidden={active !== index}><strong className="landing-journey-description-title">{title}.</strong> <span className="landing-journey-description-full">{description}</span><span className="landing-journey-description-short">{shortDescription}</span></div></div></div>)}</div><div className="landing-journey-stage" role="region" aria-label={`${JOURNEY[active][0]} preview`}><JourneyPreview active={active} /></div></div></div></div></section>
+  return <section className="landing-journey" id="features"><div className="landing-section-intro"><p className="lf-eyebrow">Your entire job search</p><h2>Start to finish.</h2><JourneyRevealText /></div><div className="landing-journey-scroller" ref={runwayRef} style={{ '--steps': JOURNEY.length } as CSSProperties}><div className="landing-journey-pinned"><div className="landing-journey-viewer"><div className="landing-journey-controls"><button aria-label="Previous feature" onClick={() => cycleFeature(-1)}><ChevronUp aria-hidden="true" /></button><button aria-label="Next feature" onClick={() => cycleFeature(1)}><ChevronDown aria-hidden="true" /></button></div><div className="landing-journey-nav" ref={navRef} aria-label="Job search stages">{JOURNEY.map(([title, description, shortDescription], index) => <div className="landing-journey-item" key={title}><button aria-expanded={active === index} aria-controls={`journey-description-${index}`} onClick={() => setActive(index)}><Plus aria-hidden="true" className="landing-journey-icon-expand" />{index > active ? <ChevronRight aria-hidden="true" className="landing-journey-icon-step" /> : null}{title}{index < active ? <ChevronLeft aria-hidden="true" className="landing-journey-icon-step" /> : null}</button><div className="landing-journey-description-shell" data-open={active === index}><div className="landing-journey-description" id={`journey-description-${index}`} role="region" aria-label={`${title} details`} aria-hidden={active !== index}><strong className="landing-journey-description-title">{title}.</strong> <span className="landing-journey-description-full">{description}</span><span className="landing-journey-description-short">{shortDescription}</span></div></div></div>)}</div><div className="landing-journey-stage" role="region" aria-label={`${JOURNEY[active][0]} preview`}><JourneyPreview active={active} /></div></div></div></div></section>
 }
 
 function ProductFacts() {
   const [copyRevealed, setCopyRevealed] = useState(false)
-  return <section className="landing-facts"><ScrollRevealText segments={FACTS_COPY} className="landing-facts-reveal" onComplete={() => setCopyRevealed(true)} /><div className="landing-facts-grid"><div className="landing-stat landing-stat-minutes"><span>Up to</span><CountUp value={4000} enabled={copyRevealed} /><span>minutes Included</span></div><div className="landing-fact-copy"><div><strong>Multiple AI models</strong><span>Choose the model that fits the conversation.</span><ul><li>OpenAI</li><li>Anthropic</li><li>Google Gemini</li><li>Kimi</li><li>Qwen</li></ul><span>Switch models depending on the interview, question, or task.</span></div><div><strong>Personalized context</strong><span>Your resume<br />Your job description<br />Upload multiple knowledge bases</span></div><div><strong>Simple setup</strong><span>Add your context<br />Choose your preferences<br />Start your Copilot</span></div></div><div className="landing-stat landing-stat-price"><span>Starting from</span><CountUp value={0.1} decimals={2} prefix="$" enabled={copyRevealed} /><span>per minute</span></div></div></section>
+  return <section className="landing-facts"><ScrollRevealText segments={FACTS_COPY} className="landing-reveal landing-facts-reveal" onComplete={() => setCopyRevealed(true)} /><div className="landing-facts-grid"><div className="landing-stat landing-stat-minutes"><span>Up to</span><CountUp value={4000} enabled={copyRevealed} /><span>minutes Included</span></div><div className="landing-fact-copy"><div><strong>Multiple AI models</strong><span>Choose the model that fits the conversation.</span><ul><li>OpenAI</li><li>Anthropic</li><li>Google Gemini</li><li>Kimi</li><li>Qwen</li></ul><span>Switch models depending on the interview, question, or task.</span></div><div><strong>Personalized context</strong><span>Your resume<br />Your job description<br />Upload multiple knowledge bases</span></div><div><strong>Simple setup</strong><span>Add your context<br />Choose your preferences<br />Start your Copilot</span></div></div><div className="landing-stat landing-stat-price"><span>Starting from</span><CountUp value={0.1} decimals={2} prefix="$" enabled={copyRevealed} /><span>per minute</span></div></div></section>
 }
 
 const COPILOT_TABS = ['Interviews', 'Meetings', 'Coding', 'Practice'] as const
@@ -286,7 +300,7 @@ function CopilotShowcase() {
   // now walks them, tapping still picks one.
   const { runwayRef, active, setActive } = useScrollSteps(COPILOT_TABS.length)
   const activeTab = COPILOT_TABS[active]
-  return <section className="landing-copilot"><div className="landing-section-intro"><h2>Your copilot.<br />Always within reach.</h2><p>Jobwhisper gives you real-time AI support while the conversation is happening, so you can focus on the person in front of you instead of scrambling for what to say next. Whether you’re answering an interview question, working through a coding challenge, leading an important meeting, or practicing before the real thing, your Copilot listens, understands the context, and helps you respond with confidence.</p></div><div className="landing-copilot-scroller" ref={runwayRef} style={{ '--steps': COPILOT_TABS.length } as CSSProperties}><div className="landing-copilot-pinned"><div className="landing-copilot-tabs" role="tablist" aria-label="Copilot use cases">{COPILOT_TABS.map((tab, index) => <button key={tab} role="tab" aria-selected={activeTab === tab} aria-controls="copilot-preview" onClick={() => setActive(index)}>{tab}</button>)}</div><div className="landing-copilot-image" data-copilot-tab={activeTab.toLowerCase()} id="copilot-preview" role="tabpanel">{COPILOT_TABS.map((tab, index) => <img key={tab} src={COPILOT_IMAGES[tab]} alt={index === active ? `Jobwhisper ${tab.toLowerCase()} copilot desktop preview` : ''} aria-hidden={index === active ? undefined : true} loading={index === 0 ? 'eager' : 'lazy'} data-current={index === active} data-side={index === active ? undefined : index < active ? 'before' : 'after'} />)}</div><div className="landing-copilot-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Try Interview Copilot <ArrowUpRight aria-hidden="true" /></button></div></div></div></section>
+  return <section className="landing-copilot"><div className="landing-section-intro"><h2>Your copilot.<br />Always within reach.</h2><ScrollRevealText segments={COPILOT_COPY} className="landing-reveal" /></div><div className="landing-copilot-scroller" ref={runwayRef} style={{ '--steps': COPILOT_TABS.length } as CSSProperties}><div className="landing-copilot-pinned"><div className="landing-copilot-tabs" role="tablist" aria-label="Copilot use cases">{COPILOT_TABS.map((tab, index) => <button key={tab} role="tab" aria-selected={activeTab === tab} aria-controls="copilot-preview" onClick={() => setActive(index)}>{tab}</button>)}</div><div className="landing-copilot-image" data-copilot-tab={activeTab.toLowerCase()} id="copilot-preview" role="tabpanel">{COPILOT_TABS.map((tab, index) => <img key={tab} src={COPILOT_IMAGES[tab]} alt={index === active ? `Jobwhisper ${tab.toLowerCase()} copilot desktop preview` : ''} aria-hidden={index === active ? undefined : true} loading={index === 0 ? 'eager' : 'lazy'} data-current={index === active} data-side={index === active ? undefined : index < active ? 'before' : 'after'} />)}</div><div className="landing-copilot-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Try Interview Copilot <ArrowUpRight aria-hidden="true" /></button></div></div></div></section>
 }
 
 /**
@@ -441,7 +455,7 @@ function TryItNow() {
   const tab = stage === 'quiz' ? quizStep?.tab : 'All set'
 
   return <section className="landing-try" aria-labelledby="landing-try-title">
-    <p className="landing-try-eyebrow">Getting started</p>
+    <p className="lf-eyebrow">Getting started</p>
     <h2 id="landing-try-title">Try it on a job you actually want.</h2>
     <p className="landing-try-lede">Paste the description, add your resume, and tell us what landing it looks like. Your setup will be waiting.</p>
 
@@ -455,7 +469,6 @@ function TryItNow() {
     >
       <label className="sr-only" htmlFor="landing-try-job">Paste a job description</label>
       <textarea id="landing-try-job" placeholder="Paste a job description" rows={3} value={jobText} onChange={(event) => setJobText(event.target.value)} />
-      <span className="landing-try-glow" aria-hidden="true" />
       <div className="landing-try-card-foot">
         {/* The only way in: the questions that follow are about this resume and this posting. */}
         <label className="landing-try-attach">
@@ -568,7 +581,7 @@ function Faq() {
 
 function Closing() {
   const navigate = useNavigate()
-  return <section className="landing-closing"><h2>Ready when you are.<br />Let’s get you hired.</h2><p>Your next opportunity could start with a better resume, the right application, stronger preparation, or simply knowing what to say when the interview begins. <strong>Jobwhisper brings it all together,</strong> helping you find the right roles, prepare for the moments that matter, and show up with support when it counts. You’ve done the hard part getting this far. Now let’s help you turn the next opportunity into an offer.</p><div className="landing-closing-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Get started free <ArrowUpRight aria-hidden="true" /></button><button className="landing-secondary-button" onClick={() => navigate('/pricing')}>See pricing</button></div><div className="landing-hero-notes landing-closing-note"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span><b aria-hidden="true">·</b><span>Plans from $47/month</span></div></section>
+  return <section className="landing-closing"><h2>Ready when you are.<br />Let’s get you hired.</h2><ScrollRevealText segments={CLOSING_COPY} className="landing-reveal" /><div className="landing-closing-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Get started free <ArrowUpRight aria-hidden="true" /></button><button className="landing-secondary-button" onClick={() => navigate('/pricing')}>See pricing</button></div><div className="landing-hero-notes landing-closing-note"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span><b aria-hidden="true">·</b><span>Plans from $47/month</span></div></section>
 }
 
 export function LandingPage() {

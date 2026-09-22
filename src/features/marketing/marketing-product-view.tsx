@@ -153,7 +153,7 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
         <ProductStage walkthroughImages={walkthroughImages} activeIndex={activeIndex} />
         <div className="marketing-product-intro">
           <div className="marketing-product-copy" key={activeSectionId}>
-            <p className="marketing-product-label">{product.label}</p>
+            <p className="lf-eyebrow marketing-product-label">{product.label}</p>
             <h1 aria-label={isHero ? product.headline : activeCopy.title}><TwoLineTitle>{isHero ? product.headline : activeCopy.title}</TwoLineTitle></h1>
             <p>{activeBody}</p>
           </div>
