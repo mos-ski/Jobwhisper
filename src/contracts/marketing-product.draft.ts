@@ -29,6 +29,7 @@ export type MarketingProduct = {
   readonly label: string
   readonly headline: string
   readonly summary: string
+  readonly narrative: string
   readonly overview: readonly string[]
   readonly workflow: readonly MarketingProductWorkflowStep[]
   readonly outcome: string

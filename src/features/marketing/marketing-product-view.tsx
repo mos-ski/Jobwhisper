@@ -1,19 +1,97 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 import { ArrowDown, ArrowUpRight } from 'lucide-react'
 
 import type { MarketingProduct } from '@/contracts/marketing-product.draft'
 import { MarketingFooter, MarketingNav } from './marketing-chrome'
 import './marketing-product-view.css'
 
+type EmphasisKind = 'strong' | 'underline' | 'mark'
+
+const PRODUCT_EMPHASIS: Readonly<Record<MarketingProduct['slug'], Readonly<Record<EmphasisKind, readonly string[]>>>> = {
+  'resume-builder': {
+    strong: ['existing experience', 'real experience', 'you remain in control', 'finished version'],
+    underline: ['review every suggested change', 'accept the changes', 'reject the ones', 'save this tailored resume'],
+    mark: ['job description', 'role you want', 'resume canvas', 'ATS review'],
+  },
+  'interview-copilot': {
+    strong: ['your own voice', 'you remain responsible', 'stay present', 'better-supported version of you'],
+    underline: ['test the microphone and system audio', 'read the suggestion as support', 'review the conversation'],
+    mark: ['resume and the job description', 'live conversation', 'Copilot session', 'desktop experience'],
+  },
+  'interview-prep': {
+    strong: ['answer out loud', 'the first run is diagnostic', 'specific feedback', 'visible improvement'],
+    underline: ['practice them again', 'do not memorize an entire paragraph', 'create a practice setup for each one'],
+    mark: ['job description', 'simulated interviewer', 'session report', 'real interview'],
+  },
+  'auto-apply': {
+    strong: ['accurate information', 'you choose a job', 'use your judgment', 'you keep the decisions'],
+    underline: ['review the proposed version', 'choose how much control you want', 'follow the activity in Your Jobs'],
+    mark: ['job preferences', 'Auto Apply agents', 'application timeline', 'controlled submission'],
+  },
+}
+
+function splitNarrative(narrative: string) {
+  const sentences = narrative.trim().split(/(?<=[.!?])\s+(?=[A-Z])/)
+  const paragraphs: string[] = []
+  for (let index = 0; index < sentences.length; index += 4) paragraphs.push(sentences.slice(index, index + 4).join(' '))
+  return paragraphs
+}
+
+function ProductNarrative({ product, revealedWords }: { readonly product: MarketingProduct; readonly revealedWords: number }) {
+  const paragraphs = splitNarrative(product.narrative)
+  const emphasis = PRODUCT_EMPHASIS[product.slug]
+  let wordIndex = 0
+
+  const renderText = (text: string, kind?: EmphasisKind) => {
+    const words = text.trim().split(/\s+/)
+    const content = words.map((word) => {
+      const currentIndex = wordIndex
+      wordIndex += 1
+      return <span key={`${word}-${currentIndex}`} data-reveal-word data-revealed={currentIndex < revealedWords} aria-hidden="true">{word} </span>
+    })
+    if (kind === 'strong') return <strong key={`${kind}-${wordIndex}`}>{content}</strong>
+    if (kind === 'underline') return <u key={`${kind}-${wordIndex}`}>{content}</u>
+    if (kind === 'mark') return <mark key={`${kind}-${wordIndex}`}>{content}</mark>
+    return <span key={`plain-${wordIndex}`}>{content}</span>
+  }
+
+  const renderParagraph = (paragraph: string) => {
+    const matches = (Object.keys(emphasis) as EmphasisKind[]).flatMap((kind) => emphasis[kind].flatMap((phrase) => {
+      const index = paragraph.toLocaleLowerCase().indexOf(phrase.toLocaleLowerCase())
+      return index < 0 ? [] : [{ kind, index, end: index + phrase.length }]
+    })).sort((a, b) => a.index - b.index)
+    const parts: ReactNode[] = []
+    let cursor = 0
+    matches.forEach((match) => {
+      if (match.index < cursor) return
+      if (match.index > cursor) parts.push(renderText(paragraph.slice(cursor, match.index)))
+      parts.push(renderText(paragraph.slice(match.index, match.end), match.kind))
+      cursor = match.end
+    })
+    if (cursor < paragraph.length) parts.push(renderText(paragraph.slice(cursor)))
+    return parts
+  }
+
+  return <div className="marketing-product-narrative" data-testid="product-narrative" aria-label={product.narrative}>
+    {paragraphs.map((paragraph, index) => <p className="marketing-product-reveal" key={`${product.slug}-${index}`}>{renderParagraph(paragraph)}</p>)}
+  </div>
+}
+
 export type MarketingProductViewProps = {
   readonly product: MarketingProduct
+  readonly walkthroughImages: readonly string[]
   readonly activeSectionId: string
   readonly onSectionVisible: (sectionId: string) => void
   readonly onPrimaryAction: () => void
+  readonly onDownload: () => void
 }
 
-export function MarketingProductView({ product, activeSectionId, onSectionVisible, onPrimaryAction }: MarketingProductViewProps) {
+export function MarketingProductView({ product, walkthroughImages, activeSectionId, onSectionVisible, onPrimaryAction, onDownload }: MarketingProductViewProps) {
   const storyRef = useRef<HTMLDivElement>(null)
+  const summaryRef = useRef<HTMLElement>(null)
+  const [revealedWords, setRevealedWords] = useState(0)
+  const totalRevealWords = product.narrative.trim().split(/\s+/).length
 
   useEffect(() => {
     const story = storyRef.current
@@ -26,43 +104,76 @@ export function MarketingProductView({ product, activeSectionId, onSectionVisibl
     return () => observer.disconnect()
   }, [onSectionVisible, product.slug])
 
+  useEffect(() => {
+    const story = storyRef.current
+    const summary = summaryRef.current
+    if (!story || !summary) return
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    if (reducedMotion) {
+      setRevealedWords(totalRevealWords)
+      return
+    }
+
+    let animationFrame = 0
+    const update = () => {
+      animationFrame = 0
+      const { top, height } = story.getBoundingClientRect()
+      const revealStart = window.innerHeight * 0.72
+      const revealEnd = -(height - window.innerHeight * 0.35)
+      const rawProgress = Math.min(1, Math.max(0, (revealStart - top) / Math.max(1, revealStart - revealEnd)))
+      const progress = 0.08 + rawProgress * 0.92
+      setRevealedWords(Math.ceil(progress * totalRevealWords))
+      const availableScroll = Math.max(0, summary.scrollHeight - summary.clientHeight)
+      summary.scrollTop = availableScroll * rawProgress
+    }
+    const scheduleUpdate = () => {
+      if (!animationFrame) animationFrame = window.requestAnimationFrame(update)
+    }
+
+    update()
+    window.addEventListener('scroll', scheduleUpdate, { passive: true })
+    window.addEventListener('resize', scheduleUpdate)
+    return () => {
+      window.removeEventListener('scroll', scheduleUpdate)
+      window.removeEventListener('resize', scheduleUpdate)
+      if (animationFrame) window.cancelAnimationFrame(animationFrame)
+    }
+  }, [product.slug, totalRevealWords])
+
   return (
     <main className="marketing-product-page">
       <MarketingNav />
       <div className="marketing-product-layout">
-        <aside className="marketing-product-summary" aria-label={`${product.label} overview`}>
+        <aside className="marketing-product-summary" aria-label={`${product.label} overview`} ref={summaryRef}>
           <div className="marketing-product-intro">
             <div className="marketing-product-summary-copy">
               <h1>{product.headline}</h1>
-              <p>{product.summary}</p>
-              {product.overview.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-              <section className="marketing-product-explanation" aria-labelledby={`${product.slug}-how-it-works`}>
-                <h2 id={`${product.slug}-how-it-works`}>How it works</h2>
-                {product.workflow.map((step) => <p key={step.title}><strong>{step.title}.</strong> {step.body}</p>)}
-              </section>
-              <p className="marketing-product-outcome"><strong>The outcome.</strong> {product.outcome}</p>
-            </div>
-            <div className="marketing-product-actions">
-              <a className="marketing-product-download" href="/#download">
-                <span>Download Now</span>
-                <span className="marketing-product-platforms" aria-hidden="true"><img src="/landing-apple.svg" alt="" /><img src="/landing-windows.svg" alt="" /></span>
-              </a>
-              <button className="marketing-product-cta" type="button" onClick={onPrimaryAction}>Get Started<ArrowUpRight aria-hidden="true" /></button>
+              <div className="marketing-product-actions">
+                <button className="marketing-product-cta" type="button" onClick={onPrimaryAction}>{product.ctaLabel}<ArrowUpRight aria-hidden="true" /></button>
+              </div>
+              <ProductNarrative product={product} revealedWords={revealedWords} />
             </div>
           </div>
           <ProductFaq product={product} />
-          <a className="marketing-product-scroll-cue" href={`#${product.sections[0]?.id}`}>See how it works<ArrowDown aria-hidden="true" /></a>
+          <a className="marketing-product-scroll-cue" href={`#${product.slug}-walkthrough-1`}>See how it works<ArrowDown aria-hidden="true" /></a>
         </aside>
         <div className="marketing-product-story" ref={storyRef}>
-          {product.sections.map((section) => (
-            <section className="marketing-product-section" id={section.id} key={section.id} data-product-section="" data-active={activeSectionId === section.id}>
-              <div className="marketing-product-section-copy"><h2>{section.title}</h2><p>{section.body}</p></div>
-              <figure><img src={section.imageSrc} alt={section.imageAlt} /></figure>
+          {walkthroughImages.map((imageSrc, index) => {
+            const section = product.sections[Math.min(index, product.sections.length - 1)]
+            const sectionId = `${product.slug}-walkthrough-${index + 1}`
+            return (
+            <section className="marketing-product-section" id={sectionId} key={imageSrc} data-product-section="" data-active={activeSectionId === sectionId}>
+              <figure><img src={imageSrc} alt={`${product.label} walkthrough step ${index + 1}: ${section?.title ?? product.outcome}`} loading={index === 0 ? 'eager' : 'lazy'} /></figure>
             </section>
-          ))}
+          )})}
         </div>
       </div>
       <MarketingFooter />
+      <aside className="landing-social-proof" aria-label="Join Jobwhisper">
+        <div className="landing-social-proof-avatars" aria-hidden="true"><img src="/figma-landing/social-proof-1.jpg" alt="" /><img src="/figma-landing/social-proof-2.jpg" alt="" /><img src="/figma-landing/social-proof-3.jpg" alt="" /></div>
+        <p><span className="landing-social-proof-copy-desktop">Join 57,000+ job seekers landing better roles</span><span className="landing-social-proof-copy-mobile">57,000+ job seekers</span></p>
+        <button type="button" onClick={onDownload}><span>Download</span><span className="landing-social-proof-platforms" aria-hidden="true"><img src="/landing-apple.svg" alt="" /><img src="/landing-windows.svg" alt="" /></span></button>
+      </aside>
     </main>
   )
 }

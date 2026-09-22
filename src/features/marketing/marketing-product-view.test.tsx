@@ -18,6 +18,7 @@ const product: MarketingProduct = {
     { title: 'Review the draft', body: 'Keep only the suggestions that sound like you.' },
   ],
   outcome: 'A focused resume that makes your fit easier to understand.',
+  narrative: 'Start with the role you want. Bring in your existing experience. Review every suggested change. Keep only what is accurate. Check the finished document. Leave with a focused resume that is ready to send.',
   faqs: [
     { question: 'Will Jobwhisper invent experience?', answer: 'No. Suggestions stay grounded in the information you provide.' },
     { question: 'Can I edit the result?', answer: 'Yes. Every section remains editable before export.' },
@@ -51,17 +52,21 @@ describe('MarketingProductView', () => {
     render(
       <MarketingProductView
         product={product}
-        activeSectionId="target"
+        walkthroughImages={['/walkthrough-1.jpg', '/walkthrough-2.jpg']}
+        activeSectionId="resume-builder-walkthrough-1"
         onSectionVisible={vi.fn()}
         onPrimaryAction={vi.fn()}
+        onDownload={vi.fn()}
       />,
     )
 
     expect(screen.getByRole('heading', { level: 1, name: product.headline })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Get Started' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: product.ctaLabel })).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: 'Download' })).toHaveLength(2)
+    expect(screen.queryByRole('link', { name: 'Download Now' })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Jobwhisper home' })).toHaveAttribute('href', '/')
-    expect(screen.getByRole('heading', { name: 'How it works' })).toBeInTheDocument()
-    expect(screen.getByText(product.outcome, { exact: false })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'How it works' })).not.toBeInTheDocument()
+    expect(screen.getByTestId('product-narrative')).toHaveAttribute('aria-label', product.narrative)
     expect(screen.getByText('Will Jobwhisper invent experience?')).toBeInTheDocument()
     const navigation = screen.getByRole('navigation', { name: 'Main navigation' })
     expect(within(navigation).getByRole('link', { name: 'Features' })).toHaveAttribute('href', '/#features')
@@ -69,10 +74,29 @@ describe('MarketingProductView', () => {
     expect(within(navigation).getByRole('link', { name: 'FAQ' })).toHaveAttribute('href', '/#faq')
     expect(within(navigation).getByRole('link', { name: 'Log in' })).toHaveAttribute('href', '/v3/auth/sign-in')
     expect(within(navigation).getByRole('button', { name: 'Download' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Download Now' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Leave with a stronger application.' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'Finished resume ready to export' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: /walkthrough step 2: Leave with a stronger application/ })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute('href', '/privacy')
     expect(screen.getByRole('link', { name: 'Terms of Service' })).toHaveAttribute('href', '/terms')
+  })
+
+  it('uses the landing-page word reveal treatment for the left-side explanation', () => {
+    render(
+      <MarketingProductView
+        product={product}
+        walkthroughImages={['/walkthrough-1.jpg', '/walkthrough-2.jpg', '/walkthrough-3.jpg', '/walkthrough-4.jpg']}
+        activeSectionId="resume-builder-walkthrough-2"
+        onSectionVisible={vi.fn()}
+        onPrimaryAction={vi.fn()}
+        onDownload={vi.fn()}
+      />,
+    )
+
+    const narrative = screen.getByTestId('product-narrative')
+    expect(narrative.querySelectorAll('p').length).toBeGreaterThan(1)
+    expect(narrative.querySelectorAll('[data-reveal-word]').length).toBeGreaterThan(20)
+    expect(narrative.querySelector('[data-reveal-word]')).toHaveAttribute('data-revealed')
+    expect(narrative.querySelector('strong')).toBeInTheDocument()
+    expect(narrative.querySelector('u')).toBeInTheDocument()
+    expect(narrative.querySelector('mark')).toBeInTheDocument()
   })
 })
