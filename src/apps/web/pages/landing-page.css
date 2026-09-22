@@ -424,7 +424,8 @@
 .landing-try-attach input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 .landing-try-file{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;color:var(--lf-landing-muted)}
 .landing-try-cta{margin-inline-start:auto;min-width:150px;min-height:36px;padding:6px 16px;border:0;border-radius:8px;background:var(--lf-landing-bg);color:var(--lf-landing-paper);font:inherit;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,.05)}
-.landing-try-cta:disabled{cursor:default;opacity:.75}
+.landing-try-cta:disabled{cursor:not-allowed;background:var(--lf-surface-subtle);color:var(--lf-landing-muted);box-shadow:inset 0 0 0 1px var(--lf-border)}
+.landing-try-cta:disabled[data-working='']{background:var(--lf-landing-bg);color:var(--lf-landing-paper);box-shadow:none;opacity:.75}
 .landing-try-hint{margin:8px 0 0;font-size:14px;line-height:20px;color:#343434}
 
 .landing-try-reveal{width:min(640px,100%)}

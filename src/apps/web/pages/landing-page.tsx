@@ -304,8 +304,12 @@ const TRY_OPTIONS = [
 function TryItNow() {
   const navigate = useNavigate()
   const [stage, setStage] = useState<'idle' | 'loading' | 'options'>('idle')
+  const [jobText, setJobText] = useState('')
   const [resumeName, setResumeName] = useState<string | null>(null)
   const optionsRef = useRef<HTMLDivElement>(null)
+  // Both halves are the point of the demonstration — a job description with no resume, or a
+  // resume with no posting, would show nothing worth seeing.
+  const ready = jobText.trim().length > 0 && resumeName !== null
 
   useEffect(() => {
     if (stage !== 'loading') return
@@ -326,7 +330,7 @@ function TryItNow() {
 
     <div className="landing-try-card">
       <label className="sr-only" htmlFor="landing-try-job">Paste a job description</label>
-      <textarea id="landing-try-job" placeholder="Paste a job description" rows={3} />
+      <textarea id="landing-try-job" placeholder="Paste a job description" rows={3} value={jobText} onChange={(event) => setJobText(event.target.value)} />
       <span className="landing-try-glow" aria-hidden="true" />
       <div className="landing-try-card-foot">
         <label className="landing-try-attach">
@@ -339,13 +343,23 @@ function TryItNow() {
           />
         </label>
         {resumeName ? <span className="landing-try-file">{resumeName}</span> : null}
-        <button type="button" className="landing-try-cta" onClick={() => setStage('loading')} disabled={stage === 'loading'}>
+        <button type="button" className="landing-try-cta" onClick={() => setStage('loading')} disabled={!ready || stage === 'loading'} data-working={stage === 'loading' ? '' : undefined}>
           {stage === 'loading' ? 'Working…' : 'See how it works'}
         </button>
       </div>
     </div>
 
-    <p className="landing-try-hint">Nothing is sent yet. This just shows you where it would go.</p>
+    {/* The button is dead until both halves are in, so say which one is still missing rather
+        than leaving the reader clicking at it. */}
+    <p className="landing-try-hint" aria-live="polite">
+      {ready
+        ? 'Nothing is sent yet. This just shows you where it would go.'
+        : jobText.trim()
+          ? 'Attach your resume to continue.'
+          : resumeName
+            ? 'Paste a job description to continue.'
+            : 'Paste a job description and attach your resume to continue.'}
+    </p>
 
     <div className="landing-try-reveal" data-stage={stage} aria-live="polite">
       {stage === 'loading' ? <span className="landing-try-dots" role="status"><i /><i /><i /><span className="sr-only">Reading the job description</span></span> : null}
