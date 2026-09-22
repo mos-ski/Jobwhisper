@@ -1,8 +1,4 @@
 export { HelpCenterLayout } from './help-center-layout'
 export type { HelpCenterLayoutProps } from './help-center-layout'
-export { HelpCenterHome } from './help-center-home'
-export { HelpCollectionPage } from './help-collection-page'
-export type { HelpCollectionPageProps } from './help-collection-page'
 export { HelpArticlePage } from './help-article-page'
 export type { HelpArticlePageProps } from './help-article-page'
-export { useHelpSearch } from './use-help-search'
