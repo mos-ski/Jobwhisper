@@ -65,7 +65,10 @@ describe('MarketingProductView', () => {
     expect(screen.getAllByRole('button', { name: 'Download' })).toHaveLength(2)
     expect(screen.queryByRole('link', { name: 'Download Now' })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Jobwhisper home' })).toHaveAttribute('href', '/')
-    expect(screen.getByText((content) => content.startsWith(product.summary))).toBeInTheDocument()
+    // The headline stays the product's, but the body under it describes the first
+    // screenshot rather than repeating the summary, so words and picture agree on arrival.
+    const summaryBody = document.querySelector('.marketing-product-copy > p:not(.marketing-product-label)')
+    expect(summaryBody).toHaveTextContent(product.sections[0].body)
     expect(screen.getByText('Will Jobwhisper invent experience?')).toBeInTheDocument()
     const navigation = screen.getByRole('navigation', { name: 'Main navigation' })
     expect(within(navigation).getByRole('link', { name: 'Features' })).toHaveAttribute('href', '/#features')
@@ -74,7 +77,9 @@ describe('MarketingProductView', () => {
     expect(within(navigation).getByRole('link', { name: 'Log in' })).toHaveAttribute('href', '/v3/auth/sign-in')
     expect(within(navigation).getByRole('button', { name: 'Download' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Choose the role you want next.' })).toBeInTheDocument()
-    expect(screen.getByText('Add the role and job description so every recommendation has a clear target.')).toBeInTheDocument()
+    // This body now renders twice: once in the pinned summary and once in the section copy
+    // the phone layout shows, so both are asserted rather than one being ambiguous.
+    expect(screen.getAllByText('Add the role and job description so every recommendation has a clear target.')).toHaveLength(2)
     expect(screen.getByRole('img', { name: /walkthrough step 2: Leave with a stronger application/ })).toBeInTheDocument()
     // The footer sits outside the two-column grid: as a child of the story column it was
     // rendering at that column's width, inside a layout built for the full page.

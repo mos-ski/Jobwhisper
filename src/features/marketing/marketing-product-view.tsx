@@ -90,9 +90,10 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
   const activeIndex = Math.max(0, Number.parseInt(sectionIdParts[sectionIdParts.length - 1] ?? '1', 10) - 1)
   const activeCopy = walkthroughCopy(product, activeIndex)
   const isHero = activeIndex === 0
-  // The body is written to run three lines. Appending the summary's first paragraph, or a
-  // step line, pushed it to five and six, which is what the clamp was there to hide.
-  const activeBody = isHero ? product.summary : activeCopy.body
+  // The first step keeps the page's own headline, because that is the page's H1 and what a
+  // search result shows. Its body still describes the screenshot on screen, so the words
+  // and the picture agree from the first frame.
+  const activeBody = activeCopy.body
 
   useEffect(() => {
     const story = storyRef.current
