@@ -379,7 +379,7 @@ const QUIZ: readonly QuizStep[] = [
  */
 function TryItNow() {
   const navigate = useNavigate()
-  const [stage, setStage] = useState<'idle' | 'resume' | 'quiz' | 'loading' | 'done'>('idle')
+  const [stage, setStage] = useState<'idle' | 'quiz' | 'loading' | 'done'>('idle')
   const [jobText, setJobText] = useState('')
   const [resume, setResume] = useState<File | null>(null)
   const [dragging, setDragging] = useState(false)
@@ -387,15 +387,12 @@ function TryItNow() {
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const sheetRef = useRef<HTMLDivElement>(null)
   const ctaRef = useRef<HTMLButtonElement>(null)
-  const fileRef = useRef<HTMLInputElement>(null)
-  // The card only gates on the job description. Everything else is asked afterwards, one
-  // question at a time, because a wizard is answerable where a form is work.
-  const hasJob = jobText.trim().length > 0
+  // Nothing opens until there is a posting and a resume to work from — the questions that
+  // follow are about those two things, so asking them first would be asking about nothing.
+  const ready = jobText.trim().length > 0 && resume !== null
   const open = stage !== 'idle'
   const quizStep = QUIZ[step]
-  const answered = stage === 'resume'
-    ? resume !== null
-    : quizStep !== undefined && (answers[quizStep.id] ?? '').trim().length > 0
+  const answered = quizStep !== undefined && (answers[quizStep.id] ?? '').trim().length > 0
 
   useEffect(() => {
     if (stage !== 'loading') return
@@ -431,39 +428,43 @@ function TryItNow() {
   }
 
   function goBack() {
-    if (stage === 'quiz' && step > 0) return setStep(step - 1)
-    if (stage === 'quiz') return setStage('resume')
+    if (step > 0) return setStep(step - 1)
     closeSheet()
   }
 
   function goOn() {
-    if (stage === 'resume') { setStep(0); return setStage('quiz') }
     if (step < QUIZ.length - 1) return setStep(step + 1)
     setStage('loading')
   }
 
-  const position = stage === 'resume' ? 0 : stage === 'quiz' ? step + 1 : QUIZ.length + 1
-  const tab = stage === 'resume' ? 'Resume' : stage === 'quiz' ? quizStep?.tab : 'All set'
+  const position = stage === 'quiz' ? step : QUIZ.length
+  const tab = stage === 'quiz' ? quizStep?.tab : 'All set'
 
   return <section className="landing-try" aria-labelledby="landing-try-title">
     <p className="landing-try-eyebrow">Getting started</p>
     <h2 id="landing-try-title">Try it on a job you actually want.</h2>
     <p className="landing-try-lede">Paste the description, add your resume, and tell us what landing it looks like. Your setup will be waiting.</p>
 
-    <div className="landing-try-card" data-asking={open ? '' : undefined}>
+    <div
+      className="landing-try-card"
+      data-asking={open ? '' : undefined}
+      data-dragging={dragging ? '' : undefined}
+      onDragOver={(event) => { if (!open) { event.preventDefault(); setDragging(true) } }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={(event) => { if (!open) { event.preventDefault(); takeFile(event.dataTransfer.files?.[0]) } }}
+    >
       <label className="sr-only" htmlFor="landing-try-job">Paste a job description</label>
       <textarea id="landing-try-job" placeholder="Paste a job description" rows={3} value={jobText} onChange={(event) => setJobText(event.target.value)} />
       <span className="landing-try-glow" aria-hidden="true" />
       <div className="landing-try-card-foot">
-        {/* The shortcut for anyone who has the file to hand already: attach here and the panel
-            opens with the first question already answered. */}
+        {/* The only way in: the questions that follow are about this resume and this posting. */}
         <label className="landing-try-attach">
           <Paperclip aria-hidden="true" />
           <span className="sr-only">Attach your resume</span>
           <input type="file" accept=".pdf,.doc,.docx,.txt" onChange={(event) => takeFile(event.target.files?.[0])} />
         </label>
         {resume ? <span className="landing-try-file">{resume.name}</span> : null}
-        <button ref={ctaRef} type="button" className="landing-try-cta" onClick={() => setStage('resume')} disabled={!hasJob}>See how it works</button>
+        <button ref={ctaRef} type="button" className="landing-try-cta" onClick={() => { setStep(0); setStage('quiz') }} disabled={!ready}>Set me up</button>
       </div>
 
       {open ? (
@@ -474,9 +475,6 @@ function TryItNow() {
           aria-labelledby="landing-try-ask"
           ref={sheetRef}
           tabIndex={-1}
-          onDragOver={(event) => { if (stage === 'resume') { event.preventDefault(); setDragging(true) } }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={(event) => { if (stage === 'resume') { event.preventDefault(); takeFile(event.dataTransfer.files?.[0]) } }}
         >
           <div className="landing-try-sheet-head">
             <span className="landing-try-sheet-tab">{tab}</span>
@@ -484,27 +482,9 @@ function TryItNow() {
               <X aria-hidden="true" /><span className="sr-only">Close</span>
             </button>
           </div>
-          <div className="landing-try-progress" role="presentation"><span style={{ width: `${((position + 1) / (QUIZ.length + 2)) * 100}%` }} /></div>
+          <div className="landing-try-progress" role="presentation"><span style={{ width: `${((position + 1) / (QUIZ.length + 1)) * 100}%` }} /></div>
 
           <div className="landing-try-sheet-body">
-            {stage === 'resume' ? <>
-              <p className="landing-try-ask" id="landing-try-ask">Which resume should we work from?</p>
-              <button
-                type="button"
-                className="landing-try-pick"
-                data-selected={resume ? '' : undefined}
-                data-dragging={dragging ? '' : undefined}
-                onClick={() => fileRef.current?.click()}
-              >
-                <span className="landing-try-radio" aria-hidden="true" />
-                <span className="landing-try-pick-copy">
-                  <b>{resume ? resume.name : 'Upload your resume'}</b>
-                  <small>{resume ? `${Math.max(1, Math.round(resume.size / 1024))} KB · choose a different file` : 'PDF, DOC, DOCX or TXT — or drop it anywhere in this panel'}</small>
-                </span>
-              </button>
-              <input ref={fileRef} type="file" accept=".pdf,.doc,.docx,.txt" className="landing-try-sheet-file" onChange={(event) => takeFile(event.target.files?.[0])} />
-            </> : null}
-
             {stage === 'quiz' && quizStep ? <>
               <p className="landing-try-ask" id="landing-try-ask">{quizStep.ask}</p>
               {quizStep.options?.map(([label, hint]) => (
@@ -559,9 +539,9 @@ function TryItNow() {
             </> : null}
           </div>
 
-          {stage === 'resume' || stage === 'quiz' ? <div className="landing-try-sheet-foot">
+          {stage === 'quiz' ? <div className="landing-try-sheet-foot">
             <button type="button" className="landing-try-back" onClick={goBack}>Back</button>
-            <span className="landing-try-sheet-step">{position + 1} of {QUIZ.length + 1}</span>
+            <span className="landing-try-sheet-step">{position + 1} of {QUIZ.length}</span>
             <button type="button" className="landing-try-submit" onClick={goOn} disabled={!answered}>
               {stage === 'quiz' && step === QUIZ.length - 1 ? 'Finish' : 'Continue'}
             </button>
@@ -571,7 +551,13 @@ function TryItNow() {
     </div>
 
     <p className="landing-try-hint" aria-live="polite">
-      {hasJob ? 'Nothing is sent yet. Your answers set your account up when you sign in.' : 'Paste a job description to continue.'}
+      {ready
+        ? 'Nothing is sent yet. Your answers set your account up when you sign in.'
+        : jobText.trim()
+          ? 'Attach your resume to continue.'
+          : resume
+            ? 'Paste a job description to continue.'
+            : 'Paste a job description and attach your resume to continue.'}
     </p>
   </section>
 }

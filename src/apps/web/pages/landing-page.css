@@ -426,6 +426,7 @@
 .landing-try-cta{margin-inline-start:auto;min-width:150px;min-height:36px;padding:6px 16px;border:0;border-radius:8px;background:var(--lf-landing-bg);color:var(--lf-landing-paper);font:inherit;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,.05)}
 .landing-try-cta:disabled{cursor:not-allowed;background:var(--lf-surface-subtle);color:var(--lf-landing-muted);box-shadow:inset 0 0 0 1px var(--lf-border)}
 .landing-try-cta:disabled[data-working='']{background:var(--lf-landing-bg);color:var(--lf-landing-paper);box-shadow:none;opacity:.75}
+.landing-try-card[data-dragging]{border-color:var(--lf-landing-bg)}
 .landing-try-card[data-asking]{min-height:508px}
 
 /* The resume panel. It rises inside the card and covers the button it came from, the way a
