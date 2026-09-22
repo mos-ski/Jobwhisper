@@ -426,7 +426,7 @@
 .landing-try-cta{margin-inline-start:auto;min-width:150px;min-height:36px;padding:6px 16px;border:0;border-radius:8px;background:var(--lf-landing-bg);color:var(--lf-landing-paper);font:inherit;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,.05)}
 .landing-try-cta:disabled{cursor:not-allowed;background:var(--lf-surface-subtle);color:var(--lf-landing-muted);box-shadow:inset 0 0 0 1px var(--lf-border)}
 .landing-try-cta:disabled[data-working='']{background:var(--lf-landing-bg);color:var(--lf-landing-paper);box-shadow:none;opacity:.75}
-.landing-try-card[data-asking]{min-height:278px}
+.landing-try-card[data-asking]{min-height:508px}
 
 /* The resume panel. It rises inside the card and covers the button it came from, the way a
    question arrives mid-conversation: one thing asked, the answer next to it, submit pinned
@@ -450,10 +450,36 @@
 .landing-try-pick-copy b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;line-height:20px;font-weight:600;color:var(--lf-landing-ink)}
 .landing-try-pick-copy small{font-size:12px;line-height:18px;color:var(--lf-landing-muted)}
 .landing-try-sheet-file{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
-.landing-try-sheet-foot{margin-top:12px;padding-top:12px;display:flex;align-items:center;gap:10px;border-top:1px solid rgba(27,25,25,.08)}
-.landing-try-sheet-step{width:20px;height:20px;display:grid;place-items:center;border-radius:5px;background:var(--lf-surface-subtle);color:var(--lf-landing-muted);font-size:11px;font-weight:600}
+.landing-try-sheet-foot{margin-top:12px;padding-top:12px;display:flex;align-items:center;gap:12px;border-top:1px solid rgba(27,25,25,.08)}
+.landing-try-sheet-step{font-size:12px;color:var(--lf-landing-muted);font-variant-numeric:tabular-nums}
+.landing-try-back{padding:6px 10px;border:0;border-radius:8px;background:transparent;font:inherit;font-size:13px;font-weight:600;color:var(--lf-landing-muted);cursor:pointer}
+.landing-try-back:hover{background:var(--lf-surface-subtle);color:var(--lf-landing-ink)}
 .landing-try-submit{margin-inline-start:auto;min-width:150px;min-height:36px;padding:6px 16px;border:0;border-radius:8px;background:var(--lf-landing-bg);color:var(--lf-landing-paper);font:inherit;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,.05)}
 .landing-try-submit:disabled{cursor:not-allowed;background:var(--lf-surface-subtle);color:var(--lf-landing-muted);box-shadow:inset 0 0 0 1px var(--lf-border)}
+/* How far through the questions you are. */
+.landing-try-progress{margin-top:10px;height:3px;border-radius:2px;background:rgba(27,25,25,.08);overflow:hidden}
+.landing-try-progress span{display:block;height:100%;border-radius:2px;background:var(--lf-landing-bg);transition:width 260ms ease}
+
+.landing-try-pick+.landing-try-pick{margin-top:8px}
+.landing-try-field{width:100%;padding:12px 14px;border:1px solid #e5e7eb;border-radius:10px;background:var(--lf-landing-paper);font:inherit;font-size:15px;line-height:22px;color:var(--lf-landing-ink)}
+.landing-try-field:focus{outline:none;border-color:var(--lf-landing-bg)}
+.landing-try-field::placeholder{color:var(--lf-landing-muted)}
+.landing-try-pills{display:flex;flex-wrap:wrap;gap:8px}
+.landing-try-pills button{padding:7px 14px;border:1px solid #e5e7eb;border-radius:999px;background:var(--lf-landing-paper);font:inherit;font-size:13px;color:var(--lf-landing-ink);cursor:pointer;transition:border-color 140ms ease,background-color 140ms ease}
+.landing-try-pills button:hover{background:var(--lf-surface-subtle)}
+.landing-try-pills button[data-selected]{border-color:var(--lf-landing-bg);background:var(--lf-landing-bg);color:var(--lf-landing-paper)}
+
+.landing-try-working{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.landing-try-working p{margin:0;font-size:14px;color:var(--lf-landing-muted)}
+.landing-try-sheet[data-stage='done'] .landing-try-sheet-body{display:flex;flex-direction:column;justify-content:center}
+.landing-try-summary{margin:0 0 18px;font-size:15px;line-height:23px;color:var(--lf-landing-ink)}
+.landing-try-summary b{font-weight:600}
+.landing-try-recap{margin:0 0 24px;display:grid;gap:1px;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;background:#e5e7eb}
+.landing-try-recap div{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:11px 14px;background:var(--lf-landing-paper)}
+.landing-try-recap dt{font-size:13px;color:var(--lf-landing-muted)}
+.landing-try-recap dd{margin:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:600;color:var(--lf-landing-ink)}
+.landing-try-finish{width:100%;min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:10px;background:var(--lf-landing-bg);color:var(--lf-landing-paper);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.landing-try-finish svg{width:16px;height:16px}
 .landing-try-hint{margin:8px 0 0;font-size:14px;line-height:20px;color:#343434}
 
 .landing-try-reveal{width:min(640px,100%)}
@@ -480,7 +506,7 @@
 .landing-try h2{font-size:clamp(32px,8.5vw,44px)}
 .landing-try-lede{font-size:16px;line-height:24px}
 .landing-try-grid{grid-template-columns:1fr}
-.landing-try-card[data-asking]{min-height:292px}
+.landing-try-card[data-asking]{min-height:594px}
 .landing-try-submit{min-width:0;flex:1}
 }
 @media(prefers-reduced-motion:reduce){
