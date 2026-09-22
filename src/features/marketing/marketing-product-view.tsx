@@ -94,12 +94,14 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
           const copy = walkthroughCopy(product, index)
           const sectionId = `${product.slug}-walkthrough-${index + 1}`
           return <section className="marketing-product-section" id={sectionId} key={imageSrc} data-product-section="" data-active={activeSectionId === sectionId}>
+            {/* Image first, then its caption. The walkthrough is the thing being shown;
+                the copy explains the screenshot above it rather than trailing a promise. */}
+            <figure><img src={imageSrc} alt={`${product.label} walkthrough step ${index + 1}: ${copy.title}`} loading={index === 0 ? 'eager' : 'lazy'} /></figure>
             <div className="marketing-product-section-copy" data-testid="product-walkthrough-copy">
               <span>{copy.eyebrow}</span>
               <h2>{copy.title}</h2>
               <p>{copy.body}</p>
             </div>
-            <figure><img src={imageSrc} alt={`${product.label} walkthrough step ${index + 1}: ${copy.title}`} loading={index === 0 ? 'eager' : 'lazy'} /></figure>
           </section>
         })}
       </div>

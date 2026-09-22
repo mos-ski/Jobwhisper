@@ -415,8 +415,10 @@
   }
   .marketing-product-section-copy {
     display: block;
-    margin: -14px -14px 14px;
-    padding: 22px 0 18px;
+    /* The caption follows its screenshot now, so the bleed flips: a gap above it, and the
+       negative bottom takes it out to the section's edge instead of the top. */
+    margin: 14px -14px -14px;
+    padding: 18px 0 22px;
     background: var(--lf-landing-paper);
   }
   .marketing-product-section-copy p { font-size: 16px; }
