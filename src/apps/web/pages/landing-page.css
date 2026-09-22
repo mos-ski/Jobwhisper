@@ -264,3 +264,46 @@
 /* Let the two sentences break evenly instead of leaving one word stranded. */
 .landing-closing h2{text-wrap:balance}
 @media(max-width:560px){.landing-closing h2{font-size:34px;line-height:1.12}}
+
+/* The Features nav item now carries the product pages behind it. On the desktop pill that
+   is a panel under the link; the ::before strip bridges the 10px gap so the pointer can
+   travel from the link into the panel without the container's pointerleave closing it. */
+.landing-nav-features{position:relative;display:flex;align-items:center}
+.landing-nav-features>a{height:42px;display:flex;align-items:center;gap:4px;color:var(--lf-landing-nav-text);text-decoration:none}
+.landing-nav-features>a svg{width:10px;transition:transform .16s ease}
+.landing-nav-features[data-open='true']>a{color:var(--lf-landing-paper)}
+.landing-nav-features[data-open='true']>a svg{transform:rotate(180deg)}
+.landing-nav-features-menu{position:absolute;top:calc(100% + 10px);inset-inline-start:-12px;z-index:30;width:326px;padding:6px;border:1px solid var(--lf-landing-nav-border);border-radius:16px;background:var(--lf-landing-nav);box-shadow:var(--lf-shadow-announcement);display:flex;flex-direction:column}
+.landing-nav-features-menu::before{content:'';position:absolute;inset-inline:0;top:-11px;height:11px}
+.landing-nav-links .landing-nav-features-menu a{min-height:58px;height:auto;padding:10px 12px;border-radius:10px;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;color:var(--lf-landing-paper);text-decoration:none}
+.landing-nav-links .landing-nav-features-menu a:hover,.landing-nav-links .landing-nav-features-menu a:focus-visible{background:var(--lf-landing-nav-border)}
+.landing-nav-features-label{font-size:15px;font-weight:600;line-height:20px}
+.landing-nav-features-blurb{color:var(--lf-landing-nav-text);font-size:13px;font-weight:400;line-height:18px}
+
+/* On the phone sheet the same list hangs off the Features row as a thread: the rule runs
+   down from the row to the last child, and each child taps into it with a short stub. */
+.landing-nav-sheet-thread{display:flex;flex-direction:column;border-bottom:1px solid var(--lf-landing-nav-border)}
+.landing-nav-sheet-thread>button{min-height:58px;padding:0;display:flex;align-items:center;justify-content:space-between;gap:10px;border:0;background:transparent;color:inherit;font:inherit;font-size:22px;font-weight:600;text-align:start;cursor:pointer}
+.landing-nav-sheet-thread>button svg{width:18px;height:18px;flex:0 0 auto;opacity:.6;transition:transform .16s ease}
+.landing-nav-sheet-thread[data-open='true']>button svg{transform:rotate(180deg)}
+.landing-nav-sheet-thread-items{position:relative;margin:0 0 12px 8px;padding-inline-start:20px;display:flex;flex-direction:column}
+.landing-nav-sheet-thread-items::before{content:'';position:absolute;inset-inline-start:0;top:0;bottom:24px;width:1px;background:var(--lf-landing-nav-border)}
+.landing-nav-sheet-links .landing-nav-sheet-thread-items a{position:relative;min-height:48px;display:flex;align-items:center;border-bottom:0;color:inherit;font-size:17px;font-weight:500;text-decoration:none}
+.landing-nav-sheet-links .landing-nav-sheet-thread-items a::before{content:'';position:absolute;inset-inline-start:-20px;top:50%;width:13px;height:1px;background:var(--lf-landing-nav-border)}
+@media(prefers-reduced-motion:reduce){.landing-nav-features>a svg,.landing-nav-sheet-thread>button svg{transition:none}}
+
+/* The hero carried a 700-720px floor from the desktop composition. On a phone the copy
+   stops well short of that, so the page held a screenful of blank paper between the CTA
+   and the demo video. The content sets the height now, and the demo follows it directly. */
+@media(max-width:900px){
+  .landing-hero{min-height:0;padding-bottom:32px}
+  .landing-hero-copy{margin-top:44px;gap:24px}
+}
+@media(max-width:560px){
+  .landing-hero{min-height:0;padding-bottom:24px}
+  .landing-hero-copy{margin-top:34px;gap:22px}
+}
+@media(max-width:380px){
+  .landing-hero{min-height:0;padding-bottom:20px}
+  .landing-hero-copy{margin-top:28px}
+}

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type FocusEvent, type KeyboardEvent } from 'react'
 import { ChevronDown, Menu as MenuIcon, X } from 'lucide-react'
 
 import { Menu, MenuContent, MenuItem, MenuTrigger } from '@/ui'
@@ -13,6 +13,71 @@ import '@/apps/web/pages/landing-page.css'
 /** Absolute so they still resolve from /pricing and /products/*, not just from home. */
 const FEATURES_HREF = '/#features'
 const FAQ_HREF = '/#faq'
+
+/**
+ * [label, href, blurb]. The product pages the nav opens onto, in the order the landing
+ * page tells the story: write the resume, sit the interview, rehearse for it, keep
+ * applying. 'All features' sends people to the landing page's own section, which is where
+ * the Features link went when it was a plain anchor with a chevron and no menu behind it.
+ */
+const FEATURE_ITEMS = [
+  ['AI Resume Builder', '/products/resume-builder', 'Tailor a resume to the role you actually want.'],
+  ['Interview Copilot', '/products/interview-copilot', 'Real-time answer support while the interview runs.'],
+  ['Interview Prep', '/products/interview-prep', 'Rehearse role-specific questions and get feedback.'],
+  ['Auto Apply', '/products/auto-apply', 'Review matched roles and move applications forward.'],
+  ['All features', FEATURES_HREF, 'See how the whole job search fits together.'],
+] as const
+
+/**
+ * Desktop "Features". Still a link to the landing page's features section — middle-click
+ * and open-in-new-tab keep working, and a pointer that never hovers still has somewhere
+ * to go — with the product pages on a panel that opens on hover or keyboard focus.
+ */
+function FeaturesMenu() {
+  const [open, setOpen] = useState(false)
+  const closeOnLeave = (event: FocusEvent<HTMLDivElement>) => {
+    if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false)
+  }
+  const closeOnEscape = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape') setOpen(false)
+  }
+
+  return <div
+    className="landing-nav-features"
+    data-open={open}
+    onPointerEnter={() => setOpen(true)}
+    onPointerLeave={() => setOpen(false)}
+    onFocus={() => setOpen(true)}
+    onBlur={closeOnLeave}
+    onKeyDown={closeOnEscape}
+  >
+    <a href={FEATURES_HREF} aria-expanded={open} aria-controls="landing-nav-features-menu">Features <ChevronDown aria-hidden="true" /></a>
+    {open ? <div className="landing-nav-features-menu" id="landing-nav-features-menu">
+      {FEATURE_ITEMS.map(([label, href, blurb]) => <a key={label} href={href} onClick={() => setOpen(false)}>
+        <span className="landing-nav-features-label">{label}</span>
+        <span className="landing-nav-features-blurb">{blurb}</span>
+      </a>)}
+    </div> : null}
+  </div>
+}
+
+/**
+ * Phone "Features". A dropdown anchored to a 22px row would cover the rows under it, so
+ * the feature pages hang off the Features row as a thread instead: the row stays put, the
+ * children indent under a rule that traces back up to it, and everything below shifts down.
+ */
+function FeaturesThread({ onNavigate }: { readonly onNavigate: () => void }) {
+  const [open, setOpen] = useState(false)
+
+  return <div className="landing-nav-sheet-thread" data-open={open}>
+    <button type="button" aria-expanded={open} aria-controls="landing-nav-sheet-features" onClick={() => setOpen(!open)}>
+      Features <ChevronDown aria-hidden="true" />
+    </button>
+    {open ? <div className="landing-nav-sheet-thread-items" id="landing-nav-sheet-features">
+      {FEATURE_ITEMS.map(([label, href]) => <a key={label} href={href} onClick={onNavigate}>{label}</a>)}
+    </div> : null}
+  </div>
+}
 
 export function DownloadMenu({ compact = false }: { readonly compact?: boolean }) {
   return <Menu><MenuTrigger render={<button className={compact ? 'landing-nav-download' : 'landing-primary-button'} aria-label={compact ? 'Download' : undefined} />}>
@@ -33,7 +98,7 @@ function NavSheet({ onClose }: { readonly onClose: () => void }) {
       <button type="button" aria-label="Close menu" onClick={onClose}><X aria-hidden="true" /></button>
     </div>
     <nav className="landing-nav-sheet-links" aria-label="Menu">
-      <a href={FEATURES_HREF} onClick={onClose}>Features</a>
+      <FeaturesThread onNavigate={onClose} />
       <a href="/pricing" onClick={onClose}>Pricing</a>
       <a href={FAQ_HREF} onClick={onClose}>FAQ</a>
     </nav>
@@ -51,7 +116,7 @@ export function MarketingNav() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return <>
-    <nav className="landing-nav" aria-label="Main navigation"><a className="landing-nav-home" href="/" aria-label="Jobwhisper home"><img src="/landing-logo.svg" alt="" className="landing-nav-logo" /></a><div className="landing-nav-links"><a href={FEATURES_HREF}>Features <ChevronDown aria-hidden="true" /></a><a href="/pricing">Pricing</a><a href={FAQ_HREF}>FAQ</a></div><div className="landing-nav-actions"><DownloadMenu compact /><a className="landing-nav-auth" href="/v3/auth/sign-in">Log in</a><button type="button" className="landing-nav-menu" aria-label="Open menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}><MenuIcon aria-hidden="true" /></button></div></nav>
+    <nav className="landing-nav" aria-label="Main navigation"><a className="landing-nav-home" href="/" aria-label="Jobwhisper home"><img src="/landing-logo.svg" alt="" className="landing-nav-logo" /></a><div className="landing-nav-links"><FeaturesMenu /><a href="/pricing">Pricing</a><a href={FAQ_HREF}>FAQ</a></div><div className="landing-nav-actions"><DownloadMenu compact /><a className="landing-nav-auth" href="/v3/auth/sign-in">Log in</a><button type="button" className="landing-nav-menu" aria-label="Open menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}><MenuIcon aria-hidden="true" /></button></div></nav>
     {menuOpen ? <NavSheet onClose={() => setMenuOpen(false)} /> : null}
   </>
 }

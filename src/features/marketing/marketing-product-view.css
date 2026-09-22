@@ -422,3 +422,94 @@
     color: var(--product-strong);
   }
 }
+/* On a phone the walkthrough pins to the top of the screen and the narrative scrolls
+   under it, so the screenshot changes step by step as the reading position moves. The
+   wrapper is what the stage sticks inside, which is why it ends where the narrative ends:
+   the image leaves the screen when there is nothing left for it to illustrate. */
+.marketing-product-read {
+  display: contents;
+}
+.marketing-product-stage {
+  display: none;
+}
+@media (max-width: 900px) {
+  .marketing-product-read {
+    position: relative;
+    display: block;
+  }
+  /* The two-column rules leave this scrollable, and an overflow ancestor would capture the
+     stage's stickiness instead of the page. */
+  .marketing-product-summary {
+    overflow: visible;
+  }
+  .marketing-product-stage {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    margin: 20px -20px 18px;
+    padding: 10px 20px 12px;
+    display: block;
+    background: var(--lf-landing-paper);
+    border-bottom: 1px solid var(--product-rule);
+  }
+  .marketing-product-stage-frame {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    max-height: 42svh;
+    border-radius: 14px;
+    background: var(--lf-landing-bg);
+    overflow: hidden;
+  }
+  .marketing-product-stage-frame img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 8px;
+    object-fit: contain;
+    object-position: center;
+    opacity: 0;
+    transition: opacity 360ms ease, transform 480ms cubic-bezier(.22, 1, .36, 1);
+  }
+  /* Alternating entry: odd steps arrive from the right, even ones from the left, so a
+     change reads as moving along the walkthrough rather than as a flicker in place. */
+  .marketing-product-stage-frame img[data-enter="start"] {
+    transform: translateX(-14%);
+  }
+  .marketing-product-stage-frame img[data-enter="end"] {
+    transform: translateX(14%);
+  }
+  .marketing-product-stage-frame img[data-current="true"] {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .marketing-product-stage-caption {
+    margin: 10px 0 0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+  .marketing-product-stage-caption span:first-child {
+    flex: none;
+    color: var(--product-strong);
+    font-weight: 600;
+  }
+  .marketing-product-stage-caption span:last-child {
+    overflow: hidden;
+    color: var(--product-body);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* The stage is showing these same screenshots now, and the cue pointed at the pile. */
+  .marketing-product-story,
+  .marketing-product-scroll-cue {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marketing-product-stage-frame img {
+    transition: none;
+  }
+}

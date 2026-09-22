@@ -78,6 +78,42 @@ function ProductNarrative({ product, revealedWords }: { readonly product: Market
   </div>
 }
 
+/**
+ * The phone walkthrough stage. The story column is a desktop device — screenshots
+ * scrolling beside pinned text — and on a phone it collapsed into a pile of images at the
+ * very bottom of the page, past the narrative, where nobody reading ever arrives. Here the
+ * same screenshots pin to the top of the screen once the headline scrolls away and advance
+ * with the reading position, so the step being described is the step on screen. The slide
+ * direction alternates so each change reads as a step along rather than a flicker.
+ */
+function ProductStage({ product, walkthroughImages, activeIndex }: {
+  readonly product: MarketingProduct
+  readonly walkthroughImages: readonly string[]
+  readonly activeIndex: number
+}) {
+  const sectionFor = (index: number) => product.sections[Math.min(index, product.sections.length - 1)]
+  const current = sectionFor(activeIndex)
+
+  return <div className="marketing-product-stage" data-testid="product-stage">
+    <div className="marketing-product-stage-frame">
+      {walkthroughImages.map((imageSrc, index) => <img
+        key={imageSrc}
+        src={imageSrc}
+        // Only the image on screen carries a description: the others are the same picture
+        // waiting its turn, and announcing all of them would read as one long duplicate.
+        alt={index === activeIndex ? `${product.label} step ${index + 1} of ${walkthroughImages.length}: ${sectionFor(index)?.title ?? product.outcome}` : ''}
+        loading={index === 0 ? 'eager' : 'lazy'}
+        data-current={index === activeIndex}
+        data-enter={index % 2 === 0 ? 'start' : 'end'}
+      />)}
+    </div>
+    <p className="marketing-product-stage-caption">
+      <span>Step {activeIndex + 1} of {walkthroughImages.length}</span>
+      <span>{current?.title ?? product.outcome}</span>
+    </p>
+  </div>
+}
+
 export type MarketingProductViewProps = {
   readonly product: MarketingProduct
   readonly walkthroughImages: readonly string[]
@@ -91,6 +127,7 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
   const storyRef = useRef<HTMLDivElement>(null)
   const summaryRef = useRef<HTMLElement>(null)
   const [revealedWords, setRevealedWords] = useState(0)
+  const [readProgress, setReadProgress] = useState(0)
   const totalRevealWords = product.narrative.trim().split(/\s+/).length
 
   useEffect(() => {
@@ -108,11 +145,10 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
     const story = storyRef.current
     const summary = summaryRef.current
     if (!story || !summary) return
+    // Reduced motion hands the narrative over whole instead of revealing it word by word,
+    // but the reading position still has to be measured: the phone stage uses it to decide
+    // which screenshot belongs with the paragraph in front of the reader.
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
-    if (reducedMotion) {
-      setRevealedWords(totalRevealWords)
-      return
-    }
 
     let animationFrame = 0
     const update = () => {
@@ -147,7 +183,9 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
         rawProgress = clamp((revealStart - top) / Math.max(1, revealStart - revealEnd))
       }
       const progress = 0.08 + rawProgress * 0.92
-      setRevealedWords(Math.ceil(progress * totalRevealWords))
+      setReadProgress(rawProgress)
+      setRevealedWords(reducedMotion ? totalRevealWords : Math.ceil(progress * totalRevealWords))
+      if (reducedMotion) return
       // The summary is taller than its pinned box, so its own text has to advance in step.
       // Safe inside a window-scroll handler: this scrolls the summary, not the window.
       const availableScroll = Math.max(0, summary.scrollHeight - summary.clientHeight)
@@ -167,6 +205,13 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
     }
   }, [product.slug, totalRevealWords])
 
+  // Reading position rather than the story column's observer: the column is laid aside on
+  // a phone, so nothing there intersects to report a step.
+  const stageIndex = Math.min(
+    Math.max(walkthroughImages.length - 1, 0),
+    Math.floor(readProgress * walkthroughImages.length),
+  )
+
   return (
     <main className="marketing-product-page">
       <div className="marketing-product-nav"><MarketingNav /></div>
@@ -178,7 +223,10 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
               <div className="marketing-product-actions">
                 <button className="marketing-product-cta" type="button" onClick={onPrimaryAction}>{product.ctaLabel}<ArrowUpRight aria-hidden="true" /></button>
               </div>
-              <ProductNarrative product={product} revealedWords={revealedWords} />
+              <div className="marketing-product-read">
+                <ProductStage product={product} walkthroughImages={walkthroughImages} activeIndex={stageIndex} />
+                <ProductNarrative product={product} revealedWords={revealedWords} />
+              </div>
             </div>
           </div>
           <ProductFaq product={product} />
