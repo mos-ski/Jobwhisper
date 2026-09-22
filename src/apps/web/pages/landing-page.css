@@ -378,3 +378,18 @@
   .figma-landing-page .landing-footer,
   .marketing-product-page .landing-footer{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
 }
+
+/* One rhythm for the gaps between sections. The demo card and the copilot showcase were
+   the two that broke it: the demo carried no vertical spacing at all and the showcase
+   allowed 49px above its heading, so the card landed almost on top of it. */
+.figma-landing-page{--landing-section-pad:140px}
+@media(max-width:900px){.figma-landing-page{--landing-section-pad:96px}}
+@media(max-width:560px){.figma-landing-page{--landing-section-pad:72px}}
+
+/* Margin rather than padding: this element is the blue card itself, so padding would push
+   the artwork inwards instead of moving the card away from its neighbours. */
+.landing-demo{margin-block:var(--landing-section-pad)}
+
+/* Height follows the content now. It was pinned to 1312px, which is what forced the
+   cramped 49px above the heading in the first place. */
+.landing-copilot{height:auto;padding-block:var(--landing-section-pad)}
