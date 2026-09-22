@@ -216,10 +216,9 @@
   font-size: 18px;
   line-height: 1.65;
   letter-spacing: 0.01em;
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  /* No clamp. Three lines is the length the copy is written to, not a box to cut it off
+     in — a body that ends in an ellipsis mid-sentence is worse than one that runs a line
+     long. */
 }
 /* The FAQ sits below the walkthrough now rather than inside the pinned column, so it
    centres itself and carries its own gutters and the clearance above the footer that the
@@ -389,17 +388,12 @@
     width: 100%;
   }
   .marketing-product-copy h1 {
-    font-size: clamp(38px, 11.5vw, 58px);
-    /* The two-line clamp holds the pinned column to a fixed height on the wide layout.
-       Here the column is already height:auto, so clamping only crops the headline. */
-    display: block;
-    overflow: visible;
-    -webkit-line-clamp: none;
-  }
-  /* Each designed line is a nowrap span, which is what makes "A resume that makes" demand
-     422px in a 335px column and lose its last word. Phones rewrap them. */
-  .marketing-product-copy h1 > span {
-    white-space: normal;
+    /* Two lines, per the rule. TwoLineTitle splits the title into two balanced halves and
+       each half stays on one line, so the size has to be the one where the longest half
+       still fits the column: "Leave with a resume built" measures 323px at 32px against
+       335px available, and 370px at 36px. 8.5vw lands on 32px at 375px wide. */
+    font-size: clamp(22px, 8.5vw, 44px);
+    line-height: 1.12;
   }
   .marketing-product-copy {
     height: auto;
@@ -430,11 +424,13 @@
     padding: 40px 20px 72px;
     border-inline-start: 0;
   }
+  /* On a phone the whole product is one pinned block — screenshot, then the title, body
+     and CTA that belong to it. The sections carry no visible content here; they are the
+     scroll distance that moves the block from one step to the next. */
   .marketing-product-section {
-    /* The blue was the frame behind the screenshot. The stage holds the screenshot now, so
-       the section is only copy and the padding would show as an empty blue band. */
-    margin-bottom: 30px;
+    margin: 0;
     padding: 0;
+    min-height: 62svh;
     background: transparent;
     opacity: 1;
     transform: none;
@@ -481,17 +477,30 @@
     display: none;
   }
   .marketing-product-summary {
+    position: sticky;
+    top: 0;
+    /* Starts centred in the viewport rather than jammed under the nav; scrolling lifts it
+       until it reaches the top and pins there for the rest of the walkthrough. The two
+       clamps keep the block a steady height, so one offset holds for every step. */
+    margin-top: 10svh;
+    height: auto;
+    max-height: none;
+    padding: 12px 20px 20px;
     overflow: visible;
+    border-inline-end: 0;
+    background: var(--lf-landing-paper);
   }
-  .marketing-product-section-copy {
-    display: block;
-    /* Bleed and paper backdrop existed to sit this over the framed image. It is the only
-       thing in the section now, so it just flows. */
-    margin: 0;
+  .marketing-product-stage {
+    margin: 0 0 14px;
     padding: 0;
+    border-bottom: 0;
     background: transparent;
   }
-  .marketing-product-section-copy p { font-size: 16px; }
+  /* The pinned block already shows the step's copy, and showing it twice was the phone
+     inventing a second, different-looking page. */
+  .marketing-product-section-copy {
+    display: none;
+  }
   .marketing-product-section figure { padding: 0; }
   .marketing-product-footer { grid-template-columns: 1fr; min-height: 0; padding: 72px 24px 28px; }
   .marketing-product-footer-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
