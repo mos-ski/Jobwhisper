@@ -318,5 +318,5 @@ export function LandingPage() {
 
   // The sections are wrapped so they can carry the opaque sheet that covers the pinned
   // footer — on the page element itself the background paints under the footer instead.
-  return <main className="figma-landing-page"><div className="landing-content"><BrandAnnouncement /><Hero heroRef={heroRef} /><Demo /><Journey /><ProductFacts /><CopilotShowcase /><Faq /><Closing /></div><MarketingFooter />{showSocialProof ? <SocialProofSignup /> : null}</main>
+  return <main className="figma-landing-page"><div className="landing-content"><BrandAnnouncement /><Hero heroRef={heroRef} /><Demo /><CopilotShowcase /><ProductFacts /><Journey /><Faq /><Closing /></div><MarketingFooter />{showSocialProof ? <SocialProofSignup /> : null}</main>
 }
