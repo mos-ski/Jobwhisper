@@ -65,8 +65,7 @@ describe('MarketingProductView', () => {
     expect(screen.getAllByRole('button', { name: 'Download' })).toHaveLength(2)
     expect(screen.queryByRole('link', { name: 'Download Now' })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Jobwhisper home' })).toHaveAttribute('href', '/')
-    expect(screen.queryByRole('heading', { name: 'How it works' })).not.toBeInTheDocument()
-    expect(screen.getByTestId('product-narrative')).toHaveAttribute('aria-label', product.narrative)
+    expect(screen.getByText((content) => content.startsWith(product.summary))).toBeInTheDocument()
     expect(screen.getByText('Will Jobwhisper invent experience?')).toBeInTheDocument()
     const navigation = screen.getByRole('navigation', { name: 'Main navigation' })
     expect(within(navigation).getByRole('link', { name: 'Features' })).toHaveAttribute('href', '/#features')
@@ -74,6 +73,8 @@ describe('MarketingProductView', () => {
     expect(within(navigation).getByRole('link', { name: 'FAQ' })).toHaveAttribute('href', '/#faq')
     expect(within(navigation).getByRole('link', { name: 'Log in' })).toHaveAttribute('href', '/v3/auth/sign-in')
     expect(within(navigation).getByRole('button', { name: 'Download' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'Choose the role you want next.' })).toBeInTheDocument()
+    expect(screen.getByText('Add the role and job description so every recommendation has a clear target.')).toBeInTheDocument()
     expect(screen.getByRole('img', { name: /walkthrough step 2: Leave with a stronger application/ })).toBeInTheDocument()
     // The footer sits outside the two-column grid: as a child of the story column it was
     // rendering at that column's width, inside a layout built for the full page.
@@ -87,7 +88,7 @@ describe('MarketingProductView', () => {
     expect(screen.getByRole('link', { name: 'Terms of Service' })).toHaveAttribute('href', '/terms')
   })
 
-  it('uses the landing-page word reveal treatment for the left-side explanation', () => {
+  it('pairs every walkthrough image with concise supporting copy', () => {
     render(
       <MarketingProductView
         product={product}
@@ -99,12 +100,8 @@ describe('MarketingProductView', () => {
       />,
     )
 
-    const narrative = screen.getByTestId('product-narrative')
-    expect(narrative.querySelectorAll('p').length).toBeGreaterThan(1)
-    expect(narrative.querySelectorAll('[data-reveal-word]').length).toBeGreaterThan(20)
-    expect(narrative.querySelector('[data-reveal-word]')).toHaveAttribute('data-revealed')
-    expect(narrative.querySelector('strong')).toBeInTheDocument()
-    expect(narrative.querySelector('u')).toBeInTheDocument()
-    expect(narrative.querySelector('mark')).toBeInTheDocument()
+    expect(screen.getAllByTestId('product-walkthrough-copy')).toHaveLength(4)
+    expect(screen.queryByTestId('product-narrative')).not.toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4)
   })
 })

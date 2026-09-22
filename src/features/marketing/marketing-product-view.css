@@ -129,11 +129,26 @@
   height: calc(100svh - 118px);
   padding: 44px 48px 30px;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   border-inline-end: 1px solid var(--product-rule);
   scrollbar-width: thin;
 }
 .marketing-product-intro {
   width: min(100%, 690px);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.marketing-product-copy {
+  height: auto;
+  overflow: hidden;
+  animation: marketing-product-copy-in 260ms ease both;
+}
+@keyframes marketing-product-copy-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .marketing-product-actions {
   margin-top: 24px;
@@ -141,7 +156,9 @@
 }
 .marketing-product-cta {
   height: 48px;
-  min-width: 248px;
+  width: fit-content;
+  min-width: 0;
+  align-self: flex-start;
   padding-inline: 22px;
   border-radius: 10px;
   display: inline-flex;
@@ -154,6 +171,9 @@
   text-decoration: none;
   cursor: pointer;
 }
+.marketing-product-intro > .marketing-product-cta {
+  margin-top: 24px;
+}
 .marketing-product-cta {
   border: 1px solid var(--lf-landing-bg);
   background: var(--lf-landing-bg);
@@ -164,88 +184,40 @@
   width: 16px;
   height: 16px;
 }
-.marketing-product-summary-copy {
-  margin-top: 0;
-}
-.marketing-product-summary h1 {
-  max-width: 616px;
+.marketing-product-copy h1 {
+  max-width: 620px;
   margin: 0;
   font-family: 'Gowun Batang', serif;
-  font-size: clamp(48px, 3.7vw, 64px);
+  font-size: clamp(42px, 3vw, 56px);
   line-height: 1;
   letter-spacing: -0.047em;
   font-weight: 700;
+  text-wrap: balance;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
-.marketing-product-summary-copy > p {
-  max-width: 660px;
-  margin: 14px 0 0;
-  color: var(--product-body);
-  font-size: 18px;
-  line-height: 1.5;
-  letter-spacing: 0.01em;
+.marketing-product-copy h1 > span {
+  display: block;
+  white-space: nowrap;
 }
-.marketing-product-reveal {
-  color: var(--product-body);
-}
-.marketing-product-reveal > span,
-.marketing-product-reveal strong {
-  display: inline;
-}
-.marketing-product-reveal [data-reveal-word] {
-  color: var(--product-body);
-  opacity: .24;
-  transition: color 120ms linear, opacity 120ms linear;
-}
-.marketing-product-reveal [data-reveal-word][data-revealed="true"] {
-  color: var(--product-body);
-  opacity: 1;
-}
-.marketing-product-reveal strong [data-reveal-word][data-revealed="true"] {
-  color: var(--product-strong);
-}
-.marketing-product-narrative {
-  max-width: 660px;
-  margin-top: 22px;
-}
-.marketing-product-narrative p {
-  margin: 0 0 24px;
+.marketing-product-copy > p {
+  max-width: 620px;
+  margin: 24px 0 0;
   color: var(--product-body);
   font-size: 18px;
   line-height: 1.65;
-  letter-spacing: .01em;
-}
-.marketing-product-narrative strong {
-  color: var(--product-strong);
-  font-weight: 700;
-}
-.marketing-product-narrative u {
-  text-decoration-color: var(--lf-landing-bg);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 4px;
-}
-/* A highlighted phrase is a label on the narrative, so it reads at full strength whether
-   or not the reveal has reached it — on the blue it was unreadable, because the reveal's
-   own colour rule outranks the mark (one class and two attributes against one class, an
-   element and one attribute) and painted the words body grey, at 24% until revealed.
-   Sky blue behind bold ink instead, and the reveal leaves the phrase alone: the two
-   selectors below carry an attribute more than the rule they have to beat. */
-.marketing-product-narrative mark {
-  padding-inline: .14em;
-  border-radius: 3px;
-  background: var(--lf-landing-sky);
-  color: var(--lf-landing-ink);
-  font-weight: 700;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-}
-.marketing-product-narrative mark [data-reveal-word],
-.marketing-product-narrative mark [data-reveal-word][data-revealed] {
-  color: var(--lf-landing-ink);
-  opacity: 1;
+  letter-spacing: 0.01em;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 .marketing-product-faq {
   width: min(100%, 720px);
-  margin-top: 48px;
+  margin-top: 24px;
+  padding-top: 0;
 }
 .marketing-product-faq details {
   border-bottom: 1px solid var(--product-rule);
@@ -298,6 +270,33 @@
   transform: translateY(18px) scale(.985);
   scroll-margin-top: 150px;
   transition: opacity 420ms ease, transform 420ms cubic-bezier(.22, 1, .36, 1);
+}
+.marketing-product-section-copy {
+  display: none;
+}
+.marketing-product-section-copy > span {
+  color: var(--lf-landing-bg);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.marketing-product-section-copy h2 {
+  margin: 8px 0 0;
+  color: var(--product-strong);
+  font-size: clamp(28px, 2.2vw, 40px);
+  line-height: 1.08;
+  letter-spacing: -.035em;
+}
+.marketing-product-section-copy p {
+  margin: 12px 0 0;
+  color: var(--product-body);
+  font-size: 18px;
+  line-height: 1.55;
+}
+.marketing-product-section figure {
+  padding: 28px;
+  background: var(--lf-landing-bg);
 }
 .marketing-product-section[data-active="true"] {
   opacity: 1;
@@ -370,17 +369,25 @@
     padding: 32px 20px 44px;
     border-inline-end: 0;
   }
+  .marketing-product-intro {
+    display: block;
+  }
   .marketing-product-cta {
     width: 100%;
   }
-  .marketing-product-summary h1 {
+  .marketing-product-copy h1 {
     font-size: clamp(42px, 13vw, 58px);
   }
-  .marketing-product-summary-copy > p {
+  .marketing-product-copy {
+    height: auto;
+    overflow: visible;
+  }
+  .marketing-product-copy > p {
     font-size: 16px;
   }
   .marketing-product-faq {
     margin-top: 28px;
+    padding-top: 0;
   }
   .marketing-product-scroll-cue {
     min-height: 44px;
@@ -406,6 +413,14 @@
     opacity: 1;
     transform: none;
   }
+  .marketing-product-section-copy {
+    display: block;
+    margin: -14px -14px 14px;
+    padding: 22px 0 18px;
+    background: var(--lf-landing-paper);
+  }
+  .marketing-product-section-copy p { font-size: 16px; }
+  .marketing-product-section figure { padding: 0; }
   .marketing-product-footer { grid-template-columns: 1fr; min-height: 0; padding: 72px 24px 28px; }
   .marketing-product-footer-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .marketing-product-footer-meta { flex-direction: column; }
@@ -417,110 +432,6 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .marketing-product-section {
-    transition: none;
-  }
-  .marketing-product-reveal {
-    color: var(--product-body);
-  }
-  .marketing-product-reveal [data-reveal-word] {
-    color: var(--product-body);
-    opacity: 1;
-    transition: none;
-  }
-  .marketing-product-reveal strong [data-reveal-word] {
-    color: var(--product-strong);
-  }
-}
-/* On a phone the walkthrough pins to the top of the screen and the narrative scrolls
-   under it, so the screenshot changes step by step as the reading position moves. The
-   wrapper is what the stage sticks inside, which is why it ends where the narrative ends:
-   the image leaves the screen when there is nothing left for it to illustrate. */
-.marketing-product-read {
-  display: contents;
-}
-.marketing-product-stage {
-  display: none;
-}
-@media (max-width: 900px) {
-  .marketing-product-read {
-    position: relative;
-    display: block;
-  }
-  /* The two-column rules leave this scrollable, and an overflow ancestor would capture the
-     stage's stickiness instead of the page. */
-  .marketing-product-summary {
-    overflow: visible;
-  }
-  .marketing-product-stage {
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    margin: 20px -20px 18px;
-    padding: 10px 20px 12px;
-    display: block;
-    background: var(--lf-landing-paper);
-    border-bottom: 1px solid var(--product-rule);
-  }
-  .marketing-product-stage-frame {
-    position: relative;
-    aspect-ratio: 16 / 10;
-    max-height: 42svh;
-    border-radius: 14px;
-    background: var(--lf-landing-bg);
-    overflow: hidden;
-  }
-  .marketing-product-stage-frame img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    padding: 8px;
-    object-fit: contain;
-    object-position: center;
-    opacity: 0;
-    transition: opacity 360ms ease, transform 480ms cubic-bezier(.22, 1, .36, 1);
-  }
-  /* One direction, held by the order of the steps rather than by watching the scroll: a
-     step behind the one on screen waits to its left, a step ahead waits to its right. So
-     reading down, the next screenshot slides in from the right while the one it replaces
-     leaves to the left, and scrolling back up runs the same movement in reverse. */
-  .marketing-product-stage-frame img[data-side="before"] {
-    transform: translateX(-14%);
-  }
-  .marketing-product-stage-frame img[data-side="after"] {
-    transform: translateX(14%);
-  }
-  .marketing-product-stage-frame img[data-current="true"] {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  .marketing-product-stage-caption {
-    margin: 10px 0 0;
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    font-size: 13px;
-    line-height: 1.35;
-  }
-  .marketing-product-stage-caption span:first-child {
-    flex: none;
-    color: var(--product-strong);
-    font-weight: 600;
-  }
-  .marketing-product-stage-caption span:last-child {
-    overflow: hidden;
-    color: var(--product-body);
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  /* The stage is showing these same screenshots now, and the cue pointed at the pile. */
-  .marketing-product-story,
-  .marketing-product-scroll-cue {
-    display: none;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .marketing-product-stage-frame img {
     transition: none;
   }
 }
