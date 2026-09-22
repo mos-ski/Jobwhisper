@@ -214,10 +214,13 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
+/* The FAQ sits below the walkthrough now rather than inside the pinned column, so it
+   centres itself and carries its own gutters and the clearance above the footer that the
+   column used to provide. */
 .marketing-product-faq {
   width: min(100%, 720px);
-  margin-top: 24px;
-  padding-top: 0;
+  margin: 64px auto 0;
+  padding: 0 48px 96px;
 }
 .marketing-product-faq details {
   border-bottom: 1px solid var(--product-rule);
@@ -379,7 +382,17 @@
     width: 100%;
   }
   .marketing-product-copy h1 {
-    font-size: clamp(42px, 13vw, 58px);
+    font-size: clamp(38px, 11.5vw, 58px);
+    /* The two-line clamp holds the pinned column to a fixed height on the wide layout.
+       Here the column is already height:auto, so clamping only crops the headline. */
+    display: block;
+    overflow: visible;
+    -webkit-line-clamp: none;
+  }
+  /* Each designed line is a nowrap span, which is what makes "A resume that makes" demand
+     422px in a 335px column and lose its last word. Phones rewrap them. */
+  .marketing-product-copy h1 > span {
+    white-space: normal;
   }
   .marketing-product-copy {
     height: auto;
@@ -389,8 +402,8 @@
     font-size: 16px;
   }
   .marketing-product-faq {
-    margin-top: 28px;
-    padding-top: 0;
+    margin-top: 40px;
+    padding: 0 20px 72px;
   }
   .marketing-product-scroll-cue {
     min-height: 44px;
@@ -486,4 +499,11 @@
   .marketing-product-section {
     transition: none;
   }
+}
+
+/* The landing page pulls the footer up 28px so it tucks under its closing panel's rounded
+   bottom corners. This page has no such panel — the pull just clips whatever ends above
+   it, which since the FAQ moved down is the FAQ's last row. */
+.marketing-product-page .landing-footer {
+  margin-top: 0;
 }

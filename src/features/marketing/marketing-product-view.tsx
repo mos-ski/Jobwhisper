@@ -113,7 +113,6 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
           </div>
           <button className="marketing-product-cta" type="button" onClick={onPrimaryAction}>{product.ctaLabel}<ArrowUpRight aria-hidden="true" /></button>
         </div>
-        <ProductFaq product={product} />
         <a className="marketing-product-scroll-cue" href={`#${product.slug}-walkthrough-1`}>See how it works<ArrowDown aria-hidden="true" /></a>
       </aside>
 
@@ -133,6 +132,7 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
         })}
       </div>
     </div>
+    <ProductFaq product={product} />
     <MarketingFooter />
     <aside className="landing-social-proof" aria-label="Join Jobwhisper">
       <div className="landing-social-proof-avatars" aria-hidden="true"><img src="/figma-landing/social-proof-1.jpg" alt="" /><img src="/figma-landing/social-proof-2.jpg" alt="" /><img src="/figma-landing/social-proof-3.jpg" alt="" /></div>
