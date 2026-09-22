@@ -196,9 +196,8 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
           </section>
         })}
       </div>
-
-      <ProductFaq product={product} />
     </div>
+    <ProductFaq product={product} />
     <MarketingFooter />
     <aside className="landing-social-proof" aria-label="Join Jobwhisper">
       <div className="landing-social-proof-avatars" aria-hidden="true"><img src="/figma-landing/social-proof-1.jpg" alt="" /><img src="/figma-landing/social-proof-2.jpg" alt="" /><img src="/figma-landing/social-proof-3.jpg" alt="" /></div>
