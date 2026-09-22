@@ -386,9 +386,12 @@
 @media(max-width:900px){.figma-landing-page{--landing-section-pad:96px}}
 @media(max-width:560px){.figma-landing-page{--landing-section-pad:72px}}
 
-/* Margin rather than padding: this element is the blue card itself, so padding would push
-   the artwork inwards instead of moving the card away from its neighbours. */
-.landing-demo{margin-block:var(--landing-section-pad)}
+/* Bottom only. The demo is part of the hero — it shows the product the headline just
+   promised — so the tight gap above it is deliberate and stays. It was the space below,
+   into the copilot showcase, that was missing.
+   Margin rather than padding: this element is the blue card itself, so padding would push
+   the artwork inwards instead of moving the card away from what follows it. */
+.landing-demo{margin-block:0 var(--landing-section-pad)}
 
 /* Height follows the content now. It was pinned to 1312px, which is what forced the
    cramped 49px above the heading in the first place. */
