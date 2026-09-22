@@ -126,7 +126,14 @@
 .marketing-product-summary {
   position: sticky;
   top: 118px;
-  height: calc(100svh - 118px);
+  /* Was a fixed screen-height column, which the FAQ used to fill. With the FAQ moved below
+     the walkthrough that left ~250px of empty paper under the CTA, so the column sizes to
+     its content and only caps at the screen. */
+  height: auto;
+  max-height: calc(100svh - 118px);
+  /* A grid item stretches to its row, and the row is as tall as the walkthrough column, so
+     without this the column keeps the full height whatever its content asks for. */
+  align-self: start;
   padding: 44px 48px 30px;
   overflow-y: auto;
   display: flex;
