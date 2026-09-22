@@ -318,7 +318,7 @@
    one step per --landing-step-scroll after it. The floating download bar owns the bottom of
    the screen, so the panel centres in what is left above it rather than in the whole
    viewport, which also closes the gap centring would open over the top of it. */
-.landing-journey-scroller,.landing-copilot-scroller{--landing-step-scroll:40svh;display:block;position:relative;height:calc(100svh + (var(--steps) - 1) * var(--landing-step-scroll))}
+.landing-journey-scroller,.landing-copilot-scroller{--landing-step-scroll:28svh;display:block;position:relative;height:calc(100svh + (var(--steps) - 1) * var(--landing-step-scroll))}
 .landing-journey-pinned,.landing-copilot-pinned{position:sticky;top:0;min-height:100svh;padding-bottom:calc(96px + env(safe-area-inset-bottom));display:flex;flex-direction:column;justify-content:center}
 /* Flex centring places the panel now, so the stacking margins come off. */
 .landing-journey-pinned .landing-journey-viewer,.landing-copilot-pinned .landing-copilot-tabs{margin-top:0}
@@ -339,7 +339,7 @@
 }
 @media(max-width:900px){
   /* A thumb covers less ground than a wheel, so the steps sit a little further apart. */
-  .landing-journey-scroller,.landing-copilot-scroller{--landing-step-scroll:45svh}
+  .landing-journey-scroller,.landing-copilot-scroller{--landing-step-scroll:32svh}
   .landing-copilot-pinned .landing-copilot-image{margin-top:28px}
 }
 
@@ -396,3 +396,10 @@
 /* Height follows the content now. It was pinned to 1312px, which is what forced the
    cramped 49px above the heading in the first place. */
 .landing-copilot{height:auto;padding-block:var(--landing-section-pad)}
+
+/* Trying the journey panel in black. On blue the pills read by hue, not brightness —
+   #1e1e1f against #0052ff. On black there is no hue difference left and almost no
+   brightness difference either, so they need lifting off the panel to stay visible. */
+.landing-journey-viewer{background:var(--lf-landing-footer)}
+.landing-journey-viewer .landing-journey-item button{background:#26262a}
+.landing-journey-viewer .landing-journey-description{background:#1c1c20}
