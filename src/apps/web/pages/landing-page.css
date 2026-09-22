@@ -307,3 +307,59 @@
   .landing-hero{min-height:0;padding-bottom:20px}
   .landing-hero-copy{margin-top:28px}
 }
+
+/* The journey and the copilot showcase now advance with the scroll, the way the product
+   pages walk their screenshots: the panel pins to the screen and the step follows the
+   reading position, so a phone reader sees all six stages and all four use cases instead
+   of the first one and a row of controls they never touched. The runway is the page height
+   the scroll runs through — one screen for the panel, then 45svh per step after it. The
+   wide layout keeps its chevrons and tabs, so both wrappers dissolve there and the hook,
+   which asks the stylesheet for a box, finds none and leaves the step alone. */
+.landing-journey-scroller,.landing-journey-pinned,
+.landing-copilot-scroller,.landing-copilot-pinned{display:contents}
+@media(max-width:900px){
+  .landing-journey-scroller,.landing-copilot-scroller{display:block;position:relative;height:calc(100svh + (var(--steps) - 1) * 45svh)}
+  /* The floating download bar owns the bottom of the screen, so the panel centres in what
+     is left above it rather than in the whole viewport — which also closes the gap that
+     centring opened over the top of it. */
+  .landing-journey-pinned,.landing-copilot-pinned{position:sticky;top:0;min-height:100svh;padding-bottom:calc(96px + env(safe-area-inset-bottom));display:flex;flex-direction:column;justify-content:center}
+  /* Flex centring places the panel now, so the stacking margins come off. */
+  .landing-journey-pinned .landing-journey-viewer,.landing-copilot-pinned .landing-copilot-tabs{margin-top:0}
+  .landing-copilot-pinned .landing-copilot-image{margin-top:28px}
+}
+
+/* One movement for both, matching the product pages: a step behind the one on screen waits
+   to its left and a step ahead waits to its right, so scrolling down always brings the next
+   panel in from the right and scrolling back up reverses it. */
+.journey-product img[data-side='before']{transform:translateX(-12%) scale(.985)}
+.journey-product img[data-side='after']{transform:translateX(12%) scale(.985)}
+.journey-product img[data-active='true']{transform:translateX(0) scale(1)}
+.landing-copilot-image{position:relative}
+.landing-copilot-image img{position:absolute;inset:0;opacity:0;transition:opacity 380ms ease,transform 480ms cubic-bezier(.22,1,.36,1);pointer-events:none}
+.landing-copilot-image img[data-side='before']{transform:translateX(-12%)}
+.landing-copilot-image img[data-side='after']{transform:translateX(12%)}
+.landing-copilot-image img[data-current='true']{opacity:1;transform:translateX(0);pointer-events:auto}
+@media(prefers-reduced-motion:reduce){
+  .landing-copilot-image img{transition:none}
+  .journey-product img[data-side='before'],.journey-product img[data-side='after'],
+  .landing-copilot-image img[data-side='before'],.landing-copilot-image img[data-side='after']{transform:none}
+}
+
+/* The page carried overflow:hidden to stop the wide children scrolling sideways, and that
+   made it the scrollport the pinned panels above stick inside — a box that never scrolls,
+   so they never pinned. Clip does the same job on the x axis without becoming a scroll
+   container, and unlike hidden it does not force the other axis to auto. The hidden line
+   stays in front of it for anything that does not know clip: the panels scroll instead of
+   pinning there, and the steps still follow the scroll. */
+.figma-landing-page{overflow:visible;overflow-x:hidden;overflow-x:clip}
+
+/* The floating download bar is fixed 16px from the bottom and 64px tall, and on a phone it
+   spans nearly the full width, so it sat squarely over the last row of the footer: the
+   copyright line and the Privacy Policy and Terms links were unreachable. The two pages
+   that carry the bar reserve room for it under the footer. Named by page rather than on
+   .landing-footer itself, so the pricing and legal footers, which have no bar, keep their
+   spacing. */
+@media(max-width:900px){
+  .figma-landing-page .landing-footer,
+  .marketing-product-page .landing-footer{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
+}

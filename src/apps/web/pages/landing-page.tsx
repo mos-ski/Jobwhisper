@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type RefObject } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type RefObject } from 'react'
 import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Plus } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger } from '@/ui'
@@ -65,7 +65,7 @@ function Demo() {
 function JourneyPreview({ active }: { readonly active: number }) {
   const images = ['/figma-landing/journey-resume.png', '/figma-landing/journey-jobs.png', '/figma-landing/journey-copilot.png', '/figma-landing/journey-simulator.png', '/figma-landing/journey-meeting.png', '/figma-landing/journey-coding.png']
   const labels = ['AI Resume Builder preview', 'AI Job Application preview', 'Interview Copilot preview', 'Interview Prep preview', 'Meeting Copilot preview', 'Coding Interview preview']
-  return <div className="journey-product">{images.map((image, index) => <img key={image} src={image} alt={index === active ? labels[index] : ''} data-active={index === active} aria-hidden={index === active ? undefined : true} />)}</div>
+  return <div className="journey-product">{images.map((image, index) => <img key={image} src={image} alt={index === active ? labels[index] : ''} data-active={index === active} data-side={index === active ? undefined : index < active ? 'before' : 'after'} aria-hidden={index === active ? undefined : true} />)}</div>
 }
 
 const JOURNEY_COPY = [
@@ -198,8 +198,57 @@ const FACTS_COPY = [
   { text: 'Jobwhisper combines leading AI models with your resume, job description and personal context to give you relevant answers in real time. Setup takes just a few steps, and once you’re ready, your Copilot stays with you across interviews, coding sessions, meetings and practice. Less switching between tools. Less searching for answers. More focus on the conversation in front of you.', strong: false },
 ] as const
 
-function Journey() {
+/**
+ * Steps a pinned section with the scroll, the way the product pages advance their
+ * walkthrough: the panel stays on screen while its runway travels past, and the step
+ * follows the reading position instead of waiting for a tap. A tap still chooses a step
+ * and keeps it until the scroll crosses into a different one.
+ *
+ * The runway only exists on the phone layout — the wide one has its chevrons and tabs and
+ * keeps them — so this asks the stylesheet whether there is a box to measure rather than
+ * re-testing the breakpoint in here.
+ */
+function useScrollSteps(count: number) {
+  const runwayRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
+  const scrolledStep = useRef(0)
+
+  useEffect(() => {
+    const runway = runwayRef.current
+    if (!runway) return
+
+    let animationFrame = 0
+    const update = () => {
+      animationFrame = 0
+      if (window.getComputedStyle(runway).display === 'contents') return
+      const { top, height } = runway.getBoundingClientRect()
+      const extent = Math.max(1, height - window.innerHeight)
+      const progress = Math.min(1, Math.max(0, -top / extent))
+      const step = Math.min(count - 1, Math.floor(progress * count))
+      // Only when the scroll has genuinely moved on, so a tap survives until then.
+      if (step === scrolledStep.current) return
+      scrolledStep.current = step
+      setActive(step)
+    }
+    const scheduleUpdate = () => {
+      if (!animationFrame) animationFrame = window.requestAnimationFrame(update)
+    }
+
+    update()
+    window.addEventListener('scroll', scheduleUpdate, { passive: true })
+    window.addEventListener('resize', scheduleUpdate)
+    return () => {
+      window.removeEventListener('scroll', scheduleUpdate)
+      window.removeEventListener('resize', scheduleUpdate)
+      if (animationFrame) window.cancelAnimationFrame(animationFrame)
+    }
+  }, [count])
+
+  return { runwayRef, active, setActive }
+}
+
+function Journey() {
+  const { runwayRef, active, setActive } = useScrollSteps(JOURNEY.length)
   const navRef = useRef<HTMLDivElement>(null)
   const cycleFeature = (direction: -1 | 1) => setActive((current) => (current + direction + JOURNEY.length) % JOURNEY.length)
 
@@ -215,7 +264,7 @@ function Journey() {
     if (item instanceof HTMLElement) item.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
   }, [active])
 
-  return <section className="landing-journey" id="features"><div className="landing-section-intro"><p>Your entire job search</p><h2>Start to finish.</h2><JourneyRevealText /></div><div className="landing-journey-viewer"><div className="landing-journey-controls"><button aria-label="Previous feature" onClick={() => cycleFeature(-1)}><ChevronUp aria-hidden="true" /></button><button aria-label="Next feature" onClick={() => cycleFeature(1)}><ChevronDown aria-hidden="true" /></button></div><div className="landing-journey-nav" ref={navRef} aria-label="Job search stages">{JOURNEY.map(([title, description, shortDescription], index) => <div className="landing-journey-item" key={title}><button aria-expanded={active === index} aria-controls={`journey-description-${index}`} onClick={() => setActive(index)}><Plus aria-hidden="true" className="landing-journey-icon-expand" />{index > active ? <ChevronRight aria-hidden="true" className="landing-journey-icon-step" /> : null}{title}{index < active ? <ChevronLeft aria-hidden="true" className="landing-journey-icon-step" /> : null}</button><div className="landing-journey-description-shell" data-open={active === index}><div className="landing-journey-description" id={`journey-description-${index}`} role="region" aria-label={`${title} details`} aria-hidden={active !== index}><strong className="landing-journey-description-title">{title}.</strong> <span className="landing-journey-description-full">{description}</span><span className="landing-journey-description-short">{shortDescription}</span></div></div></div>)}</div><div className="landing-journey-stage" role="region" aria-label={`${JOURNEY[active][0]} preview`}><JourneyPreview active={active} /></div></div></section>
+  return <section className="landing-journey" id="features"><div className="landing-section-intro"><p>Your entire job search</p><h2>Start to finish.</h2><JourneyRevealText /></div><div className="landing-journey-scroller" ref={runwayRef} style={{ '--steps': JOURNEY.length } as CSSProperties}><div className="landing-journey-pinned"><div className="landing-journey-viewer"><div className="landing-journey-controls"><button aria-label="Previous feature" onClick={() => cycleFeature(-1)}><ChevronUp aria-hidden="true" /></button><button aria-label="Next feature" onClick={() => cycleFeature(1)}><ChevronDown aria-hidden="true" /></button></div><div className="landing-journey-nav" ref={navRef} aria-label="Job search stages">{JOURNEY.map(([title, description, shortDescription], index) => <div className="landing-journey-item" key={title}><button aria-expanded={active === index} aria-controls={`journey-description-${index}`} onClick={() => setActive(index)}><Plus aria-hidden="true" className="landing-journey-icon-expand" />{index > active ? <ChevronRight aria-hidden="true" className="landing-journey-icon-step" /> : null}{title}{index < active ? <ChevronLeft aria-hidden="true" className="landing-journey-icon-step" /> : null}</button><div className="landing-journey-description-shell" data-open={active === index}><div className="landing-journey-description" id={`journey-description-${index}`} role="region" aria-label={`${title} details`} aria-hidden={active !== index}><strong className="landing-journey-description-title">{title}.</strong> <span className="landing-journey-description-full">{description}</span><span className="landing-journey-description-short">{shortDescription}</span></div></div></div>)}</div><div className="landing-journey-stage" role="region" aria-label={`${JOURNEY[active][0]} preview`}><JourneyPreview active={active} /></div></div></div></div></section>
 }
 
 function ProductFacts() {
@@ -232,8 +281,12 @@ const COPILOT_IMAGES: Record<(typeof COPILOT_TABS)[number], string> = {
 }
 function CopilotShowcase() {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<(typeof COPILOT_TABS)[number]>('Interviews')
-  return <section className="landing-copilot"><div className="landing-section-intro"><h2>Your copilot.<br />Always within reach.</h2><p>Jobwhisper gives you real-time AI support while the conversation is happening, so you can focus on the person in front of you instead of scrambling for what to say next. Whether you’re answering an interview question, working through a coding challenge, leading an important meeting, or practicing before the real thing, your Copilot listens, understands the context, and helps you respond with confidence.</p></div><div className="landing-copilot-tabs" role="tablist" aria-label="Copilot use cases">{COPILOT_TABS.map((tab) => <button key={tab} role="tab" aria-selected={activeTab === tab} aria-controls="copilot-preview" onClick={() => setActiveTab(tab)}>{tab}</button>)}</div><div className="landing-copilot-image" data-copilot-tab={activeTab.toLowerCase()} id="copilot-preview" role="tabpanel"><img src={COPILOT_IMAGES[activeTab]} alt={`Jobwhisper ${activeTab.toLowerCase()} copilot desktop preview`} /></div><div className="landing-copilot-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Try Interview Copilot <ArrowUpRight aria-hidden="true" /></button></div></section>
+  // The four use cases were a tab row and nothing else: on a phone they sat above the fold
+  // of the section and most readers scrolled straight past all but the first. Scrolling
+  // now walks them, tapping still picks one.
+  const { runwayRef, active, setActive } = useScrollSteps(COPILOT_TABS.length)
+  const activeTab = COPILOT_TABS[active]
+  return <section className="landing-copilot"><div className="landing-section-intro"><h2>Your copilot.<br />Always within reach.</h2><p>Jobwhisper gives you real-time AI support while the conversation is happening, so you can focus on the person in front of you instead of scrambling for what to say next. Whether you’re answering an interview question, working through a coding challenge, leading an important meeting, or practicing before the real thing, your Copilot listens, understands the context, and helps you respond with confidence.</p></div><div className="landing-copilot-scroller" ref={runwayRef} style={{ '--steps': COPILOT_TABS.length } as CSSProperties}><div className="landing-copilot-pinned"><div className="landing-copilot-tabs" role="tablist" aria-label="Copilot use cases">{COPILOT_TABS.map((tab, index) => <button key={tab} role="tab" aria-selected={activeTab === tab} aria-controls="copilot-preview" onClick={() => setActive(index)}>{tab}</button>)}</div><div className="landing-copilot-image" data-copilot-tab={activeTab.toLowerCase()} id="copilot-preview" role="tabpanel">{COPILOT_TABS.map((tab, index) => <img key={tab} src={COPILOT_IMAGES[tab]} alt={index === active ? `Jobwhisper ${tab.toLowerCase()} copilot desktop preview` : ''} aria-hidden={index === active ? undefined : true} loading={index === 0 ? 'eager' : 'lazy'} data-current={index === active} data-side={index === active ? undefined : index < active ? 'before' : 'after'} />)}</div><div className="landing-copilot-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Try Interview Copilot <ArrowUpRight aria-hidden="true" /></button></div></div></div></section>
 }
 
 function Faq() {
