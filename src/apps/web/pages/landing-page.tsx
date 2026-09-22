@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type RefObject } from 'react'
-import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Plus } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Paperclip, Plus } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger } from '@/ui'
 import { MarketingFooter, MarketingNav } from '@/features/marketing/marketing-chrome'
@@ -289,6 +289,87 @@ function CopilotShowcase() {
   return <section className="landing-copilot"><div className="landing-section-intro"><h2>Your copilot.<br />Always within reach.</h2><p>Jobwhisper gives you real-time AI support while the conversation is happening, so you can focus on the person in front of you instead of scrambling for what to say next. Whether you’re answering an interview question, working through a coding challenge, leading an important meeting, or practicing before the real thing, your Copilot listens, understands the context, and helps you respond with confidence.</p></div><div className="landing-copilot-scroller" ref={runwayRef} style={{ '--steps': COPILOT_TABS.length } as CSSProperties}><div className="landing-copilot-pinned"><div className="landing-copilot-tabs" role="tablist" aria-label="Copilot use cases">{COPILOT_TABS.map((tab, index) => <button key={tab} role="tab" aria-selected={activeTab === tab} aria-controls="copilot-preview" onClick={() => setActive(index)}>{tab}</button>)}</div><div className="landing-copilot-image" data-copilot-tab={activeTab.toLowerCase()} id="copilot-preview" role="tabpanel">{COPILOT_TABS.map((tab, index) => <img key={tab} src={COPILOT_IMAGES[tab]} alt={index === active ? `Jobwhisper ${tab.toLowerCase()} copilot desktop preview` : ''} aria-hidden={index === active ? undefined : true} loading={index === 0 ? 'eager' : 'lazy'} data-current={index === active} data-side={index === active ? undefined : index < active ? 'before' : 'after'} />)}</div><div className="landing-copilot-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Try Interview Copilot <ArrowUpRight aria-hidden="true" /></button></div></div></div></section>
 }
 
+/** [label, blurb, isNew]. Shown once the reader asks to see how it works. */
+const TRY_OPTIONS = [
+  ['Tailor my Resume', 'Let Jobwhisper build a resume around this role, leading with the experience the employer asked for.', false],
+  ['Practice For Interview', 'Rehearse with an AI interviewer on this role, then read what landed and what needs work.', false],
+  ['Start Interview Copilot', 'Live support during the real conversation, drawn from the resume and the job description you just gave.', false],
+  ['Auto-Apply', 'Let Jobwhisper find roles like this one and prepare each application for you to approve.', true],
+] as const
+
+/**
+ * The funnel: paste the job, add a resume, and the four things Jobwhisper can do with them
+ * appear underneath. Every one of them goes to sign-up for now.
+ */
+function TryItNow() {
+  const navigate = useNavigate()
+  const [stage, setStage] = useState<'idle' | 'loading' | 'options'>('idle')
+  const [resumeName, setResumeName] = useState<string | null>(null)
+  const optionsRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (stage !== 'loading') return
+    const timer = window.setTimeout(() => setStage('options'), 1100)
+    return () => window.clearTimeout(timer)
+  }, [stage])
+
+  // The options arrive below the fold of this card, so move the reader to them rather than
+  // leaving the page looking unchanged after the wait.
+  useEffect(() => {
+    if (stage === 'options') optionsRef.current?.focus({ preventScroll: true })
+  }, [stage])
+
+  return <section className="landing-try" aria-labelledby="landing-try-title">
+    <p className="landing-try-eyebrow">Getting started</p>
+    <h2 id="landing-try-title">Try it on a job you actually want.</h2>
+    <p className="landing-try-lede">Paste the description, add your resume, and see what Jobwhisper would do with them.</p>
+
+    <div className="landing-try-card">
+      <label className="sr-only" htmlFor="landing-try-job">Paste a job description</label>
+      <textarea id="landing-try-job" placeholder="Paste a job description" rows={3} />
+      <span className="landing-try-glow" aria-hidden="true" />
+      <div className="landing-try-card-foot">
+        <label className="landing-try-attach">
+          <Paperclip aria-hidden="true" />
+          <span className="sr-only">Attach your resume</span>
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx,.txt"
+            onChange={(event) => setResumeName(event.target.files?.[0]?.name ?? null)}
+          />
+        </label>
+        {resumeName ? <span className="landing-try-file">{resumeName}</span> : null}
+        <button type="button" className="landing-try-cta" onClick={() => setStage('loading')} disabled={stage === 'loading'}>
+          {stage === 'loading' ? 'Working…' : 'See how it works'}
+        </button>
+      </div>
+    </div>
+
+    <p className="landing-try-hint">Nothing is sent yet. This just shows you where it would go.</p>
+
+    <div className="landing-try-reveal" data-stage={stage} aria-live="polite">
+      {stage === 'loading' ? <span className="landing-try-dots" role="status"><i /><i /><i /><span className="sr-only">Reading the job description</span></span> : null}
+      {stage === 'options' ? (
+        <div className="landing-try-options" ref={optionsRef} tabIndex={-1}>
+          <p className="landing-try-options-title">What do you want to use this for?</p>
+          <div className="landing-try-grid">
+            {TRY_OPTIONS.map(([label, blurb, isNew]) => (
+              <button type="button" key={label} onClick={() => navigate('/v3/auth/create-account')}>
+                <span className="landing-try-option-head">
+                  <b>{label}</b>
+                  <ArrowRight aria-hidden="true" />
+                  {isNew ? <em>New</em> : null}
+                </span>
+                <span className="landing-try-option-body">{blurb}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  </section>
+}
+
 function Faq() {
   return <section className="landing-faq" id="faq"><h2>Frequently asked questions</h2><Accordion className="landing-faq-list">{FAQS.map(([question, answer], index) => <AccordionItem key={question} value={String(index)}><AccordionHeader><AccordionTrigger>{question}</AccordionTrigger></AccordionHeader><AccordionPanel>{answer}</AccordionPanel></AccordionItem>)}</Accordion></section>
 }
@@ -318,5 +399,5 @@ export function LandingPage() {
 
   // The sections are wrapped so they can carry the opaque sheet that covers the pinned
   // footer — on the page element itself the background paints under the footer instead.
-  return <main className="figma-landing-page"><div className="landing-content"><BrandAnnouncement /><Hero heroRef={heroRef} /><Demo /><CopilotShowcase /><ProductFacts /><Journey /><Faq /><Closing /></div><MarketingFooter />{showSocialProof ? <SocialProofSignup /> : null}</main>
+  return <main className="figma-landing-page"><div className="landing-content"><BrandAnnouncement /><Hero heroRef={heroRef} /><Demo /><CopilotShowcase /><ProductFacts /><Journey /><TryItNow /><Faq /><Closing /></div><MarketingFooter />{showSocialProof ? <SocialProofSignup /> : null}</main>
 }
