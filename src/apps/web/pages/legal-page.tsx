@@ -53,7 +53,8 @@ export function LegalPage({ kind }: LegalPageProps) {
   const content = CONTENT[kind]
 
   return (
-    <div className="min-h-screen bg-canvas font-rethink text-ink">
+    // Light, like the rest of the public pages this is linked from — see PricingPage.
+    <div data-theme="light" className="min-h-screen bg-canvas font-rethink text-ink">
       <MarketingNav />
 
       <main className="mx-auto w-full max-w-4xl px-4 pb-20 pt-16 sm:px-6 sm:pt-24 lg:px-8">

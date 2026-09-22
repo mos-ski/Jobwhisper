@@ -35,6 +35,15 @@ describe('PricingPage', () => {
     expect(screen.getByRole('img', { name: 'Jobwhisper' })).toBeInTheDocument()
   })
 
+  it('stays on the light palette however the reader\'s system is set', () => {
+    renderPricingPage()
+
+    // The page is built from the semantic tokens, which flip with prefers-color-scheme, so
+    // without this hook it was the one marketing page that went dark on a dark phone.
+    const heading = screen.getByRole('heading', { level: 1, name: 'Pricing that follows how you use Jobwhisper' })
+    expect(heading.closest('[data-theme]')).toHaveAttribute('data-theme', 'light')
+  })
+
   it('presents pricing questions inside the shared surface treatment', () => {
     renderPricingPage()
 

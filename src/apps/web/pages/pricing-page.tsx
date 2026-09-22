@@ -794,7 +794,12 @@ export function PricingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-canvas font-rethink text-ink">
+    // Pinned to the light palette. The public pages are a light composition — the landing
+    // page paints itself with the scheme-independent landing tokens — but this one is built
+    // from the semantic tokens, so it was the only marketing page that turned dark when the
+    // reader's system asked for dark, nav pill and all. data-theme is the same hook the
+    // theme switch uses, so the subtree gets the light values and color-scheme with it.
+    <div data-theme="light" className="min-h-screen bg-canvas font-rethink text-ink">
       <div className="flex justify-center px-4 pt-4 sm:pt-9"><MarketingNav /></div>
       <main>
         <PageShell className="pb-8 pt-10 sm:pt-14">
