@@ -308,23 +308,38 @@
   .landing-hero-copy{margin-top:28px}
 }
 
-/* The journey and the copilot showcase now advance with the scroll, the way the product
-   pages walk their screenshots: the panel pins to the screen and the step follows the
-   reading position, so a phone reader sees all six stages and all four use cases instead
-   of the first one and a row of controls they never touched. The runway is the page height
-   the scroll runs through — one screen for the panel, then 45svh per step after it. The
-   wide layout keeps its chevrons and tabs, so both wrappers dissolve there and the hook,
-   which asks the stylesheet for a box, finds none and leaves the step alone. */
-.landing-journey-scroller,.landing-journey-pinned,
-.landing-copilot-scroller,.landing-copilot-pinned{display:contents}
+/* The journey and the copilot showcase advance with the scroll, the way the product pages
+   walk their screenshots: the panel pins to the screen and the step follows the reading
+   position, so six stages and four use cases all get seen instead of the first of each and
+   a control the reader never touched. It runs at every width — the chevrons and the tabs
+   still work alongside it, for anyone who would rather pick.
+
+   The runway is the page height the scroll travels through: one screen for the panel, then
+   one step per --landing-step-scroll after it. The floating download bar owns the bottom of
+   the screen, so the panel centres in what is left above it rather than in the whole
+   viewport, which also closes the gap centring would open over the top of it. */
+.landing-journey-scroller,.landing-copilot-scroller{--landing-step-scroll:40svh;display:block;position:relative;height:calc(100svh + (var(--steps) - 1) * var(--landing-step-scroll))}
+.landing-journey-pinned,.landing-copilot-pinned{position:sticky;top:0;min-height:100svh;padding-bottom:calc(96px + env(safe-area-inset-bottom));display:flex;flex-direction:column;justify-content:center}
+/* Flex centring places the panel now, so the stacking margins come off. */
+.landing-journey-pinned .landing-journey-viewer,.landing-copilot-pinned .landing-copilot-tabs{margin-top:0}
+@media(min-width:901px){
+  /* The section was cut to a fixed 1312px for a composition that scrolled past it; the
+     runway is what sets its height now. */
+  .landing-copilot{height:auto}
+  /* Both panels were drawn to be scrolled past, so on a laptop they stood taller than the
+     screen they now have to sit inside: 769px of journey viewer and 832px of showcase
+     against 768px of window. These cap them against the viewport instead, which keeps the
+     artwork's own proportions and leaves the wide layout otherwise where it was. */
+  .landing-journey-pinned .landing-journey-viewer{min-height:0;padding-block:min(98px,6svh)}
+  .landing-journey-pinned .landing-journey-stage{height:min(573px,64svh)}
+  /* The preview is object-fit:cover on a box cut to the artwork's own 1050x656, so capping
+     its height would crop the screenshot. Capping the width against the height that is
+     available keeps the whole window in view, just smaller. */
+  .landing-copilot-pinned .landing-copilot-image{width:min(1050px,100%,calc(56svh * 1.6));height:auto;aspect-ratio:1050/656;margin-top:32px}
+}
 @media(max-width:900px){
-  .landing-journey-scroller,.landing-copilot-scroller{display:block;position:relative;height:calc(100svh + (var(--steps) - 1) * 45svh)}
-  /* The floating download bar owns the bottom of the screen, so the panel centres in what
-     is left above it rather than in the whole viewport — which also closes the gap that
-     centring opened over the top of it. */
-  .landing-journey-pinned,.landing-copilot-pinned{position:sticky;top:0;min-height:100svh;padding-bottom:calc(96px + env(safe-area-inset-bottom));display:flex;flex-direction:column;justify-content:center}
-  /* Flex centring places the panel now, so the stacking margins come off. */
-  .landing-journey-pinned .landing-journey-viewer,.landing-copilot-pinned .landing-copilot-tabs{margin-top:0}
+  /* A thumb covers less ground than a wheel, so the steps sit a little further apart. */
+  .landing-journey-scroller,.landing-copilot-scroller{--landing-step-scroll:45svh}
   .landing-copilot-pinned .landing-copilot-image{margin-top:28px}
 }
 
