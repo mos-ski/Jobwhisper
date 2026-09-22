@@ -122,7 +122,14 @@
   padding-top: 118px;
   display: grid;
   grid-template-columns: minmax(420px, 45%) minmax(0, 55%);
+  /* Two rows so the FAQ can take the space under the summary while the walkthrough spans
+     the full height beside them. In DOM order the FAQ follows the story, which is what a
+     phone wants; the placement below is only for the wide layout. */
+  grid-template-rows: auto 1fr;
 }
+.marketing-product-summary { grid-area: 1 / 1; }
+.marketing-product-faq { grid-area: 2 / 1; }
+.marketing-product-story { grid-area: 1 / 2 / -1 / 3; }
 .marketing-product-summary {
   position: sticky;
   top: 118px;
@@ -191,6 +198,14 @@
   width: 16px;
   height: 16px;
 }
+.marketing-product-label {
+  margin: 0 0 10px;
+  color: var(--lf-landing-bg);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
 .marketing-product-copy h1 {
   max-width: 620px;
   margin: 0;
@@ -225,8 +240,8 @@
    column used to provide. */
 .marketing-product-faq {
   width: min(100%, 720px);
-  margin: 64px auto 0;
-  padding: 0 48px 96px;
+  margin: 0;
+  padding: 0 48px 72px;
 }
 .marketing-product-faq details {
   border-bottom: 1px solid var(--product-rule);
@@ -374,6 +389,21 @@
     padding-top: 0;
     display: block;
   }
+  /* Block flow here, so the grid areas would be meaningless and the FAQ simply follows the
+     walkthrough in DOM order. */
+  .marketing-product-summary,
+  .marketing-product-faq,
+  .marketing-product-story {
+    grid-area: auto;
+  }
+  .marketing-product-faq {
+    margin-top: 40px;
+    padding: 0 20px 72px;
+  }
+  .marketing-product-label {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
   .marketing-product-summary {
     position: relative;
     top: auto;
@@ -401,10 +431,6 @@
   }
   .marketing-product-copy > p {
     font-size: 16px;
-  }
-  .marketing-product-faq {
-    margin-top: 40px;
-    padding: 0 20px 72px;
   }
   .marketing-product-scroll-cue {
     min-height: 44px;

@@ -173,6 +173,7 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
         <ProductStage walkthroughImages={walkthroughImages} activeIndex={activeIndex} />
         <div className="marketing-product-intro">
           <div className="marketing-product-copy" key={activeSectionId}>
+            <p className="marketing-product-label">{product.label}</p>
             <h1 aria-label={isHero ? product.headline : activeCopy.title}><TwoLineTitle>{isHero ? product.headline : activeCopy.title}</TwoLineTitle></h1>
             <p>{activeBody}</p>
           </div>
@@ -195,8 +196,9 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
           </section>
         })}
       </div>
+
+      <ProductFaq product={product} />
     </div>
-    <ProductFaq product={product} />
     <MarketingFooter />
     <aside className="landing-social-proof" aria-label="Join Jobwhisper">
       <div className="landing-social-proof-avatars" aria-hidden="true"><img src="/figma-landing/social-proof-1.jpg" alt="" /><img src="/figma-landing/social-proof-2.jpg" alt="" /><img src="/figma-landing/social-proof-3.jpg" alt="" /></div>
