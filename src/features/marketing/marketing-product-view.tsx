@@ -110,10 +110,17 @@ function ProductStage({ product, walkthroughImages, activeIndex }: {
         data-side={index === activeIndex ? undefined : index < activeIndex ? 'before' : 'after'}
       />)}
     </div>
-    <p className="marketing-product-stage-caption">
-      <span>Step {activeIndex + 1} of {walkthroughImages.length}</span>
-      <span>{current?.title ?? product.outcome}</span>
-    </p>
+    {/* The caption carries the step's own eyebrow, title and body — the copy direction the
+        walkthrough rewrite introduced — rather than a title alone, so the picture above is
+        explained where it is being shown. */}
+    <div className="marketing-product-stage-caption">
+      <p className="marketing-product-stage-step">
+        <span>Step {activeIndex + 1} of {walkthroughImages.length}</span>
+        {current?.eyebrow ? <span>{current.eyebrow}</span> : null}
+      </p>
+      <h2>{current?.title ?? product.outcome}</h2>
+      {current?.body ? <p className="marketing-product-stage-body">{current.body}</p> : null}
+    </div>
   </div>
 }
 

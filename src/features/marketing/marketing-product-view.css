@@ -494,24 +494,44 @@
     opacity: 1;
     transform: translateX(0);
   }
+  /* The caption was one truncated line beside a step counter. It carries the step's whole
+     copy now, so it is a block: counter and eyebrow on one row, then the title, then the
+     body — nothing clipped, because this is where the step is explained. */
   .marketing-product-stage-caption {
-    margin: 10px 0 0;
+    margin: 12px 0 0;
+  }
+  .marketing-product-stage-step {
+    margin: 0;
     display: flex;
     align-items: baseline;
-    gap: 8px;
-    font-size: 13px;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    font-size: 12px;
     line-height: 1.35;
+    letter-spacing: .07em;
+    text-transform: uppercase;
   }
-  .marketing-product-stage-caption span:first-child {
+  .marketing-product-stage-step span:first-child {
     flex: none;
     color: var(--product-strong);
-    font-weight: 600;
+    font-weight: 700;
   }
-  .marketing-product-stage-caption span:last-child {
-    overflow: hidden;
+  .marketing-product-stage-step span:last-child {
+    color: var(--lf-landing-bg);
+    font-weight: 700;
+  }
+  .marketing-product-stage-caption h2 {
+    margin: 6px 0 0;
+    color: var(--product-strong);
+    font-size: 21px;
+    line-height: 1.2;
+    letter-spacing: -.02em;
+  }
+  .marketing-product-stage-body {
+    margin: 8px 0 0;
     color: var(--product-body);
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-size: 15px;
+    line-height: 1.5;
   }
   /* The stage is showing these same screenshots now, and the cue pointed at the pile. */
   .marketing-product-story,
