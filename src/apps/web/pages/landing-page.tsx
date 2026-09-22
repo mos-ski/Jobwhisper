@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type RefObject } from 'react'
-import { ArrowRight, ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Paperclip, Plus } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Paperclip, Plus, X } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger } from '@/ui'
 import { MarketingFooter, MarketingNav } from '@/features/marketing/marketing-chrome'
@@ -303,13 +303,17 @@ const TRY_OPTIONS = [
  */
 function TryItNow() {
   const navigate = useNavigate()
-  const [stage, setStage] = useState<'idle' | 'loading' | 'options'>('idle')
+  const [stage, setStage] = useState<'idle' | 'asking' | 'loading' | 'options'>('idle')
   const [jobText, setJobText] = useState('')
-  const [resumeName, setResumeName] = useState<string | null>(null)
+  const [resume, setResume] = useState<File | null>(null)
+  const [dragging, setDragging] = useState(false)
   const optionsRef = useRef<HTMLDivElement>(null)
-  // Both halves are the point of the demonstration — a job description with no resume, or a
-  // resume with no posting, would show nothing worth seeing.
-  const ready = jobText.trim().length > 0 && resumeName !== null
+  const sheetRef = useRef<HTMLDivElement>(null)
+  const ctaRef = useRef<HTMLButtonElement>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
+  // The card only gates on the job description. The resume is asked for afterwards, in the
+  // panel, because one question at a time is easier to answer than a form to complete.
+  const hasJob = jobText.trim().length > 0
 
   useEffect(() => {
     if (stage !== 'loading') return
@@ -323,42 +327,110 @@ function TryItNow() {
     if (stage === 'options') optionsRef.current?.focus({ preventScroll: true })
   }, [stage])
 
+  // While the panel is up it owns the keyboard: it takes focus on open, Escape dismisses it,
+  // and dismissing hands focus back to the button it rose from.
+  useEffect(() => {
+    if (stage !== 'asking') return
+    sheetRef.current?.focus({ preventScroll: true })
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeSheet()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [stage])
+
+  function closeSheet() {
+    setStage('idle')
+    setDragging(false)
+    ctaRef.current?.focus({ preventScroll: true })
+  }
+
+  function takeFile(file: File | undefined) {
+    if (file) setResume(file)
+    setDragging(false)
+  }
+
   return <section className="landing-try" aria-labelledby="landing-try-title">
     <p className="landing-try-eyebrow">Getting started</p>
     <h2 id="landing-try-title">Try it on a job you actually want.</h2>
     <p className="landing-try-lede">Paste the description, add your resume, and see what Jobwhisper would do with them.</p>
 
-    <div className="landing-try-card">
+    <div className="landing-try-card" data-asking={stage === 'asking' ? '' : undefined}>
       <label className="sr-only" htmlFor="landing-try-job">Paste a job description</label>
       <textarea id="landing-try-job" placeholder="Paste a job description" rows={3} value={jobText} onChange={(event) => setJobText(event.target.value)} />
       <span className="landing-try-glow" aria-hidden="true" />
       <div className="landing-try-card-foot">
+        {/* The shortcut for anyone who has the file to hand already: attach here and the panel
+            opens with the answer filled in, one click from done. */}
         <label className="landing-try-attach">
           <Paperclip aria-hidden="true" />
           <span className="sr-only">Attach your resume</span>
-          <input
-            type="file"
-            accept=".pdf,.doc,.docx,.txt"
-            onChange={(event) => setResumeName(event.target.files?.[0]?.name ?? null)}
-          />
+          <input type="file" accept=".pdf,.doc,.docx,.txt" onChange={(event) => takeFile(event.target.files?.[0])} />
         </label>
-        {resumeName ? <span className="landing-try-file">{resumeName}</span> : null}
-        <button type="button" className="landing-try-cta" onClick={() => setStage('loading')} disabled={!ready || stage === 'loading'} data-working={stage === 'loading' ? '' : undefined}>
+        {resume ? <span className="landing-try-file">{resume.name}</span> : null}
+        <button
+          ref={ctaRef}
+          type="button"
+          className="landing-try-cta"
+          onClick={() => setStage('asking')}
+          disabled={!hasJob || stage === 'loading'}
+          data-working={stage === 'loading' ? '' : undefined}
+        >
           {stage === 'loading' ? 'Working…' : 'See how it works'}
         </button>
       </div>
+
+      {/* The resume is asked for the way a question gets asked mid-conversation: a panel that
+          rises over the button you just pressed, holding one question and its answer. */}
+      {stage === 'asking' ? (
+        <div
+          className="landing-try-sheet"
+          role="dialog"
+          aria-labelledby="landing-try-ask"
+          ref={sheetRef}
+          tabIndex={-1}
+          onDragOver={(event) => { event.preventDefault(); setDragging(true) }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={(event) => { event.preventDefault(); takeFile(event.dataTransfer.files?.[0]) }}
+        >
+          <div className="landing-try-sheet-head">
+            <span className="landing-try-sheet-tab">Resume</span>
+            <button type="button" className="landing-try-sheet-close" onClick={closeSheet}>
+              <X aria-hidden="true" /><span className="sr-only">Close</span>
+            </button>
+          </div>
+
+          <div className="landing-try-sheet-body">
+          <p className="landing-try-ask" id="landing-try-ask">Which resume should we work from?</p>
+
+          <button
+            type="button"
+            className="landing-try-pick"
+            data-selected={resume ? '' : undefined}
+            data-dragging={dragging ? '' : undefined}
+            onClick={() => fileRef.current?.click()}
+          >
+            <span className="landing-try-radio" aria-hidden="true" />
+            <span className="landing-try-pick-copy">
+              <b>{resume ? resume.name : 'Upload your resume'}</b>
+              <small>{resume ? `${Math.max(1, Math.round(resume.size / 1024))} KB · choose a different file` : 'PDF, DOC, DOCX or TXT — or drop it anywhere in this panel'}</small>
+            </span>
+          </button>
+          <input ref={fileRef} type="file" accept=".pdf,.doc,.docx,.txt" className="landing-try-sheet-file" onChange={(event) => takeFile(event.target.files?.[0])} />
+          </div>
+
+          <div className="landing-try-sheet-foot">
+            <span className="landing-try-sheet-step" aria-hidden="true">1</span>
+            <button type="button" className="landing-try-submit" onClick={() => setStage('loading')} disabled={!resume}>
+              {resume ? 'Submit' : 'Add a resume to continue'}
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
 
-    {/* The button is dead until both halves are in, so say which one is still missing rather
-        than leaving the reader clicking at it. */}
     <p className="landing-try-hint" aria-live="polite">
-      {ready
-        ? 'Nothing is sent yet. This just shows you where it would go.'
-        : jobText.trim()
-          ? 'Attach your resume to continue.'
-          : resumeName
-            ? 'Paste a job description to continue.'
-            : 'Paste a job description and attach your resume to continue.'}
+      {hasJob ? 'Nothing is sent yet. This just shows you where it would go.' : 'Paste a job description to continue.'}
     </p>
 
     <div className="landing-try-reveal" data-stage={stage} aria-live="polite">

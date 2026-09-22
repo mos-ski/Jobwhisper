@@ -412,7 +412,7 @@
 .landing-try h2{width:min(640px,100%);margin:4px 0 0;font-family:'Gowun Batang',serif;font-size:56px;line-height:1.2;letter-spacing:-.03em;font-weight:700;color:var(--lf-landing-ink)}
 .landing-try-lede{width:min(640px,100%);margin:24px 0 0;font-size:18px;line-height:27px;color:var(--lf-landing-ink)}
 
-.landing-try-card{position:relative;width:min(640px,100%);margin-top:32px;min-height:170px;display:flex;flex-direction:column;border:1px solid rgba(27,25,25,.1);border-radius:16px;background:rgba(255,255,255,.8);backdrop-filter:blur(10px);overflow:hidden;text-align:start}
+.landing-try-card{position:relative;width:min(640px,100%);margin-top:32px;min-height:170px;transition:min-height 240ms ease;display:flex;flex-direction:column;border:1px solid rgba(27,25,25,.1);border-radius:16px;background:rgba(255,255,255,.8);backdrop-filter:blur(10px);overflow:hidden;text-align:start}
 .landing-try-card textarea{flex:1;min-height:106px;padding:20px;border:0;background:transparent;resize:none;font:inherit;font-size:16px;line-height:24px;color:var(--lf-landing-ink)}
 .landing-try-card textarea:focus{outline:none}
 .landing-try-card textarea::placeholder{color:var(--lf-landing-ink);opacity:.55}
@@ -426,6 +426,34 @@
 .landing-try-cta{margin-inline-start:auto;min-width:150px;min-height:36px;padding:6px 16px;border:0;border-radius:8px;background:var(--lf-landing-bg);color:var(--lf-landing-paper);font:inherit;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,.05)}
 .landing-try-cta:disabled{cursor:not-allowed;background:var(--lf-surface-subtle);color:var(--lf-landing-muted);box-shadow:inset 0 0 0 1px var(--lf-border)}
 .landing-try-cta:disabled[data-working='']{background:var(--lf-landing-bg);color:var(--lf-landing-paper);box-shadow:none;opacity:.75}
+.landing-try-card[data-asking]{min-height:278px}
+
+/* The resume panel. It rises inside the card and covers the button it came from, the way a
+   question arrives mid-conversation: one thing asked, the answer next to it, submit pinned
+   to the bottom while the middle scrolls. */
+.landing-try-sheet{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;padding:14px 16px 16px;border-radius:16px;background:var(--lf-landing-paper);box-shadow:0 -10px 30px rgba(16,24,40,.10);outline:none;animation:landing-try-rise 220ms cubic-bezier(.2,.8,.3,1) both}
+@keyframes landing-try-rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.landing-try-sheet-head{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(27,25,25,.08)}
+.landing-try-sheet-tab{padding-bottom:9px;margin-bottom:-1px;border-bottom:2px solid var(--lf-landing-bg);font-size:13px;font-weight:600;color:var(--lf-landing-ink)}
+.landing-try-sheet-close{width:28px;height:28px;display:grid;place-items:center;border:0;border-radius:6px;background:transparent;color:var(--lf-landing-muted);cursor:pointer}
+.landing-try-sheet-close:hover{background:var(--lf-surface-subtle);color:var(--lf-landing-ink)}
+.landing-try-sheet-close svg{width:16px;height:16px}
+.landing-try-sheet-body{flex:1;min-height:0;overflow:auto}
+.landing-try-ask{margin:14px 0 10px;font-family:'Gowun Batang',serif;font-size:17px;line-height:24px;font-weight:700;color:var(--lf-landing-ink)}
+.landing-try-pick{width:100%;display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:10px;background:var(--lf-landing-paper);font:inherit;text-align:start;cursor:pointer;transition:border-color 140ms ease,background-color 140ms ease}
+.landing-try-pick:hover{background:var(--lf-surface-subtle)}
+.landing-try-pick[data-selected],.landing-try-pick[data-dragging]{border-color:var(--lf-landing-bg)}
+.landing-try-pick[data-dragging]{background:var(--lf-surface-subtle)}
+.landing-try-radio{margin-top:2px;width:16px;height:16px;flex:0 0 16px;border-radius:50%;box-shadow:inset 0 0 0 1.5px #c7c7c7;transition:box-shadow 140ms ease}
+.landing-try-pick[data-selected] .landing-try-radio{box-shadow:inset 0 0 0 5px var(--lf-landing-bg)}
+.landing-try-pick-copy{min-width:0;display:flex;flex-direction:column;gap:2px}
+.landing-try-pick-copy b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;line-height:20px;font-weight:600;color:var(--lf-landing-ink)}
+.landing-try-pick-copy small{font-size:12px;line-height:18px;color:var(--lf-landing-muted)}
+.landing-try-sheet-file{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.landing-try-sheet-foot{margin-top:12px;padding-top:12px;display:flex;align-items:center;gap:10px;border-top:1px solid rgba(27,25,25,.08)}
+.landing-try-sheet-step{width:20px;height:20px;display:grid;place-items:center;border-radius:5px;background:var(--lf-surface-subtle);color:var(--lf-landing-muted);font-size:11px;font-weight:600}
+.landing-try-submit{margin-inline-start:auto;min-width:150px;min-height:36px;padding:6px 16px;border:0;border-radius:8px;background:var(--lf-landing-bg);color:var(--lf-landing-paper);font:inherit;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,.05)}
+.landing-try-submit:disabled{cursor:not-allowed;background:var(--lf-surface-subtle);color:var(--lf-landing-muted);box-shadow:inset 0 0 0 1px var(--lf-border)}
 .landing-try-hint{margin:8px 0 0;font-size:14px;line-height:20px;color:#343434}
 
 .landing-try-reveal{width:min(640px,100%)}
@@ -452,8 +480,12 @@
 .landing-try h2{font-size:clamp(32px,8.5vw,44px)}
 .landing-try-lede{font-size:16px;line-height:24px}
 .landing-try-grid{grid-template-columns:1fr}
+.landing-try-card[data-asking]{min-height:292px}
+.landing-try-submit{min-width:0;flex:1}
 }
 @media(prefers-reduced-motion:reduce){
 .landing-try-dots i{animation:none;opacity:.6}
 .landing-try-options{animation:none}
+.landing-try-sheet{animation:none}
+.landing-try-card{transition:none}
 }
