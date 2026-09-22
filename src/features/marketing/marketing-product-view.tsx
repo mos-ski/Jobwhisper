@@ -5,26 +5,6 @@ import type { MarketingProduct, MarketingProductSection } from '@/contracts/mark
 import { MarketingFooter, MarketingNav } from './marketing-chrome'
 import './marketing-product-view.css'
 
-const EXTRA_WALKTHROUGH_COPY: Readonly<Record<MarketingProduct['slug'], readonly { readonly title: string; readonly body: string }[]>> = {
-  'resume-builder': [
-    { title: 'Set a clear target for every resume.', body: 'Paste the job description or describe the role. That target decides which experience gets the attention.' },
-    { title: 'Bring your strongest experience into focus.', body: 'Upload a resume or build your history from scratch. Your facts stay intact; the strongest evidence stands out.' },
-  ],
-  'interview-copilot': [
-    { title: 'Add the context behind the opportunity.', body: 'Add your resume and the job description before the call, so every suggestion stays grounded in your experience.' },
-    { title: 'Choose support that sounds like you.', body: 'Set the length, tone and detail you can use naturally. Suggestions help without becoming a script to recite.' },
-    { title: 'Stay present while every question lands.', body: 'Copilot follows the conversation and surfaces the right points, so you can keep your attention on the interviewer.' },
-    { title: 'Turn each conversation into better preparation.', body: 'Revisit the hard questions afterwards and capture a better answer for the interview that comes next.' },
-  ],
-  'interview-prep': [],
-  'auto-apply': [
-    { title: 'Define the opportunities worth your attention.', body: 'Set the roles, seniority, salary, location and work style. The search stays on roles that match your priorities.' },
-    { title: 'Review every match before moving forward.', body: 'See why each role fits, keep the promising ones, dismiss the rest. The shortlist stays yours.' },
-    { title: 'Tailor each application around the role.', body: 'Prepare a focused resume from accurate experience, and review every change before the employer sees it.' },
-    { title: 'Track every application in one clear pipeline.', body: 'Follow every application from match to submission. Nothing moves forward without a status you can see.' },
-  ],
-}
-
 export type MarketingProductViewProps = {
   readonly product: MarketingProduct
   readonly walkthroughImages: readonly string[]
@@ -37,15 +17,14 @@ export type MarketingProductViewProps = {
 function walkthroughCopy(product: MarketingProduct, index: number): MarketingProductSection {
   const section = product.sections[index]
   if (section) return section
+  // Every screenshot has a section of its own now; this only guards a mismatch between the
+  // image list and the copy list.
   const workflow = product.workflow[index] ?? product.workflow[index % product.workflow.length]
-  // Images beyond the designed sections get written copy rather than a recycled workflow
-  // line, so every screenshot has a title and body of its own.
-  const extra = EXTRA_WALKTHROUGH_COPY[product.slug][index - product.sections.length]
   return {
     id: `${product.slug}-step-${index + 1}`,
     eyebrow: `Step ${index + 1}`,
-    title: extra?.title ?? workflow?.title ?? product.outcome,
-    body: extra?.body ?? workflow?.body ?? product.summary,
+    title: workflow?.title ?? product.outcome,
+    body: workflow?.body ?? product.summary,
     steps: [],
     imageSrc: '',
     imageAlt: `${product.label} walkthrough step ${index + 1}`,

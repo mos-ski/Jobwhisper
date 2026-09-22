@@ -217,7 +217,9 @@
   display: block;
   white-space: nowrap;
 }
-.marketing-product-copy > p {
+/* :not() keeps the feature label out of this: as `.marketing-product-copy > p` it would
+   otherwise outrank the label's own rule on specificity and take its size and colour. */
+.marketing-product-copy > p:not(.marketing-product-label) {
   max-width: 620px;
   margin: 24px 0 0;
   color: var(--product-body);
@@ -417,7 +419,7 @@
     height: auto;
     overflow: visible;
   }
-  .marketing-product-copy > p {
+  .marketing-product-copy > p:not(.marketing-product-label) {
     font-size: 16px;
   }
   .marketing-product-scroll-cue {
