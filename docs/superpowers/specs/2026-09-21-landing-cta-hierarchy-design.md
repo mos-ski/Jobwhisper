@@ -6,12 +6,12 @@ Make the landing page present one clear interview-focused conversion action whil
 
 ## Approved hierarchy
 
-- The hero contains one primary blue button labeled `Ace your Interview` that opens account creation.
+- The hero contains one primary blue button labeled `Ace my next interview` that opens account creation.
 - The desktop navigation contains a dedicated text-only `Download` dropdown and a restrained secondary `Log in` button.
 - The mobile navigation keeps Sign up visible and keeps the download menu available in compact form.
 - The demo has no centered Get Started action or guarantee caption.
 - After the hero leaves the viewport, a fixed, horizontally centered social-proof pill appears. It uses a single-line outcome statement and a primary blue `Download` action with Apple and Windows marks.
-- `Ace your Interview` is the only blue primary action in the hero viewport.
+- `Ace my next interview` is the only blue primary action in the hero viewport.
 - The navigation Download trigger has no leading mark; it uses only its label and dropdown chevron.
 - The free-credit and no-card reassurance row uses full readable contrast rather than reduced opacity.
 
