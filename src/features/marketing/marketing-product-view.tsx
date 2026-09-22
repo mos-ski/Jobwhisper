@@ -83,8 +83,11 @@ function ProductNarrative({ product, revealedWords }: { readonly product: Market
  * scrolling beside pinned text — and on a phone it collapsed into a pile of images at the
  * very bottom of the page, past the narrative, where nobody reading ever arrives. Here the
  * same screenshots pin to the top of the screen once the headline scrolls away and advance
- * with the reading position, so the step being described is the step on screen. The slide
- * direction alternates so each change reads as a step along rather than a flicker.
+ * with the reading position, so the step being described is the step on screen. The steps
+ * lie side by side like a filmstrip: each one is parked left or right of the one on screen
+ * according to where it falls in the order, so scrolling down always slides the strip one
+ * way and scrolling up always the other, without the code having to watch which way the
+ * page is moving.
  */
 function ProductStage({ product, walkthroughImages, activeIndex }: {
   readonly product: MarketingProduct
@@ -104,7 +107,7 @@ function ProductStage({ product, walkthroughImages, activeIndex }: {
         alt={index === activeIndex ? `${product.label} step ${index + 1} of ${walkthroughImages.length}: ${sectionFor(index)?.title ?? product.outcome}` : ''}
         loading={index === 0 ? 'eager' : 'lazy'}
         data-current={index === activeIndex}
-        data-enter={index % 2 === 0 ? 'start' : 'end'}
+        data-side={index === activeIndex ? undefined : index < activeIndex ? 'before' : 'after'}
       />)}
     </div>
     <p className="marketing-product-stage-caption">

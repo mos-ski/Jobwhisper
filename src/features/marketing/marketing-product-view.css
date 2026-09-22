@@ -223,16 +223,25 @@
   text-decoration-thickness: 2px;
   text-underline-offset: 4px;
 }
+/* A highlighted phrase is a label on the narrative, so it reads at full strength whether
+   or not the reveal has reached it — on the blue it was unreadable, because the reveal's
+   own colour rule outranks the mark (one class and two attributes against one class, an
+   element and one attribute) and painted the words body grey, at 24% until revealed.
+   Sky blue behind bold ink instead, and the reveal leaves the phrase alone: the two
+   selectors below carry an attribute more than the rule they have to beat. */
 .marketing-product-narrative mark {
   padding-inline: .14em;
   border-radius: 3px;
-  background: var(--lf-landing-bg);
-  color: var(--lf-landing-paper);
+  background: var(--lf-landing-sky);
+  color: var(--lf-landing-ink);
+  font-weight: 700;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
-.marketing-product-narrative mark [data-reveal-word] {
-  color: var(--lf-landing-paper);
+.marketing-product-narrative mark [data-reveal-word],
+.marketing-product-narrative mark [data-reveal-word][data-revealed] {
+  color: var(--lf-landing-ink);
+  opacity: 1;
 }
 .marketing-product-faq {
   width: min(100%, 720px);
@@ -471,12 +480,14 @@
     opacity: 0;
     transition: opacity 360ms ease, transform 480ms cubic-bezier(.22, 1, .36, 1);
   }
-  /* Alternating entry: odd steps arrive from the right, even ones from the left, so a
-     change reads as moving along the walkthrough rather than as a flicker in place. */
-  .marketing-product-stage-frame img[data-enter="start"] {
+  /* One direction, held by the order of the steps rather than by watching the scroll: a
+     step behind the one on screen waits to its left, a step ahead waits to its right. So
+     reading down, the next screenshot slides in from the right while the one it replaces
+     leaves to the left, and scrolling back up runs the same movement in reverse. */
+  .marketing-product-stage-frame img[data-side="before"] {
     transform: translateX(-14%);
   }
-  .marketing-product-stage-frame img[data-enter="end"] {
+  .marketing-product-stage-frame img[data-side="after"] {
     transform: translateX(14%);
   }
   .marketing-product-stage-frame img[data-current="true"] {
