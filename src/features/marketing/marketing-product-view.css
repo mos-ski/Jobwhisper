@@ -1,7 +1,13 @@
 .marketing-product-page {
+  /* The page is light; only the footer stays dark, the way the landing page does it.
+     These three locals are what the body-text rules below use, so the dark-page colours
+     are named in one place rather than twenty. */
+  --product-strong: var(--lf-landing-ink);
+  --product-body: var(--lf-landing-muted);
+  --product-rule: var(--lf-landing-border);
   min-height: 100vh;
-  background: var(--lf-landing-footer);
-  color: var(--lf-landing-paper);
+  background: var(--lf-landing-paper);
+  color: var(--product-strong);
   font-family: "Rethink Sans", sans-serif;
 }
 .marketing-product-page * {
@@ -47,7 +53,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  color: var(--lf-landing-nav-text);
+  color: var(--product-body);
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
@@ -62,7 +68,7 @@
   border-radius: 14px;
   gap: 5px;
   background: transparent;
-  color: var(--lf-landing-nav-text);
+  color: var(--product-body);
   font: inherit;
   cursor: pointer;
 }
@@ -123,7 +129,7 @@
   height: calc(100svh - 118px);
   padding: 44px 48px 30px;
   overflow-y: auto;
-  border-inline-end: 1px solid var(--lf-landing-footer-frame);
+  border-inline-end: 1px solid var(--product-rule);
   scrollbar-width: thin;
 }
 .marketing-product-intro {
@@ -173,29 +179,29 @@
 .marketing-product-summary-copy > p {
   max-width: 660px;
   margin: 14px 0 0;
-  color: var(--lf-landing-nav-text);
+  color: var(--product-body);
   font-size: 18px;
   line-height: 1.5;
   letter-spacing: 0.01em;
 }
 .marketing-product-reveal {
-  color: var(--lf-landing-nav-text);
+  color: var(--product-body);
 }
 .marketing-product-reveal > span,
 .marketing-product-reveal strong {
   display: inline;
 }
 .marketing-product-reveal [data-reveal-word] {
-  color: var(--lf-landing-nav-text);
+  color: var(--product-body);
   opacity: .24;
   transition: color 120ms linear, opacity 120ms linear;
 }
 .marketing-product-reveal [data-reveal-word][data-revealed="true"] {
-  color: var(--lf-landing-nav-text);
+  color: var(--product-body);
   opacity: 1;
 }
 .marketing-product-reveal strong [data-reveal-word][data-revealed="true"] {
-  color: var(--lf-landing-paper);
+  color: var(--product-strong);
 }
 .marketing-product-narrative {
   max-width: 660px;
@@ -203,13 +209,13 @@
 }
 .marketing-product-narrative p {
   margin: 0 0 24px;
-  color: var(--lf-landing-nav-text);
+  color: var(--product-body);
   font-size: 18px;
   line-height: 1.65;
   letter-spacing: .01em;
 }
 .marketing-product-narrative strong {
-  color: var(--lf-landing-paper);
+  color: var(--product-strong);
   font-weight: 700;
 }
 .marketing-product-narrative u {
@@ -233,7 +239,7 @@
   margin-top: 48px;
 }
 .marketing-product-faq details {
-  border-bottom: 1px solid var(--lf-landing-footer-frame);
+  border-bottom: 1px solid var(--product-rule);
 }
 .marketing-product-faq summary {
   min-height: 58px;
@@ -242,7 +248,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  color: var(--lf-landing-paper);
+  color: var(--product-strong);
   font-size: 15px;
   font-weight: 500;
   line-height: 1.4;
@@ -263,7 +269,7 @@
 .marketing-product-faq details p {
   margin: 0;
   padding: 0 46px 18px 14px;
-  color: var(--lf-landing-nav-text);
+  color: var(--product-body);
   font-size: 15px;
   line-height: 1.5;
 }
@@ -273,7 +279,7 @@
 .marketing-product-story {
   min-width: 0;
   padding: 48px;
-  border-inline-start: 1px solid var(--lf-landing-footer-frame);
+  border-inline-start: 1px solid var(--product-rule);
 }
 .marketing-product-section {
   margin-bottom: 48px;
@@ -315,7 +321,7 @@
   grid-template-rows: 1fr auto;
   gap: 56px 80px;
   background: var(--lf-landing-footer);
-  border-top: 1px solid var(--lf-landing-footer-frame);
+  border-top: 1px solid var(--product-rule);
 }
 .marketing-product-footer-brand img { width: 190px; }
 .marketing-product-footer-brand p { max-width: 380px; margin: 20px 0 0; color: var(--lf-landing-footer-text); font-size: 16px; line-height: 24px; }
@@ -373,7 +379,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: var(--lf-landing-paper);
+    color: var(--product-strong);
     font-size: 14px;
     font-weight: 600;
     text-decoration: none;
@@ -405,14 +411,14 @@
     transition: none;
   }
   .marketing-product-reveal {
-    color: var(--lf-landing-nav-text);
+    color: var(--product-body);
   }
   .marketing-product-reveal [data-reveal-word] {
-    color: var(--lf-landing-nav-text);
+    color: var(--product-body);
     opacity: 1;
     transition: none;
   }
   .marketing-product-reveal strong [data-reveal-word] {
-    color: var(--lf-landing-paper);
+    color: var(--product-strong);
   }
 }

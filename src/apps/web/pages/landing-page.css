@@ -12,7 +12,7 @@
 
 .landing-faq{width:100%;height:912px;margin:0;padding:134px 24px;color:var(--lf-landing-ink)}.landing-faq h2{width:min(820px,100%);margin:0 auto 40px;text-align:center;color:var(--lf-landing-ink);font-size:40px;line-height:44px;letter-spacing:-.429px;font-weight:500}.landing-faq-list{width:min(820px,100%);margin:0 auto}.landing-faq-list [data-slot='accordion-item']{border-bottom:1px solid var(--lf-landing-border);color:var(--lf-landing-ink)}.landing-faq-list [data-slot='accordion-trigger']{position:relative;min-height:70px;padding:20px 25px;color:var(--lf-landing-ink);font-size:18px;line-height:23px;font-weight:500}.landing-faq-list [data-slot='accordion-trigger']:hover{color:var(--lf-landing-ink)}.landing-faq-list [data-slot='accordion-trigger']>svg{display:none}.landing-faq-list [data-slot='accordion-trigger']::after{content:'+';width:28px;height:28px;flex:none;display:grid;place-items:center;color:var(--lf-landing-ink);font-size:22px;line-height:28px;font-weight:400}.landing-faq-list [data-slot='accordion-trigger'][data-panel-open]::after{content:'−'}.landing-faq-list [data-slot='accordion-panel']{padding:0 25px;color:var(--lf-landing-muted);font-size:16px;line-height:23.68px;font-weight:400}.landing-faq-list [data-slot='accordion-panel']>div{padding:0 0 20px}.landing-closing{text-align:center}.landing-closing h2{margin:20px 0 52px;font-size:clamp(52px,5vw,80px);line-height:1.05;letter-spacing:-.02em}.landing-closing p{width:min(840px,100%);margin:0 auto;color:var(--lf-landing-muted);font-size:21px;line-height:1.38}.landing-closing p strong{color:var(--lf-landing-bg)}
 .landing-footer{padding:100px max(24px,calc((100vw - 1360px)/2));background:var(--lf-landing-footer);color:var(--lf-landing-paper);display:grid;grid-template-columns:2fr repeat(3,1fr);gap:80px}.landing-footer img{width:235px}.landing-footer h2{margin:22px 0 64px;font-size:48px;line-height:1;font-weight:400}.landing-footer>div{display:flex;flex-direction:column;align-items:flex-start;gap:12px}.landing-footer a{color:var(--lf-landing-footer-text);text-decoration:none}.landing-footer strong{margin-bottom:16px}
-@media(max-width:900px){.landing-nav-links{display:none}.landing-nav{width:min(100%,520px);justify-content:space-between;gap:12px}.landing-nav-actions{margin:0}.landing-hero{min-height:700px}.landing-hero-copy{margin-top:72px}.landing-journey-viewer{padding:64px 32px;gap:48px}.landing-facts-grid{grid-template-columns:1fr;gap:42px}.landing-copilot{height:auto;padding-block:88px}.landing-copilot .landing-section-intro h2{font-size:clamp(48px,8vw,64px);line-height:1.06}.landing-copilot .landing-section-intro>p:last-child{height:auto}.landing-copilot-image{height:auto;aspect-ratio:1050/656}.landing-footer{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.landing-journey-viewer{grid-template-columns:1fr}.landing-nav-links{display:none}.landing-nav{width:min(100%,520px);justify-content:space-between;gap:12px}.landing-nav-actions{margin:0}.landing-hero{min-height:700px}.landing-hero-copy{margin-top:72px}.landing-journey-viewer{padding:64px 32px;gap:48px}.landing-facts-grid{grid-template-columns:1fr;gap:42px}.landing-copilot{height:auto;padding-block:88px}.landing-copilot .landing-section-intro h2{font-size:clamp(48px,8vw,64px);line-height:1.06}.landing-copilot .landing-section-intro>p:last-child{height:auto}.landing-copilot-image{height:auto;aspect-ratio:1050/656}.landing-footer{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.landing-hero{padding-inline:16px}.landing-nav-download span{display:none}.landing-nav-download{width:44px;padding:0;justify-content:center}.landing-hero-actions{width:100%;flex-direction:column}.landing-primary-button,.landing-secondary-button{width:100%;min-width:0}.landing-hero-notes{flex-direction:column;gap:4px}.landing-demo{width:calc(100% - 24px);aspect-ratio:4/3}.landing-journey,.landing-facts,.landing-copilot,.landing-closing{padding:88px 18px}.landing-section-intro>p:last-child,.landing-facts>p,.landing-closing p{font-size:17px}.landing-journey-viewer{margin-top:72px;padding:36px 18px}.landing-chat-card{min-height:470px;padding:48px 24px}.landing-copilot-tabs{max-width:100%;overflow-x:auto}.landing-platforms{padding-block:88px}.landing-platform-scroller{grid-auto-columns:min(84vw,340px)}.landing-faq{height:auto;min-height:760px;padding:88px 18px}.landing-faq h2{font-size:34px;line-height:40px}.landing-faq-list [data-slot='accordion-trigger']{padding-inline:8px;font-size:17px}.landing-faq-list [data-slot='accordion-panel']{padding-inline:8px}.landing-footer{grid-template-columns:1fr;gap:48px}}
 @media(max-width:900px){.landing-facts{width:calc(100% - 36px);padding:88px 0}.landing-facts>p{height:auto;margin-bottom:56px}.landing-facts-grid{grid-template-columns:1fr;grid-template-rows:auto;gap:42px}.landing-stat-minutes,.landing-fact-copy,.landing-stat-price{grid-column:1;grid-row:auto}.landing-fact-copy{padding-inline-start:0}}
 @media(prefers-reduced-motion:reduce){.figma-landing-page *,.figma-landing-page *::before,.figma-landing-page *::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
@@ -194,8 +194,21 @@
 }
 @media(max-width:380px){.landing-nav{gap:4px;padding-inline:6px}.landing-nav-logo{width:100px}.landing-nav-actions{gap:6px}.landing-nav-auth{min-width:66px;padding-inline:10px;font-size:14px}}
 
-.landing-brand-announcement{min-height:52px;padding:16px;border-bottom:3px solid var(--lf-landing-sky);display:flex;align-items:center;justify-content:center;background:var(--lf-landing-nav);color:var(--lf-landing-surface);font-size:13px;line-height:18px;text-align:center;letter-spacing:-.016em}
-.landing-brand-announcement p{margin:0}.landing-brand-announcement a{min-height:0;margin-inline-start:4px;color:var(--lf-landing-sky);text-decoration:none}.landing-brand-announcement a:hover{text-decoration:underline}
+.landing-brand-announcement{min-height:52px;padding:16px;border-bottom:3px solid var(--lf-landing-sky);display:flex;align-items:center;justify-content:center;gap:10px;background:var(--lf-landing-nav);color:var(--lf-landing-surface);font-size:13px;line-height:18px;text-align:center;letter-spacing:-.016em}
+.landing-brand-announcement p{margin:0;white-space:nowrap}
+/* The travelling half. It is the only thing that clips, so the link beside it stays put. */
+.landing-brand-announcement-marquee{flex:0 1 auto;min-width:0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 28px,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,transparent,#000 28px,#000 calc(100% - 28px),transparent)}
+.landing-brand-announcement-track{width:max-content;display:flex;gap:48px;animation:landing-brand-marquee 26s linear infinite}
+/* Half the track is one copy plus half a gap, so a further half-gap lands the second copy
+   exactly where the first began. */
+@keyframes landing-brand-marquee{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 24px))}}
+.landing-brand-announcement:hover .landing-brand-announcement-track,.landing-brand-announcement:focus-within .landing-brand-announcement-track{animation-play-state:paused}
+@media(prefers-reduced-motion:reduce){
+.landing-brand-announcement-track{animation:none;gap:0}
+.landing-brand-announcement-marquee{-webkit-mask-image:none;mask-image:none}
+.landing-brand-announcement p{white-space:normal}
+.landing-brand-announcement [data-marquee-clone]{display:none}
+}.landing-brand-announcement a{flex:0 0 auto;min-height:0;color:var(--lf-landing-sky);text-decoration:none;white-space:nowrap}.landing-brand-announcement a:hover{text-decoration:underline}
 .landing-social-proof{position:fixed;z-index:30;inset:auto auto 24px 50%;transform:translateX(-50%);width:min(512px,calc(100% - 48px));min-height:64px;padding:10px 12px;border-radius:999px;display:flex;align-items:center;gap:12px;background:var(--lf-landing-dark-chip);color:var(--lf-landing-surface);box-shadow:var(--lf-shadow-announcement);backdrop-filter:blur(20px)}
 .landing-social-proof-avatars{display:flex;flex:none}.landing-social-proof-avatars img{width:27px;height:27px;margin-inline-end:-4px;border:2px solid var(--lf-landing-paper);border-radius:50%;object-fit:cover}.landing-social-proof p{flex:1;margin:0;white-space:nowrap;font-size:12px;line-height:18px;font-weight:600}.landing-social-proof-copy-mobile{display:none}.landing-social-proof button{min-width:138px;height:44px;padding:0 18px;border:0;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:9px;background:var(--lf-landing-bg);color:var(--lf-landing-paper);font:inherit;font-size:17px;cursor:pointer}.landing-social-proof button:hover{background:var(--lf-accent-hover)}.landing-social-proof-platforms{display:flex;align-items:center;gap:5px}.landing-social-proof-platforms img{width:16px;height:16px}
 @media(max-width:560px){.landing-brand-announcement{padding-inline:20px}.landing-social-proof{bottom:16px;width:calc(100% - 24px);gap:8px}.landing-social-proof-avatars img{width:24px;height:24px}.landing-social-proof p{font-size:11px;line-height:14px}.landing-social-proof-copy-desktop{display:none}.landing-social-proof-copy-mobile{display:inline}.landing-social-proof button{min-width:112px;padding-inline:12px;font-size:14px}.landing-social-proof-platforms img{width:14px;height:14px}}
@@ -215,3 +228,39 @@
 .landing-copilot-actions,.landing-closing-actions{flex-direction:column;align-items:stretch}
 .landing-copilot-actions .landing-primary-button,.landing-closing-actions .landing-primary-button,.landing-closing-actions .landing-secondary-button{width:100%;min-width:0}
 }
+
+/* The logo SVG is exported with preserveAspectRatio="none", so it stretches to fill
+   whatever box it is given. The overrides below 900px changed only its width and left
+   height at 24px, which squashed the artwork. Sizing by height with an automatic width
+   keeps the box at the artwork's own ratio. */
+.landing-nav-logo{width:auto;height:24px;flex:0 0 auto}
+@media(max-width:560px){.landing-nav-logo{height:22px}}
+
+/* Below 900px the compact download trigger loses its label and reads as a bare chevron,
+   so it comes out of the bar entirely — the downloads live in the sheet instead. */
+@media(max-width:900px){.landing-nav-download{display:none}}
+
+/* The phone menu: a full-page sheet, since it now carries the links, every download and
+   the sign-in, which is more than a popup anchored to a 44px button should hold. */
+.landing-nav-sheet{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;padding:16px 18px 28px;background:var(--lf-landing-nav);color:var(--lf-landing-paper);overflow-y:auto;overscroll-behavior:contain}
+.landing-nav-sheet-bar{min-height:44px;display:flex;align-items:center;justify-content:space-between}
+.landing-nav-sheet-bar button{width:44px;height:44px;display:grid;place-items:center;border:0;border-radius:12px;background:transparent;color:inherit;cursor:pointer}
+.landing-nav-sheet-bar svg{width:22px;height:22px}
+.landing-nav-sheet-links{margin-top:20px;display:flex;flex-direction:column}
+.landing-nav-sheet-links a{min-height:58px;display:flex;align-items:center;border-bottom:1px solid var(--lf-landing-nav-border);color:inherit;font-size:22px;font-weight:600;text-decoration:none}
+.landing-nav-sheet-label{margin:26px 0 2px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;opacity:.5}
+.landing-nav-sheet-downloads{display:flex;flex-direction:column}
+.landing-nav-sheet-downloads a{min-height:52px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--lf-landing-nav-border);color:inherit;font-size:16px;text-decoration:none}
+.landing-nav-sheet-downloads img{width:22px;height:22px;flex:0 0 auto;object-fit:contain}
+.landing-nav-sheet-cta{margin-top:32px;min-height:52px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:var(--lf-landing-paper);color:var(--lf-landing-nav);font-size:16px;font-weight:600;text-decoration:none}
+@media(min-width:901px){.landing-nav-sheet{display:none}}
+
+/* The closing row reuses the hero's note row, which is sized for two items: a fixed 18px
+   height and fixed widths on the first and last child. This row has three, so the third
+   was being clamped to 115px and running off the edge. */
+.landing-closing .landing-closing-note{height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;row-gap:6px;column-gap:9px}
+.landing-closing .landing-closing-note span{width:auto;max-width:none}
+
+/* Let the two sentences break evenly instead of leaving one word stranded. */
+.landing-closing h2{text-wrap:balance}
+@media(max-width:560px){.landing-closing h2{font-size:34px;line-height:1.12}}

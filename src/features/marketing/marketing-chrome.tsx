@@ -1,4 +1,5 @@
-import { ChevronDown, Menu as MenuIcon } from 'lucide-react'
+import { useState } from 'react'
+import { ChevronDown, Menu as MenuIcon, X } from 'lucide-react'
 
 import { Menu, MenuContent, MenuItem, MenuTrigger } from '@/ui'
 import { downloadItems } from '@/mocks/account'
@@ -20,20 +21,39 @@ export function DownloadMenu({ compact = false }: { readonly compact?: boolean }
   </MenuTrigger><MenuContent align="end" sideOffset={8} className="landing-download-menu">{downloadItems.map((item) => <MenuItem key={item.id} render={<a href={item.href} className="landing-download-item" />}><img src={item.imageSrc} alt="" /><span>{item.support}</span></MenuItem>)}</MenuContent></Menu>
 }
 
-/** The inline Features/Pricing/FAQ links are hidden below 900px, so the same destinations
- *  move into this menu rather than being unreachable from a phone. */
-function NavLinksMenu() {
-  return <Menu><MenuTrigger render={<button className="landing-nav-menu" aria-label="Open menu" />}><MenuIcon aria-hidden="true" /></MenuTrigger><MenuContent align="end" className="landing-download-menu">
-    <MenuItem className="landing-download-item"><a href={FEATURES_HREF}>Features</a></MenuItem>
-    <MenuItem className="landing-download-item"><a href="/pricing">Pricing</a></MenuItem>
-    <MenuItem className="landing-download-item"><a href={FAQ_HREF}>FAQ</a></MenuItem>
-  </MenuContent></Menu>
+/**
+ * The phone menu. A full-page sheet rather than a dropdown: the inline links are hidden
+ * below 900px and so is the download trigger, so everything the nav offers has to live
+ * here, and that is more than a popup anchored to a 44px button wants to hold.
+ */
+function NavSheet({ onClose }: { readonly onClose: () => void }) {
+  return <div className="landing-nav-sheet" role="dialog" aria-modal="true" aria-label="Menu">
+    <div className="landing-nav-sheet-bar">
+      <a href="/" aria-label="Jobwhisper home"><img src="/landing-logo.svg" alt="" className="landing-nav-logo" /></a>
+      <button type="button" aria-label="Close menu" onClick={onClose}><X aria-hidden="true" /></button>
+    </div>
+    <nav className="landing-nav-sheet-links" aria-label="Menu">
+      <a href={FEATURES_HREF} onClick={onClose}>Features</a>
+      <a href="/pricing" onClick={onClose}>Pricing</a>
+      <a href={FAQ_HREF} onClick={onClose}>FAQ</a>
+    </nav>
+    <p className="landing-nav-sheet-label">Download</p>
+    <div className="landing-nav-sheet-downloads">
+      {downloadItems.map((item) => <a key={item.id} href={item.href} onClick={onClose}><img src={item.imageSrc} alt="" /><span>{item.support}</span></a>)}
+    </div>
+    <a className="landing-nav-sheet-cta" href="/v3/auth/sign-in">Log in</a>
+  </div>
 }
 
 // Plain anchors rather than navigate() calls: the nav then needs no Router context, so it
 // renders in any page's tests, and the links can be middle-clicked or opened in a new tab.
 export function MarketingNav() {
-  return <nav className="landing-nav" aria-label="Main navigation"><a className="landing-nav-home" href="/" aria-label="Jobwhisper home"><img src="/landing-logo.svg" alt="" className="landing-nav-logo" /></a><div className="landing-nav-links"><a href={FEATURES_HREF}>Features <ChevronDown aria-hidden="true" /></a><a href="/pricing">Pricing</a><a href={FAQ_HREF}>FAQ</a></div><div className="landing-nav-actions"><DownloadMenu compact /><a className="landing-nav-auth" href="/v3/auth/sign-in">Log in</a><NavLinksMenu /></div></nav>
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  return <>
+    <nav className="landing-nav" aria-label="Main navigation"><a className="landing-nav-home" href="/" aria-label="Jobwhisper home"><img src="/landing-logo.svg" alt="" className="landing-nav-logo" /></a><div className="landing-nav-links"><a href={FEATURES_HREF}>Features <ChevronDown aria-hidden="true" /></a><a href="/pricing">Pricing</a><a href={FAQ_HREF}>FAQ</a></div><div className="landing-nav-actions"><DownloadMenu compact /><a className="landing-nav-auth" href="/v3/auth/sign-in">Log in</a><button type="button" className="landing-nav-menu" aria-label="Open menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}><MenuIcon aria-hidden="true" /></button></div></nav>
+    {menuOpen ? <NavSheet onClose={() => setMenuOpen(false)} /> : null}
+  </>
 }
 
 /** [label, href]. '#' where the page does not exist yet. */

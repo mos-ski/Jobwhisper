@@ -67,7 +67,11 @@ describe('LandingPage', () => {
         name: /Pass Your Next Interview\.\s*Land the Job\. Or Don’t Pay!/,
       }),
     ).toBeInTheDocument()
-    expect(screen.getByText(/We’ve moved on from Lightforth/)).toBeInTheDocument()
+    // The announcement marquee carries a second copy so the loop has no seam; it is hidden
+    // from assistive tech rather than deduplicated, so both are in the DOM.
+    const announcements = screen.getAllByText(/We’ve moved on from Lightforth/)
+    expect(announcements).toHaveLength(2)
+    expect(announcements[1]).toHaveAttribute('aria-hidden', 'true')
     expect(screen.getByRole('link', { name: 'Learn more' })).toHaveAttribute('href', 'https://lightforth.ai/')
     expect(screen.queryByText('Join 57,000+ job seekers landing better roles')).not.toBeInTheDocument()
     expect(

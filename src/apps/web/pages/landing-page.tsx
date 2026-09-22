@@ -27,8 +27,21 @@ const FAQS = [
   ['How do I contact the Jobwhisper team?', 'Open the help center from your account or use the contact options in the footer.'],
 ] as const
 
+const BRAND_ANNOUNCEMENT = 'We’ve moved on from Lightforth. Meet Jobwhisper, built to help you land your next role.'
+
 function BrandAnnouncement() {
-  return <div className="landing-brand-announcement"><p>We’ve moved on from Lightforth. Meet Jobwhisper, built to help you land your next role. <a href="https://lightforth.ai/">Learn more</a></p></div>
+  // The message travels; the link does not, so it stays hittable rather than sliding out
+  // from under the cursor. The second copy is what makes the loop seamless — it is hidden
+  // from assistive tech so the sentence is not announced twice.
+  return <div className="landing-brand-announcement">
+    <div className="landing-brand-announcement-marquee">
+      <div className="landing-brand-announcement-track">
+        <p>{BRAND_ANNOUNCEMENT}</p>
+        <p aria-hidden="true" data-marquee-clone="">{BRAND_ANNOUNCEMENT}</p>
+      </div>
+    </div>
+    <a href="https://lightforth.ai/">Learn more</a>
+  </div>
 }
 
 function SocialProofSignup() {
