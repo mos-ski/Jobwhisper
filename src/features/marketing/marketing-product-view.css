@@ -90,6 +90,28 @@
   color: var(--lf-landing-paper);
   text-decoration: none;
 }
+/* .landing-nav is a flex container with no intrinsic width, so as a direct child of the
+   page it stretched edge to edge and its 22px radius stopped reading as a pill. This row
+   centres it, the way the landing and pricing pages do. */
+.marketing-product-nav {
+  display: flex;
+  justify-content: center;
+  padding: 16px 16px 0;
+}
+@media (min-width: 901px) {
+  /* The columns below are pinned, so the nav stays put above them — which is what the
+     layout's top padding is clearance for. The row spans the page to centre the pill, so
+     it must not swallow clicks either side of it. */
+  .marketing-product-nav {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 30;
+    pointer-events: none;
+  }
+  .marketing-product-nav > * {
+    pointer-events: auto;
+  }
+}
 .marketing-product-layout {
   padding-top: 118px;
   display: grid;

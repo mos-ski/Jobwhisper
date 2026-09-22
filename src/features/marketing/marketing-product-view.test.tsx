@@ -75,6 +75,14 @@ describe('MarketingProductView', () => {
     expect(within(navigation).getByRole('link', { name: 'Log in' })).toHaveAttribute('href', '/v3/auth/sign-in')
     expect(within(navigation).getByRole('button', { name: 'Download' })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: /walkthrough step 2: Leave with a stronger application/ })).toBeInTheDocument()
+    // The footer sits outside the two-column grid: as a child of the story column it was
+    // rendering at that column's width, inside a layout built for the full page.
+    const walkthrough = document.querySelector('.marketing-product-story')
+    expect(walkthrough).not.toBeNull()
+    expect(within(walkthrough as HTMLElement).queryByRole('contentinfo')).toBeNull()
+    expect(screen.getByRole('contentinfo').closest('.marketing-product-layout')).toBeNull()
+    // The nav needs its own centring row; on its own it stretches edge to edge.
+    expect(screen.getByRole('navigation', { name: 'Main navigation' }).parentElement).toHaveClass('marketing-product-nav')
     expect(screen.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute('href', '/privacy')
     expect(screen.getByRole('link', { name: 'Terms of Service' })).toHaveAttribute('href', '/terms')
   })

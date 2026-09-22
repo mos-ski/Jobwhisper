@@ -169,7 +169,7 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
 
   return (
     <main className="marketing-product-page">
-      <MarketingNav />
+      <div className="marketing-product-nav"><MarketingNav /></div>
       <div className="marketing-product-layout">
         <aside className="marketing-product-summary" aria-label={`${product.label} overview`} ref={summaryRef}>
           <div className="marketing-product-intro">
@@ -193,9 +193,9 @@ export function MarketingProductView({ product, walkthroughImages, activeSection
               <figure><img src={imageSrc} alt={`${product.label} walkthrough step ${index + 1}: ${section?.title ?? product.outcome}`} loading={index === 0 ? 'eager' : 'lazy'} /></figure>
             </section>
           )})}
-          <MarketingFooter />
         </div>
       </div>
+      <MarketingFooter />
       <aside className="landing-social-proof" aria-label="Join Jobwhisper">
         <div className="landing-social-proof-avatars" aria-hidden="true"><img src="/figma-landing/social-proof-1.jpg" alt="" /><img src="/figma-landing/social-proof-2.jpg" alt="" /><img src="/figma-landing/social-proof-3.jpg" alt="" /></div>
         <p><span className="landing-social-proof-copy-desktop">Join 57,000+ job seekers landing better roles</span><span className="landing-social-proof-copy-mobile">57,000+ job seekers</span></p>
