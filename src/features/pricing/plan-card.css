@@ -1,12 +1,5 @@
-/* The tab strip shares its row with the billing toggle, so on a phone it has little room
-   left. It swipes instead of wrapping: snapping per tab, and with no scrollbar drawn over
-   the rule beneath it. */
-.pricing-tabs{scroll-snap-type:x proximity;scroll-padding-inline-start:2px;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
-.pricing-tabs::-webkit-scrollbar{display:none}
-.pricing-tabs>*{scroll-snap-align:start}
-
-/* The cards sit straight on the page per 1130:20394 — no panel, no heading of their
-   own, since the tab strip above already names this tab. */
+/* The cards sit straight on the page per 1130:20394 — no panel of their own, since the
+   section heading above already names them. */
 .pricing-plans{display:block}
 
 /* Interview plan cards — Figma 1130:20394.

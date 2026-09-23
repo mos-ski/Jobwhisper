@@ -1,15 +1,13 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ChevronDown } from 'lucide-react'
 
 import { MarketingFooter, MarketingNav } from '@/features/marketing/marketing-chrome'
 import { PlanAmount, PlanCard, PlanCarousel, type PlanTerms } from '@/features/pricing/plan-card'
 import { ProOfferWidget } from '@/features/billing/pro-offer-widget'
-import { Button, Tabs, TabsContent, TabsList, TabsTrigger, cn } from '@/ui'
+import { Button, cn } from '@/ui'
 
-type PricingTab = 'interview' | 'job-search' | 'done-for-you'
-
-type InterviewPlan = {
+type SubscriptionPlan = {
   readonly id: string
   readonly name: string
   /** Pill beside the plan name, per design 1130:20394. */
@@ -17,10 +15,13 @@ type InterviewPlan = {
   /** The featured plan wears the badge as a banner across the top instead. */
   readonly featured?: boolean
   readonly tagline: string
-  readonly creditsPerMonth: number
-  readonly monthlyPrice: number
-  readonly annualMonthlyPrice: number
-  readonly credits: string
+  /** Starter is the one weekly plan; Pro and Premium bill monthly. */
+  readonly cadence: 'week' | 'month'
+  /** Per cadence — so per week on Starter, per month on the other two. */
+  readonly price: number
+  /** The monthly equivalent when paid annually. Absent on the weekly plan, which has no
+   *  annual rate to switch to: a year bought a week at a time is not an annual plan. */
+  readonly annualPrice?: number
   readonly description: string
   readonly features: readonly string[]
 }
@@ -65,35 +66,39 @@ type SupportingContent = {
   readonly primaryPath: string
 }
 
-const INTERVIEW_PLANS: readonly InterviewPlan[] = [
+// One set of plans, all unlimited: the credit allowance that used to separate them is gone,
+// so what a plan unlocks is the only thing that varies. Starter bills weekly on purpose —
+// it is sized for the week someone actually has interviews, not for a year of readiness.
+const PLANS: readonly SubscriptionPlan[] = [
   {
     id: 'starter',
     name: 'Starter',
     badge: 'Great to Start',
-    tagline: 'The essentials, on the web',
-    creditsPerMonth: 500,
-    monthlyPrice: 47,
-    annualMonthlyPrice: 38,
-    credits: 'About 500 interview credits each month',
-    description: 'The interview essentials for occasional preparation and live support on the web.',
-    features: ['Interview Prep', 'Interview Copilot on desktop and web', 'Knowledge Base with 3 documents'],
+    tagline: 'Live interview support, by the week',
+    cadence: 'week',
+    price: 19,
+    description: 'Unlimited Interview Copilot on web and desktop, for the week you are interviewing.',
+    features: [
+      'Interview Copilot on web and desktop',
+      'Unlimited live interview sessions',
+      'Knowledge Base with 3 documents',
+    ],
   },
   {
     id: 'pro',
     name: 'Pro',
     badge: 'Most Popular',
     featured: true,
-    tagline: 'More time, every surface',
-    creditsPerMonth: 1000,
-    monthlyPrice: 99,
-    annualMonthlyPrice: 79,
-    credits: 'About 1,000 interview credits each month',
-    description: 'More interview time, plus desktop, coding, and meeting support.',
+    tagline: 'The whole job search, unlimited',
+    cadence: 'month',
+    price: 99,
+    annualPrice: 79,
+    description: 'Every Jobwhisper tool, unlimited, for the length of your search.',
     features: [
       'Everything in Starter',
-      'Web and desktop apps',
-      'Coding Copilot',
-      'Meeting Copilot',
+      'Interview Prep',
+      'Coding Copilot and Meeting Copilot',
+      'Auto Apply and Resume Builder',
       'Knowledge Base with 5 documents',
     ],
   },
@@ -101,13 +106,17 @@ const INTERVIEW_PLANS: readonly InterviewPlan[] = [
     id: 'premium',
     name: 'Premium',
     badge: 'Best Value',
-    tagline: 'For heavy interview weeks',
-    creditsPerMonth: 4000,
-    monthlyPrice: 497,
-    annualMonthlyPrice: 398,
-    credits: 'About 4,000 interview credits each month',
-    description: 'High-volume interview and meeting support with more context and priority help.',
-    features: ['Everything in Pro', 'Priority support', 'Knowledge Base with 10 documents'],
+    tagline: 'Everything, on the record',
+    cadence: 'month',
+    price: 497,
+    annualPrice: 398,
+    description: 'Pro, plus recordings of every session and priority support.',
+    features: [
+      'Everything in Pro',
+      'Call recording for every session',
+      'Priority support',
+      'Knowledge Base with 10 documents',
+    ],
   },
 ]
 
@@ -171,311 +180,117 @@ const MANAGED_PACKAGES: readonly ManagedPackage[] = [
   },
 ]
 
-const SUPPORTING_CONTENT: Readonly<Record<PricingTab, SupportingContent>> = {
-  interview: {
-    guideTitle: 'How interview credits work',
-    guideDescription: 'Your subscription includes time for preparation and live interview support.',
-    guideItems: [
-      { label: 'Live sessions', value: '1 interview credit = 1 minute' },
-      { label: 'Credit refresh', value: 'Included credits refresh each billing cycle' },
-      { label: 'Where to use them', value: 'Interview Prep and eligible live copilots' },
-      { label: 'Billing model', value: 'Monthly or annual subscription' },
-    ],
-    faqTitle: 'Interview plan questions',
-    faqDescription: 'Details about subscriptions, minutes, and plan changes.',
-    faqItems: [
-      {
-        question: 'How are interview plans billed?',
-        answer:
-          'Interview plans are recurring monthly or annual subscriptions. Your included credits refresh with each billing cycle.',
-      },
-      {
-        question: 'How are interview credits measured?',
-        answer: 'One interview credit covers one minute of an eligible live interview or meeting session.',
-      },
-      {
-        question: 'What is included with an interview plan?',
-        answer:
-          'Every plan includes Interview Prep and live web support. Higher tiers add desktop, coding, meeting, and larger Knowledge Base allowances.',
-      },
-      {
-        question: 'Can I change my interview plan?',
-        answer:
-          'Yes. Upgrades take effect immediately with a prorated charge. Downgrades take effect at the end of the current billing cycle.',
-      },
-      {
-        question: 'What is the difference between monthly and annual billing?',
-        answer: 'Monthly billing renews each month. Annual billing is paid once a year and shows a lower monthly equivalent.',
-      },
-      {
-        question: 'Which plans include Interview Copilot?',
-        answer: 'Starter, Pro, and Premium all include access to Interview Copilot on desktop and web.',
-      },
-      {
-        question: 'Which plans include the desktop app?',
-        answer: 'Desktop app access is included with Pro and Premium.',
-      },
-      {
-        question: 'Which plans include Coding Copilot?',
-        answer: 'Coding Copilot is included with Pro and Premium.',
-      },
-      {
-        question: 'Which plans include Meeting Copilot?',
-        answer: 'Meeting Copilot is included with Pro and Premium.',
-      },
-      {
-        question: 'How many Knowledge Base documents can I add?',
-        answer: 'Starter includes 3 documents, Pro includes 5, and Premium includes 10.',
-      },
-      {
-        question: 'Can I use a plan for interview practice?',
-        answer: 'Yes. Interview Prep simulates an interview, records your responses, and produces a performance report.',
-      },
-      {
-        question: 'Can I use Jobwhisper during a live interview?',
-        answer: 'Yes. Eligible plans include live Copilot access on the web, with desktop access available on Pro and Premium.',
-      },
-      {
-        question: 'Should I add my resume before a session?',
-        answer: 'Adding your resume gives Jobwhisper context about your real experience so practice questions and suggestions are more relevant.',
-      },
-      {
-        question: 'Can I add a job description?',
-        answer: 'Yes. A job description helps tailor the interview context to the specific role and company.',
-      },
-      {
-        question: 'Can I choose how Copilot responds?',
-        answer: 'Yes. You can choose Default, Headlines, or Coaching response preferences before a live Copilot session.',
-      },
-      {
-        question: 'Can I control the response length?',
-        answer: 'Yes. Copilot supports short, medium, and long response preferences.',
-      },
-      {
-        question: 'Does the web Copilot need interview audio?',
-        answer: 'Yes. The web Copilot needs access to the interview audio so it can hear and understand each question.',
-      },
-      {
-        question: 'When should I set up a live session?',
-        answer: 'Set up and test your interview context and audio before the call so you are ready when the conversation begins.',
-      },
-      {
-        question: 'Can I review a practice session afterward?',
-        answer: 'Yes. Interview Prep produces a report so you can review your performance and identify areas to improve.',
-      },
-      {
-        question: 'Can I review a live Copilot conversation?',
-        answer: 'Yes. Jobwhisper keeps the session transcript so you can revisit the questions and conversation afterward.',
-      },
-    ],
-    closingTitle: 'Choose the interview support you need',
-    closingDescription: 'Create an account, select a plan, and use your minutes across eligible interview tools.',
-    primaryAction: 'View interview plans',
-    primaryPath: '/v3/auth/choose-plan',
-  },
-  'job-search': {
-    guideTitle: 'How job-search credits work',
-    guideDescription: 'Resume Builder and Auto Apply use separate prepaid balances with no subscription.',
-    guideItems: [
-      { label: 'Resume Builder', value: '$0.10 for each AI prompt' },
-      { label: 'Auto Apply', value: '$1 for each successful application' },
-      { label: 'Credit validity', value: 'Credits remain valid for 30 days' },
-      { label: 'Included at no charge', value: 'ATS scoring and AI suggestions' },
-    ],
-    faqTitle: 'Job-search credit questions',
-    faqDescription: 'Details about prepaid balances, charges, and validity.',
-    faqItems: [
-      {
-        question: 'Do I need a subscription?',
-        answer: 'No. Resume Builder and Auto Apply use prepaid credits that you can buy and use as needed.',
-      },
-      {
-        question: 'When does Auto Apply charge me?',
-        answer: 'One application credit is charged only after Jobwhisper successfully submits an application.',
-      },
-      {
-        question: 'How long do prepaid credits last?',
-        answer: 'Resume Builder and Auto Apply credits remain valid for 30 days from the purchase date.',
-      },
-      {
-        question: 'Can credits move between products?',
-        answer:
-          'Resume Builder and Auto Apply keep separate balances because each product measures completed work differently.',
-      },
-      {
-        question: 'What counts as a Resume Builder charge?',
-        answer: 'A resume credit is used when you send an AI prompt to create or revise resume content.',
-      },
-      {
-        question: 'Is ATS scoring charged?',
-        answer: 'No. Checking your ATS score is included at no charge.',
-      },
-      {
-        question: 'Are resume downloads charged?',
-        answer: 'No. You can download the resume you created without an additional prompt charge.',
-      },
-      {
-        question: 'What is the minimum Resume Builder purchase?',
-        answer: 'Resume Builder prepaid credit purchases start at $5.',
-      },
-      {
-        question: 'What is the minimum Auto Apply purchase?',
-        answer: 'Auto Apply prepaid credit purchases start at $10.',
-      },
-      {
-        question: 'Am I charged when an application fails?',
-        answer: 'No. Auto Apply is charged only after an application is successfully submitted.',
-      },
-      {
-        question: 'What is included in an Auto Apply application?',
-        answer: 'Auto Apply includes job matching, resume tailoring when needed, and submission of the application.',
-      },
-      {
-        question: 'Do I choose which jobs to apply to?',
-        answer: 'Yes. Review matched jobs in the Jobs tab and click Apply on the opportunities you want to pursue.',
-      },
-      {
-        question: 'Will Auto Apply tailor my resume?',
-        answer: 'Auto Apply checks your resume against the job and can prepare a more relevant version before submission.',
-      },
-      {
-        question: 'Can I track an application after I start it?',
-        answer: 'Yes. The Applied tab shows each application and its current status.',
-      },
-      {
-        question: 'What does Needs Review mean?',
-        answer: 'It means Jobwhisper needs information or a decision from you before it can continue confidently.',
-      },
-      {
-        question: 'What does Failed mean?',
-        answer: 'It means the application could not be completed. Open its details to review the available activity and next steps.',
-      },
-      {
-        question: 'Can I see which resume was submitted?',
-        answer: 'Yes. Application details show the resume used for the submission.',
-      },
-      {
-        question: 'Can I review the original job listing?',
-        answer: 'Yes. Saved application details include the job link and role information for later reference.',
-      },
-      {
-        question: 'How does Jobwhisper find suitable jobs?',
-        answer: 'Scout finds roles from supported sources, and Filter scores them against the preferences in your Auto Apply profile.',
-      },
-      {
-        question: 'Can I update my job preferences?',
-        answer: 'Yes. Update the roles, locations, salary, job type, and work arrangement used to match opportunities.',
-      },
-    ],
-    closingTitle: 'Ready to add job-search credits?',
-    closingDescription: 'Buy the balance you need for resume prompts or successful applications—without a subscription.',
-    primaryAction: 'Buy credits',
-    primaryPath: '/v3/billing',
-  },
-  'done-for-you': {
-    guideTitle: 'How Done For You works',
-    guideDescription: 'A success manager runs the search until your package target is reached.',
-    guideItems: [
-      { label: 'Your target', value: 'Choose 5 or 20 interview invitations' },
-      { label: 'Job search', value: 'We scout and review matched roles' },
-      { label: 'Applications', value: 'We tailor and submit each application' },
-      { label: 'Jobwhisper access', value: 'Full access during package fulfillment' },
-    ],
-    faqTitle: 'Done For You questions',
-    faqDescription: 'Details about fulfillment, the interview target, and what your manager handles.',
-    faqItems: [
-      {
-        question: 'How does the interview guarantee work?',
-        answer:
-          'Your success manager keeps working until the number of interview invitations included in your package has been delivered.',
-      },
-      {
-        question: 'What does my success manager handle?',
-        answer: 'They scout matched roles, tailor your resume for each role, and submit the applications on your behalf.',
-      },
-      {
-        question: 'Do I receive Jobwhisper access?',
-        answer: 'Yes. Your package includes full Jobwhisper access while the managed search is being fulfilled.',
-      },
-      {
-        question: 'Is this a recurring subscription?',
-        answer: 'No. Done For You is a one-time package tied to the interview target you select.',
-      },
-      {
-        question: 'What is the difference between the two packages?',
-        answer: 'One package targets 5 interview invitations and the other targets 20. The 20-interview package also includes priority scheduling.',
-      },
-      {
-        question: 'What counts toward my package target?',
-        answer: 'The target is based on interview invitations delivered through the managed search.',
-      },
-      {
-        question: 'Does the service include job scouting?',
-        answer: 'Yes. Your success manager searches for roles that match your background and job preferences.',
-      },
-      {
-        question: 'Does the service include job matching?',
-        answer: 'Yes. Roles are reviewed against the preferences and career information you provide.',
-      },
-      {
-        question: 'Will my resume be tailored for each role?',
-        answer: 'Yes. The managed service includes tailoring your resume to the matched opportunities being pursued.',
-      },
-      {
-        question: 'Who submits the applications?',
-        answer: 'Your success manager handles the application work on your behalf.',
-      },
-      {
-        question: 'What information do I need to provide?',
-        answer: 'Provide an accurate resume, contact information, job preferences, work authorization details, and the application answers needed for your search.',
-      },
-      {
-        question: 'Can I set preferred roles and locations?',
-        answer: 'Yes. Your role, location, salary, employment type, and work-arrangement preferences guide the managed search.',
-      },
-      {
-        question: 'Can I update my preferences during fulfillment?',
-        answer: 'Contact your success manager when your search requirements change so the active search can use accurate information.',
-      },
-      {
-        question: 'Will I be contacted by a real person?',
-        answer: 'Yes. Done For You connects you with a real success manager who coordinates the managed search.',
-      },
-      {
-        question: 'Can I track the applications being handled?',
-        answer: 'Yes. Jobwhisper keeps the application details and statuses available while your manager runs the search.',
-      },
-      {
-        question: 'What happens if an application needs more information?',
-        answer: 'Your manager can contact you for missing or updated information instead of guessing on your behalf.',
-      },
-      {
-        question: 'Does the package include interview preparation?',
-        answer: 'The package includes full Jobwhisper access during fulfillment, so you can use the available preparation tools when interviews arrive.',
-      },
-      {
-        question: 'What should I focus on while the search is managed?',
-        answer: 'Keep your information current, respond when your manager needs input, and prepare for the interviews the search generates.',
-      },
-      {
-        question: 'Can I continue applying to jobs myself?',
-        answer: 'Yes. The managed service handles its search while you remain free to pursue other opportunities yourself.',
-      },
-      {
-        question: 'How do I choose the right interview target?',
-        answer: 'Choose based on how broad and long you expect your search to be. Contact support if you want help comparing the 5- and 20-interview packages.',
-      },
-    ],
-    closingTitle: 'Want a success manager to run your search?',
-    closingDescription: 'Choose an interview target and let a real person handle the search, tailoring, and applications.',
-    primaryAction: 'Choose a package',
-    primaryPath: '/v3/billing/done-for-you',
-  },
+// One merged set now that the page sells one thing: the plans, with Done For You and
+// pay-as-you-go as sections under them rather than tabs with their own guide and FAQ.
+const SUPPORTING_CONTENT: SupportingContent = {
+  guideTitle: 'How billing works',
+  guideDescription: 'Pick the cadence that matches your search, and stop watching a credit balance.',
+  guideItems: [
+    { label: 'Starter', value: 'Renews every week until you cancel' },
+    { label: 'Pro and Premium', value: 'Monthly, or annually for 20% less a month' },
+    { label: 'Usage', value: 'Unlimited on every plan — no credits to track' },
+    { label: 'Without a plan', value: 'Resume Builder and Auto Apply can be bought as you go' },
+  ],
+  faqTitle: 'Pricing questions',
+  faqDescription: 'Plans, cadences, what unlimited covers, and the two ways to buy without one.',
+  faqItems: [
+    {
+      question: 'What does unlimited mean on these plans?',
+      answer:
+        'Every plan includes unlimited use of the tools it covers. There is no credit balance, no minute counting, and nothing to top up mid-interview.',
+    },
+    {
+      question: 'How does the Starter plan bill?',
+      answer:
+        'Starter renews every week until you cancel. It is sized for the week you are actually interviewing rather than a whole month of readiness.',
+    },
+    {
+      question: 'How do Pro and Premium bill?',
+      answer: 'Monthly by default, or annually at a lower monthly equivalent. Both renew until you cancel.',
+    },
+    {
+      question: 'Can I pay annually?',
+      answer:
+        'Yes, on Pro and Premium — paid once a year, at about 20% less a month. Starter is weekly only, since a year bought a week at a time is not an annual plan.',
+    },
+    {
+      question: 'Which plans include the desktop app?',
+      answer: 'All three. Interview Copilot runs on web and desktop on Starter, Pro, and Premium.',
+    },
+    {
+      question: 'Which plan includes Interview Prep?',
+      answer: 'Pro and Premium. Starter covers live interview support only.',
+    },
+    {
+      question: 'Which plans include Coding Copilot and Meeting Copilot?',
+      answer: 'Both are included with Pro and Premium.',
+    },
+    {
+      question: 'Which plan includes Auto Apply and Resume Builder?',
+      answer:
+        'Pro and Premium include both, unlimited. Without a plan you can still buy either as you go.',
+    },
+    {
+      question: 'What does Premium add over Pro?',
+      answer:
+        'A recording of every session, priority support, and a Knowledge Base that holds ten documents instead of five.',
+    },
+    {
+      question: 'Can I change plan later?',
+      answer:
+        'Yes. Upgrades take effect immediately with a prorated charge. Downgrades take effect at the end of the current week or month.',
+    },
+    {
+      question: 'Can I cancel?',
+      answer: 'Yes. Cancelling stops the next renewal and your plan runs to the end of the week or month you have paid for.',
+    },
+    {
+      question: 'How many Knowledge Base documents can I add?',
+      answer: 'Starter holds 3 documents, Pro holds 5, and Premium holds 10.',
+    },
+    {
+      question: 'Do I need a plan to use Resume Builder or Auto Apply?',
+      answer:
+        'No. Both can be bought as you go — Resume Builder from $5, Auto Apply from $10 — with no subscription.',
+    },
+    {
+      question: 'When does pay-as-you-go Auto Apply charge me?',
+      answer: 'Only after an application is successfully submitted. A failed submission is not charged.',
+    },
+    {
+      question: 'How long do prepaid credits last?',
+      answer: 'Resume Builder and Auto Apply credits remain valid for 30 days from the purchase date.',
+    },
+    {
+      question: 'What is Done For You?',
+      answer:
+        'A managed search. A success manager scouts roles, tailors your resume, and applies on your behalf until the guaranteed number of interviews is delivered.',
+    },
+    {
+      question: 'How long does Done For You run?',
+      answer:
+        'Until the guarantee is met. Your Jobwhisper access continues for as long as fulfillment takes rather than expiring on a fixed date.',
+    },
+    {
+      question: 'Can I use Jobwhisper during a live interview?',
+      answer: 'Yes. That is what Interview Copilot is for, on web and desktop, on every plan.',
+    },
+    {
+      question: 'Should I add my resume before a session?',
+      answer:
+        'Adding your resume gives Jobwhisper context about your real experience, so suggestions and practice questions are relevant to you.',
+    },
+    {
+      question: 'Can I review a live Copilot conversation afterward?',
+      answer: 'Yes. Jobwhisper keeps the session transcript so you can revisit the questions and the conversation.',
+    },
+  ],
+  closingTitle: 'Choose the plan that fits your search',
+  closingDescription: 'Create an account, pick a plan, and use every tool it covers without counting anything.',
+  primaryAction: 'View plans',
+  primaryPath: '/v3/auth/choose-plan',
 }
 
-function isPricingTab(value: string | null): value is PricingTab {
-  return value === 'interview' || value === 'job-search' || value === 'done-for-you'
-}
 
 function PageShell({ children, className }: { readonly children: ReactNode; readonly className?: string }) {
   return <div className={cn('mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8', className)}>{children}</div>
@@ -567,7 +382,7 @@ function BillingToggle({ annual, onChange }: { readonly annual: boolean; readonl
 }
 
 
-function InterviewPlans({ annual }: { readonly annual: boolean }) {
+function SubscriptionPlans({ annual }: { readonly annual: boolean }) {
   const [showProOffer, setShowProOffer] = useState(false)
   const proOfferTriggeredRef = useRef(false)
   const navigate = useNavigate()
@@ -587,17 +402,20 @@ function InterviewPlans({ annual }: { readonly annual: boolean }) {
   // bordered box around them would read as a card inside a card.
   return (
     <section className="pricing-plans">
-      <PlanCarousel count={INTERVIEW_PLANS.length}>
-        {INTERVIEW_PLANS.map((plan) => (
+      <PlanCarousel count={PLANS.length}>
+        {PLANS.map((plan) => (
           <PlanCard
             key={plan.id}
             name={plan.name}
             badge={plan.featured ? undefined : plan.badge}
             banner={plan.featured ? plan.badge : undefined}
             tagline={plan.tagline}
-            amount={<AnimatedPrice value={annual ? plan.annualMonthlyPrice : plan.monthlyPrice} />}
-            unit="/month"
-            terms={[['Monthly credits', plan.creditsPerMonth.toLocaleString('en-US')], ['1 credit', '1 interview minute']]}
+            amount={<AnimatedPrice value={annual && plan.annualPrice ? plan.annualPrice : plan.price} />}
+            unit={`/${plan.cadence}`}
+            terms={[
+              ['Billing', plan.cadence === 'week' ? 'Weekly' : annual && plan.annualPrice ? 'Annual' : 'Monthly'],
+              ['Included use', 'Unlimited'],
+            ]}
             features={plan.features}
             ctaLabel={`Unlock ${plan.name}`}
             onCta={() => navigate(`/v3/auth/create-account?plan=${plan.id}`)}
@@ -609,6 +427,16 @@ function InterviewPlans({ annual }: { readonly annual: boolean }) {
       </PlanCarousel>
       {showProOffer ? <ProOfferWidget onDismiss={() => setShowProOffer(false)} onClaim={() => navigate('/v3/auth/choose-plan?plan=pro&offer=welcome-60')} /> : null}
     </section>
+  )
+}
+
+/** A titled lead-in for the sections that used to be tabs. */
+function SectionIntro({ title, description }: { readonly title: string; readonly description: string }) {
+  return (
+    <div className="pb-5">
+      <h2 className="font-gowun text-2xl font-bold text-ink">{title}</h2>
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-muted">{description}</p>
+    </div>
   )
 }
 
@@ -637,11 +465,15 @@ function PoweredByModels() {
   </section>
 }
 
-function JobSearchCredits() {
+function PayAsYouGo() {
   const navigate = useNavigate()
 
   return (
     <section className="pricing-plans">
+      <SectionIntro
+        title="No plan? Pay as you go"
+        description="Resume Builder and Auto Apply can be bought on their own, with no subscription. Both are included unlimited on Pro and Premium."
+      />
       <PlanCarousel count={CREDIT_PRODUCTS.length}>
         {CREDIT_PRODUCTS.map((product) => (
           <PlanCard
@@ -666,6 +498,10 @@ function DoneForYou() {
 
   return (
     <section className="pricing-plans">
+      <SectionIntro
+        title="Or have it done for you"
+        description="A success manager runs the search on your behalf until the guaranteed number of interviews lands. Sold once, not as a subscription."
+      />
       <PlanCarousel count={MANAGED_PACKAGES.length}>
         {MANAGED_PACKAGES.map((managedPackage) => (
           <PlanCard
@@ -779,19 +615,7 @@ function ClosingPanel({ content }: { readonly content: SupportingContent }) {
 }
 
 export function PricingPage() {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const requestedTab = searchParams.get('tab')
-  const activeTab: PricingTab = isPricingTab(requestedTab) ? requestedTab : 'interview'
-  const supportingContent = SUPPORTING_CONTENT[activeTab]
   const [annual, setAnnual] = useState(true)
-
-  const handleTabChange = (value: string) => {
-    if (!isPricingTab(value)) return
-    const nextParams = new URLSearchParams(searchParams)
-    if (value === 'interview') nextParams.delete('tab')
-    else nextParams.set('tab', value)
-    setSearchParams(nextParams, { replace: true })
-  }
 
   return (
     // Pinned to the light palette. The public pages are a light composition — the landing
@@ -804,39 +628,44 @@ export function PricingPage() {
       <main>
         <PageShell className="pb-8 pt-10 sm:pt-14">
           <h1 className="max-w-3xl font-gowun text-4xl font-bold leading-tight text-ink sm:text-5xl">
-            Pricing that follows how you use Jobwhisper
+            One plan, everything unlimited
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-ink-muted">
-            Subscribe for interview support, buy credits for applications and resumes, or have a success manager run the search for you.
+            Pick the plan that matches your search and use every tool it covers without counting minutes,
+            prompts, or applications. Interviewing this week? Starter bills by the week.
           </p>
         </PageShell>
 
+        {/* The three shapes used to be three tabs, which hid two of them behind a click and
+            asked a visitor to understand the difference before seeing any of it. They are
+            sections of one page now: the plans, then the two ways to buy without one. */}
         <PageShell className="pb-6">
-          <Tabs value={activeTab} onValueChange={handleTabChange}>
-            {/* The rule moves to the wrapper so it runs under the toggle too, rather than
-                stopping where the tabs do. */}
-            <div className="mb-6 flex flex-col-reverse gap-3 border-b border-border sm:flex-row sm:items-end sm:gap-4">
-              <TabsList className="pricing-tabs min-w-0 flex-1 gap-7 border-b-0" aria-label="Pricing models">
-                <TabsTrigger value="interview" className="min-h-11 pb-3 text-sm sm:text-base">Interview plans</TabsTrigger>
-                <TabsTrigger value="job-search" className="min-h-11 pb-3 text-sm sm:text-base">Job-search credits</TabsTrigger>
-                <TabsTrigger value="done-for-you" className="min-h-11 pb-3 text-sm sm:text-base">Done for you</TabsTrigger>
-              </TabsList>
-              {activeTab === 'interview' ? (
-                <div className="shrink-0 self-end sm:pb-2"><BillingToggle annual={annual} onChange={() => setAnnual((value) => !value)} /></div>
-              ) : null}
+          <div className="mb-6 flex flex-col-reverse gap-3 border-b border-border pb-4 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+            <div className="min-w-0">
+              <h2 className="font-gowun text-2xl font-bold text-ink">Plans</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-muted">
+                Unlimited use of everything the plan covers. Cancel whenever the search is over.
+              </p>
             </div>
-            <TabsContent value="interview" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><InterviewPlans annual={annual} /></TabsContent>
-            <TabsContent value="job-search" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><JobSearchCredits /></TabsContent>
-            <TabsContent value="done-for-you" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><DoneForYou /></TabsContent>
-          </Tabs>
+            {/* Starter is weekly and has no annual rate, so the toggle moves the two monthly
+                plans and leaves its card alone. */}
+            <div className="shrink-0 self-end sm:pb-1">
+              <BillingToggle annual={annual} onChange={() => setAnnual((value) => !value)} />
+            </div>
+          </div>
+          <SubscriptionPlans annual={annual} />
         </PageShell>
 
         <PoweredByModels />
+
+        <PageShell className="pb-10"><PayAsYouGo /></PageShell>
+        <PageShell className="pb-10"><DoneForYou /></PageShell>
+
         <PageShell className="pb-6">
-          <CreditGuide content={supportingContent} />
+          <CreditGuide content={SUPPORTING_CONTENT} />
         </PageShell>
-        <PricingFaq content={supportingContent} />
-        <ClosingPanel content={supportingContent} />
+        <PricingFaq content={SUPPORTING_CONTENT} />
+        <ClosingPanel content={SUPPORTING_CONTENT} />
       </main>
       <MarketingFooter />
     </div>

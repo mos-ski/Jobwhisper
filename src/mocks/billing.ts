@@ -3,12 +3,12 @@ import type { BillingSnapshot, Plan } from '@/contracts/billing'
 export type BillingPlanFixture = {
   readonly id: Plan
   readonly name: string
+  /** Per cadence — per week on the weekly plan, per month on the others. */
   readonly priceMonthly: number
-  // Back-computed as credits * 40 so the shared formatCredits() helper (still hardcoded to the
-  // old $0.40/credit constant, see src/lib/credits.ts) displays the right whole-credit number.
-  // Not a real cents amount anymore — PRICING.md §3 dropped the fixed $/credit rate, but
-  // rewriting that shared helper for a per-feature rate is out of scope here.
-  readonly includedUsageCents: number
+  /** Starter bills weekly; a weekly plan has no annual rate to switch to. */
+  readonly cadence: 'week' | 'month'
+  /** What the plan includes, now that it is not an amount. */
+  readonly included: string
   readonly description: string
   readonly features: readonly string[]
   readonly note: string
@@ -37,41 +37,48 @@ export const authPlanFixtures: readonly BillingPlanFixture[] = [
   {
     id: 'starter',
     name: 'Starter',
-    priceMonthly: 47,
-    includedUsageCents: 500 * 40,
-    description: 'Interview Prep and Interview Copilot, on the web.',
+    priceMonthly: 19,
+    cadence: 'week',
+    included: 'Unlimited use',
+    description: 'Unlimited Interview Copilot on web and desktop, for the week you are interviewing.',
     features: [
-      'Interview Prep & Interview Copilot',
-      'Web only',
-      '≈500 credits per month',
+      'Interview Copilot on web and desktop',
+      'Unlimited live interview sessions',
+      'Knowledge Base with 3 documents',
     ],
-    note: 'Ideal for light or occasional interview prep',
+    note: 'Ideal for the week an interview loop actually lands',
   },
   {
     id: 'pro',
     name: 'Pro',
     priceMonthly: 99,
-    includedUsageCents: 1000 * 40,
-    description: 'More usage included, plus the desktop app, Coding Copilot, and Meeting Copilot.',
+    cadence: 'month',
+    included: 'Unlimited use',
+    description: 'Every Jobwhisper tool, unlimited, for the length of your search.',
     features: [
       'Everything in Starter',
-      'Web + Desktop app',
+      'Interview Prep',
       'Coding Copilot & Meeting Copilot',
-      '≈1,000 credits per month',
+      'Auto Apply & Resume Builder',
+      'Knowledge Base with 5 documents',
     ],
-    note: 'Best for candidates interviewing across technical and non-technical roles',
+    note: 'Best for a search that runs longer than a week',
     popular: true,
   },
   {
     id: 'premium',
     name: 'Premium',
     priceMonthly: 497,
-    includedUsageCents: 4000 * 40,
-    description: 'Everything Pro has, at 2x the size — for power users who live in interviews.',
+    cadence: 'month',
+    included: 'Unlimited use',
+    description: 'Pro, plus a recording of every session and priority support.',
     features: [
       'Everything in Pro',
-      '2x size: ≈4,000 credits per month',
+      'Call recording for every session',
+      'Priority support',
+      'Knowledge Base with 10 documents',
     ],
-    note: 'Best for power users who live in interviews and meetings',
+    note: 'Best for candidates who want every session on the record',
   },
 ]
+

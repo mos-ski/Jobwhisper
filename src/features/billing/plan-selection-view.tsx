@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Plan } from '@/contracts/billing'
-import { formatCredits } from '@/lib/credits'
 import { Badge, Button, cn } from '@/ui'
 import { X } from 'lucide-react'
 
@@ -8,7 +7,9 @@ export type AuthPlanOption = {
   readonly id: Plan
   readonly name: string
   readonly priceMonthly: number
-  readonly includedUsageCents: number
+  /** Per cadence, so the weekly plan prices and reads by the week. */
+  readonly cadence: 'week' | 'month'
+  readonly included: string
   readonly description: string
   readonly features: readonly string[]
   readonly note: string
@@ -44,8 +45,9 @@ function PlanCard({
   readonly cardRef?: (el: HTMLElement | null) => void
 }) {
   const subscribeLabel = `Subscribe to ${plan.name}`
-  const annualMonthlyPrice = Math.round(plan.priceMonthly * 0.8)
-  const displayPrice = annual ? annualMonthlyPrice : plan.priceMonthly
+  // A weekly plan has no annual rate to switch to, so the toggle leaves it where it is.
+  const annualApplies = annual && plan.cadence === 'month'
+  const displayPrice = annualApplies ? Math.round(plan.priceMonthly * 0.8) : plan.priceMonthly
 
   return (
     <article
@@ -63,10 +65,10 @@ function PlanCard({
       <div className="flex flex-1 flex-col pt-5">
         <div className="flex flex-wrap items-end gap-1">
           <span className="font-gowun text-4xl font-semibold leading-tight text-ink">${displayPrice}</span>
-          <span className="pb-2 text-sm font-medium text-ink">per month</span>
+          <span className="pb-2 text-sm font-medium text-ink">per {plan.cadence}</span>
         </div>
-        {annual ? <p className="mt-1 text-sm text-ink-muted">${displayPrice * 12} billed yearly</p> : null}
-        <p className="mt-5 text-sm font-semibold text-ink">{formatCredits(plan.includedUsageCents)} included</p>
+        {annualApplies ? <p className="mt-1 text-sm text-ink-muted">${displayPrice * 12} billed yearly</p> : null}
+        <p className="mt-5 text-sm font-semibold text-ink">{plan.included}</p>
         <p className="mt-3 text-sm leading-5 text-ink-muted">{plan.description}</p>
 
         <div className="mt-6">

@@ -84,7 +84,9 @@ export type PlanCompareViewProps = {
  */
 function BillingPlanCardView({ plan, annual, onProHover }: { readonly plan: BillingPlanCard; readonly annual: boolean; readonly onProHover?: () => void }) {
   const navigate = useNavigate()
-  const showsDiscount = annual && Boolean(plan.annualDiscountPrice)
+  // A weekly plan carries no annual rate, so the toggle leaves its card as it is.
+  const hasAnnual = Boolean(plan.annualPrice)
+  const showsDiscount = annual && hasAnnual && Boolean(plan.annualDiscountPrice)
   // In the picker, which plan you are on outranks which is popular, so it takes the banner.
   const banner = plan.current ? 'Current plan' : plan.popular ? 'Most Popular' : undefined
 
@@ -94,9 +96,12 @@ function BillingPlanCardView({ plan, annual, onProHover }: { readonly plan: Bill
       badge={banner ? undefined : plan.tag}
       banner={banner}
       tagline={plan.description}
-      amount={<PlanAmount>{showsDiscount ? plan.annualDiscountPrice : annual ? plan.annualPrice : plan.price}</PlanAmount>}
-      unit={showsDiscount || !annual ? plan.cadence : plan.annualCadence}
-      terms={[['Included credits', plan.credits], ['Billing', annual ? 'Billed yearly' : 'Billed monthly']]}
+      amount={<PlanAmount>{showsDiscount ? plan.annualDiscountPrice : annual && hasAnnual ? plan.annualPrice : plan.price}</PlanAmount>}
+      unit={showsDiscount || !annual || !hasAnnual ? plan.cadence : plan.annualCadence}
+      terms={[
+        ['Included', plan.included],
+        ['Billing', !hasAnnual ? 'Billed weekly' : annual ? 'Billed yearly' : 'Billed monthly'],
+      ]}
       features={plan.features}
       ctaLabel={plan.current ? 'Current Plan' : plan.id === 'premium' ? 'Upgrade' : 'Downgrade'}
       onCta={plan.current ? undefined : () => navigate('/v3/billing')}

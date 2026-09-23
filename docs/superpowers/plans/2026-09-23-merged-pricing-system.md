@@ -15,24 +15,29 @@
 | Starter cadence | **Auto-renewing weekly subscription** — the first weekly cadence in the product |
 | Credits | **Retired for subscribers; pay-as-you-go survives for people with no plan** (Resume Builder $5 min, Auto Apply $1/successful application) |
 | Done-For-You | **Stays, as its own section of the merged pricing page** — not a tab, not folded into a tier |
-| Annual billing | **Dropped entirely.** No monthly/annual toggle anywhere; Starter bills weekly, Pro and Premium monthly |
-| Pro | **$79/month**, replacing today's $99 monthly / $79 annual split |
+| Annual billing | **Kept** (reversed the same day, after first being dropped). Pro and Premium bill monthly or annually; Starter is weekly only and the toggle leaves its card alone |
+| Pro | **$99/month, $79/month paid annually** — unchanged. "$79 stays the same" was read off the annual card, which is the page's default view |
+| Starter price | **$19/week** — impulse-priced for one interview loop, and four weeks of it ($76) lands just under Pro's monthly annual rate, so a second week argues for the upgrade |
 
 ## The plans
 
 | Plan | Cadence | Price | Includes |
 |---|---|---|---|
-| **Starter** | Weekly | **OPEN** (see below) | Interview Copilot only — web **and** desktop. Unlimited |
-| **Pro** | Monthly | **$79** | Interview Prep, Interview Copilot, Coding Copilot, Meeting Copilot, Auto Apply, Resume Builder. All unlimited |
-| **Premium** | Monthly | **OPEN** (today $497) | Everything in Pro, plus call recording and **one more differentiator, OPEN** |
+| **Starter** | Weekly | **$19/week** | Interview Copilot only — web **and** desktop. Unlimited |
+| **Pro** | Monthly | **$99**, or **$79** annually | Interview Prep, Interview Copilot, Coding Copilot, Meeting Copilot, Auto Apply, Resume Builder. All unlimited |
+| **Premium** | Monthly | **$497**, or **$398** annually (unchanged) | Everything in Pro, plus call recording and priority support. **One more differentiator still open** |
 
 Two deliberate inversions of today's matrix, recorded so they do not read as mistakes later: Starter **loses Interview Prep**, which it has today, and **gains the desktop app**, which is Pro-and-above today. Auto Apply and Resume Builder move from standalone prepaid credits into the Pro subscription, while remaining purchasable standalone by non-subscribers.
 
-### Open before implementation starts
+### Still open
 
-1. **Starter's weekly price.** Recommended **$19/week**: impulse-priced for someone with one interview loop, and four weeks of it ($76) lands just under Pro's $79, so a second month of Starter argues for itself as an upgrade rather than competing with Pro. $15/week if it should clearly undercut instead.
-2. **Premium's second differentiator.** Call recording alone is thin against the gap to Pro. Candidates: session transcripts with searchable history, priority/low-latency model access, a human coach review, multi-seat.
-3. **Premium's price**, which follows from 2.
+1. **Premium's second differentiator.** Call recording alone is thin against the gap to Pro ($497 vs $99), and the volume differentiator that justified that gap — 4,000 credits against Pro's 1,000 — no longer exists under unlimited. Candidates: session transcripts with searchable history, priority/low-latency model access, a human coach review, multi-seat.
+2. **Premium's price**, which follows from 1. Left at today's $497/$398 for now.
+3. **A fair-use ceiling on Auto Apply**, per the constraint below. Not in the UI yet because the number is not chosen.
+
+### Built 2026-09-23
+
+Tasks 1, 2, 3 and Task 6 step 1 are done and pushed: `PRICING.md` rewritten, `REVENUE-STREAMS.md` repriced with its revenue model flagged stale (it needs a Starter retention assumption before it can be recomputed), the merged pricing page and its test, the plan fixtures and their three consumers, the `CONTRACT-REQUESTS.md` entry, and the landing page's cost answer. Tasks 4, 5 and 7 — the in-product credit UI, admin/emails/help centre, and migration — are untouched, so a subscriber's dashboard still shows a credit balance that the pricing page no longer sells.
 
 ## Global Constraints
 
@@ -53,11 +58,11 @@ Two deliberate inversions of today's matrix, recorded so they do not read as mis
 **Interfaces:**
 - Produces: the three-plan table, the pay-as-you-go-for-non-subscribers rule, the DFY section, and the retired-concepts list every later task reads from.
 
-- [ ] **Step 1: Rewrite §1 and §1.1** as three unlimited plans on the cadences above, replacing the credits/month columns with what each plan unlocks.
-- [ ] **Step 2: Rewrite §2** so prepaid Resume Builder and Auto Apply are explicitly the no-subscription path, and say what a subscriber sees instead.
-- [ ] **Step 3: Rewrite §3** — per-feature usage rates now apply only to non-subscribers.
-- [ ] **Step 4: Record what is retired** — annual billing, the monthly credit allowance, mid-cycle top-ups for subscribers, Knowledge Base document caps if unlimited supersedes them (decide explicitly).
-- [ ] **Step 5: Update §4's surface list** to the files in Tasks 2-6 so the doc keeps pointing at real code.
+- [x] **Step 1: Rewrite §1 and §1.1** as three unlimited plans on the cadences above, replacing the credits/month columns with what each plan unlocks.
+- [x] **Step 2: Rewrite §2** so prepaid Resume Builder and Auto Apply are explicitly the no-subscription path, and say what a subscriber sees instead.
+- [x] **Step 3: Rewrite §3** — per-feature usage rates now apply only to non-subscribers.
+- [x] **Step 4: Record what is retired** — the monthly credit allowance, mid-cycle top-ups for subscribers, "1 credit = 1 minute" as plan language, and Premium's "2x size" framing. Knowledge Base caps survive, deliberately.
+- [x] **Step 5: Update §4's surface list** to the files in Tasks 2-6 so the doc keeps pointing at real code.
 
 ---
 
@@ -69,15 +74,15 @@ Two deliberate inversions of today's matrix, recorded so they do not read as mis
 
 **Interfaces:**
 - Consumes: plan fixtures from Task 3.
-- Produces: one plan row of three cards, a Done-For-You section, a pay-as-you-go section for non-subscribers; no `?tab=` parameter, no billing toggle.
+- Produces: one plan row of three cards, a Done-For-You section, a pay-as-you-go section for non-subscribers; no `?tab=` parameter.
 
-- [ ] **Step 1: Write the failing test** — three plan cards with their cadence labels, a DFY region, a PAYG region, and no billing-period toggle.
-- [ ] **Step 2: Run it and watch it fail.** `npm test -- --run src/apps/web/pages/pricing-page.test.tsx`
-- [ ] **Step 3: Replace the tab machinery** with sections. `PricingTab`, `SUPPORTING_CONTENT` keyed by tab, and the `?tab=` URL state all come out; the per-tab guide/FAQ/closing content merges into one set.
-- [ ] **Step 4: Remove `BillingToggle`, `annual` state and `annualMonthlyPrice`.** Cards carry their own cadence ("per week" / "per month").
-- [ ] **Step 5: Rewrite the FAQ and the credit guide** — "How interview credits work" is no longer true for subscribers.
-- [ ] **Step 6: Keep `data-theme="light"`** on the page root (it is the only marketing page built from semantic tokens).
-- [ ] **Step 7: Run the test and the full suite.**
+- [x] **Step 1: Write the failing test** — three plan cards with their cadence labels, a DFY region, a PAYG region, and no tabs.
+- [x] **Step 2: Run it and watch it fail.** `npm test -- --run src/apps/web/pages/pricing-page.test.tsx`
+- [x] **Step 3: Replace the tab machinery** with sections. `PricingTab`, `SUPPORTING_CONTENT` keyed by tab, and the `?tab=` URL state all come out; the per-tab guide/FAQ/closing content merges into one set.
+- [x] **Step 4: Keep `BillingToggle`** and give each card its own cadence ("/week" / "/month"). The weekly plan carries no annual rate, so the toggle moves the two monthly cards and leaves Starter's alone.
+- [x] **Step 5: Rewrite the FAQ and the credit guide** — "How interview credits work" is no longer true for subscribers.
+- [x] **Step 6: Keep `data-theme="light"`** on the page root (it is the only marketing page built from semantic tokens).
+- [x] **Step 7: Run the test and the full suite.**
 
 ---
 
@@ -93,10 +98,10 @@ Two deliberate inversions of today's matrix, recorded so they do not read as mis
 - Consumes: `Plan` (`'starter' | 'pro' | 'premium'`, unchanged).
 - Produces: fixtures carrying cadence and unlimited entitlement instead of `includedUsageCents`.
 
-- [ ] **Step 1: File the contract request** — `BillingSnapshot` needs to express "unlimited on this plan" without a wallet balance; propose the shape, do not edit `src/contracts/billing.ts`.
-- [ ] **Step 2: Replace `includedUsageCents`** with cadence + entitlement in `authPlanFixtures`.
-- [ ] **Step 3: Update the signup and comparison views** to the new features and prices, including the weekly cadence on Starter.
-- [ ] **Step 4: Run the suite.**
+- [x] **Step 1: File the contract request** — `BillingSnapshot` needs to express "unlimited on this plan" without a wallet balance; propose the shape, do not edit `src/contracts/billing.ts`.
+- [x] **Step 2: Replace `includedUsageCents`** with cadence + entitlement in `authPlanFixtures`.
+- [x] **Step 3: Update the signup and comparison views** to the new features and prices, including the weekly cadence on Starter.
+- [x] **Step 4: Run the suite.**
 
 ---
 
@@ -147,7 +152,7 @@ Two deliberate inversions of today's matrix, recorded so they do not read as mis
 - Modify: `docs/LIGHTFORTH_END_TO_END_SMARTER_SCRIPT.md`
 - Test: `src/apps/web/pages/landing-page.test.tsx`
 
-- [ ] **Step 1: Update the landing FAQ** to the new prices and cadences.
+- [x] **Step 1: Update the landing FAQ** to the new prices and cadences.
 - [ ] **Step 2: Reconcile the Pro offer widget** — "$40 first month" needs a decision against $79/month with no annual option.
 - [ ] **Step 3: Update the VSL checkout** line items.
 - [ ] **Step 4: Update the end-to-end script**, which names the pricing story.

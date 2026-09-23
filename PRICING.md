@@ -2,20 +2,31 @@
 
 This is the live, editable source of truth for pricing: what's actually charged today, where every number lives in the codebase, and what's still unresolved. Update this file the moment a price changes anywhere, or a new pricing idea gets floated, so it stays the one place to check "what do we currently charge, and does it agree with itself."
 
-**Last corrected: 2026-09-02** — three planning conversations with the founder settled the whole product shape, not just numbers: this is now genuinely **three plans + a marketplace**, not a subscription with a pile of feature upsells bolted on. Doc is stable enough to review as a whole before implementation starts (§7 is the one section still purely backlog).
+**Last corrected: 2026-09-23** — the three separately-shaped products were merged into **one set of three subscription plans, all unlimited**. The monthly credit allowance that used to separate the tiers is gone, so what a plan unlocks is the only thing that varies between them. Pay-as-you-go survives for people without a plan; Done-For-You keeps its own section of the pricing page. Implemented in code the same day (§4).
 
-## The three plans, at a glance
+## The plans, at a glance
 
-Users are sold one of three distinct intents — these aren't three tiers of one product, they're three different products with three different pricing shapes:
-
-| Plan | Answers | What it is | Pricing shape |
+| Plan | Cadence | Price | What it unlocks |
 |---|---|---|---|
-| **1. Ace Your Interview** (§1) | "Are you looking to ace your next interview?" | Interview Prep + Interview Copilot | Recurring subscription — Starter/Pro/Premium |
-| **2. Find Jobs Yourself** (§2.1) | "Are you looking for jobs right now?" (DIY) | Auto Apply (AI-run) + Resume Builder | Prepaid credits, bought upfront (preset amounts + custom "Other" input), valid 12 months, spent down as used — not a recurring charge |
-| **3. Find Jobs, Done For You** (§2.2) | Same question, but hands-off | Auto Apply + Resume Builder + a human success manager + Jobwhisper product access | Flat committed package ($497 / $997) |
-| **The Marketplace** (§5) | — | One-time content: swipe files, scripts, templates | Flat one-time purchases, $9–$29 |
+| **Starter** | Weekly, auto-renewing | **$19/week** | Interview Copilot on web **and** desktop. Unlimited |
+| **Pro** | Monthly | **$99/month**, or **$79/month** paid annually | Everything in Starter, plus Interview Prep, Coding Copilot, Meeting Copilot, Auto Apply, Resume Builder. All unlimited |
+| **Premium** | Monthly | **$497/month**, or **$398/month** paid annually | Everything in Pro, plus call recording for every session and priority support |
 
-Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold fully standalone — no Starter/Pro/Premium required, and (revised 2026-09-02) no subscription tier changes how they behave either. The two are cleanly decoupled now.
+**Unlimited means unlimited use of the tools a plan covers** — no credit balance, no minute counting, no mid-session top-up. The credit economy survives only for people **without** a plan (§2.1).
+
+**Starter is weekly on purpose.** It is sized for the week someone actually has interviews rather than a month of readiness, and it renews weekly until cancelled. It carries **no annual rate** — a year bought a week at a time is not an annual plan — so the pricing page's annual toggle moves the two monthly plans and leaves Starter's card alone.
+
+**Two deliberate inversions of the old matrix**, recorded so they don't read as bugs later:
+
+- **Starter lost Interview Prep** and **gained the desktop app.** Previously Prep was on every tier and desktop was Pro-and-above. Starter is now live interview support only, on both surfaces.
+- **Auto Apply and Resume Builder moved into Pro**, unlimited, having been standalone pay-as-you-go products outside every tier. They remain buyable standalone by non-subscribers.
+
+### Open threads on this model
+
+1. **Premium's second differentiator.** Call recording is in. It is thin on its own against the gap to Pro ($497 vs $99), and the volume differentiator that used to justify that gap — 4,000 credits against Pro's 1,000 — no longer exists under unlimited. Candidates raised: session transcripts with searchable history, priority/low-latency model access, a human coach review, multi-seat. **Premium's price should be revisited once this lands.**
+2. **A fair-use ceiling on Auto Apply.** Unlimited applications at $99/month is unbounded liability — every application carries real marginal cost, which is exactly why it is $1/successful-application pay-as-you-go (§3). `src/mocks/admin-messaging.ts` already floats "10 Auto Apply submissions per day" in campaign copy. Pick a number, put it in the small print, and enforce it before launch rather than discovering it in the margin.
+3. **Knowledge Base caps survive** (Starter 3, Pro 5, Premium 10) and are the one per-tier ceiling left. Decide deliberately whether "unlimited" should swallow them too; today it does not, and they give the tiers texture beyond the feature list.
+4. **Migration.** Existing subscribers are on $47/$99/$497 with credit balances, and today's Starter is monthly with Interview Prep. What happens to unspent balances, to annual subscribers, and to Starter subscribers moving to a weekly plan without Prep is unresolved — see `docs/superpowers/plans/2026-09-23-merged-pricing-system.md` Task 7.
 
 ## Pricing documents in this repo
 
@@ -29,53 +40,43 @@ Plan 1 is the only place a subscription exists at all. Plans 2 and 3 are sold fu
 
 ---
 
-## 1. Plan 1 — Ace Your Interview (subscription tiers, corrected 2026-09-02)
+## 1. The plans (merged 2026-09-23)
 
-| Tier | Price | Credits/mo (approx.) | ~min/mo of Copilot |
-|---|---|---|---|
-| **Starter** | **$47/month** | ≈500 credits | ≈500 min |
-| **Pro** | **$99/month** | ≈1,000 credits | ≈1,000 min |
-| **Premium** | **$197/month** | ≈4,000 credits | ≈4,000 min |
+The three plans above are one product sold at three commitment levels, not three different products. Everything they cover is unlimited; the tiers differ only in what they cover, plus the Knowledge Base cap.
 
-**Premium revised 2026-09-02: ≈2,000 → ≈4,000 credits/mo, branded "2x size."** With Coding and Meeting Copilot now shared by Pro and Premium alike (§1.1), usage volume is Premium's actual differentiator, not features — this makes that gap real instead of token (previously ≈2,000 vs Pro's ≈1,000 was already 2x; doubling again makes it 4x Pro, a much clearer upgrade case). Worth a naming gut-check: "2x size" reads as 2x *something*, but the actual ratio to Pro is 4x — fine if "2x" means "we doubled what Premium used to be," confusing if a user reads it as "2x Pro." Pick the framing deliberately when this becomes UI copy.
+**Not a plan — the un-subscribed state.** Someone with no active subscription still gets 50 min/mo of Copilot, on a rolling 30 days from last reset rather than a calendar month. **This is intentionally not shown as a "Free" plan card anywhere in the UI** — no tier row, no pricing table entry. It is what happens by default before someone subscribes, not a fourth option being sold.
 
-**First-time Pro offer:** $40 first month, renews at $99/month. This resolves an inconsistency that existed across older docs (the transition plan alone said $99, $100, and $100 in three different places for the renewal price) and also resolves the coincidence flagged in the previous version of this file — VSL's checkout should now explicitly charge $40 first month / $99 renewal to match, not just happen to be close.
+**Retired by this merge**, and not to be reintroduced piecemeal:
 
-**Credits/mo revised 2026-09-02 to round, approximate numbers** (≈500/1,000/2,000) — rounding up from the exact price ÷ $0.10 derivation (470/990/1,970) to clean marketing figures, at 1 credit = 1 minute of Copilot throughout (§3's $0.10/credit/min rate). Rounding *up* slightly narrows the margin further rather than widening it (≈500 credits is $50 of Copilot time against a $47 price) — worth knowing that's the direction this rounding pushes, not assuming it fixed the earlier zero-margin concern.
+| Retired | Was | Now |
+|---|---|---|
+| Monthly credit allowance per tier | ≈500 / 1,000 / 4,000 credits | Unlimited use of what the plan covers |
+| Mid-cycle top-ups for subscribers | $10 minimum, wallet credits | Nothing to top up |
+| "1 credit = 1 minute" as plan language | The tiers' unit of comparison | Only meaningful pay-as-you-go (§3) |
+| Premium's "2x size" framing | 4,000 credits vs Pro's 1,000 | Needs a real differentiator (open thread 1) |
+| Starter as a monthly plan with Interview Prep | $47/month | $19/week, Copilot only |
 
-*(Correcting my own error, not the founder's: I'd previously written ≈50/100/200 here, an order of magnitude off — the actual typo was in the credits figure, not the minutes. ≈500/1,000/2,000 is the number that's actually close to the exact 470/990/1,970 derivation.)*
-
-**Not a plan — the un-subscribed state.** Revised 2026-09-02: someone with no active subscription still gets 50 min/mo, up from the 5 credits the older PRDs state. **This is intentionally not shown as a "Free" plan card anywhere in the UI** — no tier row, no pricing table entry — it's just what happens by default before someone subscribes, not a fourth option being sold alongside Starter/Pro/Premium. (I'd added it as a table row in an earlier pass; pulled back out of both tables in this one, per that instruction.) **Reset anchor confirmed 2026-09-02: rolling 30 days from last reset, not calendar month** — reasoning given: 50 minutes is roughly one interview session, so it makes more sense to refill 30 days after it's used than to wait for an arbitrary calendar-month boundary.
-
-**Mid-cycle top-ups, added 2026-09-02.** A subscriber who runs out of monthly credits before the cycle resets — e.g. mid-interview — can buy more on the spot rather than waiting for the reset. Same UI pattern as Plan 2's "Add credits" modal (§2.1: preset amount buttons + an "Other" custom input, live $→credit conversion, whole-number validation), reused here rather than a separate design. **$10 minimum purchase** — matching Auto Apply's floor in §2.1, not Resume Builder's $5. Top-up credits are Plan 1 wallet credits (§1's $0.10/credit/min rate), spent alongside the monthly allowance, not a separate balance with its own expiry. Not yet built in code — no purchase UI exists for this any more than it does for §2.1 (§6 item 1).
-
-**Knowledge Base document limits, added 2026-09-02.** The Knowledge Base (resume, job description, and other context documents Copilot/Prep/Resume Builder draw from) caps how many documents a tier can have uploaded at once: **Starter 3, Pro 5, Premium 10.** Not credit-metered — a flat per-tier ceiling, same idea as the monthly minutes row but for storage, not usage. Not yet enforced anywhere in code (`src/features/documents/documents-view.tsx`, the Knowledge Base picker in Copilot/Prep/desktop).
-
-### 1.1 Feature access matrix — what each tier actually unlocks
+### 1.1 Feature access matrix — what each plan actually unlocks
 
 | Capability | Starter | Pro | Premium |
 |---|---|---|---|
-| Interview Prep | ✓ | ✓ | ✓ |
 | Interview Copilot (web) | ✓ | ✓ | ✓ |
-| Interview Copilot (desktop app) | — | ✓ | ✓ |
+| Interview Copilot (desktop app) | ✓ | ✓ | ✓ |
+| Interview Prep | — | ✓ | ✓ |
 | Coding Copilot | — | ✓ | ✓ |
 | Meeting Copilot | — | ✓ | ✓ |
-| Monthly minutes (§ above) | ≈500 | ≈1,000 | ≈4,000 |
+| Auto Apply | — | ✓ | ✓ |
+| Resume Builder | — | ✓ | ✓ |
+| Call recording | — | — | ✓ |
+| Priority support | — | — | ✓ |
+| Included use | Unlimited | Unlimited | Unlimited |
 | Knowledge Base documents | 3 | 5 | 10 |
 
-The un-subscribed/free state (50 min/mo, §1 above) isn't a column here on purpose — it's not a plan, so it doesn't belong in a table meant to compare plans. In practice it behaves like a capped version of the Starter row (Interview Prep + web Copilot only), but that's carried over from the older PRDs, not something separately reconfirmed.
+The un-subscribed state isn't a column here on purpose — it isn't a plan, so it doesn't belong in a table meant to compare plans.
 
-**Revised 2026-09-02: Meeting Copilot and Coding Copilot are both shared by Pro and Premium — confirmed, not a mistake.** Auto Apply Full-Auto Mode is **removed from this table entirely** — Plan 1 is interview-only now, no cross-reference into Plan 2/3 (see §2.3, rewritten).
+## 2. Finding Jobs without a plan (Auto Apply + Resume Builder)
 
-**Premium vs. Pro — resolved 2026-09-02.** Same feature set on purpose; Premium's differentiator is volume, made explicit by the 4,000-credit "2x size" jump above rather than left as an accidental byproduct of unrelated decisions.
-
-**Caveat, don't treat the row structure above as freshly confirmed either:** it's still carried over from `docs/PRICING_STRATEGY_PRD.md` §2 except where explicitly revised in this session.
-
-**Still not corrected anywhere in code:** the feature access matrix now lives in §1.1 above, but nothing in `src/mocks/billing.ts`/`account.ts` reflects it. Annual pricing is also still unaddressed.
-
-## 2. Plans 2 & 3 — Finding Jobs (Auto Apply + Resume Builder)
-
-The core product (Plan 1) is interview prep + live in-interview help. Everything below answers a different question — "are you looking for jobs right now?" — and is sold **standalone, no Starter/Pro/Premium subscription required.**
+**Revised 2026-09-23.** Auto Apply and Resume Builder are now **included, unlimited, in Pro and Premium** (§1.1). Everything in this section is what they cost **to someone with no plan** — still sold standalone, still no subscription required, and still the only place the credit economy survives. A subscriber never sees a balance, a rate, or a top-up for either tool.
 
 Resume tailoring that happens automatically *as part of* an Auto Apply application is **not** a Resume Builder charge — it's just Auto Apply doing its job, bundled into the $1/$10 price. "Resume Builder" as its own billed product only means a user deliberately opening the tool to build, fix, or tailor a resume themselves.
 
@@ -148,9 +149,19 @@ Resolved by the prepaid-credit model above (§2.1): Resume Builder is purchased 
 
 ## 4. Live pricing surfaces (where these numbers need to actually get wired in)
 
-### 4.1 Subscription + add-ons — `src/mocks/billing.ts`, `src/mocks/account.ts`
+### 4.1 Wired in 2026-09-23 — the merged model in code
 
-Currently hardcoded to the **old** $20/$100/$200, plus the old $15/mo Resume Builder and $40/mo Auto Apply add-on entries — none of which match Plans 2/3's actual shape anymore. Needs a real rebuild, not a price edit: `src/contracts/billing.ts`'s `AddOnId`/`FeatureAccess` shape assumes an add-on requires an active `BillingSnapshot` subscription, which is now wrong for both Auto Apply and Resume Builder (§2) — they need their own standalone entitlement/purchase path (a prepaid credit balance per feature, per §2.1) that works for accounts with no subscription at all. This is a bigger contract change than the tier-price update in §1.
+| Surface | File | State |
+|---|---|---|
+| Public pricing page | `src/apps/web/pages/pricing-page.tsx` | **Done.** One plan set, tabs gone, `?tab=` retired, Done-For-You and pay-as-you-go as sections, annual toggle kept and skipping weekly Starter |
+| Signup plan cards | `src/mocks/billing.ts`, `src/features/billing/plan-selection-view.tsx`, `src/features/demo/demo-pricing-panel.tsx` | **Done.** `includedUsageCents` replaced by a cadence and an `included` label |
+| In-app plan comparison | `src/mocks/account.ts`, `src/features/billing/plan-compare-view.tsx`, `src/contracts/account.draft.ts` | **Done.** Annual fields optional for the weekly plan; `credits` field renamed `included` |
+| Landing FAQ | `src/apps/web/pages/landing-page.tsx` | **Done.** Cost answer rewritten |
+| Entitlement contract | `src/contracts/billing.ts` | **Open.** `CreditWallet` and `FeatureAccess.creditCost` no longer describe a subscriber. Not editable here — filed in `CONTRACT-REQUESTS.md` |
+| In-product credit UI | dashboard balance, account usage, top-up dialogs, `src/lib/credits.ts` | **Open.** Task 4 of the plan doc: a subscriber should see "Unlimited", a non-subscriber still sees a balance |
+| Admin, emails, help centre | `src/features/admin/*`, `src/emails/templates/*`, `src/data/help-center/articles/*` | **Open.** Tasks 5 of the plan doc. Credit adjustment should scope to pay-as-you-go balances only |
+
+Plan of record for the open rows: `docs/superpowers/plans/2026-09-23-merged-pricing-system.md`.
 
 **Decided 2026-09-02: Auto Apply and Resume Builder are both removed from the subscribe-time checkout order bump entirely** — neither is offered as an "add this for $X/mo" checkbox at signup anymore. They're sold through their own standalone "Add credits" purchase flow (§2.1), unconnected to the Plan 1 subscribe flow.
 
