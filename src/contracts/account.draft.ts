@@ -19,6 +19,10 @@ export type BillingPlanCard = {
   readonly name: string
   readonly price: string
   readonly cadence: string
+  /** The annual rate and its cadence. Absent on a weekly plan: annual billing does not
+   *  apply to it, and its card says so rather than silently not moving. */
+  readonly annualPrice?: string
+  readonly annualCadence?: string
   /** What the plan includes. Plans are unlimited now, so this is no longer an amount. */
   readonly included: string
   readonly description: string

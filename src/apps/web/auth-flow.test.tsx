@@ -45,8 +45,9 @@ describe('v3 web auth flow', () => {
     )
 
     expect(screen.getByRole('heading', { name: 'Choose a plan' })).toBeInTheDocument()
-    // Annual billing is gone: Starter bills weekly, Pro and Premium monthly, one price each.
-    expect(screen.queryByRole('switch', { name: 'Toggle annual billing' })).not.toBeInTheDocument()
+    expect(screen.getByRole('switch', { name: 'Toggle annual billing' })).toBeInTheDocument()
+    // Starter bills weekly, so the switch leaves it alone and its card says why.
+    expect(screen.getByText('Annual billing does not apply to weekly plans')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Starter' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Pro' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Premium' })).toBeInTheDocument()

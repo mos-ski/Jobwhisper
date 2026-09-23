@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
@@ -54,21 +54,30 @@ describe('PricingPage', () => {
     expect(within(premium).getByText('Unlimited Auto Apply')).toBeInTheDocument()
   })
 
-  it('prices each plan once, on its own cadence, with no annual switch', () => {
+  it('tells Starter out of the annual switch instead of silently ignoring it', async () => {
+    const user = userEvent.setup()
     renderPricingPage()
 
-    const starter = screen.getByRole('heading', { level: 3, name: 'Starter' }).closest('article') as HTMLElement
-    const pro = screen.getByRole('heading', { level: 3, name: 'Pro' }).closest('article') as HTMLElement
-    const premium = screen.getByRole('heading', { level: 3, name: 'Premium' }).closest('article') as HTMLElement
+    const starter = () => screen.getByRole('heading', { level: 3, name: 'Starter' }).closest('article') as HTMLElement
+    const pro = () => screen.getByRole('heading', { level: 3, name: 'Pro' }).closest('article') as HTMLElement
+    const premium = () => screen.getByRole('heading', { level: 3, name: 'Premium' }).closest('article') as HTMLElement
 
-    expect(within(starter).getByText('$47')).toBeInTheDocument()
-    expect(within(starter).getByText('/week')).toBeInTheDocument()
-    expect(within(starter).getByText('Weekly')).toBeInTheDocument()
-    expect(within(pro).getByText('$99')).toBeInTheDocument()
-    expect(within(pro).getByText('/month')).toBeInTheDocument()
-    expect(within(premium).getByText('$497')).toBeInTheDocument()
-    expect(screen.queryByRole('switch', { name: 'Toggle annual billing' })).not.toBeInTheDocument()
-    expect(screen.queryByText(/save 20%/)).not.toBeInTheDocument()
+    // Annual is the default view: the monthly plans show their annual rate, the weekly one
+    // shows its own price and says why it did not move.
+    expect(within(starter()).getByText('$47')).toBeInTheDocument()
+    expect(within(starter()).getByText('/week')).toBeInTheDocument()
+    expect(within(starter()).getByText('Annual billing does not apply to weekly plans')).toBeInTheDocument()
+    expect(within(pro()).getByText('$79')).toBeInTheDocument()
+    expect(within(premium()).getByText('$398')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('switch', { name: 'Toggle annual billing' }))
+
+    // The figures tween between the two rates, so both have to settle.
+    await waitFor(() => expect(within(pro()).getByText('$99')).toBeInTheDocument())
+    await waitFor(() => expect(within(premium()).getByText('$497')).toBeInTheDocument())
+    expect(within(starter()).getByText('$47')).toBeInTheDocument()
+    // The note is the answer to "why didn't this one change?", so it goes when nothing asked.
+    expect(within(starter()).queryByText('Annual billing does not apply to weekly plans')).not.toBeInTheDocument()
   })
 
   it('sells the three ways to buy as three tabs', async () => {

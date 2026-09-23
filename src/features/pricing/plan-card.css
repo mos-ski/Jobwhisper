@@ -121,6 +121,8 @@
 .pricing-plan-features{margin:0;padding:20px 0 0;border-top:1px solid var(--lf-border);list-style:none;display:flex;flex-direction:column;gap:10px}
 .pricing-plan-features li{display:flex;align-items:flex-start;gap:10px;font-size:14px;line-height:20px;color:var(--lf-ink)}
 .pricing-plan-note{margin:0;font-size:13px;font-style:italic;line-height:18px;color:var(--lf-accent-text)}
+/* Under the price, where the answer to "why didn't this one change?" belongs. */
+.pricing-plan-price-note{margin:6px 0 0;font-size:13px;line-height:18px;color:var(--lf-ink-muted)}
 .pricing-plan-features svg{width:16px;height:16px;flex:0 0 16px;margin-top:2px;color:var(--lf-ink-muted)}
 
 /* Dashes under the carousel: the only thing on a phone that says the row keeps going. */

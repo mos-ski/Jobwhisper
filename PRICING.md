@@ -9,10 +9,10 @@ This is the live, editable source of truth for pricing: what's actually charged 
 | Plan | Cadence | Price | What it unlocks |
 |---|---|---|---|
 | **Starter** | Weekly, auto-renewing | **$47/week** | Interview Prep **and** Interview Copilot, unlimited, on web, desktop and mobile |
-| **Pro** | Monthly | **$99/month** | Everything in Starter, plus Meeting Copilot, Coding Copilot, Resume Builder, and Auto Apply for **500 jobs a month** |
-| **Premium** | Monthly | **$497/month** | Everything in Pro, with **the job cap taken off Auto Apply**, plus priority support |
+| **Pro** | Monthly | **$99/month**, or **$79/month** paid annually | Everything in Starter, plus Meeting Copilot, Coding Copilot, Resume Builder, and Auto Apply for **500 jobs a month** |
+| **Premium** | Monthly | **$497/month**, or **$398/month** paid annually | Everything in Pro, with **the job cap taken off Auto Apply**, plus priority support |
 
-**No annual billing.** Retired 2026-09-23 across the pricing page, the signup flow and the in-app plan comparison: one price per plan, nothing to toggle.
+**Annual billing applies to the monthly plans only** — 20% off, on Pro and Premium. **Starter is weekly and opts out**: switching a billing toggle to annual leaves its price where it is, and every surface that offers the switch says so on Starter's card — "Annual billing does not apply to weekly plans" — rather than letting the card look like it missed the toggle. That note is live on the pricing page, the signup plan picker and the in-app plan comparison.
 
 **Unlimited means the interview side, on every plan** — Prep and every Copilot, no credit balance, no minute counting, no mid-session top-up. **Auto Apply is the one metered thing left inside a plan**, and its volume is what separates Pro from Premium. The credit economy otherwise survives only for people **without** a plan (§2.1).
 

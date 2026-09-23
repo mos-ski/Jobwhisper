@@ -15,8 +15,8 @@
 | Starter cadence | **Auto-renewing weekly subscription** — the first weekly cadence in the product |
 | Credits | **Retired for subscribers; pay-as-you-go survives for people with no plan** (Resume Builder $5 min, Auto Apply $1/successful application) |
 | Done-For-You | **Stays, as its own section of the merged pricing page** — not a tab, not folded into a tier |
-| Annual billing | **Retired everywhere** — pricing page, signup flow and in-app comparison. One price per plan. (Dropped, briefly restored, then dropped for good on 2026-09-23.) |
-| Pro | **$99/month** |
+| Annual billing | **Kept, on the monthly plans only.** 20% off Pro and Premium; Starter is weekly and opts out, and each surface that offers the switch says so on its card rather than leaving it looking ignored. |
+| Pro | **$99/month**, $79/month annually |
 | Starter price | **$47/week** — the founder's correction of the recommended $19. See the open thread in `PRICING.md` §1: four weeks of it is ~$204 against Pro's $99, so the ladder reads backwards unless the card says "one week" loudly |
 
 ## The plans
@@ -24,8 +24,8 @@
 | Plan | Cadence | Price | Includes |
 |---|---|---|---|
 | **Starter** | Weekly | **$47/week** | Interview Prep **and** Interview Copilot, unlimited, on web, desktop and mobile |
-| **Pro** | Monthly | **$99/month** | Everything in Starter, plus Meeting and Coding Copilot, Resume Builder, and Auto Apply for **500 jobs a month** |
-| **Premium** | Monthly | **$497/month** | Everything in Pro, with **the job cap off Auto Apply**, plus priority support |
+| **Pro** | Monthly | **$99/month** ($79 annually) | Everything in Starter, plus Meeting and Coding Copilot, Resume Builder, and Auto Apply for **500 jobs a month** |
+| **Premium** | Monthly | **$497/month** ($398 annually) | Everything in Pro, with **the job cap off Auto Apply**, plus priority support |
 
 Call recording is on every plan, and so is every platform — neither is tiered. Auto Apply volume is the only thing that ladders, which is also what gives Premium its price rationale: 500 jobs is worth ~$500 at the pay-as-you-go rate, so $497 buys the cap off.
 

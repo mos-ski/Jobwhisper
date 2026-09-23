@@ -6,7 +6,7 @@
 
 | Stream | How it works | Price |
 |---|---|---|
-| **Subscription** | Starter / Pro / Premium. Interviews unlimited on all three; Auto Apply is capped at 500 jobs/month on Pro and uncapped on Premium. No annual billing | **$47/week** · **$99/month** · **$497/month** |
+| **Subscription** | Starter / Pro / Premium. Interviews unlimited on all three; Auto Apply is capped at 500 jobs/month on Pro and uncapped on Premium. Annual billing on the monthly plans only | **$47/week** · **$99/month** ($79 annually) · **$497/month** ($398 annually) |
 | **Pay as you go** | Prepaid credits, for people **without** a plan only — all three are unlimited on a plan | $10 min → $0.10/interview minute · $5 min → $0.10/resume prompt · $10 min → $1/successful application |
 | **Done For You** | One-time package, not a subscription — a success manager applies for the client until the guarantee is met | $497 (10 interviews guaranteed) / $997 (20 interviews guaranteed) |
 

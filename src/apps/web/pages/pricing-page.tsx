@@ -21,6 +21,9 @@ type SubscriptionPlan = {
   readonly cadence: 'week' | 'month'
   /** Per cadence — so per week on Starter, per month on the other two. */
   readonly price: number
+  /** The monthly equivalent when paid annually. The weekly plan has none: annual billing
+   *  does not apply to it, and its card says so rather than silently not moving. */
+  readonly annualPrice?: number
   /** The row under Billing. Auto Apply volume is what separates Pro from Premium, so the
    *  card states it rather than leaving "unlimited" to cover a plan with a job cap. */
   readonly usageLabel: string
@@ -99,6 +102,7 @@ const PLANS: readonly SubscriptionPlan[] = [
     tagline: 'The whole job search',
     cadence: 'month',
     price: 99,
+    annualPrice: 79,
     usageLabel: 'Auto Apply',
     usageValue: '500 jobs',
     description: 'Every interview tool unlimited, plus Resume Builder and 500 jobs applied for you each month.',
@@ -117,6 +121,7 @@ const PLANS: readonly SubscriptionPlan[] = [
     tagline: 'Apply without a ceiling',
     cadence: 'month',
     price: 497,
+    annualPrice: 398,
     usageLabel: 'Auto Apply',
     usageValue: 'Unlimited',
     description: 'Everything in Pro, with the job cap taken off Auto Apply.',
@@ -211,7 +216,7 @@ const SUPPORTING_CONTENT: SupportingContent = {
   guideDescription: 'One price per plan, no credit balance to watch, and two ways to buy without one.',
   guideItems: [
     { label: 'Starter', value: 'Renews every week until you cancel' },
-    { label: 'Pro and Premium', value: 'Renew every month until you cancel' },
+    { label: 'Pro and Premium', value: 'Monthly, or annually for 20% less a month' },
     { label: 'Usage', value: 'Unlimited interviews on every plan — no credits to track' },
     { label: 'Without a plan', value: 'Interview minutes, resume prompts and applications, bought as you go' },
   ],
@@ -226,11 +231,11 @@ const SUPPORTING_CONTENT: SupportingContent = {
     {
       question: 'How does the Starter plan bill?',
       answer:
-        'Starter renews every week until you cancel. It is sized for the week you are actually interviewing rather than a whole month of readiness.',
+        'Starter renews every week until you cancel. It is sized for the week you are actually interviewing rather than a whole month of readiness, so annual billing does not apply to it — switching the toggle leaves its price where it is.',
     },
     {
       question: 'How do Pro and Premium bill?',
-      answer: 'Monthly, until you cancel. There is one price per plan — no annual commitment and no annual rate.',
+      answer: 'Monthly by default, or annually at about 20% less a month. Both renew until you cancel.',
     },
     {
       question: 'Can I buy interview minutes without a plan?',
@@ -325,6 +330,67 @@ const SUPPORTING_CONTENT: SupportingContent = {
 }
 
 
+function useAnimatedNumber(target: number) {
+  const [displayValue, setDisplayValue] = useState(target)
+  const previousTargetRef = useRef(target)
+
+  useEffect(() => {
+    const startValue = previousTargetRef.current
+    previousTargetRef.current = target
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    if (reduceMotion || startValue === target) {
+      setDisplayValue(target)
+      return
+    }
+
+    const startTime = performance.now()
+    let frame = 0
+    const finish = window.setTimeout(() => setDisplayValue(target), 450)
+    const update = (now: number) => {
+      const progress = Math.min((now - startTime) / 420, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setDisplayValue(Math.round(startValue + (target - startValue) * eased))
+      if (progress < 1) frame = window.requestAnimationFrame(update)
+    }
+
+    frame = window.requestAnimationFrame(update)
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.clearTimeout(finish)
+    }
+  }, [target])
+
+  return displayValue
+}
+
+function AnimatedPrice({ value }: { readonly value: number }) {
+  const displayValue = useAnimatedNumber(value)
+  return <PlanAmount>${displayValue}</PlanAmount>
+}
+
+function BillingToggle({ annual, onChange }: { readonly annual: boolean; readonly onChange: () => void }) {
+  return (
+    <div className="inline-flex min-h-11 items-center gap-3 rounded-lg border border-border bg-surface-subtle px-3">
+      <span className={cn('text-sm font-medium', annual ? 'text-ink-muted' : 'text-ink')}>Monthly</span>
+      <button
+        type="button"
+        role="switch"
+        aria-label="Toggle annual billing"
+        aria-checked={annual}
+        onClick={onChange}
+        className={cn(
+          'relative flex h-6 w-10 shrink-0 items-center rounded-pill p-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+          annual ? 'bg-accent' : 'bg-muted',
+        )}
+      >
+        <span className={cn('block size-5 rounded-pill bg-surface shadow-control transition-transform', annual ? 'translate-x-4' : 'translate-x-0')} />
+      </button>
+      <span className={cn('text-sm font-medium', annual ? 'text-ink' : 'text-ink-muted')}>Annual, save 20%</span>
+    </div>
+  )
+}
+
 function isPricingTab(value: string | null): value is PricingTab {
   return value === 'subscription' || value === 'pay-as-you-go' || value === 'done-for-you'
 }
@@ -356,7 +422,7 @@ function PanelHeader({
   )
 }
 
-function SubscriptionPlans() {
+function SubscriptionPlans({ annual }: { readonly annual: boolean }) {
   const [showProOffer, setShowProOffer] = useState(false)
   const proOfferTriggeredRef = useRef(false)
   const navigate = useNavigate()
@@ -384,10 +450,13 @@ function SubscriptionPlans() {
             badge={plan.featured ? undefined : plan.badge}
             banner={plan.featured ? plan.badge : undefined}
             tagline={plan.tagline}
-            amount={<PlanAmount>${plan.price}</PlanAmount>}
+            amount={<AnimatedPrice value={annual && plan.annualPrice ? plan.annualPrice : plan.price} />}
             unit={`/${plan.cadence}`}
+            // The weekly plan does not move when the switch does, so it says why instead of
+            // looking like the toggle missed it.
+            priceNote={annual && !plan.annualPrice ? 'Annual billing does not apply to weekly plans' : undefined}
             terms={[
-              ['Billing', plan.cadence === 'week' ? 'Weekly' : 'Monthly'],
+              ['Billing', plan.cadence === 'week' ? 'Weekly' : annual && plan.annualPrice ? 'Annual' : 'Monthly'],
               [plan.usageLabel, plan.usageValue],
             ]}
             features={plan.features}
@@ -589,6 +658,7 @@ function ClosingPanel({ content }: { readonly content: SupportingContent }) {
 }
 
 export function PricingPage() {
+  const [annual, setAnnual] = useState(true)
   const [searchParams, setSearchParams] = useSearchParams()
   const requestedTab = searchParams.get('tab')
   const activeTab: PricingTab = isPricingTab(requestedTab) ? requestedTab : 'subscription'
@@ -625,12 +695,18 @@ export function PricingPage() {
             is answered in one place rather than three overlapping sets. */}
         <PageShell className="pb-6">
           <Tabs value={activeTab} onValueChange={handleTabChange}>
-            <TabsList className="pricing-tabs mb-6 min-w-0 gap-7" aria-label="Ways to buy">
-              <TabsTrigger value="subscription" className="min-h-11 pb-3 text-sm sm:text-base">Subscription plans</TabsTrigger>
-              <TabsTrigger value="pay-as-you-go" className="min-h-11 pb-3 text-sm sm:text-base">Pay as you go</TabsTrigger>
-              <TabsTrigger value="done-for-you" className="min-h-11 pb-3 text-sm sm:text-base">Done for you</TabsTrigger>
-            </TabsList>
-            <TabsContent value="subscription" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><SubscriptionPlans /></TabsContent>
+            {/* The rule runs under the toggle too, rather than stopping where the tabs do. */}
+            <div className="mb-6 flex flex-col-reverse gap-3 border-b border-border sm:flex-row sm:items-end sm:gap-4">
+              <TabsList className="pricing-tabs min-w-0 flex-1 gap-7 border-b-0" aria-label="Ways to buy">
+                <TabsTrigger value="subscription" className="min-h-11 pb-3 text-sm sm:text-base">Subscription plans</TabsTrigger>
+                <TabsTrigger value="pay-as-you-go" className="min-h-11 pb-3 text-sm sm:text-base">Pay as you go</TabsTrigger>
+                <TabsTrigger value="done-for-you" className="min-h-11 pb-3 text-sm sm:text-base">Done for you</TabsTrigger>
+              </TabsList>
+              {activeTab === 'subscription' ? (
+                <div className="shrink-0 self-end sm:pb-2"><BillingToggle annual={annual} onChange={() => setAnnual((value) => !value)} /></div>
+              ) : null}
+            </div>
+            <TabsContent value="subscription" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><SubscriptionPlans annual={annual} /></TabsContent>
             <TabsContent value="pay-as-you-go" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><PayAsYouGo /></TabsContent>
             <TabsContent value="done-for-you" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><DoneForYou /></TabsContent>
           </Tabs>
