@@ -44,6 +44,7 @@ export const authPlanFixtures: readonly BillingPlanFixture[] = [
     features: [
       'Interview Prep and Interview Copilot',
       'Unlimited interview sessions',
+      'One model — OpenAI',
       'Web, desktop and mobile',
       'Call recording for every session',
       'Knowledge Base with 3 documents',
@@ -59,6 +60,7 @@ export const authPlanFixtures: readonly BillingPlanFixture[] = [
     description: 'Every interview tool unlimited, plus Resume Builder and 500 jobs applied for you each month.',
     features: [
       'Everything in Starter',
+      'Multi-agent models — OpenAI, Claude, Grok, Kimi and Qwen',
       'Meeting Copilot & Coding Copilot',
       'Resume Builder',
       'Auto Apply — 500 jobs a month',

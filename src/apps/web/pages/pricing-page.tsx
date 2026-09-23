@@ -83,6 +83,7 @@ const PLANS: readonly SubscriptionPlan[] = [
     features: [
       'Interview Prep and Interview Copilot',
       'Unlimited interview sessions',
+      'One model — OpenAI',
       'Web, desktop and mobile',
       'Call recording for every session',
       'Knowledge Base with 3 documents',
@@ -100,6 +101,7 @@ const PLANS: readonly SubscriptionPlan[] = [
     description: 'Every interview tool unlimited, plus Resume Builder and 500 jobs applied for you each month.',
     features: [
       'Everything in Starter',
+      'Multi-agent models — OpenAI, Claude, Grok, Kimi and Qwen',
       'Meeting Copilot and Coding Copilot',
       'Resume Builder',
       'Auto Apply — 500 jobs a month',
@@ -257,6 +259,11 @@ const SUPPORTING_CONTENT: SupportingContent = {
       question: 'What happens after 500 Auto Apply jobs on Pro?',
       answer:
         'The month resets and the next 500 begin. If you are consistently applying past that, Premium takes the cap off.',
+    },
+    {
+      question: 'Which AI models can I use?',
+      answer:
+        'Starter runs on OpenAI. Pro and Premium pick between OpenAI, Claude, Grok, Kimi and Qwen, choosing the one that suits the question in front of you.',
     },
     {
       question: 'What does Premium add over Pro?',

@@ -83,7 +83,7 @@ export const billingPlans: readonly BillingPlanCard[] = [
     price: '$47',
     cadence: 'per week',
     description: 'Unlimited Interview Prep and Interview Copilot, on every platform, for the week you are interviewing.',
-    features: ['Interview Prep and Interview Copilot', 'Unlimited interview sessions', 'Web, desktop and mobile', 'Call recording for every session', 'Knowledge Base with 3 documents'],
+    features: ['Interview Prep and Interview Copilot', 'Unlimited interview sessions', 'One model — OpenAI', 'Web, desktop and mobile', 'Call recording for every session', 'Knowledge Base with 3 documents'],
     note: 'Ideal for the week an interview loop actually lands',
   },
   {
@@ -94,7 +94,7 @@ export const billingPlans: readonly BillingPlanCard[] = [
     annualPrice: '$79',
     annualCadence: 'per month',
     description: 'Every interview tool unlimited, plus Resume Builder and 500 jobs applied for you each month.',
-    features: ['Everything in Starter', 'Meeting Copilot & Coding Copilot', 'Resume Builder', 'Auto Apply — 500 jobs a month', 'Knowledge Base with 5 documents'],
+    features: ['Everything in Starter', 'Multi-agent models — OpenAI, Claude, Grok, Kimi and Qwen', 'Meeting Copilot & Coding Copilot', 'Resume Builder', 'Auto Apply — 500 jobs a month', 'Knowledge Base with 5 documents'],
     note: 'Best for a search that runs longer than a week',
     popular: true,
     current: true,

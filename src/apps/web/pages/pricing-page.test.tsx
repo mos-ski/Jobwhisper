@@ -51,6 +51,10 @@ describe('PricingPage', () => {
     expect(within(pro).getByText('Auto Apply — 500 jobs a month')).toBeInTheDocument()
     expect(within(pro).getByText('Resume Builder')).toBeInTheDocument()
     expect(within(premium).getByText('Unlimited Auto Apply')).toBeInTheDocument()
+    // Starter runs on one model; the paid plans pick between five.
+    const starter = screen.getByRole('heading', { level: 3, name: 'Starter' }).closest('article') as HTMLElement
+    expect(within(starter).getByText('One model — OpenAI')).toBeInTheDocument()
+    expect(within(pro).getByText('Multi-agent models — OpenAI, Claude, Grok, Kimi and Qwen')).toBeInTheDocument()
     // The plan cards carry no terms table: the features say what is covered, the price row
     // says how often it charges, and the row of label/value pairs said neither twice.
     expect(pro.querySelector('.pricing-plan-credits')).toBeNull()
@@ -109,7 +113,7 @@ describe('PricingPage', () => {
 
     const faqPanel = screen.getByRole('region', { name: 'Pricing questions' })
     expect(faqPanel).toHaveClass('bg-surface', 'border-border', 'rounded-sm')
-    expect(faqPanel.querySelectorAll('details')).toHaveLength(22)
+    expect(faqPanel.querySelectorAll('details')).toHaveLength(23)
     expect(screen.getByText('What does unlimited mean on these plans?')).toBeInTheDocument()
     expect(screen.getByText('What happens after 500 Auto Apply jobs on Pro?')).toBeInTheDocument()
     expect(screen.getByText('How does the Starter plan bill?')).toBeInTheDocument()

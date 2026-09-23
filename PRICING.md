@@ -72,6 +72,7 @@ The three plans above are one product sold at three commitment levels, not three
 | Interview Prep | ✓ unlimited | ✓ unlimited | ✓ unlimited |
 | Interview Copilot | ✓ unlimited | ✓ unlimited | ✓ unlimited |
 | Web, desktop **and** mobile | ✓ | ✓ | ✓ |
+| **AI models** | OpenAI only | **OpenAI, Claude, Grok, Kimi, Qwen** | **OpenAI, Claude, Grok, Kimi, Qwen** |
 | Call recording | ✓ | ✓ | ✓ |
 | Meeting Copilot | — | ✓ unlimited | ✓ unlimited |
 | Coding Copilot | — | ✓ unlimited | ✓ unlimited |
