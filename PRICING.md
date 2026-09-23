@@ -82,6 +82,8 @@ The three plans above are one product sold at three commitment levels, not three
 
 Auto Apply is the only row with a number in it. That is deliberate: it is the one capability with a real per-use cost, so it is the one that ladders.
 
+**The cards carry no terms table** (removed 2026-09-23). A label/value row saying "Interview use — Unlimited" or "Auto Apply — 500 jobs" repeated what the feature list said two inches below it, and a "Billing — Monthly" row repeated the /month beside the price. What the cards show under the price instead is the annual note: what a year costs on the monthly plans, and why the switch left the weekly one alone.
+
 The un-subscribed state isn't a column here on purpose — it isn't a plan, so it doesn't belong in a table meant to compare plans.
 
 ## 2. Finding Jobs without a plan (Auto Apply + Resume Builder)

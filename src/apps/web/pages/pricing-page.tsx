@@ -24,10 +24,6 @@ type SubscriptionPlan = {
   /** The monthly equivalent when paid annually. The weekly plan has none: annual billing
    *  does not apply to it, and its card says so rather than silently not moving. */
   readonly annualPrice?: number
-  /** The row under Billing. Auto Apply volume is what separates Pro from Premium, so the
-   *  card states it rather than leaving "unlimited" to cover a plan with a job cap. */
-  readonly usageLabel: string
-  readonly usageValue: string
   readonly description: string
   readonly features: readonly string[]
 }
@@ -83,8 +79,6 @@ const PLANS: readonly SubscriptionPlan[] = [
     tagline: 'The interview, by the week',
     cadence: 'week',
     price: 47,
-    usageLabel: 'Interview use',
-    usageValue: 'Unlimited',
     description: 'Unlimited Interview Prep and Interview Copilot, on every platform, for the week you are interviewing.',
     features: [
       'Interview Prep and Interview Copilot',
@@ -103,8 +97,6 @@ const PLANS: readonly SubscriptionPlan[] = [
     cadence: 'month',
     price: 99,
     annualPrice: 79,
-    usageLabel: 'Auto Apply',
-    usageValue: '500 jobs',
     description: 'Every interview tool unlimited, plus Resume Builder and 500 jobs applied for you each month.',
     features: [
       'Everything in Starter',
@@ -122,8 +114,6 @@ const PLANS: readonly SubscriptionPlan[] = [
     cadence: 'month',
     price: 497,
     annualPrice: 398,
-    usageLabel: 'Auto Apply',
-    usageValue: 'Unlimited',
     description: 'Everything in Pro, with the job cap taken off Auto Apply.',
     features: [
       'Everything in Pro',
@@ -452,13 +442,10 @@ function SubscriptionPlans({ annual }: { readonly annual: boolean }) {
             tagline={plan.tagline}
             amount={<AnimatedPrice value={annual && plan.annualPrice ? plan.annualPrice : plan.price} />}
             unit={`/${plan.cadence}`}
-            // The weekly plan does not move when the switch does, so it says why instead of
-            // looking like the toggle missed it.
-            priceNote={annual && !plan.annualPrice ? 'Annual billing does not apply to weekly plans' : undefined}
-            terms={[
-              ['Billing', plan.cadence === 'week' ? 'Weekly' : annual && plan.annualPrice ? 'Annual' : 'Monthly'],
-              [plan.usageLabel, plan.usageValue],
-            ]}
+            // Under annual every card carries a line: the monthly ones say what a year
+            // costs, the weekly one says why the switch left it alone. Three notes or none,
+            // which is also what keeps the CTAs on one line whichever way the switch is set.
+            priceNote={annual ? (plan.annualPrice ? `$${(plan.annualPrice * 12).toLocaleString('en-US')} billed yearly` : 'Annual billing does not apply to weekly plans') : undefined}
             features={plan.features}
             ctaLabel={`Unlock ${plan.name}`}
             onCta={() => navigate(`/v3/auth/create-account?plan=${plan.id}`)}

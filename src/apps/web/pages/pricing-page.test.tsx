@@ -48,10 +48,13 @@ describe('PricingPage', () => {
 
     const pro = screen.getByRole('heading', { level: 3, name: 'Pro' }).closest('article') as HTMLElement
     const premium = screen.getByRole('heading', { level: 3, name: 'Premium' }).closest('article') as HTMLElement
-    expect(within(pro).getByText('500 jobs')).toBeInTheDocument()
     expect(within(pro).getByText('Auto Apply — 500 jobs a month')).toBeInTheDocument()
     expect(within(pro).getByText('Resume Builder')).toBeInTheDocument()
     expect(within(premium).getByText('Unlimited Auto Apply')).toBeInTheDocument()
+    // The plan cards carry no terms table: the features say what is covered, the price row
+    // says how often it charges, and the row of label/value pairs said neither twice.
+    expect(pro.querySelector('.pricing-plan-credits')).toBeNull()
+    expect(premium.querySelector('.pricing-plan-credits')).toBeNull()
   })
 
   it('tells Starter out of the annual switch instead of silently ignoring it', async () => {

@@ -97,11 +97,9 @@ function BillingPlanCardView({ plan, annual, onProHover }: { readonly plan: Bill
       tagline={plan.description}
       amount={<PlanAmount>{annualApplies ? plan.annualPrice : plan.price}</PlanAmount>}
       unit={annualApplies ? plan.annualCadence : plan.cadence}
-      priceNote={annual && !plan.annualPrice ? 'Annual billing does not apply to weekly plans' : undefined}
-      terms={[
-        ['Included', plan.included],
-        ['Billing', plan.cadence === 'per week' ? 'Billed weekly' : annualApplies ? 'Billed yearly' : 'Billed monthly'],
-      ]}
+      // Same as the public page: the features say what is covered, so a terms table would
+      // say it a second time. Under annual the note carries what the row used to.
+      priceNote={annual ? (plan.annualPrice ? 'Billed yearly' : 'Annual billing does not apply to weekly plans') : undefined}
       features={plan.features}
       ctaLabel={plan.current ? 'Current Plan' : plan.id === 'premium' ? 'Upgrade' : 'Downgrade'}
       onCta={plan.current ? undefined : () => navigate('/v3/billing')}

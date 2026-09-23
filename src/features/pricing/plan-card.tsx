@@ -51,8 +51,10 @@ export function PlanCard({
           {badge ? <span className="pricing-plan-badge">{badge}</span> : null}
         </div>
         {tagline ? <p className="pricing-plan-tagline">{tagline}</p> : null}
-        <p className="pricing-plan-price">{amount}{unit ? <span className="pricing-plan-cadence">{unit}</span> : null}</p>
-        {priceNote ? <p className="pricing-plan-price-note" role="status">{priceNote}</p> : null}
+        <div className="pricing-plan-price-block">
+          <p className="pricing-plan-price">{amount}{unit ? <span className="pricing-plan-cadence">{unit}</span> : null}</p>
+          {priceNote ? <p className="pricing-plan-price-note" role="status">{priceNote}</p> : null}
+        </div>
         <button type="button" className="pricing-plan-cta" data-variant={ctaVariant} onClick={onCta} disabled={ctaDisabled}>{ctaLabel}</button>
         {terms?.length ? (
           <dl className="pricing-plan-credits">
