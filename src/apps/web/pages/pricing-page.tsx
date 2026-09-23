@@ -21,6 +21,10 @@ type SubscriptionPlan = {
   readonly cadence: 'week' | 'month'
   /** Per cadence — so per week on Starter, per month on the other two. */
   readonly price: number
+  /** The row under Billing. Auto Apply volume is what separates Pro from Premium, so the
+   *  card states it rather than leaving "unlimited" to cover a plan with a job cap. */
+  readonly usageLabel: string
+  readonly usageValue: string
   readonly description: string
   readonly features: readonly string[]
 }
@@ -73,13 +77,17 @@ const PLANS: readonly SubscriptionPlan[] = [
     id: 'starter',
     name: 'Starter',
     badge: 'Great to Start',
-    tagline: 'Live interview support, by the week',
+    tagline: 'The interview, by the week',
     cadence: 'week',
     price: 47,
-    description: 'Unlimited Interview Copilot on web and desktop, for the week you are interviewing.',
+    usageLabel: 'Interview use',
+    usageValue: 'Unlimited',
+    description: 'Unlimited Interview Prep and Interview Copilot, on every platform, for the week you are interviewing.',
     features: [
-      'Interview Copilot on web and desktop',
-      'Unlimited live interview sessions',
+      'Interview Prep and Interview Copilot',
+      'Unlimited interview sessions',
+      'Web, desktop and mobile',
+      'Call recording for every session',
       'Knowledge Base with 3 documents',
     ],
   },
@@ -88,15 +96,17 @@ const PLANS: readonly SubscriptionPlan[] = [
     name: 'Pro',
     badge: 'Most Popular',
     featured: true,
-    tagline: 'The whole job search, unlimited',
+    tagline: 'The whole job search',
     cadence: 'month',
     price: 99,
-    description: 'Every Jobwhisper tool, unlimited, for the length of your search.',
+    usageLabel: 'Auto Apply',
+    usageValue: '500 jobs',
+    description: 'Every interview tool unlimited, plus Resume Builder and 500 jobs applied for you each month.',
     features: [
       'Everything in Starter',
-      'Interview Prep',
-      'Coding Copilot and Meeting Copilot',
-      'Auto Apply and Resume Builder',
+      'Meeting Copilot and Coding Copilot',
+      'Resume Builder',
+      'Auto Apply — 500 jobs a month',
       'Knowledge Base with 5 documents',
     ],
   },
@@ -104,13 +114,15 @@ const PLANS: readonly SubscriptionPlan[] = [
     id: 'premium',
     name: 'Premium',
     badge: 'Best Value',
-    tagline: 'Everything, on the record',
+    tagline: 'Apply without a ceiling',
     cadence: 'month',
     price: 497,
-    description: 'Pro, plus recordings of every session and priority support.',
+    usageLabel: 'Auto Apply',
+    usageValue: 'Unlimited',
+    description: 'Everything in Pro, with the job cap taken off Auto Apply.',
     features: [
       'Everything in Pro',
-      'Call recording for every session',
+      'Unlimited Auto Apply',
       'Priority support',
       'Knowledge Base with 10 documents',
     ],
@@ -200,7 +212,7 @@ const SUPPORTING_CONTENT: SupportingContent = {
   guideItems: [
     { label: 'Starter', value: 'Renews every week until you cancel' },
     { label: 'Pro and Premium', value: 'Renew every month until you cancel' },
-    { label: 'Usage', value: 'Unlimited on every plan — no credits to track' },
+    { label: 'Usage', value: 'Unlimited interviews on every plan — no credits to track' },
     { label: 'Without a plan', value: 'Interview minutes, resume prompts and applications, bought as you go' },
   ],
   faqTitle: 'Pricing questions',
@@ -209,7 +221,7 @@ const SUPPORTING_CONTENT: SupportingContent = {
     {
       question: 'What does unlimited mean on these plans?',
       answer:
-        'Every plan includes unlimited use of the tools it covers. There is no credit balance, no minute counting, and nothing to top up mid-interview.',
+        'Interview Prep and every Copilot are unlimited on every plan — no credit balance, no minute counting, nothing to top up mid-interview. Auto Apply is the one metered thing: 500 jobs a month on Pro, uncapped on Premium.',
     },
     {
       question: 'How does the Starter plan bill?',
@@ -226,12 +238,16 @@ const SUPPORTING_CONTENT: SupportingContent = {
         'Yes. Interview credits are $0.10 a minute, from $10, and they cover both Interview Prep and a live Interview Copilot session. A plan includes both unlimited instead.',
     },
     {
-      question: 'Which plans include the desktop app?',
-      answer: 'All three. Interview Copilot runs on web and desktop on Starter, Pro, and Premium.',
+      question: 'Which platforms can I use?',
+      answer: 'All of them, on every plan — web, desktop and mobile. No platform is held back for a higher tier.',
     },
     {
       question: 'Which plan includes Interview Prep?',
-      answer: 'Pro and Premium. Starter covers live interview support only.',
+      answer: 'All three, unlimited, alongside Interview Copilot. Practice and the live call are the same plan.',
+    },
+    {
+      question: 'Is call recording included?',
+      answer: 'Yes, on every plan. Every session can be recorded, whichever plan you are on.',
     },
     {
       question: 'Which plans include Coding Copilot and Meeting Copilot?',
@@ -240,12 +256,17 @@ const SUPPORTING_CONTENT: SupportingContent = {
     {
       question: 'Which plan includes Auto Apply and Resume Builder?',
       answer:
-        'Pro and Premium include both, unlimited. Without a plan you can still buy either as you go.',
+        'Pro and Premium. Resume Builder is unlimited on both. Auto Apply covers 500 jobs a month on Pro and is uncapped on Premium. Without a plan you can buy either as you go.',
+    },
+    {
+      question: 'What happens after 500 Auto Apply jobs on Pro?',
+      answer:
+        'The month resets and the next 500 begin. If you are consistently applying past that, Premium takes the cap off.',
     },
     {
       question: 'What does Premium add over Pro?',
       answer:
-        'A recording of every session, priority support, and a Knowledge Base that holds ten documents instead of five.',
+        'Auto Apply without a job cap — that is the real difference — plus priority support and a Knowledge Base that holds ten documents instead of five.',
     },
     {
       question: 'Can I change plan later?',
@@ -367,7 +388,7 @@ function SubscriptionPlans() {
             unit={`/${plan.cadence}`}
             terms={[
               ['Billing', plan.cadence === 'week' ? 'Weekly' : 'Monthly'],
-              ['Included use', 'Unlimited'],
+              [plan.usageLabel, plan.usageValue],
             ]}
             features={plan.features}
             ctaLabel={`Unlock ${plan.name}`}

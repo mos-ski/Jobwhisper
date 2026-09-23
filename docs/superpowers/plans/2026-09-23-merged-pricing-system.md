@@ -23,9 +23,11 @@
 
 | Plan | Cadence | Price | Includes |
 |---|---|---|---|
-| **Starter** | Weekly | **$47/week** | Interview Copilot only — web **and** desktop. Unlimited |
-| **Pro** | Monthly | **$99/month** | Interview Prep, Interview Copilot, Coding Copilot, Meeting Copilot, Auto Apply, Resume Builder. All unlimited |
-| **Premium** | Monthly | **$497/month** | Everything in Pro, plus call recording and priority support. **One more differentiator still open** |
+| **Starter** | Weekly | **$47/week** | Interview Prep **and** Interview Copilot, unlimited, on web, desktop and mobile |
+| **Pro** | Monthly | **$99/month** | Everything in Starter, plus Meeting and Coding Copilot, Resume Builder, and Auto Apply for **500 jobs a month** |
+| **Premium** | Monthly | **$497/month** | Everything in Pro, with **the job cap off Auto Apply**, plus priority support |
+
+Call recording is on every plan, and so is every platform — neither is tiered. Auto Apply volume is the only thing that ladders, which is also what gives Premium its price rationale: 500 jobs is worth ~$500 at the pay-as-you-go rate, so $497 buys the cap off.
 
 The pricing page keeps **three tabs**, one per way of buying: subscription plans, pay as you go, done for you. Pay-as-you-go carries **three** products now — interview minutes (new, $0.10/min from $10, covering Prep and Copilot alike), resume prompts, and applications.
 
@@ -33,9 +35,10 @@ Two deliberate inversions of today's matrix, recorded so they do not read as mis
 
 ### Still open
 
-1. **Premium's second differentiator.** Call recording alone is thin against the gap to Pro ($497 vs $99), and the volume differentiator that justified that gap — 4,000 credits against Pro's 1,000 — no longer exists under unlimited. Candidates: session transcripts with searchable history, priority/low-latency model access, a human coach review, multi-seat.
-2. **Premium's price**, which follows from 1. Left at today's $497/$398 for now.
-3. **A fair-use ceiling on Auto Apply**, per the constraint below. Not in the UI yet because the number is not chosen.
+1. **Starter's $47/week reads above Pro** — four weeks is ~$204 against Pro's $99 for less product. Deliberate short-term premium, or a price to revisit? The card should say "one week" loudly either way.
+2. **Premium's uncapped Auto Apply** is the one unbounded cost left. Pro's 500/month is the ceiling that resolves it below; Premium's $497 covers ~500 applications at cost, so the exposure is the tail.
+
+Premium's differentiator and the Auto Apply ceiling — both open in the first pass — were resolved on 2026-09-23: unlimited Auto Apply is the differentiator, and 500 jobs a month is the ceiling.
 
 ### Built 2026-09-23
 

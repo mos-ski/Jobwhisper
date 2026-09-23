@@ -8,28 +8,32 @@ This is the live, editable source of truth for pricing: what's actually charged 
 
 | Plan | Cadence | Price | What it unlocks |
 |---|---|---|---|
-| **Starter** | Weekly, auto-renewing | **$47/week** | Interview Copilot on web **and** desktop. Unlimited |
-| **Pro** | Monthly | **$99/month** | Everything in Starter, plus Interview Prep, Coding Copilot, Meeting Copilot, Auto Apply, Resume Builder. All unlimited |
-| **Premium** | Monthly | **$497/month** | Everything in Pro, plus call recording for every session and priority support |
+| **Starter** | Weekly, auto-renewing | **$47/week** | Interview Prep **and** Interview Copilot, unlimited, on web, desktop and mobile |
+| **Pro** | Monthly | **$99/month** | Everything in Starter, plus Meeting Copilot, Coding Copilot, Resume Builder, and Auto Apply for **500 jobs a month** |
+| **Premium** | Monthly | **$497/month** | Everything in Pro, with **the job cap taken off Auto Apply**, plus priority support |
 
 **No annual billing.** Retired 2026-09-23 across the pricing page, the signup flow and the in-app plan comparison: one price per plan, nothing to toggle.
 
-**Unlimited means unlimited use of the tools a plan covers** — no credit balance, no minute counting, no mid-session top-up. The credit economy survives only for people **without** a plan (§2.1).
+**Unlimited means the interview side, on every plan** — Prep and every Copilot, no credit balance, no minute counting, no mid-session top-up. **Auto Apply is the one metered thing left inside a plan**, and its volume is what separates Pro from Premium. The credit economy otherwise survives only for people **without** a plan (§2.1).
+
+**Every platform on every plan** (revised 2026-09-23): web, desktop and mobile, with no platform held back for a higher tier. **Call recording is on every plan too**, for the same reason — it was briefly Premium's differentiator and is now universal.
 
 **Starter is weekly on purpose.** It is sized for the week someone actually has interviews rather than a month of readiness, and it renews weekly until cancelled.
 
 **Open, and load-bearing: Starter's $47 is priced above Pro in practice.** At $47/week, four weeks is ~$204 against Pro's $99/month for strictly more product, so the cards ladder backwards for anyone staying longer than two weeks. That is defensible as a deliberate short-term premium — a week pass for someone interviewing on Thursday, the way day passes price above memberships — but it needs saying on the card, or the page reads as a mistake. Two ways out if it is not deliberate: price Starter under a month of Pro, or label it explicitly as a one-week pass and let the ladder read as urgency rather than value.
 
-**Two deliberate inversions of the old matrix**, recorded so they don't read as bugs later:
+**What moved, against the old matrix:**
 
-- **Starter lost Interview Prep** and **gained the desktop app.** Previously Prep was on every tier and desktop was Pro-and-above. Starter is now live interview support only, on both surfaces.
-- **Auto Apply and Resume Builder moved into Pro**, unlimited, having been standalone pay-as-you-go products outside every tier. They remain buyable standalone by non-subscribers.
+- **Starter keeps Interview Prep** and **gains desktop and mobile.** Desktop was Pro-and-above before; now no platform is tiered at all.
+- **Auto Apply and Resume Builder moved into Pro**, having been standalone pay-as-you-go products outside every tier. Resume Builder is unlimited there; Auto Apply is capped at 500 jobs a month and uncapped on Premium. Both remain buyable standalone by non-subscribers.
+- **Call recording is universal**, not a Premium feature (it was one for about an hour on 2026-09-23).
 
 ### Open threads on this model
 
-1. **Premium's second differentiator.** Call recording is in. It is thin on its own against the gap to Pro ($497 vs $99), and the volume differentiator that used to justify that gap — 4,000 credits against Pro's 1,000 — no longer exists under unlimited. Candidates raised: session transcripts with searchable history, priority/low-latency model access, a human coach review, multi-seat. **Premium's price should be revisited once this lands.**
-2. **A fair-use ceiling on Auto Apply.** Unlimited applications at $99/month is unbounded liability — every application carries real marginal cost, which is exactly why it is $1/successful-application pay-as-you-go (§3). `src/mocks/admin-messaging.ts` already floats "10 Auto Apply submissions per day" in campaign copy. Pick a number, put it in the small print, and enforce it before launch rather than discovering it in the margin.
-3. **Knowledge Base caps survive** (Starter 3, Pro 5, Premium 10) and are the one per-tier ceiling left. Decide deliberately whether "unlimited" should swallow them too; today it does not, and they give the tiers texture beyond the feature list.
+1. **~~Premium's second differentiator~~ — resolved 2026-09-23.** It is Auto Apply without a job cap, and the price now has arithmetic behind it: at the $1/successful-application pay-as-you-go rate (§3), Pro's 500-job allowance is worth ~$500, so **Premium's $497 is priced at roughly what Pro's cap is worth.** Someone applying past 500 a month is better off on Premium, which is exactly the upgrade argument the old "2x credits" framing never made.
+2. **~~A fair-use ceiling on Auto Apply~~ — mostly resolved.** Pro's 500 jobs a month is that ceiling. **Premium's uncapped Auto Apply is the remaining exposure**: every application carries real marginal cost, and nothing bounds it but how many roles a person can plausibly be matched to. The $497 price covers ~500 applications at cost, so the risk is confined to the tail — a Premium subscriber applying to thousands. Worth watching in the data before it needs a policy.
+3. **Starter's $47/week is priced above Pro in practice** — see below.
+4. **Knowledge Base caps survive** (Starter 3, Pro 5, Premium 10) and are the one per-tier ceiling left. Decide deliberately whether "unlimited" should swallow them too; today it does not, and they give the tiers texture beyond the feature list.
 4. **Migration.** Existing subscribers are on $47/$99/$497 with credit balances, and today's Starter is monthly with Interview Prep. What happens to unspent balances, to annual subscribers, and to Starter subscribers moving to a weekly plan without Prep is unresolved — see `docs/superpowers/plans/2026-09-23-merged-pricing-system.md` Task 7.
 
 ## Pricing documents in this repo
@@ -65,17 +69,18 @@ The three plans above are one product sold at three commitment levels, not three
 
 | Capability | Starter | Pro | Premium |
 |---|---|---|---|
-| Interview Copilot (web) | ✓ | ✓ | ✓ |
-| Interview Copilot (desktop app) | ✓ | ✓ | ✓ |
-| Interview Prep | — | ✓ | ✓ |
-| Coding Copilot | — | ✓ | ✓ |
-| Meeting Copilot | — | ✓ | ✓ |
-| Auto Apply | — | ✓ | ✓ |
-| Resume Builder | — | ✓ | ✓ |
-| Call recording | — | — | ✓ |
+| Interview Prep | ✓ unlimited | ✓ unlimited | ✓ unlimited |
+| Interview Copilot | ✓ unlimited | ✓ unlimited | ✓ unlimited |
+| Web, desktop **and** mobile | ✓ | ✓ | ✓ |
+| Call recording | ✓ | ✓ | ✓ |
+| Meeting Copilot | — | ✓ unlimited | ✓ unlimited |
+| Coding Copilot | — | ✓ unlimited | ✓ unlimited |
+| Resume Builder | — | ✓ unlimited | ✓ unlimited |
+| **Auto Apply** | — | **500 jobs/month** | **Unlimited** |
 | Priority support | — | — | ✓ |
-| Included use | Unlimited | Unlimited | Unlimited |
 | Knowledge Base documents | 3 | 5 | 10 |
+
+Auto Apply is the only row with a number in it. That is deliberate: it is the one capability with a real per-use cost, so it is the one that ladders.
 
 The un-subscribed state isn't a column here on purpose — it isn't a plan, so it doesn't belong in a table meant to compare plans.
 

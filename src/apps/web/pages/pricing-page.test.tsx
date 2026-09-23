@@ -35,16 +35,23 @@ describe('PricingPage', () => {
     expect(screen.getByRole('img', { name: 'Jobwhisper' })).toBeInTheDocument()
   })
 
-  it('sells unlimited use instead of a credit allowance', () => {
+  it('sells unlimited interviews, and Auto Apply volume as the ladder', () => {
     renderPricingPage()
 
-    // The allowance was what separated the tiers; what a plan unlocks is the difference now.
-    expect(screen.getAllByText('Unlimited')).toHaveLength(3)
+    // The credit allowance was what separated the tiers; Auto Apply volume is now.
     expect(screen.queryByText('1 interview credit = 1 minute')).not.toBeInTheDocument()
     expect(screen.queryByText(/interview credits each month/)).not.toBeInTheDocument()
-    expect(screen.getByText('Interview Copilot on web and desktop')).toBeInTheDocument()
-    expect(screen.getByText('Auto Apply and Resume Builder')).toBeInTheDocument()
+    expect(screen.getByText('Interview Prep and Interview Copilot')).toBeInTheDocument()
+    expect(screen.getByText('Web, desktop and mobile')).toBeInTheDocument()
+    // Call recording is on every plan, so it is listed on the one the others inherit from.
     expect(screen.getByText('Call recording for every session')).toBeInTheDocument()
+
+    const pro = screen.getByRole('heading', { level: 3, name: 'Pro' }).closest('article') as HTMLElement
+    const premium = screen.getByRole('heading', { level: 3, name: 'Premium' }).closest('article') as HTMLElement
+    expect(within(pro).getByText('500 jobs')).toBeInTheDocument()
+    expect(within(pro).getByText('Auto Apply — 500 jobs a month')).toBeInTheDocument()
+    expect(within(pro).getByText('Resume Builder')).toBeInTheDocument()
+    expect(within(premium).getByText('Unlimited Auto Apply')).toBeInTheDocument()
   })
 
   it('prices each plan once, on its own cadence, with no annual switch', () => {
@@ -90,8 +97,9 @@ describe('PricingPage', () => {
 
     const faqPanel = screen.getByRole('region', { name: 'Pricing questions' })
     expect(faqPanel).toHaveClass('bg-surface', 'border-border', 'rounded-sm')
-    expect(faqPanel.querySelectorAll('details')).toHaveLength(20)
+    expect(faqPanel.querySelectorAll('details')).toHaveLength(22)
     expect(screen.getByText('What does unlimited mean on these plans?')).toBeInTheDocument()
+    expect(screen.getByText('What happens after 500 Auto Apply jobs on Pro?')).toBeInTheDocument()
     expect(screen.getByText('How does the Starter plan bill?')).toBeInTheDocument()
     expect(screen.getByText('Can I buy interview minutes without a plan?')).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'How billing works' })).toBeInTheDocument()
