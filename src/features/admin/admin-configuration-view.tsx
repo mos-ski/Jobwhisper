@@ -26,6 +26,7 @@ import type {
 import type { AdminNavItem, AdminNotification, AdminSearchResult } from '@/contracts/admin.draft'
 import type { UserIdentity } from '@/contracts/identity'
 import {
+  Checkbox,
   Badge,
   Button,
   cn,
@@ -74,7 +75,14 @@ export type AdminConfigurationViewProps = {
   /** Today as a `YYYY-MM-DD` calendar string. Decides whether a new coupon starts active or scheduled. */
   readonly today: string
   readonly isLoading?: boolean
-  readonly onSavePricing?: (changes: readonly AdminConfigChange[]) => void
+  /**
+   * `resetUsageForExistingSubscribers` answers the question the review dialog asks: does a
+   * changed price or allowance reach the people already subscribed, or only the next ones?
+   */
+  readonly onSavePricing?: (
+    changes: readonly AdminConfigChange[],
+    options: { readonly resetUsageForExistingSubscribers: boolean },
+  ) => void
   readonly onSaveTrials?: (changes: readonly AdminConfigChange[]) => void
   readonly onCreateCoupon?: (draft: AdminCouponDraft) => void
   readonly onDeactivateCoupon?: (couponId: string) => void
@@ -187,6 +195,76 @@ type ConfigFieldProps = {
   readonly placeholder?: string
 }
 
+/**
+ * An allowance an admin sets as a number or waives entirely. The radio decides which,
+ * and the number field only exists while it is limited — an unlimited allowance has no
+ * figure to hold, and leaving a disabled input full of the last number invites the reader
+ * to think it still applies.
+ */
+function AllowanceField({
+  id,
+  legend,
+  unit,
+  kind,
+  amount,
+  hint,
+  error,
+  onKindChange,
+  onAmountChange,
+}: {
+  readonly id: string
+  readonly legend: string
+  readonly unit: string
+  readonly kind: AllowanceKind
+  readonly amount: string
+  readonly hint?: string
+  readonly error?: string
+  readonly onKindChange: (kind: AllowanceKind) => void
+  readonly onAmountChange: (amount: string) => void
+}) {
+  return (
+    <fieldset className="grid gap-2">
+      <legend className="text-sm font-medium text-ink">{legend}</legend>
+      <div className="flex flex-wrap gap-2">
+        {(['limited', 'unlimited'] as const).map((option) => (
+          <label
+            key={option}
+            className={cn(
+              'inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-soft border px-3 text-sm font-medium',
+              kind === option ? 'border-accent bg-accent-subtle text-accent-text' : 'border-input bg-surface text-ink',
+            )}
+          >
+            <input
+              type="radio"
+              name={id}
+              value={option}
+              checked={kind === option}
+              onChange={() => onKindChange(option)}
+              className="size-4 accent-accent"
+            />
+            {option === 'limited' ? 'Limited' : 'Unlimited'}
+          </label>
+        ))}
+      </div>
+      {kind === 'limited' ? (
+        <ConfigField
+          id={id}
+          label={`${legend}, ${unit}`}
+          inputMode="numeric"
+          value={amount}
+          error={error}
+          hint={hint}
+          onChange={onAmountChange}
+        />
+      ) : (
+        <p className="text-xs leading-5 text-ink-muted">
+          No ceiling. Subscribers on this plan see “Unlimited” rather than a balance.
+        </p>
+      )}
+    </fieldset>
+  )
+}
+
 function ConfigField({
   id,
   label,
@@ -273,6 +351,7 @@ function ChangeReviewDialog({
   impact,
   changes,
   confirmLabel,
+  decision,
   onConfirm,
 }: {
   readonly open: boolean
@@ -282,6 +361,8 @@ function ChangeReviewDialog({
   readonly impact: string
   readonly changes: readonly AdminConfigChange[]
   readonly confirmLabel: string
+  /** A choice the admin has to make about the change itself, shown above the buttons. */
+  readonly decision?: ReactNode
   readonly onConfirm: () => void
 }) {
   return (
@@ -325,6 +406,8 @@ function ChangeReviewDialog({
         <div className="mt-4">
           <ImpactNote>{impact}</ImpactNote>
         </div>
+
+        {decision ? <div className="mt-4">{decision}</div> : null}
 
         <div className="mt-5 flex flex-wrap justify-end gap-2">
           <Button variant="secondary" size="lg" onClick={() => onOpenChange(false)}>
@@ -444,14 +527,21 @@ function setFeatureToggle(
 
 /* ------------------------------------------------------------------ pricing tab */
 
+type AllowanceKind = 'limited' | 'unlimited'
+
 type PlanForm = {
   readonly id: AdminConfigPlanId
   readonly name: string
   readonly positioning: string
   readonly subscriberCount: number
+  readonly cadence: 'week' | 'month'
   readonly monthlyPrice: string
+  /** Empty on a weekly plan, which has no annual rate to set. */
   readonly annualPrice: string
-  readonly monthlyCredits: string
+  readonly interviewKind: AllowanceKind
+  readonly interviewAmount: string
+  readonly autoApplyKind: AllowanceKind
+  readonly autoApplyAmount: string
   readonly knowledgeBaseDocumentLimit: string
   readonly features: readonly FeatureToggle[]
   readonly introOfferLabel: string | null
@@ -477,6 +567,11 @@ type PricingForm = {
   readonly marketplaceMax: string
 }
 
+/** "Unlimited" or "500 jobs" — never a number standing in for no ceiling. */
+function allowanceLabel(kind: AllowanceKind, amount: string, unit: string): string {
+  return kind === 'unlimited' ? 'Unlimited' : `${countLabel(amount)} ${unit}`
+}
+
 function buildPricingForm(
   plans: readonly AdminPlanConfig[],
   definitions: readonly AdminConfigFeatureDefinition[],
@@ -490,9 +585,13 @@ function buildPricingForm(
       name: plan.name,
       positioning: plan.positioning,
       subscriberCount: plan.subscriberCount,
+      cadence: plan.cadence,
       monthlyPrice: centsToInput(plan.monthlyPriceCents),
-      annualPrice: centsToInput(plan.annualPriceCents),
-      monthlyCredits: String(plan.monthlyCredits),
+      annualPrice: plan.annualPriceCents === undefined ? '' : centsToInput(plan.annualPriceCents),
+      interviewKind: plan.interviewAllowance.kind,
+      interviewAmount: plan.interviewAllowance.kind === 'limited' ? String(plan.interviewAllowance.amount) : '',
+      autoApplyKind: plan.autoApplyAllowance.kind,
+      autoApplyAmount: plan.autoApplyAllowance.kind === 'limited' ? String(plan.autoApplyAllowance.amount) : '',
       knowledgeBaseDocumentLimit: String(plan.knowledgeBaseDocumentLimit),
       features: toFeatureToggles(definitions, plan.features),
       introOfferLabel: plan.introOffer ? plan.introOffer.label : null,
@@ -522,15 +621,26 @@ function validatePricing(form: PricingForm): Readonly<Record<string, string>> {
     if (monthly === null || monthly <= 0) {
       errors[`${plan.id}-monthly`] = 'Enter a price above $0.00, using at most two decimals, for example 47 or 47.50.'
     }
-    const annual = parseCents(plan.annualPrice)
-    if (annual === null || annual <= 0) {
-      errors[`${plan.id}-annual`] = 'Enter a price above $0.00, using at most two decimals.'
-    } else if (monthly !== null && monthly > 0 && annual >= monthly * 12) {
-      errors[`${plan.id}-annual`] = `Annual has to undercut 12 months of monthly (${formatUsd(monthly * 12)}) or nobody has a reason to pay yearly.`
+    // A weekly plan has no annual rate to check: annual billing does not apply to it.
+    if (plan.cadence === 'month') {
+      const annual = parseCents(plan.annualPrice)
+      if (annual === null || annual <= 0) {
+        errors[`${plan.id}-annual`] = 'Enter a price above $0.00, using at most two decimals.'
+      } else if (monthly !== null && monthly > 0 && annual >= monthly * 12) {
+        errors[`${plan.id}-annual`] = `Annual has to undercut 12 months of monthly (${formatUsd(monthly * 12)}) or nobody has a reason to pay yearly.`
+      }
     }
-    const credits = parseWhole(plan.monthlyCredits)
-    if (credits === null || credits < 1) {
-      errors[`${plan.id}-credits`] = 'Enter a whole number of credits, at least 1. One credit is one minute of Copilot.'
+    if (plan.interviewKind === 'limited') {
+      const credits = parseWhole(plan.interviewAmount)
+      if (credits === null || credits < 1) {
+        errors[`${plan.id}-credits`] = 'Enter a whole number of credits, at least 1, or set the allowance to unlimited.'
+      }
+    }
+    if (plan.features.find((toggle) => toggle.id === 'auto-apply')?.enabled && plan.autoApplyKind === 'limited') {
+      const jobs = parseWhole(plan.autoApplyAmount)
+      if (jobs === null || jobs < 1) {
+        errors[`${plan.id}-auto-apply`] = 'Enter a whole number of jobs, at least 1, or set the allowance to unlimited.'
+      }
     }
     const documents = parseWhole(plan.knowledgeBaseDocumentLimit)
     if (documents === null || documents < 1 || documents > 100) {
@@ -606,14 +716,29 @@ function pricingChanges(
     const base = baseline.plans.find((item) => item.id === plan.id)
     if (!base) continue
     const section = `${plan.name} plan`
-    push(`${plan.id}-monthly`, section, 'Monthly price', moneyLabel(base.monthlyPrice), moneyLabel(plan.monthlyPrice))
-    push(`${plan.id}-annual`, section, 'Annual price', moneyLabel(base.annualPrice), moneyLabel(plan.annualPrice))
+    push(
+      `${plan.id}-monthly`,
+      section,
+      plan.cadence === 'week' ? 'Weekly price' : 'Monthly price',
+      moneyLabel(base.monthlyPrice),
+      moneyLabel(plan.monthlyPrice),
+    )
+    if (plan.cadence === 'month') {
+      push(`${plan.id}-annual`, section, 'Annual price', moneyLabel(base.annualPrice), moneyLabel(plan.annualPrice))
+    }
     push(
       `${plan.id}-credits`,
       section,
-      'Monthly credit allowance',
-      `${countLabel(base.monthlyCredits)} credits`,
-      `${countLabel(plan.monthlyCredits)} credits`,
+      'Interview allowance',
+      allowanceLabel(base.interviewKind, base.interviewAmount, 'credits'),
+      allowanceLabel(plan.interviewKind, plan.interviewAmount, 'credits'),
+    )
+    push(
+      `${plan.id}-auto-apply`,
+      section,
+      'Auto Apply allowance',
+      allowanceLabel(base.autoApplyKind, base.autoApplyAmount, 'jobs'),
+      allowanceLabel(plan.autoApplyKind, plan.autoApplyAmount, 'jobs'),
     )
     push(
       `${plan.id}-documents`,
@@ -673,7 +798,10 @@ function PricingTab({
   readonly doneForYouPackages: readonly AdminDoneForYouPackageConfig[]
   readonly marketplacePricing: AdminMarketplacePricingConfig
   readonly unsubscribedAllowance: AdminUnsubscribedAllowanceConfig
-  readonly onSavePricing?: (changes: readonly AdminConfigChange[]) => void
+  readonly onSavePricing?: (
+    changes: readonly AdminConfigChange[],
+    options: { readonly resetUsageForExistingSubscribers: boolean },
+  ) => void
   readonly onEditAllowance: () => void
 }) {
   const initial = useMemo(
@@ -683,6 +811,10 @@ function PricingTab({
   const [baseline, setBaseline] = useState<PricingForm>(initial)
   const [form, setForm] = useState<PricingForm>(initial)
   const [reviewOpen, setReviewOpen] = useState(false)
+  // Whether an allowance or price change reaches the people already subscribed, or only
+  // the ones who subscribe next. Defaults to off: the safe answer is the one that does not
+  // silently re-grant a cycle's usage to every live account.
+  const [resetExistingUsage, setResetExistingUsage] = useState(false)
   const [savedMessage, setSavedMessage] = useState<string | null>(null)
   const [blocked, setBlocked] = useState(false)
 
@@ -715,11 +847,26 @@ function PricingTab({
     setReviewOpen(true)
   }
 
+  // Which plans had a price or an allowance move, and how many people are on them — the
+  // blast radius the reset question is actually about.
+  const affectedSubscribers = useMemo(() => {
+    const touched = new Set(
+      changes
+        .filter((change) => /-(monthly|annual|credits|auto-apply)$/.test(change.id))
+        .map((change) => change.id.replace(/-(monthly|annual|credits|auto-apply)$/, '')),
+    )
+    return form.plans.filter((plan) => touched.has(plan.id)).reduce((total, plan) => total + plan.subscriberCount, 0)
+  }, [changes, form.plans])
+
   function handleConfirm() {
     setBaseline(form)
     setReviewOpen(false)
-    setSavedMessage(`${changes.length} pricing ${changes.length === 1 ? 'change is' : 'changes are'} live for new and renewing subscribers.`)
-    onSavePricing?.(changes)
+    const scope =
+      affectedSubscribers > 0 && resetExistingUsage
+        ? `live for everyone, including the ${numberFormatter.format(affectedSubscribers)} already subscribed.`
+        : 'live for new subscriptions and for renewals.'
+    setSavedMessage(`${changes.length} pricing ${changes.length === 1 ? 'change is' : 'changes are'} ${scope}`)
+    onSavePricing?.(changes, { resetUsageForExistingSubscribers: affectedSubscribers > 0 && resetExistingUsage })
   }
 
   const copilotRateCents = parseCents(form.copilotRate)
@@ -769,11 +916,12 @@ function PricingTab({
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
                   <ConfigField
                     id={`${plan.id}-monthly`}
-                    label="Monthly price, USD"
+                    label={plan.cadence === 'week' ? 'Weekly price, USD' : 'Monthly price, USD'}
                     value={plan.monthlyPrice}
                     error={errors[`${plan.id}-monthly`]}
                     onChange={(value) => updatePlan(plan.id, { monthlyPrice: value })}
                   />
+                  {plan.cadence === 'month' ? (
                   <ConfigField
                     id={`${plan.id}-annual`}
                     label="Annual price, USD"
@@ -786,19 +934,39 @@ function PricingTab({
                     }
                     onChange={(value) => updatePlan(plan.id, { annualPrice: value })}
                   />
-                  <ConfigField
+                  ) : (
+                    <p className="text-xs leading-5 text-ink-muted">
+                      Billed weekly. Annual billing does not apply to a weekly plan, so it has no annual rate to set.
+                    </p>
+                  )}
+                  <AllowanceField
                     id={`${plan.id}-credits`}
-                    label="Monthly credits"
-                    inputMode="numeric"
-                    value={plan.monthlyCredits}
+                    legend="Interview allowance"
+                    unit="credits"
+                    kind={plan.interviewKind}
+                    amount={plan.interviewAmount}
                     error={errors[`${plan.id}-credits`]}
                     hint={
-                      parseWhole(plan.monthlyCredits) !== null && copilotRateCents !== null
-                        ? `About ${countLabel(plan.monthlyCredits)} minutes of Copilot, worth ${formatUsd((parseWhole(plan.monthlyCredits) ?? 0) * copilotRateCents)} at the current rate.`
+                      plan.interviewKind === 'limited' && parseWhole(plan.interviewAmount) !== null && copilotRateCents !== null
+                        ? `About ${countLabel(plan.interviewAmount)} minutes, worth ${formatUsd((parseWhole(plan.interviewAmount) ?? 0) * copilotRateCents)} at the current rate.`
                         : undefined
                     }
-                    onChange={(value) => updatePlan(plan.id, { monthlyCredits: value })}
+                    onKindChange={(kind) => updatePlan(plan.id, { interviewKind: kind })}
+                    onAmountChange={(value) => updatePlan(plan.id, { interviewAmount: value })}
                   />
+                  {plan.features.find((toggle) => toggle.id === 'auto-apply')?.enabled ? (
+                    <AllowanceField
+                      id={`${plan.id}-auto-apply`}
+                      legend="Auto Apply allowance"
+                      unit="jobs per cycle"
+                      kind={plan.autoApplyKind}
+                      amount={plan.autoApplyAmount}
+                      error={errors[`${plan.id}-auto-apply`]}
+                      hint="The one metered thing inside a plan: every application carries a real cost."
+                      onKindChange={(kind) => updatePlan(plan.id, { autoApplyKind: kind })}
+                      onAmountChange={(value) => updatePlan(plan.id, { autoApplyAmount: value })}
+                    />
+                  ) : null}
                   <ConfigField
                     id={`${plan.id}-documents`}
                     label="Knowledge Base documents"
@@ -866,7 +1034,11 @@ function PricingTab({
               error={errors['copilot-rate']}
               hint={
                 copilotRateCents !== null
-                  ? `Starter's ${countLabel(form.plans[0]?.monthlyCredits ?? '0')} credits are worth ${formatUsd((parseWhole(form.plans[0]?.monthlyCredits ?? '0') ?? 0) * copilotRateCents)} of Copilot time.`
+                  ? `What a minute is worth where it is still counted: pay-as-you-go interview credits, and any plan whose allowance is limited. ${
+                      form.plans.every((plan) => plan.interviewKind === 'unlimited')
+                        ? 'Every plan is unlimited today, so this rate only prices the pay-as-you-go side.'
+                        : ''
+                    }`.trim()
                   : undefined
               }
               onChange={(value) => updateForm({ copilotRate: value })}
@@ -1006,6 +1178,23 @@ function PricingTab({
         impact="Applying this changes what live subscribers are charged at their next renewal, and what every pricing surface shows from now on."
         changes={changes}
         confirmLabel="Apply to live pricing"
+        decision={
+          affectedSubscribers > 0 ? (
+            <div className="rounded-soft border border-border bg-surface-subtle p-4">
+              <Checkbox
+                label="Reset usage for existing subscribers"
+                checked={resetExistingUsage}
+                onCheckedChange={setResetExistingUsage}
+                aria-describedby="reset-usage-hint"
+              />
+              <p id="reset-usage-hint" className="mt-2 text-xs leading-5 text-ink-muted">
+                {resetExistingUsage
+                  ? `${numberFormatter.format(affectedSubscribers)} live ${affectedSubscribers === 1 ? 'subscriber' : 'subscribers'} move onto the new allowance straight away, and this cycle's usage is wiped so they feel it today.`
+                  : `The new allowance applies to new subscriptions and to renewals. The ${numberFormatter.format(affectedSubscribers)} live ${affectedSubscribers === 1 ? 'subscriber keeps' : 'subscribers keep'} what they are on until their next renewal.`}
+              </p>
+            </div>
+          ) : undefined
+        }
         onConfirm={handleConfirm}
       />
     </>

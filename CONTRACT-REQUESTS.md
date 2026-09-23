@@ -161,3 +161,15 @@ What the model actually needs:
 - **Cadence on the plan.** `Plan` is `'starter' | 'pro' | 'premium'`, and Starter now bills **weekly** while the other two bill monthly with an annual option. Nothing in the contract expresses a billing period, so the renewal cadence lives in fixtures and view props today. Whatever replaces this should carry it, since "cancel before it renews" means something different at a week than at a year.
 
 Until then, `Plan` stays as-is and the drafts carry the shape: `src/contracts/account.draft.ts`'s `BillingPlanCard` has optional annual fields (a weekly plan has no annual rate) and its allowance field was renamed `included`, because it holds "Unlimited use" rather than a credit count.
+
+## Admin Invites Draft Contract
+
+`src/contracts/admin-invites.draft.ts` backs admin-issued invites: bringing someone into Jobwhisper by email or by a shareable link, with a plan or a credit balance already attached to the account they land in.
+
+Three shapes are worth carrying into the real contract rather than re-inventing:
+
+- **`AdminInviteGrant` is a discriminated union**, not a nullable plan id beside a nullable credit amount. An invite grants a plan for a number of cycles, or credits of one product, or nothing — never two at once, and the type says so.
+- **`AdminInviteUses` reuses the limited-or-unlimited shape** that `AdminPlanAllowance` uses in `admin-configuration.draft.ts`. A campaign link with no cap is a state, not a very large number, and the same is true of a plan's allowance — one shape for both keeps a sentinel like `-1` or `999999` out of the model.
+- **Every invite carries a `url`, including email ones.** An email invite is that URL, sent; treating the link as the primitive means "resend" and "copy link" are the same object rather than two flows.
+
+What a real implementation needs that this draft does not model: what happens when a grant is claimed (the ledger entry that credits the account, and whether it is reversible if the invite is revoked after acceptance), and whether an accepted invite ties the account to the admin or campaign that issued it for attribution. `grantLabel` is a pre-formatted display string like every other admin date and money field here, so the view never prices a grant itself.

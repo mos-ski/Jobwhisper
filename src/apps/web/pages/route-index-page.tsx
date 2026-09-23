@@ -390,6 +390,11 @@ const adminRoutes = [
     description: 'User table with summary tiles, status/plan filters, search, pagination, and row actions.',
   },
   {
+    href: '/admin/accounts?tab=invites',
+    label: 'Admin invites',
+    description: 'Invite by email or by link, with a plan or a credit balance attached to whoever accepts.',
+  },
+  {
     href: '/admin/accounts?state=empty',
     label: 'Admin accounts (empty)',
     description: 'No-results state with a clear-filters action.',
