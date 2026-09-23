@@ -5,7 +5,7 @@ export type BillingPlanFixture = {
   readonly name: string
   /** Per cadence — per week on the weekly plan, per month on the others. */
   readonly priceMonthly: number
-  /** Starter bills weekly; a weekly plan has no annual rate to switch to. */
+  /** Starter bills weekly, the other two monthly. There is no annual rate. */
   readonly cadence: 'week' | 'month'
   /** What the plan includes, now that it is not an amount. */
   readonly included: string
@@ -37,7 +37,7 @@ export const authPlanFixtures: readonly BillingPlanFixture[] = [
   {
     id: 'starter',
     name: 'Starter',
-    priceMonthly: 19,
+    priceMonthly: 47,
     cadence: 'week',
     included: 'Unlimited use',
     description: 'Unlimited Interview Copilot on web and desktop, for the week you are interviewing.',

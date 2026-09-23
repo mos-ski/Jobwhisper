@@ -2,19 +2,23 @@
 
 This is the live, editable source of truth for pricing: what's actually charged today, where every number lives in the codebase, and what's still unresolved. Update this file the moment a price changes anywhere, or a new pricing idea gets floated, so it stays the one place to check "what do we currently charge, and does it agree with itself."
 
-**Last corrected: 2026-09-23** — the three separately-shaped products were merged into **one set of three subscription plans, all unlimited**. The monthly credit allowance that used to separate the tiers is gone, so what a plan unlocks is the only thing that varies between them. Pay-as-you-go survives for people without a plan; Done-For-You keeps its own section of the pricing page. Implemented in code the same day (§4).
+**Last corrected: 2026-09-23 (second pass)** — the subscription became **three unlimited plans**, the credit allowance that separated the tiers is gone, and **annual billing is retired everywhere**: one price per plan, Starter weekly and the other two monthly. Pay-as-you-go survives for people without a plan and now covers **interview minutes** as well as resume prompts and applications. The pricing page keeps **three tabs** — one per way of buying. Implemented in code the same day (§4).
 
 ## The plans, at a glance
 
 | Plan | Cadence | Price | What it unlocks |
 |---|---|---|---|
-| **Starter** | Weekly, auto-renewing | **$19/week** | Interview Copilot on web **and** desktop. Unlimited |
-| **Pro** | Monthly | **$99/month**, or **$79/month** paid annually | Everything in Starter, plus Interview Prep, Coding Copilot, Meeting Copilot, Auto Apply, Resume Builder. All unlimited |
-| **Premium** | Monthly | **$497/month**, or **$398/month** paid annually | Everything in Pro, plus call recording for every session and priority support |
+| **Starter** | Weekly, auto-renewing | **$47/week** | Interview Copilot on web **and** desktop. Unlimited |
+| **Pro** | Monthly | **$99/month** | Everything in Starter, plus Interview Prep, Coding Copilot, Meeting Copilot, Auto Apply, Resume Builder. All unlimited |
+| **Premium** | Monthly | **$497/month** | Everything in Pro, plus call recording for every session and priority support |
+
+**No annual billing.** Retired 2026-09-23 across the pricing page, the signup flow and the in-app plan comparison: one price per plan, nothing to toggle.
 
 **Unlimited means unlimited use of the tools a plan covers** — no credit balance, no minute counting, no mid-session top-up. The credit economy survives only for people **without** a plan (§2.1).
 
-**Starter is weekly on purpose.** It is sized for the week someone actually has interviews rather than a month of readiness, and it renews weekly until cancelled. It carries **no annual rate** — a year bought a week at a time is not an annual plan — so the pricing page's annual toggle moves the two monthly plans and leaves Starter's card alone.
+**Starter is weekly on purpose.** It is sized for the week someone actually has interviews rather than a month of readiness, and it renews weekly until cancelled.
+
+**Open, and load-bearing: Starter's $47 is priced above Pro in practice.** At $47/week, four weeks is ~$204 against Pro's $99/month for strictly more product, so the cards ladder backwards for anyone staying longer than two weeks. That is defensible as a deliberate short-term premium — a week pass for someone interviewing on Thursday, the way day passes price above memberships — but it needs saying on the card, or the page reads as a mistake. Two ways out if it is not deliberate: price Starter under a month of Pro, or label it explicitly as a one-week pass and let the ladder read as urgency rather than value.
 
 **Two deliberate inversions of the old matrix**, recorded so they don't read as bugs later:
 
@@ -50,6 +54,7 @@ The three plans above are one product sold at three commitment levels, not three
 
 | Retired | Was | Now |
 |---|---|---|
+| Annual billing | 20% off, monthly equivalent shown on the card | Gone. One price per plan |
 | Monthly credit allowance per tier | ≈500 / 1,000 / 4,000 credits | Unlimited use of what the plan covers |
 | Mid-cycle top-ups for subscribers | $10 minimum, wallet credits | Nothing to top up |
 | "1 credit = 1 minute" as plan language | The tiers' unit of comparison | Only meaningful pay-as-you-go (§3) |
@@ -80,14 +85,17 @@ The un-subscribed state isn't a column here on purpose — it isn't a plan, so i
 
 Resume tailoring that happens automatically *as part of* an Auto Apply application is **not** a Resume Builder charge — it's just Auto Apply doing its job, bundled into the $1/$10 price. "Resume Builder" as its own billed product only means a user deliberately opening the tool to build, fix, or tailor a resume themselves.
 
-### 2.1 Plan 2 — Find Jobs Yourself (DIY)
+### 2.1 Pay as you go — the three products, for people with no plan
 
-**How it's bought:** prepaid credits, purchased upfront — one purchase flow per feature, since Resume Builder and Auto Apply are independent purchases with independent minimums:
+**How it's bought:** prepaid credits, purchased upfront — one purchase flow per product, since each has its own unit and its own minimum:
 
-| Feature | Minimum purchase | Rate | Example |
+| Product | Minimum purchase | Rate | Example |
 |---|---|---|---|
+| **Interview** (added 2026-09-23) | $10 | $0.10/credit/minute | $10 → 100 minutes |
 | Resume Builder | $5 | $0.10/credit/prompt | $5 → 50 prompts |
 | Auto Apply (AI-run) | $10 | $1/credit/successful application | $10 → 10 successful applications |
+
+**Interview credits cover both Interview Prep and a live Interview Copilot session**, on web and desktop — one balance for the whole interview side rather than one per tool, since both meter the same way (a minute is a minute) and a candidate switching between practice and the real call should not have to think about which balance is paying. Its $10 floor matches Auto Apply's rather than Resume Builder's $5, carried over from the retired mid-cycle top-up, which was the same purchase at the same rate.
 
 Confirmed 2026-09-02: this is a **one-time purchase, not a recurring monthly charge.** Credits are **valid for 12 months from purchase** (revised 2026-09-02, matching the Codex reference below — not literally forever as first stated), spent down at whatever pace the user actually uses the product. When the balance runs low, or 12 months passes, they buy more.
 

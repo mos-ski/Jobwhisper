@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ChevronDown } from 'lucide-react'
 
 import { MarketingFooter, MarketingNav } from '@/features/marketing/marketing-chrome'
 import { PlanAmount, PlanCard, PlanCarousel, type PlanTerms } from '@/features/pricing/plan-card'
 import { ProOfferWidget } from '@/features/billing/pro-offer-widget'
-import { Button, cn } from '@/ui'
+import { Button, Tabs, TabsContent, TabsList, TabsTrigger, cn } from '@/ui'
+
+type PricingTab = 'subscription' | 'pay-as-you-go' | 'done-for-you'
 
 type SubscriptionPlan = {
   readonly id: string
@@ -19,9 +21,6 @@ type SubscriptionPlan = {
   readonly cadence: 'week' | 'month'
   /** Per cadence — so per week on Starter, per month on the other two. */
   readonly price: number
-  /** The monthly equivalent when paid annually. Absent on the weekly plan, which has no
-   *  annual rate to switch to: a year bought a week at a time is not an annual plan. */
-  readonly annualPrice?: number
   readonly description: string
   readonly features: readonly string[]
 }
@@ -76,7 +75,7 @@ const PLANS: readonly SubscriptionPlan[] = [
     badge: 'Great to Start',
     tagline: 'Live interview support, by the week',
     cadence: 'week',
-    price: 19,
+    price: 47,
     description: 'Unlimited Interview Copilot on web and desktop, for the week you are interviewing.',
     features: [
       'Interview Copilot on web and desktop',
@@ -92,7 +91,6 @@ const PLANS: readonly SubscriptionPlan[] = [
     tagline: 'The whole job search, unlimited',
     cadence: 'month',
     price: 99,
-    annualPrice: 79,
     description: 'Every Jobwhisper tool, unlimited, for the length of your search.',
     features: [
       'Everything in Starter',
@@ -109,7 +107,6 @@ const PLANS: readonly SubscriptionPlan[] = [
     tagline: 'Everything, on the record',
     cadence: 'month',
     price: 497,
-    annualPrice: 398,
     description: 'Pro, plus recordings of every session and priority support.',
     features: [
       'Everything in Pro',
@@ -121,6 +118,21 @@ const PLANS: readonly SubscriptionPlan[] = [
 ]
 
 const CREDIT_PRODUCTS: readonly CreditProduct[] = [
+  {
+    id: 'interview',
+    name: 'Interview',
+    tagline: 'Pay for the minutes you use',
+    amount: '$0.10',
+    unit: 'per interview minute',
+    terms: [['Minimum purchase', '$10'], ['Credits valid for', '30 days']],
+    description: 'Live support while the interview runs, and realistic practice before it.',
+    features: [
+      'One credit per minute of a session',
+      'Works for Interview Prep and Interview Copilot',
+      'Web and desktop',
+      'No subscription required',
+    ],
+  },
   {
     id: 'resume',
     name: 'Resume Builder',
@@ -184,12 +196,12 @@ const MANAGED_PACKAGES: readonly ManagedPackage[] = [
 // pay-as-you-go as sections under them rather than tabs with their own guide and FAQ.
 const SUPPORTING_CONTENT: SupportingContent = {
   guideTitle: 'How billing works',
-  guideDescription: 'Pick the cadence that matches your search, and stop watching a credit balance.',
+  guideDescription: 'One price per plan, no credit balance to watch, and two ways to buy without one.',
   guideItems: [
     { label: 'Starter', value: 'Renews every week until you cancel' },
-    { label: 'Pro and Premium', value: 'Monthly, or annually for 20% less a month' },
+    { label: 'Pro and Premium', value: 'Renew every month until you cancel' },
     { label: 'Usage', value: 'Unlimited on every plan — no credits to track' },
-    { label: 'Without a plan', value: 'Resume Builder and Auto Apply can be bought as you go' },
+    { label: 'Without a plan', value: 'Interview minutes, resume prompts and applications, bought as you go' },
   ],
   faqTitle: 'Pricing questions',
   faqDescription: 'Plans, cadences, what unlimited covers, and the two ways to buy without one.',
@@ -206,12 +218,12 @@ const SUPPORTING_CONTENT: SupportingContent = {
     },
     {
       question: 'How do Pro and Premium bill?',
-      answer: 'Monthly by default, or annually at a lower monthly equivalent. Both renew until you cancel.',
+      answer: 'Monthly, until you cancel. There is one price per plan — no annual commitment and no annual rate.',
     },
     {
-      question: 'Can I pay annually?',
+      question: 'Can I buy interview minutes without a plan?',
       answer:
-        'Yes, on Pro and Premium — paid once a year, at about 20% less a month. Starter is weekly only, since a year bought a week at a time is not an annual plan.',
+        'Yes. Interview credits are $0.10 a minute, from $10, and they cover both Interview Prep and a live Interview Copilot session. A plan includes both unlimited instead.',
     },
     {
       question: 'Which plans include the desktop app?',
@@ -251,7 +263,7 @@ const SUPPORTING_CONTENT: SupportingContent = {
     {
       question: 'Do I need a plan to use Resume Builder or Auto Apply?',
       answer:
-        'No. Both can be bought as you go — Resume Builder from $5, Auto Apply from $10 — with no subscription.',
+        'No. Both can be bought as you go — Resume Builder from $5, Auto Apply from $10 — as can interview minutes, with no subscription.',
     },
     {
       question: 'When does pay-as-you-go Auto Apply charge me?',
@@ -292,48 +304,12 @@ const SUPPORTING_CONTENT: SupportingContent = {
 }
 
 
+function isPricingTab(value: string | null): value is PricingTab {
+  return value === 'subscription' || value === 'pay-as-you-go' || value === 'done-for-you'
+}
+
 function PageShell({ children, className }: { readonly children: ReactNode; readonly className?: string }) {
   return <div className={cn('mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8', className)}>{children}</div>
-}
-
-
-function useAnimatedNumber(target: number) {
-  const [displayValue, setDisplayValue] = useState(target)
-  const previousTargetRef = useRef(target)
-
-  useEffect(() => {
-    const startValue = previousTargetRef.current
-    previousTargetRef.current = target
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-    if (reduceMotion || startValue === target) {
-      setDisplayValue(target)
-      return
-    }
-
-    const startTime = performance.now()
-    let frame = 0
-    const finish = window.setTimeout(() => setDisplayValue(target), 450)
-    const update = (now: number) => {
-      const progress = Math.min((now - startTime) / 420, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setDisplayValue(Math.round(startValue + (target - startValue) * eased))
-      if (progress < 1) frame = window.requestAnimationFrame(update)
-    }
-
-    frame = window.requestAnimationFrame(update)
-    return () => {
-      window.cancelAnimationFrame(frame)
-      window.clearTimeout(finish)
-    }
-  }, [target])
-
-  return displayValue
-}
-
-function AnimatedPrice({ value }: { readonly value: number }) {
-  const displayValue = useAnimatedNumber(value)
-  return <PlanAmount>${displayValue}</PlanAmount>
 }
 
 
@@ -359,30 +335,7 @@ function PanelHeader({
   )
 }
 
-function BillingToggle({ annual, onChange }: { readonly annual: boolean; readonly onChange: () => void }) {
-  return (
-    <div className="inline-flex min-h-11 items-center gap-3 rounded-lg border border-border bg-surface-subtle px-3">
-      <span className={cn('text-sm font-medium', annual ? 'text-ink-muted' : 'text-ink')}>Monthly</span>
-      <button
-        type="button"
-        role="switch"
-        aria-label="Toggle annual billing"
-        aria-checked={annual}
-        onClick={onChange}
-        className={cn(
-          'relative flex h-6 w-10 shrink-0 items-center rounded-pill p-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
-          annual ? 'bg-accent' : 'bg-muted',
-        )}
-      >
-        <span className={cn('block size-5 rounded-pill bg-surface shadow-control transition-transform', annual ? 'translate-x-4' : 'translate-x-0')} />
-      </button>
-      <span className={cn('text-sm font-medium', annual ? 'text-ink' : 'text-ink-muted')}>Annual, save 20%</span>
-    </div>
-  )
-}
-
-
-function SubscriptionPlans({ annual }: { readonly annual: boolean }) {
+function SubscriptionPlans() {
   const [showProOffer, setShowProOffer] = useState(false)
   const proOfferTriggeredRef = useRef(false)
   const navigate = useNavigate()
@@ -410,10 +363,10 @@ function SubscriptionPlans({ annual }: { readonly annual: boolean }) {
             badge={plan.featured ? undefined : plan.badge}
             banner={plan.featured ? plan.badge : undefined}
             tagline={plan.tagline}
-            amount={<AnimatedPrice value={annual && plan.annualPrice ? plan.annualPrice : plan.price} />}
+            amount={<PlanAmount>${plan.price}</PlanAmount>}
             unit={`/${plan.cadence}`}
             terms={[
-              ['Billing', plan.cadence === 'week' ? 'Weekly' : annual && plan.annualPrice ? 'Annual' : 'Monthly'],
+              ['Billing', plan.cadence === 'week' ? 'Weekly' : 'Monthly'],
               ['Included use', 'Unlimited'],
             ]}
             features={plan.features}
@@ -471,8 +424,8 @@ function PayAsYouGo() {
   return (
     <section className="pricing-plans">
       <SectionIntro
-        title="No plan? Pay as you go"
-        description="Resume Builder and Auto Apply can be bought on their own, with no subscription. Both are included unlimited on Pro and Premium."
+        title="Pay as you go"
+        description="Interview minutes, Resume Builder prompts and Auto Apply submissions, bought on their own with no subscription. All three are included unlimited on a plan."
       />
       <PlanCarousel count={CREDIT_PRODUCTS.length}>
         {CREDIT_PRODUCTS.map((product) => (
@@ -615,7 +568,17 @@ function ClosingPanel({ content }: { readonly content: SupportingContent }) {
 }
 
 export function PricingPage() {
-  const [annual, setAnnual] = useState(true)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const requestedTab = searchParams.get('tab')
+  const activeTab: PricingTab = isPricingTab(requestedTab) ? requestedTab : 'subscription'
+
+  const handleTabChange = (value: string) => {
+    if (!isPricingTab(value)) return
+    const nextParams = new URLSearchParams(searchParams)
+    if (value === 'subscription') nextParams.delete('tab')
+    else nextParams.set('tab', value)
+    setSearchParams(nextParams, { replace: true })
+  }
 
   return (
     // Pinned to the light palette. The public pages are a light composition — the landing
@@ -628,38 +591,31 @@ export function PricingPage() {
       <main>
         <PageShell className="pb-8 pt-10 sm:pt-14">
           <h1 className="max-w-3xl font-gowun text-4xl font-bold leading-tight text-ink sm:text-5xl">
-            One plan, everything unlimited
+            Three ways to buy Jobwhisper
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-ink-muted">
-            Pick the plan that matches your search and use every tool it covers without counting minutes,
-            prompts, or applications. Interviewing this week? Starter bills by the week.
+            Subscribe for unlimited use, pay only for the minutes and applications you need, or have a
+            success manager run the search for you.
           </p>
         </PageShell>
 
-        {/* The three shapes used to be three tabs, which hid two of them behind a click and
-            asked a visitor to understand the difference before seeing any of it. They are
-            sections of one page now: the plans, then the two ways to buy without one. */}
+        {/* Three tabs, one per way of buying. The guide and questions below cover all three,
+            so they do not change with the tab — everything a visitor might ask about pricing
+            is answered in one place rather than three overlapping sets. */}
         <PageShell className="pb-6">
-          <div className="mb-6 flex flex-col-reverse gap-3 border-b border-border pb-4 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
-            <div className="min-w-0">
-              <h2 className="font-gowun text-2xl font-bold text-ink">Plans</h2>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-muted">
-                Unlimited use of everything the plan covers. Cancel whenever the search is over.
-              </p>
-            </div>
-            {/* Starter is weekly and has no annual rate, so the toggle moves the two monthly
-                plans and leaves its card alone. */}
-            <div className="shrink-0 self-end sm:pb-1">
-              <BillingToggle annual={annual} onChange={() => setAnnual((value) => !value)} />
-            </div>
-          </div>
-          <SubscriptionPlans annual={annual} />
+          <Tabs value={activeTab} onValueChange={handleTabChange}>
+            <TabsList className="pricing-tabs mb-6 min-w-0 gap-7" aria-label="Ways to buy">
+              <TabsTrigger value="subscription" className="min-h-11 pb-3 text-sm sm:text-base">Subscription plans</TabsTrigger>
+              <TabsTrigger value="pay-as-you-go" className="min-h-11 pb-3 text-sm sm:text-base">Pay as you go</TabsTrigger>
+              <TabsTrigger value="done-for-you" className="min-h-11 pb-3 text-sm sm:text-base">Done for you</TabsTrigger>
+            </TabsList>
+            <TabsContent value="subscription" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><SubscriptionPlans /></TabsContent>
+            <TabsContent value="pay-as-you-go" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><PayAsYouGo /></TabsContent>
+            <TabsContent value="done-for-you" className="mt-0 animate-ease-in-bottom motion-reduce:animate-none"><DoneForYou /></TabsContent>
+          </Tabs>
         </PageShell>
 
         <PoweredByModels />
-
-        <PageShell className="pb-10"><PayAsYouGo /></PageShell>
-        <PageShell className="pb-10"><DoneForYou /></PageShell>
 
         <PageShell className="pb-6">
           <CreditGuide content={SUPPORTING_CONTENT} />

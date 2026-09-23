@@ -19,10 +19,6 @@ export type BillingPlanCard = {
   readonly name: string
   readonly price: string
   readonly cadence: string
-  /** Absent on a weekly plan, which has no annual rate to switch to. */
-  readonly annualPrice?: string
-  readonly annualCadence?: string
-  readonly annualDiscountPrice?: string
   /** What the plan includes. Plans are unlimited now, so this is no longer an amount. */
   readonly included: string
   readonly description: string

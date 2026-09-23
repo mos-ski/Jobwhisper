@@ -16,14 +16,10 @@ export type AuthPlanOption = {
   readonly popular?: boolean
 }
 
-export type BillingCadence = 'monthly' | 'annual'
-
 export type PlanSelectionViewProps = {
-  readonly cadence: BillingCadence
   readonly plans: readonly AuthPlanOption[]
   readonly selectedPlanId: Plan
   readonly laterHref: string
-  readonly onToggleCadence: () => void
   readonly onSelectPlan: (plan: Plan) => void
 }
 
@@ -34,20 +30,15 @@ function PlanCheck() {
 function PlanCard({
   plan,
   selected,
-  annual,
   onSubscribeClick,
   cardRef,
 }: {
   readonly plan: AuthPlanOption
   readonly selected: boolean
-  readonly annual: boolean
   readonly onSubscribeClick: (plan: Plan) => void
   readonly cardRef?: (el: HTMLElement | null) => void
 }) {
   const subscribeLabel = `Subscribe to ${plan.name}`
-  // A weekly plan has no annual rate to switch to, so the toggle leaves it where it is.
-  const annualApplies = annual && plan.cadence === 'month'
-  const displayPrice = annualApplies ? Math.round(plan.priceMonthly * 0.8) : plan.priceMonthly
 
   return (
     <article
@@ -64,10 +55,9 @@ function PlanCard({
       </div>
       <div className="flex flex-1 flex-col pt-5">
         <div className="flex flex-wrap items-end gap-1">
-          <span className="font-gowun text-4xl font-semibold leading-tight text-ink">${displayPrice}</span>
+          <span className="font-gowun text-4xl font-semibold leading-tight text-ink">${plan.priceMonthly}</span>
           <span className="pb-2 text-sm font-medium text-ink">per {plan.cadence}</span>
         </div>
-        {annualApplies ? <p className="mt-1 text-sm text-ink-muted">${displayPrice * 12} billed yearly</p> : null}
         <p className="mt-5 text-sm font-semibold text-ink">{plan.included}</p>
         <p className="mt-3 text-sm leading-5 text-ink-muted">{plan.description}</p>
 
@@ -97,14 +87,11 @@ function PlanCard({
 }
 
 export function PlanSelectionView({
-  cadence,
   plans,
   selectedPlanId,
   laterHref,
-  onToggleCadence,
   onSelectPlan,
 }: PlanSelectionViewProps) {
-  const annual = cadence === 'annual'
   const carouselRef = useRef<HTMLDivElement>(null)
   const cardRefs = useRef<Partial<Record<Plan, HTMLElement>>>({})
   const recommendedPlanId = plans.find((plan) => plan.popular)?.id ?? plans[0]?.id
@@ -157,30 +144,6 @@ export function PlanSelectionView({
         <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pb-12 pt-14 sm:px-6 sm:pt-16">
           <div className="mx-auto flex flex-col items-center gap-3 text-center text-brand-bar-text">
             <h1 className="font-gowun text-2xl font-semibold leading-tight">Choose a plan</h1>
-            <div className="flex items-center gap-3 text-sm font-medium">
-              <span>Monthly</span>
-              <button
-                type="button"
-                role="switch"
-                aria-label="Toggle annual billing"
-                aria-checked={annual}
-                onClick={onToggleCadence}
-                className={cn(
-                  'relative flex h-6 w-10 shrink-0 items-center rounded-pill p-0.5 transition-colors duration-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-brand-bar',
-                  annual ? 'bg-brand-bar-text' : 'bg-brand-bar-text/25',
-                )}
-              >
-                <span
-                  className={cn(
-                    'block size-5 rounded-pill shadow-control transition-transform duration-normal',
-                    annual ? 'translate-x-4 bg-brand-bar' : 'translate-x-0 bg-brand-bar-text',
-                  )}
-                />
-              </button>
-              <span>
-                Annual <span className="text-focus">(save 20%)</span>
-              </span>
-            </div>
           </div>
 
           <div className="mx-auto mt-8 w-full max-w-4xl bg-surface p-4 shadow-panel sm:mt-12 sm:p-6">
@@ -193,7 +156,6 @@ export function PlanSelectionView({
                   key={plan.id}
                   plan={plan}
                   selected={plan.id === selectedPlanId}
-                  annual={annual}
                   onSubscribeClick={onSelectPlan}
                   cardRef={(el) => {
                     if (el) cardRefs.current[plan.id] = el

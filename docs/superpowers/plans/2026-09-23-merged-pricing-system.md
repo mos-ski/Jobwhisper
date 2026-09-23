@@ -15,17 +15,19 @@
 | Starter cadence | **Auto-renewing weekly subscription** — the first weekly cadence in the product |
 | Credits | **Retired for subscribers; pay-as-you-go survives for people with no plan** (Resume Builder $5 min, Auto Apply $1/successful application) |
 | Done-For-You | **Stays, as its own section of the merged pricing page** — not a tab, not folded into a tier |
-| Annual billing | **Kept** (reversed the same day, after first being dropped). Pro and Premium bill monthly or annually; Starter is weekly only and the toggle leaves its card alone |
-| Pro | **$99/month, $79/month paid annually** — unchanged. "$79 stays the same" was read off the annual card, which is the page's default view |
-| Starter price | **$19/week** — impulse-priced for one interview loop, and four weeks of it ($76) lands just under Pro's monthly annual rate, so a second week argues for the upgrade |
+| Annual billing | **Retired everywhere** — pricing page, signup flow and in-app comparison. One price per plan. (Dropped, briefly restored, then dropped for good on 2026-09-23.) |
+| Pro | **$99/month** |
+| Starter price | **$47/week** — the founder's correction of the recommended $19. See the open thread in `PRICING.md` §1: four weeks of it is ~$204 against Pro's $99, so the ladder reads backwards unless the card says "one week" loudly |
 
 ## The plans
 
 | Plan | Cadence | Price | Includes |
 |---|---|---|---|
-| **Starter** | Weekly | **$19/week** | Interview Copilot only — web **and** desktop. Unlimited |
-| **Pro** | Monthly | **$99**, or **$79** annually | Interview Prep, Interview Copilot, Coding Copilot, Meeting Copilot, Auto Apply, Resume Builder. All unlimited |
-| **Premium** | Monthly | **$497**, or **$398** annually (unchanged) | Everything in Pro, plus call recording and priority support. **One more differentiator still open** |
+| **Starter** | Weekly | **$47/week** | Interview Copilot only — web **and** desktop. Unlimited |
+| **Pro** | Monthly | **$99/month** | Interview Prep, Interview Copilot, Coding Copilot, Meeting Copilot, Auto Apply, Resume Builder. All unlimited |
+| **Premium** | Monthly | **$497/month** | Everything in Pro, plus call recording and priority support. **One more differentiator still open** |
+
+The pricing page keeps **three tabs**, one per way of buying: subscription plans, pay as you go, done for you. Pay-as-you-go carries **three** products now — interview minutes (new, $0.10/min from $10, covering Prep and Copilot alike), resume prompts, and applications.
 
 Two deliberate inversions of today's matrix, recorded so they do not read as mistakes later: Starter **loses Interview Prep**, which it has today, and **gains the desktop app**, which is Pro-and-above today. Auto Apply and Resume Builder move from standalone prepaid credits into the Pro subscription, while remaining purchasable standalone by non-subscribers.
 

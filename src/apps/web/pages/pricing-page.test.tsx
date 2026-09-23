@@ -1,11 +1,11 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 
 import { PricingPage } from './pricing-page'
 
-const HEADLINE = 'One plan, everything unlimited'
+const HEADLINE = 'Three ways to buy Jobwhisper'
 
 function renderPricingPage() {
   return render(
@@ -47,39 +47,40 @@ describe('PricingPage', () => {
     expect(screen.getByText('Call recording for every session')).toBeInTheDocument()
   })
 
-  it('bills Starter by the week and leaves it out of the annual switch', async () => {
-    const user = userEvent.setup()
+  it('prices each plan once, on its own cadence, with no annual switch', () => {
     renderPricingPage()
 
     const starter = screen.getByRole('heading', { level: 3, name: 'Starter' }).closest('article') as HTMLElement
     const pro = screen.getByRole('heading', { level: 3, name: 'Pro' }).closest('article') as HTMLElement
+    const premium = screen.getByRole('heading', { level: 3, name: 'Premium' }).closest('article') as HTMLElement
 
-    // Annual is the default view, so Pro shows its annual rate and Starter its weekly one.
-    expect(within(starter).getByText('$19')).toBeInTheDocument()
+    expect(within(starter).getByText('$47')).toBeInTheDocument()
     expect(within(starter).getByText('/week')).toBeInTheDocument()
     expect(within(starter).getByText('Weekly')).toBeInTheDocument()
-    expect(within(pro).getByText('$79')).toBeInTheDocument()
+    expect(within(pro).getByText('$99')).toBeInTheDocument()
     expect(within(pro).getByText('/month')).toBeInTheDocument()
-
-    await user.click(screen.getByRole('switch', { name: 'Toggle annual billing' }))
-
-    // A year bought a week at a time is not an annual plan, so Starter does not move.
-    await waitFor(() => expect(within(pro).getByText('$99')).toBeInTheDocument())
-    expect(within(starter).getByText('$19')).toBeInTheDocument()
+    expect(within(premium).getByText('$497')).toBeInTheDocument()
+    expect(screen.queryByRole('switch', { name: 'Toggle annual billing' })).not.toBeInTheDocument()
+    expect(screen.queryByText(/save 20%/)).not.toBeInTheDocument()
   })
 
-  it('merges the three tabs into sections of one page', () => {
+  it('sells the three ways to buy as three tabs', async () => {
+    const user = userEvent.setup()
     renderPricingPage()
 
-    expect(screen.queryByRole('tab', { name: 'Job-search credits' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('tab', { name: 'Done for you' })).not.toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Subscription plans' })).toHaveAttribute('aria-selected', 'true')
 
-    // Pay-as-you-go and Done For You are on the page from the start, not behind a click.
-    expect(screen.getByRole('heading', { level: 2, name: 'No plan? Pay as you go' })).toBeInTheDocument()
-    expect(screen.getByText('$0.10')).toBeInTheDocument()
+    await user.click(screen.getByRole('tab', { name: 'Pay as you go' }))
+
+    // Interview credits cover both the live session and the practice one.
+    expect(screen.getByRole('heading', { level: 3, name: 'Interview' })).toBeInTheDocument()
+    expect(screen.getByText('per interview minute')).toBeInTheDocument()
+    expect(screen.getByText('Works for Interview Prep and Interview Copilot')).toBeInTheDocument()
     expect(screen.getByText('per AI prompt')).toBeInTheDocument()
     expect(screen.getByText('per successful application')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'Or have it done for you' })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('tab', { name: 'Done for you' }))
+
     expect(screen.getByRole('heading', { level: 3, name: '5 interviews guaranteed' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: '20 interviews guaranteed' })).toBeInTheDocument()
   })
@@ -92,7 +93,7 @@ describe('PricingPage', () => {
     expect(faqPanel.querySelectorAll('details')).toHaveLength(20)
     expect(screen.getByText('What does unlimited mean on these plans?')).toBeInTheDocument()
     expect(screen.getByText('How does the Starter plan bill?')).toBeInTheDocument()
-    expect(screen.getByText('Can I pay annually?')).toBeInTheDocument()
+    expect(screen.getByText('Can I buy interview minutes without a plan?')).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'How billing works' })).toBeInTheDocument()
   })
 

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 import type { BillingPlanCard } from '@/contracts/account.draft'
 import { AppShell } from '@/features/dashboard/app-nav'
-import { Badge, ShellBar, Switch } from '@/ui'
+import { ShellBar } from '@/ui'
 import { PlanAmount, PlanCard, PlanCarousel } from '@/features/pricing/plan-card'
 import { ProOfferWidget } from './pro-offer-widget'
 
@@ -82,11 +82,8 @@ export type PlanCompareViewProps = {
  * Maps a billing plan onto the shared pricing card, so the in-app picker and the public
  * pricing page show the same thing. `current` replaces the badge and locks the CTA.
  */
-function BillingPlanCardView({ plan, annual, onProHover }: { readonly plan: BillingPlanCard; readonly annual: boolean; readonly onProHover?: () => void }) {
+function BillingPlanCardView({ plan, onProHover }: { readonly plan: BillingPlanCard; readonly onProHover?: () => void }) {
   const navigate = useNavigate()
-  // A weekly plan carries no annual rate, so the toggle leaves its card as it is.
-  const hasAnnual = Boolean(plan.annualPrice)
-  const showsDiscount = annual && hasAnnual && Boolean(plan.annualDiscountPrice)
   // In the picker, which plan you are on outranks which is popular, so it takes the banner.
   const banner = plan.current ? 'Current plan' : plan.popular ? 'Most Popular' : undefined
 
@@ -96,11 +93,11 @@ function BillingPlanCardView({ plan, annual, onProHover }: { readonly plan: Bill
       badge={banner ? undefined : plan.tag}
       banner={banner}
       tagline={plan.description}
-      amount={<PlanAmount>{showsDiscount ? plan.annualDiscountPrice : annual && hasAnnual ? plan.annualPrice : plan.price}</PlanAmount>}
-      unit={showsDiscount || !annual || !hasAnnual ? plan.cadence : plan.annualCadence}
+      amount={<PlanAmount>{plan.price}</PlanAmount>}
+      unit={plan.cadence}
       terms={[
         ['Included', plan.included],
-        ['Billing', !hasAnnual ? 'Billed weekly' : annual ? 'Billed yearly' : 'Billed monthly'],
+        ['Billing', plan.cadence === 'per week' ? 'Billed weekly' : 'Billed monthly'],
       ]}
       features={plan.features}
       ctaLabel={plan.current ? 'Current Plan' : plan.id === 'premium' ? 'Upgrade' : 'Downgrade'}
@@ -115,7 +112,6 @@ function BillingPlanCardView({ plan, annual, onProHover }: { readonly plan: Bill
 
 export function PlanCompareView({ homeHref, plans, backHref }: PlanCompareViewProps) {
   const navigate = useNavigate()
-  const [annual, setAnnual] = useState(true)
   const [showProOffer, setShowProOffer] = useState(false)
   const proOfferTriggeredRef = useRef(false)
 
@@ -148,15 +144,10 @@ export function PlanCompareView({ homeHref, plans, backHref }: PlanCompareViewPr
         <article className="w-full min-w-0 bg-surface shadow-panel">
           <div className="flex min-h-[5rem] flex-wrap items-center justify-between gap-3 border-b border-border px-4 sm:px-6 lg:px-8">
             <h1 className="font-gowun text-lg font-bold leading-5 text-ink sm:text-xl">Billing &amp; Subscription</h1>
-            <div className="flex items-center gap-2.5">
-              <span className="text-sm font-medium text-ink">Annual</span>
-              <Switch checked={annual} onCheckedChange={setAnnual} />
-              <Badge variant="positive" size="sm">(save 20%)</Badge>
-            </div>
           </div>
           <PlanCarousel count={plans.length}>
             {plans.map((plan) => (
-              <BillingPlanCardView key={plan.id} plan={plan} annual={annual} onProHover={triggerProOffer} />
+              <BillingPlanCardView key={plan.id} plan={plan} onProHover={triggerProOffer} />
             ))}
           </PlanCarousel>
         </article>
