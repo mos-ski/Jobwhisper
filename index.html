@@ -5,6 +5,10 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light dark" />
+    <!-- Internal prototype: keep it out of search results and link previews. robots.txt
+         stops the crawl; this stops an already-indexed URL from being listed, which
+         robots.txt alone cannot do. Remove both when the real site launches. -->
+    <meta name="robots" content="noindex, nofollow" />
     <script>
       (() => {
         const stored = window.localStorage.getItem('jobwhisper-theme');
