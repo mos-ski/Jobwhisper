@@ -6,6 +6,7 @@ import type { Session } from '@/contracts/identity'
 import { FunnelTrialView, type FunnelTrialStep } from '@/features/funnel/funnel-trial-view'
 import { trialFunnelOffer, trialFunnelQuestions } from '@/mocks/funnel'
 import { anonymousSession, candidateSession } from '@/mocks/sessions'
+import { useOnline } from '../funnel-page-state'
 
 const STEPS: readonly FunnelTrialStep[] = ['quiz', 'working', 'reward', 'account', 'card', 'done']
 // Review-only switches, carried through every step so a reviewer can walk a whole variant.
@@ -33,8 +34,7 @@ export function TryProPage() {
   const [answers, setAnswers] = useState<FunnelAnswers>({})
   const [session, setSession] = useState<Session>(() => (params.get('session') === 'signed-in' ? candidateSession : anonymousSession))
   const [cardStatus, setCardStatus] = useState<FunnelCardStatus>(() => (declines && step === 'card' ? 'declined' : 'idle'))
-  const [networkOnline, setNetworkOnline] = useState(() => navigator.onLine)
-  const online = networkOnline && params.get('offline') !== '1'
+  const online = useOnline(params.get('offline') === '1')
 
   function go(next: FunnelTrialStep, nextQuestion = 0, replace = false) {
     const search = new URLSearchParams()
@@ -46,17 +46,6 @@ export function TryProPage() {
     if (next === 'quiz') search.set('q', String(nextQuestion))
     setParams(search, { replace })
   }
-
-  useEffect(() => {
-    const up = () => setNetworkOnline(true)
-    const down = () => setNetworkOnline(false)
-    window.addEventListener('online', up)
-    window.addEventListener('offline', down)
-    return () => {
-      window.removeEventListener('online', up)
-      window.removeEventListener('offline', down)
-    }
-  }, [])
 
   useEffect(() => {
     if (step !== 'working') return

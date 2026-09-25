@@ -179,14 +179,16 @@ function CompareStep({ rewrite, onDownload }: FunnelResumeViewProps) {
 
       <div className="relative grid overflow-hidden rounded-panel border border-border has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus">
         <div className="col-start-1 row-start-1">
-          <ResumePage document={rewrite.before} tag="Your resume" />
+          <ResumePage document={rewrite.before} />
         </div>
         <div aria-hidden="true" className="col-start-1 row-start-1" style={{ clipPath: `inset(0 ${100 - reveal}% 0 0)` }}>
-          <ResumePage document={rewrite.after} tag="Jobwhisper version" />
+          <ResumePage document={rewrite.after} />
         </div>
         <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-accent" style={{ left: `${reveal}%` }}>
           <span className="absolute top-1/2 left-1/2 flex size-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-accent text-on-accent shadow-panel"><MoveHorizontal className="size-5" /></span>
         </div>
+        <span aria-hidden="true" className="pointer-events-none absolute left-3 top-3 rounded-full bg-accent px-2.5 py-0.5 text-xs font-semibold text-on-accent">Jobwhisper version</span>
+        <span aria-hidden="true" className="pointer-events-none absolute right-3 top-3 rounded-full bg-surface-inverse px-2.5 py-0.5 text-xs font-semibold text-canvas">Your resume</span>
         <input
           type="range"
           min={0}
@@ -209,10 +211,9 @@ function CompareStep({ rewrite, onDownload }: FunnelResumeViewProps) {
   )
 }
 
-function ResumePage({ document, tag }: { readonly document: FunnelResumeDocument; readonly tag: string }) {
+function ResumePage({ document }: { readonly document: FunnelResumeDocument }) {
   return (
-    <article className="bg-paper px-5 py-6 text-paper-ink sm:px-10 sm:py-10">
-      <p className="mb-4 inline-block rounded-full bg-surface-subtle px-2.5 py-0.5 text-xs font-semibold text-ink">{tag}</p>
+    <article className="bg-paper px-5 pb-6 pt-14 text-paper-ink sm:px-10 sm:pb-10">
       <h2 className="font-gowun text-2xl font-bold leading-tight">{document.name}</h2>
       <p className="mt-1 text-sm font-semibold">{document.headline}</p>
       <p className="text-xs text-paper-muted">{document.contact}</p>

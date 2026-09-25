@@ -207,3 +207,47 @@
 7. Entry condition: the free week has started.
    Exit condition: Start with your setup opens `/v3/app`.
    Failure branch: none.
+
+## Try-It Funnel: Resume (Upload -> Score -> Before and After -> Download Gate)
+
+1. Entry condition: a visitor opens `/v3/try/resume`. The first screen says "Free to score. Create an account to download."
+   Exit condition: they upload a resume, optionally paste a job description, and choose Score my resume.
+   Failure branch: an unsupported, oversized or empty file is refused with the fix stated, and scoring stays disabled; offline, scoring waits for the connection.
+
+2. Entry condition: the working step checks sections, keywords and layout.
+   Exit condition: the score replaces it in history.
+   Failure branch: none in this slice; production shows a retry if scoring fails.
+
+3. Entry condition: the score step shows the score out of 100, a verdict in words, and each issue with its impact and fix.
+   Exit condition: See it fixed opens the before and after.
+   Failure branch: none.
+
+4. Entry condition: the before and after shows one page with a slider, by drag or arrow keys, and the score climbing from before to after.
+   Exit condition: Download my resume. Anonymous visitors reach the gate; signed-in visitors download straight away.
+   Failure branch: none.
+
+5. Entry condition: the gate says the tailored resume is saved and needs a free account to download.
+   Exit condition: Google or a valid email downloads the resume and offers Resume Builder.
+   Failure branch: an invalid email shows a field error describing the fix.
+
+## Try-It Funnel: Auto Apply (Resume -> Nine Questions -> Matches -> Apply Gate)
+
+1. Entry condition: a visitor opens `/v3/try/auto-apply`. The first screen says "Free to match. Sign up to apply."
+   Exit condition: they upload a resume, which counts as question one of ten.
+   Failure branch: a refused file states the fix and holds Continue.
+
+2. Entry condition: `/v3/try/auto-apply?step=quiz&q=<n>` asks role, experience, salary, location, job type, work mode, start date, work authorization and sponsorship, one per page.
+   Exit condition: the last answer and Finish start matching.
+   Failure branch: Continue stays disabled until answered; offline, answers are kept and Continue waits. Personal details are not asked here; the real flow asks them after sign-up.
+
+3. Entry condition: the working step names Scout, Filter and Tailor.
+   Exit condition: the matches replace it in history.
+   Failure branch: none in this slice.
+
+4. Entry condition: the matches list shows each job's title, company, location, salary and match score.
+   Exit condition: View job opens its reasons; Apply to this job or Apply to all opens the gate for anonymous visitors, and `/v3/auto-apply/review` for signed-in ones.
+   Failure branch: with no matches, the screen offers to widen the location, work mode or salary and returns to that question.
+
+5. Entry condition: the gate names the jobs waiting and says each application is approved before it goes.
+   Exit condition: Google or a valid email opens `/v3/auto-apply/review` with the answers carried over.
+   Failure branch: an invalid email shows a field error describing the fix.

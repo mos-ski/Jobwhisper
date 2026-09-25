@@ -47,6 +47,56 @@ const tryFunnelRoutes = [
     label: 'Pro week funnel: started',
     description: 'Confirmation of what Pro includes, the free-until date, and how to cancel.',
   },
+  {
+    href: '/v3/try/resume',
+    label: 'Resume funnel',
+    description: 'Upload a resume, get an ATS score with named issues, drag a before and after, then sign up to download.',
+  },
+  {
+    href: '/v3/try/resume?step=score',
+    label: 'Resume funnel: ATS score',
+    description: 'Score out of 100 in words and numbers, with five issues ranked by impact.',
+  },
+  {
+    href: '/v3/try/resume?step=compare',
+    label: 'Resume funnel: before and after',
+    description: 'Drag or arrow-key slider revealing the Jobwhisper version while the score climbs from 54 to 91.',
+  },
+  {
+    href: '/v3/try/resume?step=gate',
+    label: 'Resume funnel: download gate',
+    description: 'Sign-up gate that says the tailored resume is saved and waiting.',
+  },
+  {
+    href: '/v3/try/resume?upload=error',
+    label: 'Resume funnel: upload refused',
+    description: 'Unsupported file with the fix stated and scoring held.',
+  },
+  {
+    href: '/v3/try/auto-apply',
+    label: 'Auto Apply funnel',
+    description: 'Resume plus nine matching questions, one per page, then matched jobs you can only apply to after signing up.',
+  },
+  {
+    href: '/v3/try/auto-apply?step=matches',
+    label: 'Auto Apply funnel: matches',
+    description: 'Eight matched jobs with match scores, a detail view with reasons, and Apply to all.',
+  },
+  {
+    href: '/v3/try/auto-apply?step=matches&job=lattice-csm',
+    label: 'Auto Apply funnel: job detail',
+    description: 'One matched job with why it matched and Apply to this job.',
+  },
+  {
+    href: '/v3/try/auto-apply?step=gate&apply=all',
+    label: 'Auto Apply funnel: apply gate',
+    description: 'Sign-up gate naming the matches the agent will apply to.',
+  },
+  {
+    href: '/v3/try/auto-apply?step=matches&matches=none',
+    label: 'Auto Apply funnel: no matches',
+    description: 'Empty result with the answers to widen.',
+  },
 ] as const
 
 const authRoutes = [
