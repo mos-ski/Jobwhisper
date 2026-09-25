@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react'
-import { X } from 'lucide-react'
+import { WifiOff, X } from 'lucide-react'
 
 import { JobwhisperMark } from '@/ui'
 
@@ -69,5 +69,23 @@ export function FunnelShell({ label, progress, onClose, closeLabel = 'Leave setu
         </footer>
       ) : null}
     </div>
+  )
+}
+
+export type FunnelTitleProps = {
+  readonly children: ReactNode
+  readonly id?: string
+}
+
+export function FunnelTitle({ children, id }: FunnelTitleProps) {
+  return <h1 id={id} data-slot="funnel-title" className="font-gowun text-3xl font-bold leading-tight text-ink sm:text-4xl">{children}</h1>
+}
+
+export function FunnelOfflineNotice() {
+  return (
+    <p role="status" data-slot="funnel-offline-notice" className="flex shrink-0 items-center justify-center gap-2 bg-warning-surface px-4 py-2 text-center text-sm text-ink">
+      <WifiOff aria-hidden="true" className="size-4 shrink-0" />
+      You are offline. Your answers stay on this page, and you can carry on when you are back online.
+    </p>
   )
 }

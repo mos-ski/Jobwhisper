@@ -1,4 +1,4 @@
-import type { FunnelQuestion, FunnelTrialOffer } from '@/contracts/funnel.draft'
+import type { AtsReport, FunnelJobMatch, FunnelQuestion, FunnelTrialOffer, ResumeRewrite } from '@/contracts/funnel.draft'
 
 export const trialFunnelQuestions: readonly FunnelQuestion[] = [
   {
@@ -90,3 +90,242 @@ export const trialFunnelOffer: FunnelTrialOffer = {
   reminderDaysBefore: 2,
   firstChargeOn: '2026-10-02',
 }
+
+export const resumeFunnelReport: AtsReport = {
+  score: 54,
+  verdict: 'Likely filtered out before a person reads it',
+  issues: [
+    { id: 'results', label: 'No results in 4 of 6 bullets', fix: 'Lead each bullet with the outcome: retention, revenue, time saved.', severity: 'high' },
+    { id: 'keywords', label: 'Missing "stakeholder management" and "churn reduction" from the job description', fix: 'Work the posting’s own terms into the roles where you did that work.', severity: 'high' },
+    { id: 'summary', label: 'Summary reads as a list of duties', fix: 'Rewrite it around the role you want and the proof you have.', severity: 'medium' },
+    { id: 'format', label: 'Skills sit in a two-column table that parsers skip', fix: 'Move skills into a single plain line.', severity: 'medium' },
+    { id: 'dates', label: 'Dates use three different formats', fix: 'Use one format, month and year, throughout.', severity: 'low' },
+  ],
+}
+
+export const resumeFunnelRewrite: ResumeRewrite = {
+  scoreBefore: 54,
+  scoreAfter: 91,
+  before: {
+    name: 'Darnell Smith',
+    headline: 'Customer Success Manager',
+    contact: 'Atlanta, GA · darnell.smith@example.com',
+    summary: 'Responsible for managing customer accounts and handling escalations. Team player with good communication skills who works well with others.',
+    roles: [
+      {
+        title: 'Customer Success Manager',
+        company: 'Brightline Health',
+        dates: 'Mar 2022 to present',
+        bullets: [
+          'Managed a portfolio of customer accounts',
+          'Handled escalations from customers',
+          'Worked with product team on feedback',
+        ],
+      },
+      {
+        title: 'Account Coordinator',
+        company: 'Parcelwise',
+        dates: '06/2019 - 02/2022',
+        bullets: [
+          'Onboarded new customers',
+          'Responsible for QBR decks',
+          'Helped reduce churn',
+        ],
+      },
+    ],
+    skills: ['Salesforce', 'Communication', 'Zendesk', 'Teamwork'],
+  },
+  after: {
+    name: 'Darnell Smith',
+    headline: 'Customer Success Manager, B2B SaaS',
+    contact: 'Atlanta, GA · darnell.smith@example.com',
+    summary: 'Customer Success Manager who cut churn 18% across a $4.2M book of mid-market accounts. Known for stakeholder management from frontline users to the C-suite, and for turning escalations into renewals.',
+    roles: [
+      {
+        title: 'Customer Success Manager',
+        company: 'Brightline Health',
+        dates: 'Mar 2022 to present',
+        bullets: [
+          'Grew net revenue retention from 97% to 112% across 38 mid-market accounts worth $4.2M ARR',
+          'Resolved 120+ executive escalations with a same-day plan, saving 9 at-risk renewals',
+          'Ran a monthly voice-of-customer review with product that shipped 6 top-requested features',
+        ],
+      },
+      {
+        title: 'Account Coordinator',
+        company: 'Parcelwise',
+        dates: 'Jun 2019 to Feb 2022',
+        bullets: [
+          'Onboarded 140 customers and cut time-to-first-value from 30 days to 12',
+          'Built the QBR template adopted by all 11 account managers',
+          'Led a churn reduction pilot that lowered logo churn 18% in two quarters',
+        ],
+      },
+    ],
+    skills: ['Stakeholder management', 'Churn reduction', 'Salesforce', 'Gainsight', 'Zendesk', 'QBRs', 'Renewals'],
+  },
+}
+
+export const autoApplyFunnelQuestions: readonly FunnelQuestion[] = [
+  { id: 'role', tab: 'Role', ask: 'What role do you want next?', kind: 'text', placeholder: 'e.g. Customer Success Manager' },
+  {
+    id: 'experience',
+    tab: 'Experience',
+    ask: 'How much experience do you have in it?',
+    kind: 'options',
+    options: [
+      { label: 'Entry level', hint: 'Under two years, or moving into the field.' },
+      { label: 'Mid level', hint: 'Two to five years doing the work.' },
+      { label: 'Senior', hint: 'Five years or more, leading the work.' },
+      { label: 'Lead or manager', hint: 'You run a team or a function.' },
+    ],
+  },
+  {
+    id: 'salary',
+    tab: 'Salary',
+    ask: 'What base salary are you aiming for?',
+    kind: 'options',
+    options: [
+      { label: 'Under $60k' },
+      { label: '$60k to $90k' },
+      { label: '$90k to $130k' },
+      { label: '$130k to $180k' },
+      { label: 'Over $180k' },
+    ],
+  },
+  { id: 'location', tab: 'Location', ask: 'Where do you want to work?', kind: 'text', placeholder: 'e.g. Atlanta, GA, or anywhere in the US' },
+  { id: 'jobType', tab: 'Job type', ask: 'What kind of contract?', kind: 'pills', choices: ['Full-time', 'Contract', 'Part-time', 'Internship'] },
+  {
+    id: 'workMode',
+    tab: 'Work mode',
+    ask: 'How do you want to work?',
+    kind: 'options',
+    options: [
+      { label: 'Remote', hint: 'From home, with no office days.' },
+      { label: 'Hybrid', hint: 'A few days a week in the office.' },
+      { label: 'On-site', hint: 'In the office every day.' },
+      { label: 'Any of these', hint: 'The role matters more than where.' },
+    ],
+  },
+  { id: 'start', tab: 'Start date', ask: 'When could you start?', kind: 'pills', choices: ['Immediately', 'In two weeks', 'In a month', 'In two months or more'] },
+  {
+    id: 'authorization',
+    tab: 'Authorization',
+    ask: 'Are you authorized to work in the US?',
+    kind: 'options',
+    options: [
+      { label: 'Yes, as a citizen or permanent resident' },
+      { label: 'Yes, on a work visa' },
+      { label: 'No, not yet' },
+    ],
+  },
+  {
+    id: 'sponsorship',
+    tab: 'Sponsorship',
+    ask: 'Will you need visa sponsorship, now or later?',
+    kind: 'options',
+    options: [
+      { label: 'No', hint: 'We only match roles that do not require it.' },
+      { label: 'Yes', hint: 'We favour employers who sponsor.' },
+    ],
+  },
+]
+
+export const autoApplyFunnelMatches: readonly FunnelJobMatch[] = [
+  {
+    id: 'lattice-csm',
+    title: 'Customer Success Manager, Mid-Market',
+    company: 'Lattice',
+    location: 'United States',
+    workMode: 'Remote',
+    salaryRange: '$95k to $120k',
+    postedLabel: 'Posted 2 hours ago',
+    matchScore: 94,
+    summary: 'Own renewals and expansion for a book of 40 mid-market customers on a people-management platform.',
+    reasons: ['Your churn reduction pilot matches their retention goal', 'Mid-market book size lines up with yours', 'Remote, as you asked'],
+  },
+  {
+    id: 'gusto-csm',
+    title: 'Senior Customer Success Manager',
+    company: 'Gusto',
+    location: 'Atlanta, GA',
+    workMode: 'Hybrid',
+    salaryRange: '$105k to $130k',
+    postedLabel: 'Posted yesterday',
+    matchScore: 91,
+    summary: 'Lead strategic accounts through onboarding, QBRs and renewal, working closely with sales and product.',
+    reasons: ['QBR ownership is a core requirement', 'In your city', 'Salary sits in your range'],
+  },
+  {
+    id: 'hubspot-cs',
+    title: 'Customer Success Manager II',
+    company: 'HubSpot',
+    location: 'United States',
+    workMode: 'Remote',
+    salaryRange: '$90k to $115k',
+    postedLabel: 'Posted 3 days ago',
+    matchScore: 88,
+    summary: 'Guide growing businesses to value on HubSpot, with clear targets on retention and upgrades.',
+    reasons: ['Salesforce and Zendesk experience listed', 'Net revenue retention is their headline metric'],
+  },
+  {
+    id: 'rippling-onboarding',
+    title: 'Customer Onboarding and Success Manager, Payroll and Benefits Implementation',
+    company: 'Rippling',
+    location: 'United States',
+    workMode: 'Remote',
+    salaryRange: '$92k to $118k',
+    postedLabel: 'Posted 4 days ago',
+    matchScore: 85,
+    summary: 'Take new customers from contract to live payroll, then hand over a healthy account to the renewal team.',
+    reasons: ['Your time-to-first-value work is the job', 'Remote'],
+  },
+  {
+    id: 'mailchimp-csm',
+    title: 'Customer Success Manager',
+    company: 'Mailchimp',
+    location: 'Atlanta, GA',
+    workMode: 'Hybrid',
+    salaryRange: '$88k to $110k',
+    postedLabel: 'Posted 5 days ago',
+    matchScore: 83,
+    summary: 'Support a portfolio of marketing teams, running health checks and escalation plans.',
+    reasons: ['In your city', 'Escalation handling is called out'],
+  },
+  {
+    id: 'calendly-am',
+    title: 'Account Manager, Retention',
+    company: 'Calendly',
+    location: 'United States',
+    workMode: 'Remote',
+    salaryRange: '$85k to $105k',
+    postedLabel: 'Posted 1 week ago',
+    matchScore: 79,
+    summary: 'Protect and grow revenue in a book of self-serve accounts moving to annual contracts.',
+    reasons: ['Retention focus', 'Title is a close neighbour of yours'],
+  },
+  {
+    id: 'salesloft-csm',
+    title: 'Customer Success Manager',
+    company: 'Salesloft',
+    location: 'Atlanta, GA',
+    workMode: 'On-site',
+    salaryRange: '$90k to $112k',
+    postedLabel: 'Posted 1 week ago',
+    matchScore: 76,
+    summary: 'Partner with sales leaders to drive adoption of a revenue workflow platform.',
+    reasons: ['Salesforce is required', 'On-site, which you marked as acceptable'],
+  },
+  {
+    id: 'cox-cs-lead',
+    title: 'Customer Success Lead',
+    company: 'Cox Automotive',
+    location: 'Atlanta, GA',
+    workMode: 'Hybrid',
+    salaryRange: '$110k to $135k',
+    postedLabel: 'Posted 2 weeks ago',
+    matchScore: 72,
+    summary: 'Lead a pod of three CSMs serving dealership groups, with a renewal target for the pod.',
+    reasons: ['A step up in scope from your current role', 'In your city'],
+  },
+]
