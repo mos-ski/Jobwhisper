@@ -3,12 +3,12 @@ import type { BillingSnapshot, Plan } from '@/contracts/billing'
 export type BillingPlanFixture = {
   readonly id: Plan
   readonly name: string
+  /** Per cadence — per week on the weekly plan, per month on the others. */
   readonly priceMonthly: number
-  // Back-computed as credits * 40 so the shared formatCredits() helper (still hardcoded to the
-  // old $0.40/credit constant, see src/lib/credits.ts) displays the right whole-credit number.
-  // Not a real cents amount anymore — PRICING.md §3 dropped the fixed $/credit rate, but
-  // rewriting that shared helper for a per-feature rate is out of scope here.
-  readonly includedUsageCents: number
+  /** Starter bills weekly, the other two monthly. There is no annual rate. */
+  readonly cadence: 'week' | 'month'
+  /** What the plan includes, now that it is not an amount. */
+  readonly included: string
   readonly description: string
   readonly features: readonly string[]
   readonly note: string
@@ -38,40 +38,52 @@ export const authPlanFixtures: readonly BillingPlanFixture[] = [
     id: 'starter',
     name: 'Starter',
     priceMonthly: 47,
-    includedUsageCents: 500 * 40,
-    description: 'Interview Prep and Interview Copilot, on the web.',
+    cadence: 'week',
+    included: 'Unlimited interviews',
+    description: 'Unlimited Interview Prep and Interview Copilot, on every platform, for the week you are interviewing.',
     features: [
-      'Interview Prep & Interview Copilot',
-      'Web only',
-      '≈500 credits per month',
+      'Interview Prep and Interview Copilot',
+      'Unlimited interview sessions',
+      'One model — OpenAI',
+      'Web, desktop and mobile',
+      'Call recording for every session',
+      'Knowledge Base with 3 documents',
     ],
-    note: 'Ideal for light or occasional interview prep',
+    note: 'Ideal for the week an interview loop actually lands',
   },
   {
     id: 'pro',
     name: 'Pro',
     priceMonthly: 99,
-    includedUsageCents: 1000 * 40,
-    description: 'More usage included, plus the desktop app, Coding Copilot, and Meeting Copilot.',
+    cadence: 'month',
+    included: '500 Auto Apply jobs',
+    description: 'Every interview tool unlimited, plus Resume Builder and 500 jobs applied for you each month.',
     features: [
       'Everything in Starter',
-      'Web + Desktop app',
-      'Coding Copilot & Meeting Copilot',
-      '≈1,000 credits per month',
+      'Multi-agent models — OpenAI, Claude, Grok, Kimi and Qwen',
+      'Meeting Copilot & Coding Copilot',
+      'Resume Builder',
+      'Auto Apply — 500 jobs a month',
+      'Knowledge Base with 5 documents',
     ],
-    note: 'Best for candidates interviewing across technical and non-technical roles',
+    note: 'Best for a search that runs longer than a week',
     popular: true,
   },
   {
     id: 'premium',
     name: 'Premium',
     priceMonthly: 497,
-    includedUsageCents: 4000 * 40,
-    description: 'Everything Pro has, at 2x the size — for power users who live in interviews.',
+    cadence: 'month',
+    included: 'Unlimited Auto Apply',
+    description: 'Everything in Pro, with the job cap taken off Auto Apply.',
     features: [
       'Everything in Pro',
-      '2x size: ≈4,000 credits per month',
+      'Unlimited Auto Apply',
+      'Priority support',
+      'Knowledge Base with 10 documents',
     ],
-    note: 'Best for power users who live in interviews and meetings',
+    note: 'Best for applying at volume, every month',
   },
 ]
+
+

@@ -41,7 +41,7 @@ The landing page carries no download section of its own. Downloads reach visitor
 
 The page closes on a call to action rather than prose alone: **Get started free** and **See pricing**, under the reassurance row the hero uses — free credits, no card required, plans from $47 a month. A second **Try Interview Copilot** action sits at the end of the Copilot section, so the page no longer runs its full length on the hero button alone.
 
-The public landing page uses one primary blue action: **Ace your Interview**. It leads to account creation. Downloads remain available from the text-only navigation dropdown and the product-demo social proof, while **Log in** uses a secondary treatment in the navigation.
+The public landing page uses one primary blue action: **Ace my next interview**, written in the visitor's own voice. It leads to account creation. Downloads remain available from the text-only navigation dropdown and the product-demo social proof, while **Log in** uses a secondary treatment in the navigation.
 
 The demo has no separate centered call to action. Once the visitor scrolls beyond the hero, a centered floating social-proof control appears with the concise outcome statement **Join 57,000+ job seekers landing better roles** and a blue Download action.
 

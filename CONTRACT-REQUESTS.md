@@ -142,6 +142,38 @@ Roles and permissions throughout reuse `src/contracts/identity.ts` unchanged —
 
 Two fields are invented with no existing precedent: `kind: 'login'` events have no backing data anywhere else in the app (no session/login timestamp exists on `AdminAccountRow` or elsewhere), and `timeAgo` is a plain display string like every other admin date field, not a raw timestamp — so a real implementation sorting/filtering by actual recency would need a backend-owned timestamp field this draft doesn't have. `amountCents` is optional and only set for `payment`/`refund`/`payout` events, mirroring `AdminTransactionRow`'s integer-cents convention.
 
+## Unlimited Plans — `BillingSnapshot` Needs An Entitlement, Not A Balance
+
+Requested 2026-09-23, when the three pricing shapes merged into three unlimited plans (`PRICING.md` §1). `src/contracts/billing.ts` models a subscriber as a wallet plus a per-feature cost:
+
+```ts
+readonly wallet: CreditWallet;                                    // balance, reserved
+readonly access: Readonly<Record<BillableFeature, FeatureAccess>>; // entitled + creditCost
+```
+
+Neither half describes a subscriber any more. A plan now grants unlimited use of the features it covers, so `wallet.balance` has no meaning for one, `creditCost` has no number to hold, and `CopilotAccessBlockReason`'s `'insufficient-credits'` can never fire for a covered feature. The contract is not editable here, so nothing above was changed — the UI is carrying the gap instead, and `src/features/billing/plan-selection-view.tsx` now takes an `included: string` from its own props type rather than reading a cents figure.
+
+What the model actually needs:
+
+- **`FeatureAccess` without a cost for covered features** — `entitled` plus something like `metering: 'unlimited' | { creditCost: number }`, so an unlimited feature is a state rather than a cost of zero (which reads as "free", a different thing).
+- **A wallet that is optional, or scoped to pay-as-you-go.** Credits survive only for people with no plan, who buy Resume Builder and Auto Apply standalone (`PRICING.md` §2). Those are two independent balances with their own expiry, not the single subscription wallet modeled today. A subscriber's snapshot should be able to carry no wallet at all rather than a meaningless zero.
+- **`'insufficient-credits'` scoped to the pay-as-you-go path.** `'not-entitled'` is the real block reason for a subscriber on a plan that does not cover a feature, and it already exists. Keeping `'insufficient-credits'` in the union is right for non-subscribers; a covered feature should not be able to produce it.
+- **Cadence on the plan.** `Plan` is `'starter' | 'pro' | 'premium'`, and Starter now bills **weekly** while the other two bill monthly with an annual option. Nothing in the contract expresses a billing period, so the renewal cadence lives in fixtures and view props today. Whatever replaces this should carry it, since "cancel before it renews" means something different at a week than at a year.
+
+Until then, `Plan` stays as-is and the drafts carry the shape: `src/contracts/account.draft.ts`'s `BillingPlanCard` has optional annual fields (a weekly plan has no annual rate) and its allowance field was renamed `included`, because it holds "Unlimited use" rather than a credit count.
+
+## Admin Invites Draft Contract
+
+`src/contracts/admin-invites.draft.ts` backs admin-issued invites: bringing someone into Jobwhisper by email or by a shareable link, with a plan or a credit balance already attached to the account they land in.
+
+Three shapes are worth carrying into the real contract rather than re-inventing:
+
+- **`AdminInviteGrant` is a discriminated union**, not a nullable plan id beside a nullable credit amount. An invite grants a plan for a number of cycles, or credits of one product, or nothing — never two at once, and the type says so.
+- **`AdminInviteUses` reuses the limited-or-unlimited shape** that `AdminPlanAllowance` uses in `admin-configuration.draft.ts`. A campaign link with no cap is a state, not a very large number, and the same is true of a plan's allowance — one shape for both keeps a sentinel like `-1` or `999999` out of the model.
+- **Every invite carries a `url`, including email ones.** An email invite is that URL, sent; treating the link as the primitive means "resend" and "copy link" are the same object rather than two flows.
+
+What a real implementation needs that this draft does not model: what happens when a grant is claimed (the ledger entry that credits the account, and whether it is reversible if the invite is revoked after acceptance), and whether an accepted invite ties the account to the admin or campaign that issued it for attribution. `grantLabel` is a pre-formatted display string like every other admin date and money field here, so the view never prices a grant itself.
+
 ## Try-It Funnel Draft Contract
 
 `src/contracts/funnel.draft.ts` backs the public `/v3/try/*` funnels, which run before any `Session` exists, so none of their data can hang off `UserIdentity` or `BillingSnapshot`.

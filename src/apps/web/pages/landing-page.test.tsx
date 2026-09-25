@@ -91,7 +91,7 @@ describe('LandingPage', () => {
     const heroActions = document.querySelector('.landing-hero-actions')
     expect(heroActions).not.toBeNull()
     expect(within(heroActions as HTMLElement).getAllByRole('button')).toHaveLength(1)
-    expect(within(heroActions as HTMLElement).getByRole('button', { name: 'Ace your Interview' })).toBeInTheDocument()
+    expect(within(heroActions as HTMLElement).getByRole('button', { name: 'Ace my next interview' })).toBeInTheDocument()
     const hero = document.querySelector('.landing-hero')
     expect(hero).not.toBeNull()
     act(() => intersectionVisibilityCallbacks.get(hero as Element)?.(false))

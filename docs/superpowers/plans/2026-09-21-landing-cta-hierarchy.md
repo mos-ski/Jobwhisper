@@ -27,11 +27,11 @@
 
 **Interfaces:**
 - Consumes: existing `DownloadMenu`, `downloadItems`, React Router `navigate`.
-- Produces: hero `Ace your Interview`, nav `Download` and `Sign up`, overlay `Download`.
+- Produces: hero `Ace my next interview`, nav `Download` and `Sign up`, overlay `Download`.
 
 - [ ] **Step 1: Write the failing test**
 
-Assert that the hero has one `Ace your Interview` action, the main navigation exposes `Download` and `Sign up`, and the social-proof region exposes `Download`.
+Assert that the hero has one `Ace my next interview` action, the main navigation exposes `Download` and `Sign up`, and the social-proof region exposes `Download`.
 
 - [ ] **Step 2: Run test to verify it fails**
 

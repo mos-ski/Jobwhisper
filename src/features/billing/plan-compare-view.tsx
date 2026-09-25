@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 import type { BillingPlanCard } from '@/contracts/account.draft'
 import { AppShell } from '@/features/dashboard/app-nav'
-import { Badge, ShellBar, Switch } from '@/ui'
+import { ShellBar, Switch } from '@/ui'
 import { PlanAmount, PlanCard, PlanCarousel } from '@/features/pricing/plan-card'
 import { ProOfferWidget } from './pro-offer-widget'
 
@@ -83,8 +83,9 @@ export type PlanCompareViewProps = {
  * pricing page show the same thing. `current` replaces the badge and locks the CTA.
  */
 function BillingPlanCardView({ plan, annual, onProHover }: { readonly plan: BillingPlanCard; readonly annual: boolean; readonly onProHover?: () => void }) {
+  // A weekly plan has no annual rate, so the switch leaves it alone and its card says why.
+  const annualApplies = annual && Boolean(plan.annualPrice)
   const navigate = useNavigate()
-  const showsDiscount = annual && Boolean(plan.annualDiscountPrice)
   // In the picker, which plan you are on outranks which is popular, so it takes the banner.
   const banner = plan.current ? 'Current plan' : plan.popular ? 'Most Popular' : undefined
 
@@ -94,9 +95,11 @@ function BillingPlanCardView({ plan, annual, onProHover }: { readonly plan: Bill
       badge={banner ? undefined : plan.tag}
       banner={banner}
       tagline={plan.description}
-      amount={<PlanAmount>{showsDiscount ? plan.annualDiscountPrice : annual ? plan.annualPrice : plan.price}</PlanAmount>}
-      unit={showsDiscount || !annual ? plan.cadence : plan.annualCadence}
-      terms={[['Included credits', plan.credits], ['Billing', annual ? 'Billed yearly' : 'Billed monthly']]}
+      amount={<PlanAmount>{annualApplies ? plan.annualPrice : plan.price}</PlanAmount>}
+      unit={annualApplies ? plan.annualCadence : plan.cadence}
+      // Same as the public page: the features say what is covered, so a terms table would
+      // say it a second time. Under annual the note carries what the row used to.
+      priceNote={annual ? (plan.annualPrice ? 'Billed yearly' : 'Annual billing does not apply to weekly plans') : undefined}
       features={plan.features}
       ctaLabel={plan.current ? 'Current Plan' : plan.id === 'premium' ? 'Upgrade' : 'Downgrade'}
       onCta={plan.current ? undefined : () => navigate('/v3/billing')}
@@ -146,7 +149,6 @@ export function PlanCompareView({ homeHref, plans, backHref }: PlanCompareViewPr
             <div className="flex items-center gap-2.5">
               <span className="text-sm font-medium text-ink">Annual</span>
               <Switch checked={annual} onCheckedChange={setAnnual} />
-              <Badge variant="positive" size="sm">(save 20%)</Badge>
             </div>
           </div>
           <PlanCarousel count={plans.length}>

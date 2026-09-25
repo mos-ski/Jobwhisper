@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { authPlanFixtures } from '@/mocks/billing'
-import { formatCredits } from '@/lib/credits'
 import { Badge, Button, Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui'
 
 const DISCOUNT_FIRST_MONTH = 0.6
@@ -52,15 +51,15 @@ export function DemoPricingPanel({ onClaimOffer }: DemoPricingPanelProps) {
 
               <div className="mt-3 flex flex-wrap items-end gap-1">
                 <span className="font-gowun text-4xl font-semibold leading-tight text-ink">${discounted ? firstMonthPrice : plan.priceMonthly}</span>
-                <span className="pb-1 text-sm font-medium text-ink">per month</span>
+                <span className="pb-1 text-sm font-medium text-ink">per {plan.cadence}</span>
               </div>
               {discounted ? (
                 <p className="mt-1 text-sm text-ink-muted">
-                  <span className="line-through">${plan.priceMonthly}/mo</span> after the first month
+                  <span className="line-through">${plan.priceMonthly}/{plan.cadence === 'week' ? 'wk' : 'mo'}</span> after the first month
                 </p>
               ) : null}
 
-              <p className="mt-4 text-sm font-semibold text-ink">{formatCredits(plan.includedUsageCents)} included</p>
+              <p className="mt-4 text-sm font-semibold text-ink">{plan.included}</p>
               <p className="mt-2 text-sm leading-5 text-ink-muted">{plan.description}</p>
 
               <ul className="mt-4 grid gap-2 text-sm leading-5 text-ink-muted">

@@ -36,6 +36,7 @@ import type {
 } from '@/contracts/admin-accounts.draft'
 import type { AdminDoneForYouApplicationLogEntry, AdminDoneForYouLead } from '@/contracts/admin-products.draft'
 import type { AdminNavItem, AdminNotification, AdminPlanId, AdminSearchResult } from '@/contracts/admin.draft'
+import type { AdminInvite, AdminInviteDraft, AdminInvitesSummary } from '@/contracts/admin-invites.draft'
 import type { UserIdentity } from '@/contracts/identity'
 import {
   Avatar,
@@ -70,11 +71,12 @@ import {
 } from '@/ui'
 
 import { AdminShell } from './admin-shell'
+import { AdminInvitesPanel } from './admin-invites-panel'
 import { contactPreferenceLabels, downloadLeadPacket, googleCalendarUrl, PACKAGE_LABELS } from './admin-products-view'
 
 const PAGE_SIZE = 8
 
-export type AdminAccountsListTab = 'subscribers' | 'dfy-clients'
+export type AdminAccountsListTab = 'subscribers' | 'dfy-clients' | 'invites'
 
 const countFormatter = new Intl.NumberFormat('en-US')
 
@@ -431,6 +433,10 @@ export type AdminAccountsListViewProps = {
   readonly tab: AdminAccountsListTab
   readonly onTabChange: (tab: AdminAccountsListTab) => void
   readonly dfyClients: readonly AdminDoneForYouLead[]
+  readonly invites: readonly AdminInvite[]
+  readonly invitesSummary: AdminInvitesSummary
+  readonly onCreateInvite?: (draft: AdminInviteDraft) => void
+  readonly onRevokeInvite?: (inviteId: string) => void
   /** Search term, mirrored to the `q` query param. */
   readonly q: string
   readonly onQChange: (value: string) => void
@@ -463,6 +469,10 @@ export function AdminAccountsListView({
   tab,
   onTabChange,
   dfyClients,
+  invites,
+  invitesSummary,
+  onCreateInvite,
+  onRevokeInvite,
   q,
   onQChange,
   status,
@@ -668,10 +678,11 @@ export function AdminAccountsListView({
           </p>
         </div>
 
-        <Tabs value={tab} onValueChange={(value) => { if (value === 'subscribers' || value === 'dfy-clients') onTabChange(value) }}>
+        <Tabs value={tab} onValueChange={(value) => { if (value === 'subscribers' || value === 'dfy-clients' || value === 'invites') onTabChange(value) }}>
           <TabsList aria-label="Account sections">
             <TabsTrigger value="subscribers">Subscribers</TabsTrigger>
             <TabsTrigger value="dfy-clients">DFY Clients</TabsTrigger>
+            <TabsTrigger value="invites">Invites</TabsTrigger>
           </TabsList>
 
           <TabsContent value="subscribers">
@@ -806,6 +817,16 @@ export function AdminAccountsListView({
 
           <TabsContent value="dfy-clients">
             <DfyClientsTab clients={dfyClients} accountHref={accountHref} />
+          </TabsContent>
+
+          <TabsContent value="invites">
+            <AdminInvitesPanel
+              invites={invites}
+              summary={invitesSummary}
+              onCreateInvite={onCreateInvite}
+              onRevokeInvite={onRevokeInvite}
+              canInvite={user.permissions.includes('admin:users:manage')}
+            />
           </TabsContent>
         </Tabs>
       </div>

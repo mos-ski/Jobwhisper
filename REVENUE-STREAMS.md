@@ -1,12 +1,16 @@
 # Revenue Streams — How Jobwhisper Makes Money
 
-## The three plans
+**Revised 2026-09-23** — the subscription is one set of three unlimited plans now, and Starter bills weekly. See `PRICING.md` for the authoritative model.
 
-| Plan | How it works | Price |
+## The streams
+
+| Stream | How it works | Price |
 |---|---|---|
-| **Ace Your Interview** | Recurring subscription — Starter/Pro/Premium | $47 / $99 / $197 per month |
-| **Find Your Job** | Prepaid pay-as-you-go credits, DIY | $10 min → $1/successful application · $5 min → $0.10/prompt |
+| **Subscription** | Starter / Pro / Premium. Interviews unlimited on all three; Auto Apply is capped at 500 jobs/month on Pro and uncapped on Premium. Annual billing on the monthly plans only | **$47/week** · **$99/month** ($79 annually) · **$497/month** ($398 annually) |
+| **Pay as you go** | Prepaid credits, for people **without** a plan only — all three are unlimited on a plan | $10 min → $0.10/interview minute · $5 min → $0.10/resume prompt · $10 min → $1/successful application |
 | **Done For You** | One-time package, not a subscription — a success manager applies for the client until the guarantee is met | $497 (10 interviews guaranteed) / $997 (20 interviews guaranteed) |
+
+> **The model below is stale and has not been recomputed.** Every subscription figure in it assumes the old monthly tiers ($47/$99/$197) and a monthly credit allowance that no longer exists. Two inputs have to be decided before it can be rebuilt honestly rather than guessed at: **how many weeks an average Starter subscriber stays** — a weekly plan's revenue per subscriber is retention, not price — and **how many of Pro's 500 monthly applications actually get used**, since that allowance is worth ~$500 at the pay-as-you-go rate against a $99 price, and Premium's uncapped version has no ceiling at all. The mid-session top-up line is already dead: subscribers have nothing to top up.
 
 ## Path to $20,000/month — self-sustaining
 

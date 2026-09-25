@@ -10,10 +10,23 @@ export type AdminConfigPlanId = 'starter' | 'pro' | 'premium'
 /** The capability rows of the plan feature matrix (PRICING.md §1.1). */
 export type AdminConfigFeatureId =
   | 'interview-prep'
-  | 'interview-copilot-web'
-  | 'interview-copilot-desktop'
+  | 'interview-copilot'
+  | 'multi-model'
+  | 'call-recording'
   | 'coding-copilot'
   | 'meeting-copilot'
+  | 'resume-builder'
+  | 'auto-apply'
+  | 'priority-support'
+
+/**
+ * What a plan grants of a metered thing. An allowance is either a number an admin types or
+ * no ceiling at all — "unlimited" is a state, not a very large number, so nothing downstream
+ * has to treat 999999 as a sentinel and the front end can render the word.
+ */
+export type AdminPlanAllowance =
+  | { readonly kind: 'limited'; readonly amount: number }
+  | { readonly kind: 'unlimited' }
 
 export type AdminConfigFeatureDefinition = {
   readonly id: AdminConfigFeatureId
@@ -34,10 +47,15 @@ export type AdminPlanConfig = {
   readonly name: string
   /** What the tier is sold on, in the admin's words, not marketing copy. */
   readonly positioning: string
+  /** Starter bills weekly; the other two monthly. Prices below are per cadence. */
+  readonly cadence: 'week' | 'month'
   readonly monthlyPriceCents: number
-  readonly annualPriceCents: number
-  /** Monthly credit allowance, 1 credit = 1 minute of Copilot. */
-  readonly monthlyCredits: number
+  /** Absent on a weekly plan: annual billing does not apply to it (PRICING.md §1). */
+  readonly annualPriceCents?: number
+  /** Interview Prep and Copilot time. Unlimited on every plan as things stand. */
+  readonly interviewAllowance: AdminPlanAllowance
+  /** Auto Apply jobs per cycle. Only meaningful where the auto-apply feature is on. */
+  readonly autoApplyAllowance: AdminPlanAllowance
   readonly knowledgeBaseDocumentLimit: number
   readonly features: Readonly<Record<AdminConfigFeatureId, boolean>>
   /** Present only on the tier that carries a first-time offer. */
