@@ -141,3 +141,11 @@ Roles and permissions throughout reuse `src/contracts/identity.ts` unchanged —
 `src/contracts/admin-activity.draft.ts` defines `AdminActivityEvent` and `AdminActivityFeed` for a platform-wide live feed (new signups, logins, and payments/refunds/payouts), reachable at `/admin/activity` and linked from the shell's notification popover ("View all"). This is distinct from `admin-systems.draft.ts`'s audit entries, which log *admin* actions, not end-user activity.
 
 Two fields are invented with no existing precedent: `kind: 'login'` events have no backing data anywhere else in the app (no session/login timestamp exists on `AdminAccountRow` or elsewhere), and `timeAgo` is a plain display string like every other admin date field, not a raw timestamp — so a real implementation sorting/filtering by actual recency would need a backend-owned timestamp field this draft doesn't have. `amountCents` is optional and only set for `payment`/`refund`/`payout` events, mirroring `AdminTransactionRow`'s integer-cents convention.
+
+## Try-It Funnel Draft Contract
+
+`src/contracts/funnel.draft.ts` backs the public `/v3/try/*` funnels, which run before any `Session` exists, so none of their data can hang off `UserIdentity` or `BillingSnapshot`.
+
+- `FunnelQuestion` is a union on `kind` (`options`, `pills`, `text`) so marketing can reorder or reword questions without touching views. Answers are a flat `FunnelAnswers` record keyed by question id; production should persist them against the account created at the funnel's gate and use them to pre-fill onboarding.
+- `FunnelTrialOffer` carries everything the card screen must state before asking for a card: credits granted, what they buy, trial length, plan name, first-month and ongoing price, reminder lead time, and the first charge date as an ISO date. The backend should compute `firstChargeOn` so the page never does date math.
+- `FunnelCardStatus` is presentation state only; production maps Stripe SetupIntent outcomes onto it.
