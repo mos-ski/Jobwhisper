@@ -1,11 +1,13 @@
 import { useState, type FormEvent } from 'react'
-import { ArrowRight, CircleCheck, LoaderCircle, Lock, WifiOff } from 'lucide-react'
+import { ArrowRight, CircleCheck, Lock } from 'lucide-react'
 
 import type { FunnelAnswers, FunnelCardStatus, FunnelQuestion as FunnelQuestionData, FunnelTrialOffer } from '@/contracts/funnel.draft'
 import type { Session } from '@/contracts/identity'
-import { Button, FormDividerLabel, FormField, GoogleAuthButton } from '@/ui'
-import { FunnelQuestion } from './funnel-question'
-import { FunnelShell } from './funnel-shell'
+import { Button, FormField } from '@/ui'
+import { FunnelGate } from './funnel-gate'
+import { FunnelQuestion, FunnelQuestionFooter } from './funnel-question'
+import { FunnelOfflineNotice, FunnelShell, FunnelTitle } from './funnel-shell'
+import { FunnelWorking } from './funnel-working'
 
 export type FunnelTrialStep = 'quiz' | 'working' | 'reward' | 'account' | 'card' | 'done'
 
@@ -43,8 +45,6 @@ const STEP_LABELS: Record<Exclude<FunnelTrialStep, 'quiz'>, string> = {
 
 const WORKING_CHECKS = ['Reading your answers', 'Matching your goal to a plan', 'Setting up your workspace'] as const
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
 function formatDate(iso: string): string {
   return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T00:00:00Z`))
 }
@@ -57,19 +57,12 @@ function progressFor(step: FunnelTrialStep, questionIndex: number, total: number
   return 1
 }
 
-const heading = 'font-gowun text-3xl font-bold leading-tight text-ink sm:text-4xl'
-
 export function FunnelTrialView(props: FunnelTrialViewProps) {
   const { step, questions, questionIndex, answers, online, onClose } = props
   const question = questions[Math.min(Math.max(questionIndex, 0), questions.length - 1)]
   const label = step === 'quiz' ? question?.tab ?? '' : STEP_LABELS[step]
 
-  const notice = online ? null : (
-    <p role="status" className="flex shrink-0 items-center justify-center gap-2 bg-warning-surface px-4 py-2 text-center text-sm text-ink">
-      <WifiOff aria-hidden="true" className="size-4 shrink-0" />
-      You are offline. Your answers stay on this page, and you can carry on when you are back online.
-    </p>
-  )
+  const notice = online ? null : <FunnelOfflineNotice />
 
   return (
     <FunnelShell
@@ -77,43 +70,15 @@ export function FunnelTrialView(props: FunnelTrialViewProps) {
       progress={progressFor(step, questionIndex, questions.length)}
       onClose={onClose}
       notice={notice}
-      footer={step === 'quiz' && question ? <QuizFooter {...props} question={question} /> : undefined}
+      footer={step === 'quiz' && question ? <FunnelQuestionFooter position={questionIndex} total={questions.length} canContinue={online && (answers[question.id] ?? '').trim().length > 0} onBack={props.onBack} onContinue={props.onContinue} /> : undefined}
     >
       {step === 'quiz' && question ? <FunnelQuestion question={question} value={answers[question.id] ?? ''} onChange={(value) => props.onAnswer(question.id, value)} /> : null}
-      {step === 'working' ? <WorkingStep /> : null}
+      {step === 'working' ? <FunnelWorking title="Putting your setup together." checks={WORKING_CHECKS} /> : null}
       {step === 'reward' ? <RewardStep {...props} /> : null}
       {step === 'account' ? <AccountStep {...props} /> : null}
       {step === 'card' ? <CardStep {...props} /> : null}
       {step === 'done' ? <DoneStep {...props} /> : null}
     </FunnelShell>
-  )
-}
-
-function QuizFooter({ question, questions, questionIndex, answers, online, onBack, onContinue }: FunnelTrialViewProps & { readonly question: FunnelQuestionData }) {
-  const answered = (answers[question.id] ?? '').trim().length > 0
-  const last = questionIndex >= questions.length - 1
-  return (
-    <>
-      <Button variant="secondary" size="lg" onClick={onBack}>Back</Button>
-      <span className="ms-auto text-sm text-ink-muted">{questionIndex + 1} of {questions.length}</span>
-      <Button size="lg" onClick={onContinue} disabled={!answered || !online}>{last ? 'Finish' : 'Continue'}</Button>
-    </>
-  )
-}
-
-function WorkingStep() {
-  return (
-    <div role="status" className="grid gap-8">
-      <h1 className={heading}>Putting your setup together.</h1>
-      <ul className="grid gap-4">
-        {WORKING_CHECKS.map((check) => (
-          <li key={check} className="flex items-center gap-3 text-lg text-ink">
-            <LoaderCircle aria-hidden="true" className="size-5 shrink-0 animate-spin text-accent-text motion-reduce:animate-none" />
-            {check}
-          </li>
-        ))}
-      </ul>
-    </div>
   )
 }
 
@@ -135,7 +100,7 @@ function RewardStep({ offer, questions, answers, resumeName, onClaim, onClose }:
   const recap = questions.filter((item) => (answers[item.id] ?? '').trim()).slice(0, 4)
   return (
     <div className="grid gap-8">
-      <h1 className={heading}>You’ve unlocked a free week of {offer.planName}.</h1>
+      <FunnelTitle>You’ve unlocked a free week of {offer.planName}.</FunnelTitle>
       <PlanPass offer={offer} caption="Free for you, starting today" />
 
       {recap.length > 0 || resumeName ? (
@@ -171,33 +136,15 @@ function RecapRow({ term, detail }: { readonly term: string; readonly detail: st
 }
 
 function AccountStep({ online, offer, onCreateAccount, onGoogleSignUp }: FunnelTrialViewProps) {
-  const [email, setEmail] = useState('')
-  const [error, setError] = useState<string | undefined>()
-
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const value = email.trim()
-    if (!EMAIL_PATTERN.test(value)) {
-      setError('Enter an email address in the form name@example.com.')
-      return
-    }
-    setError(undefined)
-    onCreateAccount(value)
-  }
-
   return (
-    <div className="grid gap-8">
-      <div className="grid gap-3">
-        <h1 className={heading}>Create your account for your free week.</h1>
-        <p className="text-base leading-7 text-ink-muted">Your answers are saved to it, so {offer.planName} opens set up for you. Next you add a card, and nothing is charged today.</p>
-      </div>
-      <form noValidate onSubmit={submit} className="grid gap-5 rounded-panel border border-border bg-surface p-6 shadow-panel">
-        <GoogleAuthButton onClick={onGoogleSignUp} disabled={!online}>Continue with Google</GoogleAuthButton>
-        <FormDividerLabel>or</FormDividerLabel>
-        <FormField id="funnel-trial-email" label="Email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} error={error} />
-        <Button type="submit" size="lg" disabled={!online}>Continue</Button>
-      </form>
-    </div>
+    <FunnelGate
+      title="Create your account for your free week."
+      body={`Your answers are saved to it, so ${offer.planName} opens set up for you. Next you add a card, and nothing is charged today.`}
+      online={online}
+      emailFieldId="funnel-trial-email"
+      onCreateAccount={onCreateAccount}
+      onGoogleSignUp={onGoogleSignUp}
+    />
   )
 }
 
@@ -219,7 +166,7 @@ function CardStep({ offer, online, cardStatus, cardError, onSubmitCard }: Funnel
 
   return (
     <div className="grid gap-8">
-      <h1 className={heading}>Start your free week of {offer.planName}.</h1>
+      <FunnelTitle>Start your free week of {offer.planName}.</FunnelTitle>
 
       <section aria-labelledby="funnel-trial-terms" className="grid gap-4 rounded-panel border border-border bg-surface p-6">
         <p id="funnel-trial-terms" className="font-gowun text-4xl font-bold leading-none text-ink">$0 today</p>
@@ -257,7 +204,7 @@ function CardStep({ offer, online, cardStatus, cardError, onSubmitCard }: Funnel
 function DoneStep({ offer, onStart }: FunnelTrialViewProps) {
   return (
     <div className="grid gap-8">
-      <h1 className={heading}>Your free week of {offer.planName} has started.</h1>
+      <FunnelTitle>Your free week of {offer.planName} has started.</FunnelTitle>
       <PlanPass offer={offer} caption={`Free until ${formatDate(offer.firstChargeOn)}`} />
       <p className="text-base leading-7 text-ink-muted">We’ll email you {offer.reminderDaysBefore} days before it ends. Cancel from Billing any time before {formatDate(offer.firstChargeOn)} and you pay nothing.</p>
       <Button size="lg" onClick={onStart} className="w-full sm:w-auto sm:justify-self-start">

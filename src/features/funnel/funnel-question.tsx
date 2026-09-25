@@ -2,6 +2,8 @@ import { useId } from 'react'
 import { Check } from 'lucide-react'
 
 import type { FunnelQuestion as FunnelQuestionData } from '@/contracts/funnel.draft'
+import { Button } from '@/ui'
+import { FunnelTitle } from './funnel-shell'
 
 export type FunnelQuestionProps = {
   readonly question: FunnelQuestionData
@@ -9,15 +11,13 @@ export type FunnelQuestionProps = {
   readonly onChange: (value: string) => void
 }
 
-const heading = 'font-gowun text-3xl font-bold leading-tight text-ink sm:text-4xl'
-
 export function FunnelQuestion({ question, value, onChange }: FunnelQuestionProps) {
   const headingId = useId()
 
   if (question.kind === 'text') {
     return (
       <div data-slot="funnel-question" data-kind="text">
-        <h1 id={headingId} className={heading}>{question.ask}</h1>
+        <FunnelTitle id={headingId}>{question.ask}</FunnelTitle>
         <input
           aria-labelledby={headingId}
           autoFocus
@@ -32,7 +32,7 @@ export function FunnelQuestion({ question, value, onChange }: FunnelQuestionProp
 
   return (
     <div data-slot="funnel-question" data-kind={question.kind}>
-      <h1 id={headingId} className={heading}>{question.ask}</h1>
+      <FunnelTitle id={headingId}>{question.ask}</FunnelTitle>
       <fieldset aria-labelledby={headingId} className={question.kind === 'pills' ? 'mt-8 flex flex-wrap gap-2' : 'mt-8 grid gap-3'}>
         {question.kind === 'options'
           ? question.options.map((option) => (
@@ -66,5 +66,24 @@ export function FunnelQuestion({ question, value, onChange }: FunnelQuestionProp
             ))}
       </fieldset>
     </div>
+  )
+}
+
+export type FunnelQuestionFooterProps = {
+  /** Zero-based. */
+  readonly position: number
+  readonly total: number
+  readonly canContinue: boolean
+  readonly onBack: () => void
+  readonly onContinue: () => void
+}
+
+export function FunnelQuestionFooter({ position, total, canContinue, onBack, onContinue }: FunnelQuestionFooterProps) {
+  return (
+    <>
+      <Button variant="secondary" size="lg" onClick={onBack}>Back</Button>
+      <span className="ms-auto text-sm text-ink-muted">{position + 1} of {total}</span>
+      <Button size="lg" onClick={onContinue} disabled={!canContinue}>{position >= total - 1 ? 'Finish' : 'Continue'}</Button>
+    </>
   )
 }
