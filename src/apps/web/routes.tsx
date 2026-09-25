@@ -69,6 +69,7 @@ import { ResumeEditorPage } from './pages/resume-editor-page'
 import { ResumeHistoryPage } from './pages/resume-history-page'
 import { ResumeUploadPage } from './pages/resume-upload-page'
 import { RouteIndexPage } from './pages/route-index-page'
+import { TryProPage } from './pages/try-pro-page'
 import { LibraryPage } from './pages/library-page'
 import { SettingsPage } from './pages/settings-page'
 import { ExtensionPage } from './pages/extension-page'
@@ -159,6 +160,10 @@ export function WebRoutes() {
 
   if (routePath === '/auth/forgot-password') {
     return <AuthForgotPasswordPage />
+  }
+
+  if (routePath === '/try/pro') {
+    return <TryProPage />
   }
 
   if (routePath === '/auth/choose-plan') {

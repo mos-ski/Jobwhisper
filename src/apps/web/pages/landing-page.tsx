@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type RefObject } from 'react'
-import { ArrowRight, ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Paperclip, Plus, X } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Paperclip, Plus } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger } from '@/ui'
 import { MarketingFooter, MarketingNav } from '@/features/marketing/marketing-chrome'
@@ -304,155 +304,22 @@ function CopilotShowcase() {
 }
 
 /**
- * The quiz. One question a screen, the way FlexJobs' wizard works, asked in the panel that
- * rises over the button — so the section is a way in rather than a form to complete.
- */
-type QuizStep = {
-  readonly id: string
-  readonly tab: string
-  readonly ask: string
-  readonly options?: readonly (readonly [label: string, hint: string])[]
-  readonly field?: { readonly placeholder: string }
-  /** Short answers that read better as a row of pills than as rows with a line of hint each. */
-  readonly choices?: readonly string[]
-}
-
-const QUIZ: readonly QuizStep[] = [
-  {
-    id: 'goal',
-    tab: 'Goal',
-    ask: 'What do you want to do with this resume?',
-    options: [
-      ['Tailor it to this job', 'Rewrite it around the posting, leading with the experience the employer asked for.'],
-      ['Auto-Apply to roles like it', 'Find matching roles and prepare every application for you to approve.'],
-      ['Practise for the interview', 'Rehearse with an AI interviewer on this role, then read what landed.'],
-      ['Get live help in the interview', 'Copilot in the real conversation, drawn from this resume and this posting.'],
-    ],
-  },
-  {
-    id: 'timing',
-    tab: 'Timing',
-    ask: 'How soon are you looking to start?',
-    options: [
-      ['Right away', 'I could start within a fortnight.'],
-      ['Within a month', 'I have notice to work, or a date in mind.'],
-      ['One to three months', 'No rush, but I am moving.'],
-      ['Just exploring', 'Seeing what is out there before I commit.'],
-    ],
-  },
-  {
-    id: 'pace',
-    tab: 'Pace',
-    ask: 'How many interviews do you want a week?',
-    options: [
-      ['One or two', 'Fewer roles, more preparation for each one.'],
-      ['Three to five', 'A steady week without losing the day job.'],
-      ['Five or more', 'Volume. Keep them coming.'],
-      ['As many as I can get', 'Apply wide and sort the shortlist later.'],
-    ],
-  },
-  {
-    id: 'setup',
-    tab: 'Setup',
-    ask: 'What kind of role are you looking for?',
-    options: [
-      ['Fully remote', 'Anywhere, with no commute in the offer.'],
-      ['Hybrid', 'Some days in the office, some at home.'],
-      ['On-site', 'In person, with a team around you.'],
-      ['Open to any', 'The role matters more than where it is.'],
-    ],
-  },
-  {
-    id: 'title',
-    tab: 'Title',
-    ask: 'What job title are you going for?',
-    field: { placeholder: 'e.g. Senior Product Designer' },
-  },
-  {
-    id: 'reason',
-    tab: 'About you',
-    ask: 'What brings you to Jobwhisper?',
-    options: [
-      ['Actively job hunting', 'Applying now, and I want to move faster.'],
-      ['Open to the right thing', 'Not looking hard, but I would take a good role.'],
-      ['Preparing for interviews', 'I have rounds booked and want to be ready.'],
-      ['Just having a look', 'Working out whether this is for me.'],
-    ],
-  },
-  {
-    id: 'source',
-    tab: 'About you',
-    ask: 'How did you hear about us?',
-    choices: ['Search', 'Social', 'A friend', 'YouTube', 'An ad', 'Somewhere else'],
-  },
-]
-
-/**
- * The funnel: paste a job, add a resume, answer six short questions, and the answers carry
- * into sign-up. Nothing leaves the page — the section is the starting point, not the product.
+ * The way in: paste a job and add a resume. The questions about them are asked full screen
+ * at /v3/try/pro, which ends at a free week of Pro.
  */
 function TryItNow() {
   const navigate = useNavigate()
-  const [stage, setStage] = useState<'idle' | 'quiz' | 'loading' | 'done'>('idle')
   const [jobText, setJobText] = useState('')
   const [resume, setResume] = useState<File | null>(null)
   const [dragging, setDragging] = useState(false)
-  const [step, setStep] = useState(0)
-  const [answers, setAnswers] = useState<Record<string, string>>({})
-  const sheetRef = useRef<HTMLDivElement>(null)
-  const ctaRef = useRef<HTMLButtonElement>(null)
-  // Nothing opens until there is a posting and a resume to work from — the questions that
+  // Nothing opens until there is a posting and a resume to work from: the questions that
   // follow are about those two things, so asking them first would be asking about nothing.
   const ready = jobText.trim().length > 0 && resume !== null
-  const open = stage !== 'idle'
-  const quizStep = QUIZ[step]
-  const answered = quizStep !== undefined && (answers[quizStep.id] ?? '').trim().length > 0
-
-  useEffect(() => {
-    if (stage !== 'loading') return
-    const timer = window.setTimeout(() => setStage('done'), 1100)
-    return () => window.clearTimeout(timer)
-  }, [stage])
-
-  // While the panel is up it owns the keyboard: it takes focus on open, Escape dismisses it,
-  // and dismissing hands focus back to the button it rose from.
-  useEffect(() => {
-    if (!open) return
-    sheetRef.current?.focus({ preventScroll: true })
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') closeSheet()
-    }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [open])
-
-  function closeSheet() {
-    setStage('idle')
-    setDragging(false)
-    ctaRef.current?.focus({ preventScroll: true })
-  }
 
   function takeFile(file: File | undefined) {
     if (file) setResume(file)
     setDragging(false)
   }
-
-  function answer(id: string, value: string) {
-    setAnswers((previous) => ({ ...previous, [id]: value }))
-  }
-
-  function goBack() {
-    if (step > 0) return setStep(step - 1)
-    closeSheet()
-  }
-
-  function goOn() {
-    if (step < QUIZ.length - 1) return setStep(step + 1)
-    setStage('loading')
-  }
-
-  const position = stage === 'quiz' ? step : QUIZ.length
-  const tab = stage === 'quiz' ? quizStep?.tab : 'All set'
 
   return <section className="landing-try" aria-labelledby="landing-try-title">
     <p className="lf-eyebrow">Getting started</p>
@@ -461,111 +328,27 @@ function TryItNow() {
 
     <div
       className="landing-try-card"
-      data-asking={open ? '' : undefined}
       data-dragging={dragging ? '' : undefined}
-      onDragOver={(event) => { if (!open) { event.preventDefault(); setDragging(true) } }}
+      onDragOver={(event) => { event.preventDefault(); setDragging(true) }}
       onDragLeave={() => setDragging(false)}
-      onDrop={(event) => { if (!open) { event.preventDefault(); takeFile(event.dataTransfer.files?.[0]) } }}
+      onDrop={(event) => { event.preventDefault(); takeFile(event.dataTransfer.files?.[0]) }}
     >
       <label className="sr-only" htmlFor="landing-try-job">Paste a job description</label>
       <textarea id="landing-try-job" placeholder="Paste a job description" rows={3} value={jobText} onChange={(event) => setJobText(event.target.value)} />
       <div className="landing-try-card-foot">
-        {/* The only way in: the questions that follow are about this resume and this posting. */}
         <label className="landing-try-attach">
           <Paperclip aria-hidden="true" />
           <span className="sr-only">Attach your resume</span>
           <input type="file" accept=".pdf,.doc,.docx,.txt" onChange={(event) => takeFile(event.target.files?.[0])} />
         </label>
         {resume ? <span className="landing-try-file">{resume.name}</span> : null}
-        <button ref={ctaRef} type="button" className="landing-try-cta" onClick={() => { setStep(0); setStage('quiz') }} disabled={!ready}>Set me up</button>
+        <button type="button" className="landing-try-cta" onClick={() => navigate('/v3/try/pro', { state: { resumeName: resume?.name } })} disabled={!ready}>Set me up</button>
       </div>
-
-      {open ? (
-        <div
-          className="landing-try-sheet"
-          data-stage={stage}
-          role="dialog"
-          aria-labelledby="landing-try-ask"
-          ref={sheetRef}
-          tabIndex={-1}
-        >
-          <div className="landing-try-sheet-head">
-            <span className="landing-try-sheet-tab">{tab}</span>
-            <button type="button" className="landing-try-sheet-close" onClick={closeSheet}>
-              <X aria-hidden="true" /><span className="sr-only">Close</span>
-            </button>
-          </div>
-          <div className="landing-try-progress" role="presentation"><span style={{ width: `${((position + 1) / (QUIZ.length + 1)) * 100}%` }} /></div>
-
-          <div className="landing-try-sheet-body">
-            {stage === 'quiz' && quizStep ? <>
-              <p className="landing-try-ask" id="landing-try-ask">{quizStep.ask}</p>
-              {quizStep.options?.map(([label, hint]) => (
-                <button
-                  type="button"
-                  key={label}
-                  className="landing-try-pick"
-                  data-selected={answers[quizStep.id] === label ? '' : undefined}
-                  onClick={() => answer(quizStep.id, label)}
-                >
-                  <span className="landing-try-radio" aria-hidden="true" />
-                  <span className="landing-try-pick-copy"><b>{label}</b><small>{hint}</small></span>
-                </button>
-              ))}
-              {quizStep.field ? <input
-                className="landing-try-field"
-                placeholder={quizStep.field.placeholder}
-                value={answers[quizStep.id] ?? ''}
-                onChange={(event) => answer(quizStep.id, event.target.value)}
-                aria-label={quizStep.ask}
-                autoFocus
-              /> : null}
-              {quizStep.choices ? <div className="landing-try-pills">
-                {quizStep.choices.map((choice) => <button
-                  type="button"
-                  key={choice}
-                  data-selected={answers[quizStep.id] === choice ? '' : undefined}
-                  onClick={() => answer(quizStep.id, choice)}
-                >{choice}</button>)}
-              </div> : null}
-            </> : null}
-
-            {stage === 'loading' ? <div className="landing-try-working">
-              <span className="landing-try-dots" role="status"><i /><i /><i /><span className="sr-only">Setting things up</span></span>
-              <p>Putting your setup together…</p>
-            </div> : null}
-
-            {stage === 'done' ? <>
-              <p className="landing-try-ask" id="landing-try-ask">Right. That is everything.</p>
-              <p className="landing-try-summary">We will open Jobwhisper on <b>{answers.goal ?? 'your resume'}</b> and set the rest up around it.</p>
-              {/* Read back rather than written out as a sentence — the answers are short labels
-                  and a sentence built from them reads like a mail merge. */}
-              <dl className="landing-try-recap">
-                {answers.title ? <div><dt>Role</dt><dd>{answers.title}</dd></div> : null}
-                {answers.setup ? <div><dt>Setup</dt><dd>{answers.setup}</dd></div> : null}
-                {answers.timing ? <div><dt>Starting</dt><dd>{answers.timing}</dd></div> : null}
-                {answers.pace ? <div><dt>Interviews a week</dt><dd>{answers.pace}</dd></div> : null}
-              </dl>
-              <button type="button" className="landing-try-finish" onClick={() => navigate('/v3/auth/create-account')}>
-                Let’s go land this one<ArrowRight aria-hidden="true" />
-              </button>
-            </> : null}
-          </div>
-
-          {stage === 'quiz' ? <div className="landing-try-sheet-foot">
-            <button type="button" className="landing-try-back" onClick={goBack}>Back</button>
-            <span className="landing-try-sheet-step">{position + 1} of {QUIZ.length}</span>
-            <button type="button" className="landing-try-submit" onClick={goOn} disabled={!answered}>
-              {stage === 'quiz' && step === QUIZ.length - 1 ? 'Finish' : 'Continue'}
-            </button>
-          </div> : null}
-        </div>
-      ) : null}
     </div>
 
     <p className="landing-try-hint" aria-live="polite">
       {ready
-        ? 'Nothing is sent yet. Your answers set your account up when you sign in.'
+        ? 'Nothing is sent yet. A few short questions come next.'
         : jobText.trim()
           ? 'Attach your resume to continue.'
           : resume

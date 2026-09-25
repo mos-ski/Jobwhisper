@@ -173,3 +173,11 @@ Three shapes are worth carrying into the real contract rather than re-inventing:
 - **Every invite carries a `url`, including email ones.** An email invite is that URL, sent; treating the link as the primitive means "resend" and "copy link" are the same object rather than two flows.
 
 What a real implementation needs that this draft does not model: what happens when a grant is claimed (the ledger entry that credits the account, and whether it is reversible if the invite is revoked after acceptance), and whether an accepted invite ties the account to the admin or campaign that issued it for attribution. `grantLabel` is a pre-formatted display string like every other admin date and money field here, so the view never prices a grant itself.
+
+## Try-It Funnel Draft Contract
+
+`src/contracts/funnel.draft.ts` backs the public `/v3/try/*` funnels, which run before any `Session` exists, so none of their data can hang off `UserIdentity` or `BillingSnapshot`.
+
+- `FunnelQuestion` is a union on `kind` (`options`, `pills`, `text`) so marketing can reorder or reword questions without touching views. Answers are a flat `FunnelAnswers` record keyed by question id; production should persist them against the account created at the funnel's gate and use them to pre-fill onboarding.
+- `FunnelTrialOffer` carries everything the card screen must state before asking for a card: plan name, trial length, what the plan includes, the monthly price, reminder lead time, and the first charge date as an ISO date. The backend should compute `firstChargeOn` so the page never does date math.
+- `FunnelCardStatus` is presentation state only; production maps Stripe SetupIntent outcomes onto it.
