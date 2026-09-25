@@ -305,7 +305,7 @@ function CopilotShowcase() {
 
 /**
  * The way in: paste a job and add a resume. The questions about them are asked full screen
- * at /v3/try/credits, which ends at the credits offer.
+ * at /v3/try/pro, which ends at a free week of Pro.
  */
 function TryItNow() {
   const navigate = useNavigate()
@@ -342,7 +342,7 @@ function TryItNow() {
           <input type="file" accept=".pdf,.doc,.docx,.txt" onChange={(event) => takeFile(event.target.files?.[0])} />
         </label>
         {resume ? <span className="landing-try-file">{resume.name}</span> : null}
-        <button type="button" className="landing-try-cta" onClick={() => navigate('/v3/try/credits', { state: { resumeName: resume?.name } })} disabled={!ready}>Set me up</button>
+        <button type="button" className="landing-try-cta" onClick={() => navigate('/v3/try/pro', { state: { resumeName: resume?.name } })} disabled={!ready}>Set me up</button>
       </div>
     </div>
 

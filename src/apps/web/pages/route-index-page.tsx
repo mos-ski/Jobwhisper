@@ -23,29 +23,29 @@ const marketingRoutes = [
 
 const tryFunnelRoutes = [
   {
-    href: '/v3/try/credits',
-    label: 'Credits funnel',
-    description: 'Seven questions, then 500 credits unlocked and claimed with a card-backed 7-day Pro trial.',
+    href: '/v3/try/pro',
+    label: 'Pro week funnel',
+    description: 'Seven questions, then a free week of Pro unlocked and started with a card: $0 today, $99 a month after.',
   },
   {
-    href: '/v3/try/credits?step=reward&session=signed-in',
-    label: 'Credits funnel: signed in',
+    href: '/v3/try/pro?step=reward&session=signed-in',
+    label: 'Pro week funnel: signed in',
     description: 'Reward reveal for an existing account; Claim goes straight to the card step.',
   },
   {
-    href: '/v3/try/credits?offline=1',
-    label: 'Credits funnel: offline',
+    href: '/v3/try/pro?offline=1',
+    label: 'Pro week funnel: offline',
     description: 'Offline notice; answers are kept and Continue waits for the connection.',
   },
   {
-    href: '/v3/try/credits?step=card&session=signed-in&card=declined',
-    label: 'Credits funnel: card declined',
+    href: '/v3/try/pro?step=card&session=signed-in&card=declined',
+    label: 'Pro week funnel: card declined',
     description: 'Card step with the bank decline explained and the form ready for another card.',
   },
   {
-    href: '/v3/try/credits?step=done&session=signed-in',
-    label: 'Credits funnel: claimed',
-    description: 'Confirmation with the credits balance and the trial end date.',
+    href: '/v3/try/pro?step=done&session=signed-in',
+    label: 'Pro week funnel: started',
+    description: 'Confirmation of what Pro includes, the free-until date, and how to cancel.',
   },
 ] as const
 

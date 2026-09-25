@@ -178,13 +178,13 @@
    Exit condition: user reviews timeline, activity log, replay, or returns to Jobs.
    Failure branch: partial submission shows the last successful event, pending fields, and retry/replay actions in a later state slice.
 
-## Try-It Funnel: Credits (Landing -> Quiz -> Reward -> Account -> Card -> Claimed)
+## Try-It Funnel: Pro Week (Landing -> Quiz -> Free Week -> Account -> Card -> Started)
 
 1. Entry condition: a visitor pastes a job description and attaches a resume in the landing page's "Try it" card.
-   Exit condition: they choose Set me up and `/v3/try/credits` opens with the resume name carried over.
+   Exit condition: they choose Set me up and `/v3/try/pro` opens with the resume name carried over.
    Failure branch: the button stays disabled with a live hint naming whichever half is missing.
 
-2. Entry condition: `/v3/try/credits?step=quiz&q=<n>` opens.
+2. Entry condition: `/v3/try/pro?step=quiz&q=<n>` opens.
    Exit condition: all seven questions are answered, one per screen, and the visitor chooses Finish.
    Failure branch: Continue stays disabled until the question is answered; offline, the answers are kept and Continue waits for the connection. Back on the first question returns to the landing page.
 
@@ -192,18 +192,18 @@
    Exit condition: the setup completes and the reward replaces it in history.
    Failure branch: none in this slice; production shows a retry if setup fails.
 
-4. Entry condition: the reward step shows 500 credits, the answer recap and "$0 today".
-   Exit condition: Claim my 500 credits, which opens the account step for anonymous visitors and the card step for signed-in ones. Not now leaves the funnel.
+4. Entry condition: the reward step shows a free week of Pro, what Pro includes, the answer recap, and "$0 today, then $99 a month after 7 days unless you cancel".
+   Exit condition: Claim my free week, which opens the account step for anonymous visitors and the card step for signed-in ones. Not now leaves the funnel.
    Failure branch: none.
 
 5. Entry condition: an anonymous visitor reaches the account step.
    Exit condition: they continue with Google or a valid email.
    Failure branch: an invalid email shows a field error describing the fix.
 
-6. Entry condition: the card step opens with the full trial terms above the form: $0 today, 7 days free until the first charge date, $40 first month then $99 a month, and a reminder email 2 days before.
-   Exit condition: a complete card starts the trial and the claimed step shows.
+6. Entry condition: the card step opens with the full terms above the form: $0 today, free for 7 days until the first charge date, then Pro at $99 a month until cancelled, and a reminder email 2 days before.
+   Exit condition: a complete card starts the week and the started step shows.
    Failure branch: a declined card shows the bank's reason with the form ready for another card; offline disables submit.
 
-7. Entry condition: the trial has started.
+7. Entry condition: the free week has started.
    Exit condition: Start with your setup opens `/v3/app`.
    Failure branch: none.

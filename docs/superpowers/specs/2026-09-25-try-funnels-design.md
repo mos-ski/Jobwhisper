@@ -2,14 +2,14 @@
 
 ## Goal
 
-Three public, pre-sign-up funnels that let a visitor feel the product before paying: a resume score and rewrite, an Auto Apply job match, and a credit reward that starts a Pro trial. Each ends at a clearly signposted gate. This is UI Studio work: every result comes from mocks, and production wires the real services at port time.
+Three public, pre-sign-up funnels that let a visitor feel the product before paying: a resume score and rewrite, an Auto Apply job match, and a free week of Pro started with a card. Each ends at a clearly signposted gate. This is UI Studio work: every result comes from mocks, and production wires the real services at port time.
 
 ## Decisions
 
-- Each funnel is its own full-screen route: `/v3/try/resume`, `/v3/try/auto-apply`, `/v3/try/credits`.
+- Each funnel is its own full-screen route: `/v3/try/resume`, `/v3/try/auto-apply`, `/v3/try/pro`.
 - Results (ATS score, rewrite, job matches) are mock fixtures in `src/mocks/`.
 - Gates are stated before the user reaches them. The entry screen of each funnel says what is free and what needs an account.
-- Build order: Funnel 3 (credits), then Funnel 1 (resume), then Funnel 2 (auto apply).
+- Build order: Funnel 3 (Pro week), then Funnel 1 (resume), then Funnel 2 (auto apply).
 
 ## Structure
 
@@ -19,10 +19,10 @@ Three public, pre-sign-up funnels that let a visitor feel the product before pay
   - `funnel-working.tsx`: the analysing screen, showing the named checks as they complete.
   - `funnel-gate.tsx`: the sign-up gate that explains what is waiting behind it.
 - Three pure views, each exporting its props type:
-  - `funnel-credits-view.tsx`
+  - `funnel-trial-view.tsx`
   - `funnel-resume-view.tsx`
   - `funnel-auto-apply-view.tsx`
-- Pages `src/apps/web/pages/try-{credits,resume,auto-apply}-page.tsx` own the mock data, navigation and local state.
+- Pages `src/apps/web/pages/try-{pro,resume,auto-apply}-page.tsx` own the mock data, navigation and local state.
 - The current step lives in the URL (`?step=<id>`), so Back works, a refresh resumes at the same step, and each step is trackable.
 - Draft types go in `src/contracts/funnel.draft.ts` and are flagged in `CONTRACT-REQUESTS.md`:
   - `AtsReport` { score, issues[] { id, label, detail, severity } }
@@ -30,18 +30,20 @@ Three public, pre-sign-up funnels that let a visitor feel the product before pay
   - `FunnelJobMatch` { id, title, company, location, salaryRange, matchScore, reasons[] }
   - `FunnelAnswers`
 
-## Funnel 3: Credits (`/v3/try/credits`)
+## Funnel 3: Pro week (`/v3/try/pro`)
 
-1. The landing-page quiz (`TryItNow`) moves here. Its "Set me up" button on the landing card carries the posting and resume into step 1, so only one version of the quiz exists.
-2. Six quiz questions, as today.
-3. Reward reveal: "You've unlocked 500 credits", shown as a balance card. This is not a game of chance.
+Revised 2026-09-25: the offer was 500 credits into a $40-then-$99 Pro trial. `PRICING.md` (2026-09-23) made Pro unlimited at $99/month and scoped credits to people without a plan, so the reward is now a free week of Pro.
+
+1. The landing-page quiz (`TryItNow`) moves here. Its "Set me up" button on the landing card carries the resume into step 1, so only one version of the quiz exists.
+2. Seven quiz questions, as on the landing page before.
+3. Reward reveal: "You've unlocked a free week of Pro", listing what Pro includes. This is not a game of chance.
 4. Card screen:
    - "$0 today" leads the screen.
-   - Terms line: "7-day free trial, then Pro at $40 for your first month and $99/month after. Cancel anytime."
-   - "We'll email you 2 days before your first charge."
+   - Terms: free for 7 days until the first charge date, then Pro at $99 a month until cancelled.
+   - "We'll email you 2 days before the first charge."
    - The card fields are layout only; production replaces them with Stripe Elements.
    - If the user is anonymous, account creation (email or Google) comes before the card.
-5. Confirmation: 500 credits added, the trial end date, and "Start with your setup" into the app.
+5. Confirmation: the week has started, what Pro includes, the free-until date, how to cancel, and "Start with your setup" into the app.
 
 ## Funnel 1: Resume (`/v3/try/resume`)
 
@@ -94,7 +96,7 @@ Pages expose callbacks named for the tracking plan events. The production team a
 - `ats_score_viewed`, `before_after_dragged`
 - `jobs_matched`
 - `gate_viewed`, `gate_converted`
-- `credits_reward_viewed`, `trial_started`
+- `trial_reward_viewed`, `trial_started`
 
 ## Boundaries
 

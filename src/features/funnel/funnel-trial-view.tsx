@@ -7,10 +7,10 @@ import { Button, FormDividerLabel, FormField, GoogleAuthButton } from '@/ui'
 import { FunnelQuestion } from './funnel-question'
 import { FunnelShell } from './funnel-shell'
 
-export type FunnelCreditsStep = 'quiz' | 'working' | 'reward' | 'account' | 'card' | 'done'
+export type FunnelTrialStep = 'quiz' | 'working' | 'reward' | 'account' | 'card' | 'done'
 
-export type FunnelCreditsViewProps = {
-  readonly step: FunnelCreditsStep
+export type FunnelTrialViewProps = {
+  readonly step: FunnelTrialStep
   readonly questions: readonly FunnelQuestionData[]
   /** Which question the quiz step shows; ignored on other steps. */
   readonly questionIndex: number
@@ -33,11 +33,11 @@ export type FunnelCreditsViewProps = {
   readonly onStart: () => void
 }
 
-const STEP_LABELS: Record<Exclude<FunnelCreditsStep, 'quiz'>, string> = {
+const STEP_LABELS: Record<Exclude<FunnelTrialStep, 'quiz'>, string> = {
   working: 'Setting up',
   reward: 'Your reward',
   account: 'Your account',
-  card: 'Claim credits',
+  card: 'Start your week',
   done: 'All set',
 }
 
@@ -49,7 +49,7 @@ function formatDate(iso: string): string {
   return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T00:00:00Z`))
 }
 
-function progressFor(step: FunnelCreditsStep, questionIndex: number, total: number): number {
+function progressFor(step: FunnelTrialStep, questionIndex: number, total: number): number {
   const steps = total + 3
   if (step === 'quiz') return (questionIndex + 1) / steps
   if (step === 'working' || step === 'reward') return (total + 1) / steps
@@ -59,7 +59,7 @@ function progressFor(step: FunnelCreditsStep, questionIndex: number, total: numb
 
 const heading = 'font-gowun text-3xl font-bold leading-tight text-ink sm:text-4xl'
 
-export function FunnelCreditsView(props: FunnelCreditsViewProps) {
+export function FunnelTrialView(props: FunnelTrialViewProps) {
   const { step, questions, questionIndex, answers, online, onClose } = props
   const question = questions[Math.min(Math.max(questionIndex, 0), questions.length - 1)]
   const label = step === 'quiz' ? question?.tab ?? '' : STEP_LABELS[step]
@@ -89,7 +89,7 @@ export function FunnelCreditsView(props: FunnelCreditsViewProps) {
   )
 }
 
-function QuizFooter({ question, questions, questionIndex, answers, online, onBack, onContinue }: FunnelCreditsViewProps & { readonly question: FunnelQuestionData }) {
+function QuizFooter({ question, questions, questionIndex, answers, online, onBack, onContinue }: FunnelTrialViewProps & { readonly question: FunnelQuestionData }) {
   const answered = (answers[question.id] ?? '').trim().length > 0
   const last = questionIndex >= questions.length - 1
   return (
@@ -117,22 +117,26 @@ function WorkingStep() {
   )
 }
 
-function CreditsBalance({ offer }: { readonly offer: FunnelTrialOffer }) {
+function PlanPass({ offer, caption }: { readonly offer: FunnelTrialOffer; readonly caption: string }) {
   return (
     <div className="rounded-panel bg-accent p-6 text-on-accent sm:p-8">
-      <p className="text-sm font-medium">Credits waiting for you</p>
-      <p className="mt-2 font-gowun text-5xl font-bold leading-none sm:text-6xl">{offer.credits.toLocaleString('en-US')}</p>
-      <p className="mt-3 text-sm leading-6">{offer.creditsWorth}</p>
+      <p className="text-sm font-medium">{caption}</p>
+      <p className="mt-2 font-gowun text-4xl font-bold leading-tight sm:text-5xl">{offer.trialDays} days of {offer.planName}</p>
+      <ul className="mt-5 grid gap-2 text-sm leading-6">
+        {offer.includes.map((line) => (
+          <li key={line} className="flex gap-2"><CircleCheck aria-hidden="true" className="mt-1 size-4 shrink-0" />{line}</li>
+        ))}
+      </ul>
     </div>
   )
 }
 
-function RewardStep({ offer, questions, answers, resumeName, onClaim, onClose }: FunnelCreditsViewProps) {
+function RewardStep({ offer, questions, answers, resumeName, onClaim, onClose }: FunnelTrialViewProps) {
   const recap = questions.filter((item) => (answers[item.id] ?? '').trim()).slice(0, 4)
   return (
     <div className="grid gap-8">
-      <h1 className={heading}>You’ve unlocked {offer.credits} credits.</h1>
-      <CreditsBalance offer={offer} />
+      <h1 className={heading}>You’ve unlocked a free week of {offer.planName}.</h1>
+      <PlanPass offer={offer} caption="Free for you, starting today" />
 
       {recap.length > 0 || resumeName ? (
         <dl className="grid gap-3 rounded-panel border border-border bg-surface p-5">
@@ -143,11 +147,11 @@ function RewardStep({ offer, questions, answers, resumeName, onClaim, onClose }:
 
       <div className="grid gap-3">
         <Button size="lg" onClick={onClaim} className="w-full sm:w-auto sm:justify-self-start">
-          Claim my {offer.credits} credits
+          Claim my free week
           <ArrowRight aria-hidden="true" className="size-4" />
         </Button>
         <p className="text-sm leading-6 text-ink-muted">
-          $0 today. Add a card to start a {offer.trialDays}-day {offer.planName} trial and the credits are yours to keep.
+          $0 today. Add a card to start it, then ${offer.monthlyUsd} a month after {offer.trialDays} days unless you cancel.
         </p>
         <button type="button" onClick={onClose} className="min-h-11 justify-self-start text-sm font-medium text-ink-muted underline underline-offset-4 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
           Not now
@@ -166,7 +170,7 @@ function RecapRow({ term, detail }: { readonly term: string; readonly detail: st
   )
 }
 
-function AccountStep({ online, offer, onCreateAccount, onGoogleSignUp }: FunnelCreditsViewProps) {
+function AccountStep({ online, offer, onCreateAccount, onGoogleSignUp }: FunnelTrialViewProps) {
   const [email, setEmail] = useState('')
   const [error, setError] = useState<string | undefined>()
 
@@ -184,20 +188,20 @@ function AccountStep({ online, offer, onCreateAccount, onGoogleSignUp }: FunnelC
   return (
     <div className="grid gap-8">
       <div className="grid gap-3">
-        <h1 className={heading}>Create your account to hold your credits.</h1>
-        <p className="text-base leading-7 text-ink-muted">Your {offer.credits} credits and your answers are saved to it. Next, you add a card, and nothing is charged today.</p>
+        <h1 className={heading}>Create your account for your free week.</h1>
+        <p className="text-base leading-7 text-ink-muted">Your answers are saved to it, so {offer.planName} opens set up for you. Next you add a card, and nothing is charged today.</p>
       </div>
       <form noValidate onSubmit={submit} className="grid gap-5 rounded-panel border border-border bg-surface p-6 shadow-panel">
         <GoogleAuthButton onClick={onGoogleSignUp} disabled={!online}>Continue with Google</GoogleAuthButton>
         <FormDividerLabel>or</FormDividerLabel>
-        <FormField id="funnel-credits-email" label="Email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} error={error} />
+        <FormField id="funnel-trial-email" label="Email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} error={error} />
         <Button type="submit" size="lg" disabled={!online}>Continue</Button>
       </form>
     </div>
   )
 }
 
-function CardStep({ offer, online, cardStatus, cardError, onSubmitCard }: FunnelCreditsViewProps) {
+function CardStep({ offer, online, cardStatus, cardError, onSubmitCard }: FunnelTrialViewProps) {
   const [name, setName] = useState('')
   const [number, setNumber] = useState('')
   const [expiry, setExpiry] = useState('')
@@ -215,13 +219,13 @@ function CardStep({ offer, online, cardStatus, cardError, onSubmitCard }: Funnel
 
   return (
     <div className="grid gap-8">
-      <h1 className={heading}>Claim your {offer.credits} credits.</h1>
+      <h1 className={heading}>Start your free week of {offer.planName}.</h1>
 
-      <section aria-labelledby="funnel-credits-terms" className="grid gap-4 rounded-panel border border-border bg-surface p-6">
-        <p id="funnel-credits-terms" className="font-gowun text-4xl font-bold leading-none text-ink">$0 today</p>
+      <section aria-labelledby="funnel-trial-terms" className="grid gap-4 rounded-panel border border-border bg-surface p-6">
+        <p id="funnel-trial-terms" className="font-gowun text-4xl font-bold leading-none text-ink">$0 today</p>
         <ul className="grid gap-3 text-base leading-7 text-ink">
           <li className="flex gap-3"><CircleCheck aria-hidden="true" className="mt-1 size-5 shrink-0 text-positive" />Free for {offer.trialDays} days, until {chargeDate}.</li>
-          <li className="flex gap-3"><CircleCheck aria-hidden="true" className="mt-1 size-5 shrink-0 text-positive" />Then {offer.planName} at ${offer.firstMonthUsd} for your first month, then ${offer.monthlyUsd} a month.</li>
+          <li className="flex gap-3"><CircleCheck aria-hidden="true" className="mt-1 size-5 shrink-0 text-positive" />Then {offer.planName} at ${offer.monthlyUsd} a month, until you cancel.</li>
           <li className="flex gap-3"><CircleCheck aria-hidden="true" className="mt-1 size-5 shrink-0 text-positive" />We’ll email you {offer.reminderDaysBefore} days before the first charge. Cancel before {chargeDate} and you pay nothing.</li>
         </ul>
       </section>
@@ -239,7 +243,7 @@ function CardStep({ offer, online, cardStatus, cardError, onSubmitCard }: Funnel
           <FormField id="funnel-card-cvc" label="Security code" autoComplete="cc-csc" inputMode="numeric" value={cvc} onChange={(event) => setCvc(event.target.value)} />
         </div>
         <Button type="submit" size="lg" loading={processing} disabled={!complete || !online || processing}>
-          Start free trial and claim {offer.credits} credits
+          Start my free week
         </Button>
         <p className="flex items-start gap-2 text-sm leading-6 text-ink-muted">
           <Lock aria-hidden="true" className="mt-1 size-4 shrink-0" />
@@ -250,12 +254,12 @@ function CardStep({ offer, online, cardStatus, cardError, onSubmitCard }: Funnel
   )
 }
 
-function DoneStep({ offer, onStart }: FunnelCreditsViewProps) {
+function DoneStep({ offer, onStart }: FunnelTrialViewProps) {
   return (
     <div className="grid gap-8">
-      <h1 className={heading}>{offer.credits} credits are yours.</h1>
-      <CreditsBalance offer={offer} />
-      <p className="text-base leading-7 text-ink-muted">Your {offer.planName} trial runs until {formatDate(offer.firstChargeOn)}. We’ll remind you before it ends.</p>
+      <h1 className={heading}>Your free week of {offer.planName} has started.</h1>
+      <PlanPass offer={offer} caption={`Free until ${formatDate(offer.firstChargeOn)}`} />
+      <p className="text-base leading-7 text-ink-muted">We’ll email you {offer.reminderDaysBefore} days before it ends. Cancel from Billing any time before {formatDate(offer.firstChargeOn)} and you pay nothing.</p>
       <Button size="lg" onClick={onStart} className="w-full sm:w-auto sm:justify-self-start">
         Start with your setup
         <ArrowRight aria-hidden="true" className="size-4" />

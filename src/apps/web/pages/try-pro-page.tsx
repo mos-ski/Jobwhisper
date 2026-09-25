@@ -3,15 +3,15 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import type { FunnelAnswers, FunnelCardStatus } from '@/contracts/funnel.draft'
 import type { Session } from '@/contracts/identity'
-import { FunnelCreditsView, type FunnelCreditsStep } from '@/features/funnel/funnel-credits-view'
-import { creditsFunnelOffer, creditsFunnelQuestions } from '@/mocks/funnel'
+import { FunnelTrialView, type FunnelTrialStep } from '@/features/funnel/funnel-trial-view'
+import { trialFunnelOffer, trialFunnelQuestions } from '@/mocks/funnel'
 import { anonymousSession, candidateSession } from '@/mocks/sessions'
 
-const STEPS: readonly FunnelCreditsStep[] = ['quiz', 'working', 'reward', 'account', 'card', 'done']
+const STEPS: readonly FunnelTrialStep[] = ['quiz', 'working', 'reward', 'account', 'card', 'done']
 // Review-only switches, carried through every step so a reviewer can walk a whole variant.
 const REVIEW_PARAMS = ['session', 'offline', 'card'] as const
 
-function parseStep(value: string | null): FunnelCreditsStep {
+function parseStep(value: string | null): FunnelTrialStep {
   return STEPS.find((step) => step === value) ?? 'quiz'
 }
 
@@ -20,12 +20,12 @@ function resumeNameFrom(state: unknown): string | undefined {
   return undefined
 }
 
-export function TryCreditsPage() {
+export function TryProPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const [params, setParams] = useSearchParams()
   const step = parseStep(params.get('step'))
-  const questionIndex = Math.min(Math.max(Number(params.get('q') ?? 0) || 0, 0), creditsFunnelQuestions.length - 1)
+  const questionIndex = Math.min(Math.max(Number(params.get('q') ?? 0) || 0, 0), trialFunnelQuestions.length - 1)
   const declines = params.get('card') === 'declined'
 
   // Search-param navigation drops router state, so the handed-over file name is read once.
@@ -36,7 +36,7 @@ export function TryCreditsPage() {
   const [networkOnline, setNetworkOnline] = useState(() => navigator.onLine)
   const online = networkOnline && params.get('offline') !== '1'
 
-  function go(next: FunnelCreditsStep, nextQuestion = 0, replace = false) {
+  function go(next: FunnelTrialStep, nextQuestion = 0, replace = false) {
     const search = new URLSearchParams()
     for (const key of REVIEW_PARAMS) {
       const value = params.get(key)
@@ -79,12 +79,12 @@ export function TryCreditsPage() {
   }, [cardStatus])
 
   return (
-    <FunnelCreditsView
+    <FunnelTrialView
       step={step}
-      questions={creditsFunnelQuestions}
+      questions={trialFunnelQuestions}
       questionIndex={questionIndex}
       answers={answers}
-      offer={creditsFunnelOffer}
+      offer={trialFunnelOffer}
       session={session}
       online={online}
       cardStatus={cardStatus}
@@ -92,7 +92,7 @@ export function TryCreditsPage() {
       resumeName={resumeName}
       onAnswer={(id, value) => setAnswers((previous) => ({ ...previous, [id]: value }))}
       onBack={() => (questionIndex > 0 ? go('quiz', questionIndex - 1) : navigate('/'))}
-      onContinue={() => (questionIndex < creditsFunnelQuestions.length - 1 ? go('quiz', questionIndex + 1) : go('working'))}
+      onContinue={() => (questionIndex < trialFunnelQuestions.length - 1 ? go('quiz', questionIndex + 1) : go('working'))}
       onClose={() => navigate('/')}
       onClaim={() => go(session.status === 'authenticated' ? 'card' : 'account')}
       onCreateAccount={() => {

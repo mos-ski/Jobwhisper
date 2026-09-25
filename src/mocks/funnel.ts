@@ -1,6 +1,6 @@
 import type { FunnelQuestion, FunnelTrialOffer } from '@/contracts/funnel.draft'
 
-export const creditsFunnelQuestions: readonly FunnelQuestion[] = [
+export const trialFunnelQuestions: readonly FunnelQuestion[] = [
   {
     id: 'goal',
     tab: 'Goal',
@@ -77,12 +77,15 @@ export const creditsFunnelQuestions: readonly FunnelQuestion[] = [
   },
 ]
 
-export const creditsFunnelOffer: FunnelTrialOffer = {
-  credits: 500,
-  creditsWorth: 'About 500 minutes of Interview Copilot or practice',
-  trialDays: 7,
+export const trialFunnelOffer: FunnelTrialOffer = {
   planName: 'Pro',
-  firstMonthUsd: 40,
+  trialDays: 7,
+  includes: [
+    'Unlimited Interview Copilot and practice, on web, desktop and mobile',
+    'Meeting Copilot and Coding Copilot',
+    'Resume Builder, unlimited',
+    'Auto Apply for up to 500 jobs a month',
+  ],
   monthlyUsd: 99,
   reminderDaysBefore: 2,
   firstChargeOn: '2026-10-02',

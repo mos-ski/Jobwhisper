@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
 import type { FunnelQuestion, FunnelTrialOffer } from '@/contracts/funnel.draft'
-import { FunnelCreditsView, type FunnelCreditsViewProps } from './funnel-credits-view'
+import { FunnelTrialView, type FunnelTrialViewProps } from './funnel-trial-view'
 
 const questions: readonly FunnelQuestion[] = [
   { id: 'goal', tab: 'Goal', ask: 'What do you want to do with this resume?', kind: 'options', options: [{ label: 'Tailor it to this job' }, { label: 'Practise for the interview' }] },
@@ -11,18 +11,16 @@ const questions: readonly FunnelQuestion[] = [
 ]
 
 const offer: FunnelTrialOffer = {
-  credits: 500,
-  creditsWorth: 'About 500 minutes of Interview Copilot or practice',
-  trialDays: 7,
   planName: 'Pro',
-  firstMonthUsd: 40,
+  trialDays: 7,
+  includes: ['Unlimited Interview Copilot and practice', 'Resume Builder, unlimited'],
   monthlyUsd: 99,
   reminderDaysBefore: 2,
   firstChargeOn: '2026-10-02',
 }
 
-function renderView(overrides: Partial<FunnelCreditsViewProps> = {}) {
-  const props: FunnelCreditsViewProps = {
+function renderView(overrides: Partial<FunnelTrialViewProps> = {}) {
+  const props: FunnelTrialViewProps = {
     step: 'quiz',
     questions,
     questionIndex: 0,
@@ -42,11 +40,11 @@ function renderView(overrides: Partial<FunnelCreditsViewProps> = {}) {
     onStart: vi.fn(),
     ...overrides,
   }
-  render(<FunnelCreditsView {...props} />)
+  render(<FunnelTrialView {...props} />)
   return props
 }
 
-describe('FunnelCreditsView', () => {
+describe('FunnelTrialView', () => {
   it('holds Continue until the question is answered', async () => {
     const user = userEvent.setup()
     const props = renderView()
@@ -69,16 +67,17 @@ describe('FunnelCreditsView', () => {
     expect(screen.getByRole('button', { name: 'Continue' })).toBeDisabled()
   })
 
-  it('reveals the credits with the terms before any card is asked for', async () => {
+  it('reveals the free week with the terms before any card is asked for', async () => {
     const user = userEvent.setup()
     const props = renderView({ step: 'reward', answers: { goal: 'Tailor it to this job', title: 'Product Designer' }, resumeName: 'darnell-smith-resume.pdf' })
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('You’ve unlocked 500 credits')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('You’ve unlocked a free week of Pro')
     expect(screen.getByText('Product Designer')).toBeInTheDocument()
     expect(screen.getByText('darnell-smith-resume.pdf')).toBeInTheDocument()
-    expect(screen.getByText(/\$0 today/)).toBeInTheDocument()
+    expect(screen.getByText('Resume Builder, unlimited')).toBeInTheDocument()
+    expect(screen.getByText(/\$0 today.*\$99 a month after 7 days/)).toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: 'Claim my 500 credits' }))
+    await user.click(screen.getByRole('button', { name: 'Claim my free week' }))
     expect(props.onClaim).toHaveBeenCalled()
   })
 
@@ -102,10 +101,10 @@ describe('FunnelCreditsView', () => {
 
     expect(screen.getByText('$0 today')).toBeInTheDocument()
     expect(screen.getByText(/Free for 7 days, until 2 October 2026/)).toBeInTheDocument()
-    expect(screen.getByText(/\$40 for your first month, then \$99 a month/)).toBeInTheDocument()
+    expect(screen.getByText(/Pro at \$99 a month, until you cancel/)).toBeInTheDocument()
     expect(screen.getByText(/email you 2 days before/)).toBeInTheDocument()
 
-    const submit = screen.getByRole('button', { name: 'Start free trial and claim 500 credits' })
+    const submit = screen.getByRole('button', { name: 'Start my free week' })
     expect(submit).toBeDisabled()
 
     await user.type(screen.getByLabelText('Name on card'), 'Darnell Smith')
@@ -121,12 +120,12 @@ describe('FunnelCreditsView', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Your bank declined this card')
   })
 
-  it('confirms the credits and when the trial ends', async () => {
+  it('confirms the week has started and when it ends', async () => {
     const user = userEvent.setup()
     const props = renderView({ step: 'done' })
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('500 credits are yours')
-    expect(screen.getByText(/2 October 2026/)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Your free week of Pro has started')
+    expect(screen.getByText('Free until 2 October 2026')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Start with your setup' }))
     expect(props.onStart).toHaveBeenCalled()
   })

@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { vi } from 'vitest'
 
-import { creditsFunnelQuestions } from '@/mocks/funnel'
+import { trialFunnelQuestions } from '@/mocks/funnel'
 import { WebRoutes } from './routes'
 
 function renderAt(path: string) {
@@ -17,12 +17,12 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-describe('/v3/try/credits', () => {
-  it('walks the quiz, reveals the credits, then asks for an account before the card', () => {
+describe('/v3/try/pro', () => {
+  it('walks the quiz, reveals the free week, then asks for an account before the card', () => {
     vi.useFakeTimers()
-    renderAt('/v3/try/credits')
+    renderAt('/v3/try/pro')
 
-    for (const question of creditsFunnelQuestions) {
+    for (const question of trialFunnelQuestions) {
       if (question.kind === 'text') {
         fireEvent.change(screen.getByRole('textbox', { name: question.ask }), { target: { value: 'Senior Product Designer' } })
       } else {
@@ -35,7 +35,7 @@ describe('/v3/try/credits', () => {
     expect(screen.getByText('Putting your setup together.')).toBeInTheDocument()
     act(() => { vi.advanceTimersByTime(1500) })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Claim my 500 credits' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Claim my free week' }))
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Create your account')
 
     fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'darnell@example.com' } })
@@ -44,8 +44,8 @@ describe('/v3/try/credits', () => {
   })
 
   it('skips the account step for someone already signed in', () => {
-    renderAt('/v3/try/credits?step=reward&session=signed-in')
-    fireEvent.click(screen.getByRole('button', { name: 'Claim my 500 credits' }))
+    renderAt('/v3/try/pro?step=reward&session=signed-in')
+    fireEvent.click(screen.getByRole('button', { name: 'Claim my free week' }))
     expect(screen.getByText('$0 today')).toBeInTheDocument()
   })
 })

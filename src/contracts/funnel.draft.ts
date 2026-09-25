@@ -19,12 +19,10 @@ export type FunnelQuestion =
 export type FunnelAnswers = Readonly<Record<string, string>>
 
 export type FunnelTrialOffer = {
-  readonly credits: number
-  /** What the credits buy, in words, e.g. "About 500 minutes of Interview Copilot or practice". */
-  readonly creditsWorth: string
-  readonly trialDays: number
   readonly planName: string
-  readonly firstMonthUsd: number
+  readonly trialDays: number
+  /** What the plan unlocks, one short line each, e.g. "Unlimited Interview Copilot and practice". */
+  readonly includes: readonly string[]
   readonly monthlyUsd: number
   readonly reminderDaysBefore: number
   /** ISO date (YYYY-MM-DD) of the first charge if the trial is not cancelled. */

@@ -2,6 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> **Revised 2026-09-25 after build:** the offer changed to a free week of Pro (see the spec). The route is `/v3/try/pro` and the view is `FunnelTrialView` in `funnel-trial-view.tsx`; credit fields left `FunnelTrialOffer` in favour of `includes`.
+
 **Goal:** Build `/v3/try/credits`: the landing-page quiz as a full-screen funnel that reveals 500 credits and claims them with a card-backed Pro trial, plus the shared funnel kit that Funnels 1 and 2 will reuse.
 
 **Architecture:** A shared `features/funnel/` kit (`FunnelShell`, `FunnelQuestion`) and a pure `FunnelCreditsView` driven entirely by props. `try-credits-page.tsx` owns the URL step (`?step=&q=`), answers, mock session and timers. The landing card keeps the posting and resume inputs, and its button hands off to the new route. The in-page quiz sheet is deleted so only one version of the quiz exists.
