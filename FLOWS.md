@@ -177,3 +177,33 @@
 9. Entry condition: application submission completes and `/v3/auto-apply/applied` opens.
    Exit condition: user reviews timeline, activity log, replay, or returns to Jobs.
    Failure branch: partial submission shows the last successful event, pending fields, and retry/replay actions in a later state slice.
+
+## Try-It Funnel: Credits (Landing -> Quiz -> Reward -> Account -> Card -> Claimed)
+
+1. Entry condition: a visitor pastes a job description and attaches a resume in the landing page's "Try it" card.
+   Exit condition: they choose Set me up and `/v3/try/credits` opens with the resume name carried over.
+   Failure branch: the button stays disabled with a live hint naming whichever half is missing.
+
+2. Entry condition: `/v3/try/credits?step=quiz&q=<n>` opens.
+   Exit condition: all seven questions are answered, one per screen, and the visitor chooses Finish.
+   Failure branch: Continue stays disabled until the question is answered; offline, the answers are kept and Continue waits for the connection. Back on the first question returns to the landing page.
+
+3. Entry condition: the quiz finishes and the working step shows.
+   Exit condition: the setup completes and the reward replaces it in history.
+   Failure branch: none in this slice; production shows a retry if setup fails.
+
+4. Entry condition: the reward step shows 500 credits, the answer recap and "$0 today".
+   Exit condition: Claim my 500 credits, which opens the account step for anonymous visitors and the card step for signed-in ones. Not now leaves the funnel.
+   Failure branch: none.
+
+5. Entry condition: an anonymous visitor reaches the account step.
+   Exit condition: they continue with Google or a valid email.
+   Failure branch: an invalid email shows a field error describing the fix.
+
+6. Entry condition: the card step opens with the full trial terms above the form: $0 today, 7 days free until the first charge date, $40 first month then $99 a month, and a reminder email 2 days before.
+   Exit condition: a complete card starts the trial and the claimed step shows.
+   Failure branch: a declined card shows the bank's reason with the form ready for another card; offline disables submit.
+
+7. Entry condition: the trial has started.
+   Exit condition: Start with your setup opens `/v3/app`.
+   Failure branch: none.

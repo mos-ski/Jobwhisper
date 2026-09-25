@@ -21,6 +21,34 @@ const marketingRoutes = [
   },
 ] as const
 
+const tryFunnelRoutes = [
+  {
+    href: '/v3/try/credits',
+    label: 'Credits funnel',
+    description: 'Seven questions, then 500 credits unlocked and claimed with a card-backed 7-day Pro trial.',
+  },
+  {
+    href: '/v3/try/credits?step=reward&session=signed-in',
+    label: 'Credits funnel: signed in',
+    description: 'Reward reveal for an existing account; Claim goes straight to the card step.',
+  },
+  {
+    href: '/v3/try/credits?offline=1',
+    label: 'Credits funnel: offline',
+    description: 'Offline notice; answers are kept and Continue waits for the connection.',
+  },
+  {
+    href: '/v3/try/credits?step=card&session=signed-in&card=declined',
+    label: 'Credits funnel: card declined',
+    description: 'Card step with the bank decline explained and the form ready for another card.',
+  },
+  {
+    href: '/v3/try/credits?step=done&session=signed-in',
+    label: 'Credits funnel: claimed',
+    description: 'Confirmation with the credits balance and the trial end date.',
+  },
+] as const
+
 const authRoutes = [
   {
     href: '/v3/auth/sign-in',
@@ -503,6 +531,23 @@ export function RouteIndexPage() {
           <h2 className="text-2xl font-semibold">Marketing</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {marketingRoutes.map((route) => (
+              <a
+                key={route.href}
+                href={route.href}
+                aria-label={route.label}
+                className="rounded-panel border border-border bg-surface p-5 shadow-panel transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                <span className="text-lg font-semibold text-ink">{route.label}</span>
+                <span className="mt-2 block text-sm leading-6 text-ink-muted">{route.description}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-10">
+          <h2 className="text-2xl font-semibold">Try-it funnels</h2>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {tryFunnelRoutes.map((route) => (
               <a
                 key={route.href}
                 href={route.href}
