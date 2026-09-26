@@ -95,66 +95,56 @@ export const resumeFunnelReport: AtsReport = {
   score: 54,
   verdict: 'Likely filtered out before a person reads it',
   issues: [
-    { id: 'results', label: 'No results in 4 of 6 bullets', fix: 'Lead each bullet with the outcome: retention, revenue, time saved.', severity: 'high' },
-    { id: 'keywords', label: 'Missing "stakeholder management" and "churn reduction" from the job description', fix: 'Work the posting’s own terms into the roles where you did that work.', severity: 'high' },
+    { id: 'results', label: 'Your two strongest bullets have no results in them', fix: 'Lead each one with the outcome: revenue retained, renewals saved, time cut.', severity: 'high' },
+    { id: 'keywords', label: 'Missing "stakeholder management" and "churn reduction" from the job description', fix: 'Work the posting’s own terms into your skills and the roles where you did that work.', severity: 'high' },
     { id: 'summary', label: 'Summary reads as a list of duties', fix: 'Rewrite it around the role you want and the proof you have.', severity: 'medium' },
-    { id: 'format', label: 'Skills sit in a two-column table that parsers skip', fix: 'Move skills into a single plain line.', severity: 'medium' },
-    { id: 'dates', label: 'Dates use three different formats', fix: 'Use one format, month and year, throughout.', severity: 'low' },
+    { id: 'skills', label: 'Skills are soft traits a parser cannot match', fix: 'Replace "Teamwork" and "Communication" with the tools and methods the job lists.', severity: 'medium' },
   ],
 }
 
 export const resumeFunnelRewrite: ResumeRewrite = {
   scoreBefore: 54,
   scoreAfter: 91,
-  before: {
-    name: 'Darnell Smith',
-    headline: 'Customer Success Manager',
-    contact: 'Atlanta, GA · darnell.smith@example.com',
-    summary: 'Responsible for managing customer accounts and handling escalations. Team player with good communication skills who works well with others.',
-    roles: [
-      {
-        title: 'Customer Success Manager',
-        company: 'Brightline Health',
-        dates: 'Mar 2022 to present',
-        bullets: [
-          'Managed a portfolio of customer accounts',
-          'Handled escalations from customers',
-          'Worked with product team on feedback',
-        ],
-      },
-      {
-        title: 'Account Coordinator',
-        company: 'Parcelwise',
-        dates: '06/2019 - 02/2022',
-        bullets: [
-          'Onboarded new customers',
-          'Responsible for QBR decks',
-          'Helped reduce churn',
-        ],
-      },
+  document: {
+    id: 'resume-darnell-smith-csm',
+    candidateName: 'DARNELL SMITH',
+    email: 'darnell.smith@example.com',
+    location: 'Atlanta, GA',
+    linkedinUrl: 'linkedin.com/in/darnell-smith',
+    portfolioUrl: 'darnellsmith.com',
+    summary:
+      'Customer Success Manager responsible for managing customer accounts and handling escalations. Team player with good communication skills who works well with others and enjoys helping customers succeed.',
+    improvedSummary:
+      'Customer Success Manager who cut churn 18% across a $4.2M book of mid-market SaaS accounts. Trusted for stakeholder management from frontline users to the C-suite, and for turning escalations into renewals.',
+    atsScore: 54,
+    atsBreakdown: [
+      { label: 'Keyword match', score: 48 },
+      { label: 'Formatting', score: 84 },
+      { label: 'Section coverage', score: 70 },
+      { label: 'Quantified impact', score: 22 },
     ],
-    skills: ['Salesforce', 'Communication', 'Zendesk', 'Teamwork'],
-  },
-  after: {
-    name: 'Darnell Smith',
-    headline: 'Customer Success Manager, B2B SaaS',
-    contact: 'Atlanta, GA · darnell.smith@example.com',
-    summary: 'Customer Success Manager who cut churn 18% across a $4.2M book of mid-market accounts. Known for stakeholder management from frontline users to the C-suite, and for turning escalations into renewals.',
+    atsContext: 'The layout parses cleanly, but the content gives a screener little to match against the job description.',
+    atsStrengths: ['Standard section headings a parser can read', 'Every role has a company, location and dates'],
+    atsGaps: ['The strongest bullets carry no numbers', 'Key terms from the job description are missing', 'The summary lists duties rather than results'],
+    atsPrompt: 'Rewrite my summary around churn reduction and add results to my two most recent bullets.',
     roles: [
       {
-        title: 'Customer Success Manager',
         company: 'Brightline Health',
-        dates: 'Mar 2022 to present',
+        location: 'Atlanta, GA',
+        title: 'Customer Success Manager',
+        period: 'Mar 2022 - Present',
         bullets: [
-          'Grew net revenue retention from 97% to 112% across 38 mid-market accounts worth $4.2M ARR',
-          'Resolved 120+ executive escalations with a same-day plan, saving 9 at-risk renewals',
+          'Managed a portfolio of mid-market customer accounts',
+          'Handled escalations from customers and internal teams',
           'Ran a monthly voice-of-customer review with product that shipped 6 top-requested features',
+          'Built renewal playbooks for accounts with low product adoption',
         ],
       },
       {
-        title: 'Account Coordinator',
         company: 'Parcelwise',
-        dates: 'Jun 2019 to Feb 2022',
+        location: 'Atlanta, GA',
+        title: 'Account Coordinator',
+        period: 'Jun 2019 - Feb 2022',
         bullets: [
           'Onboarded 140 customers and cut time-to-first-value from 30 days to 12',
           'Built the QBR template adopted by all 11 account managers',
@@ -162,7 +152,19 @@ export const resumeFunnelRewrite: ResumeRewrite = {
         ],
       },
     ],
-    skills: ['Stakeholder management', 'Churn reduction', 'Salesforce', 'Gainsight', 'Zendesk', 'QBRs', 'Renewals'],
+    improvedFirstRoleBullets: [
+      'Grew net revenue retention from 97% to 112% across 38 mid-market accounts worth $4.2M ARR',
+      'Resolved 120+ executive escalations with a same-day plan, saving 9 at-risk renewals',
+    ],
+    education: [{ school: 'Georgia State University', degree: 'B.B.A., Marketing', year: '2019' }],
+    skills: ['Salesforce', 'Zendesk', 'Communication', 'Teamwork', 'Customer Service', 'Microsoft Office'],
+    improvedSkills: ['Stakeholder Management', 'Churn Reduction', 'Salesforce', 'Gainsight', 'Zendesk', 'QBRs', 'Renewals', 'Expansion Revenue', 'Customer Health Scoring', 'SQL'],
+    certifications: [{ name: 'Certified Customer Success Manager (CCSM)', issuer: 'SuccessHACKER', year: '2023' }],
+    projects: [{ name: 'Renewal Risk Dashboard', description: 'Gainsight health-score dashboard that flags accounts 90 days before renewal risk shows up in usage.', year: '2024' }],
+    languages: [
+      { language: 'English', proficiency: 'Native' },
+      { language: 'Spanish', proficiency: 'Professional' },
+    ],
   },
 }
 
