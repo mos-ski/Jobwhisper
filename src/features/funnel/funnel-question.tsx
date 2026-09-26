@@ -2,7 +2,7 @@ import { useEffect, useId, useState, type FormEvent, type KeyboardEvent as React
 import { Check } from 'lucide-react'
 
 import type { FunnelQuestion as FunnelQuestionData } from '@/contracts/funnel.draft'
-import { Button, cn } from '@/ui'
+import { Button, cn, Slider } from '@/ui'
 import { FunnelTitle } from './funnel-shell'
 
 export type FunnelQuestionProps = {
@@ -54,6 +54,15 @@ export function FunnelQuestion({ question, value, onChange, eyebrow, onAutoAdvan
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [question.id])
 
+  if (question.kind === 'range') {
+    return (
+      <div data-slot="funnel-question" data-kind="range" className="grid gap-8">
+        <FunnelTitle id={headingId} eyebrow={eyebrow}>{question.ask}</FunnelTitle>
+        <RangeAnswer min={question.min} max={question.max} step={question.step} defaultRange={question.defaultRange} value={value} onChange={onChange} />
+      </div>
+    )
+  }
+
   if (question.kind === 'text') {
     return (
       <div data-slot="funnel-question" data-kind="text" className="grid gap-8">
@@ -91,6 +100,58 @@ export function FunnelQuestion({ question, value, onChange, eyebrow, onAutoAdvan
               </label>
             ))}
       </fieldset>
+    </div>
+  )
+}
+
+function formatThousands(amount: number, max: number): string {
+  return `$${Math.round(amount / 1000)}k${amount >= max ? '+' : ''}`
+}
+
+function parseRange(value: string, fallback: readonly [number, number]): [number, number] {
+  const [low, high] = value.split('-').map(Number)
+  return low !== undefined && high !== undefined && Number.isFinite(low) && Number.isFinite(high) ? [low, high] : [fallback[0], fallback[1]]
+}
+
+type RangeAnswerProps = {
+  readonly min: number
+  readonly max: number
+  readonly step: number
+  readonly defaultRange: readonly [number, number]
+  readonly value: string
+  readonly onChange: (value: string) => void
+}
+
+function RangeAnswer({ min, max, step, defaultRange, value, onChange }: RangeAnswerProps) {
+  const [low, high] = parseRange(value, defaultRange)
+  const dollars = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+
+  // A slider always has an answer, so the default counts as one and Continue is ready straight away.
+  useEffect(() => {
+    if (!value) onChange(`${defaultRange[0]}-${defaultRange[1]}`)
+  }, [])
+
+  return (
+    <div className="grid gap-8">
+      <p className="text-center font-gowun text-4xl font-bold leading-none text-ink tabular-nums sm:text-5xl" aria-live="polite">
+        {formatThousands(low, max)} <span className="text-2xl font-normal text-ink-muted">to</span> {formatThousands(high, max)}
+      </p>
+      <Slider
+        value={[low, high]}
+        min={min}
+        max={max}
+        step={step}
+        onValueChange={(next) => {
+          const [nextLow, nextHigh] = next
+          if (nextLow !== undefined && nextHigh !== undefined) onChange(`${nextLow}-${nextHigh}`)
+        }}
+        thumbLabels={['Minimum salary', 'Maximum salary']}
+        formatValueText={(amount) => `${dollars.format(amount)}${amount >= max ? ' or more' : ''} a year`}
+        minLabel={formatThousands(min, max)}
+        maxLabel={formatThousands(max, max)}
+        className="px-2"
+      />
+      <p className="text-center text-sm text-ink-muted">Base salary a year, before bonus or equity.</p>
     </div>
   )
 }

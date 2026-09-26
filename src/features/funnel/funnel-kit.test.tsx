@@ -137,4 +137,16 @@ describe('FunnelQuestion', () => {
     expect(screen.getByRole('listbox', { hidden: true })).not.toBeVisible()
     expect(onClose).not.toHaveBeenCalled()
   })
+
+  it('asks salary as a two-handle range that starts answered', () => {
+    const onChange = vi.fn()
+    const salary: FunnelQuestionData = { id: 'salary', tab: 'Salary', ask: 'What base salary are you aiming for?', kind: 'range', min: 30000, max: 250000, step: 5000, defaultRange: [80000, 130000] }
+    const { rerender } = render(<FunnelQuestion question={salary} value="" onChange={onChange} />)
+
+    expect(onChange).toHaveBeenCalledWith('80000-130000')
+    rerender(<FunnelQuestion question={salary} value="80000-250000" onChange={onChange} />)
+    expect(screen.getByText('$250k+')).toBeInTheDocument()
+    expect(screen.getByRole('slider', { name: 'Minimum salary' })).toBeInTheDocument()
+    expect(screen.getByRole('slider', { name: 'Maximum salary' })).toHaveAttribute('aria-valuetext', '$250,000 or more a year')
+  })
 })

@@ -21,8 +21,16 @@ export type FunnelQuestion =
       /** Offered in a dropdown as the visitor types; the first few also show as one-click chips. */
       readonly suggestions?: readonly string[]
     })
+  | (FunnelQuestionBase & {
+      readonly kind: 'range'
+      /** Whole US dollars. The top of the scale reads as "and up". */
+      readonly min: number
+      readonly max: number
+      readonly step: number
+      readonly defaultRange: readonly [number, number]
+    })
 
-/** Keyed by `FunnelQuestion.id`. */
+/** Keyed by `FunnelQuestion.id`. A range answer is stored as `"<low>-<high>"` in whole dollars, e.g. `"80000-130000"`. */
 export type FunnelAnswers = Readonly<Record<string, string>>
 
 export type FunnelTrialOffer = {
