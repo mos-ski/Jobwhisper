@@ -72,7 +72,6 @@ export function FunnelTrialView(props: FunnelTrialViewProps) {
         <FunnelQuestion
           key={question.id}
           question={question}
-          eyebrow={`Question ${questionIndex + 1} of ${questions.length}`}
           value={answers[question.id] ?? ''}
           onChange={(value) => props.onAnswer(question.id, value)}
           onAutoAdvance={online ? props.onContinue : undefined}
