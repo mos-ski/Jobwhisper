@@ -33,7 +33,7 @@ describe('/v3/try/resume', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Score my resume' }))
     act(() => { vi.advanceTimersByTime(1700) })
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Your ATS score')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Likely filtered out')
     fireEvent.click(screen.getByRole('button', { name: /See it fixed/ }))
     fireEvent.click(screen.getByRole('button', { name: 'Download my resume' }))
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Create a free account to download it')

@@ -113,3 +113,13 @@ Pages expose callbacks named for the tracking plan events. The production team a
   `data-theme="light"` on its root and `index.html` skips the theme bootstrap on `/try/` paths, so the
   web app's dark preference never reaches the public site.
 - The full test suite and production build pass.
+
+## Redesign (2026-09-26)
+
+The first build read as an in-app settings form rather than a continuation of the landing page. Approved changes, all in the shared kit so the three funnels move together:
+
+- **Brand:** white page (`bg-surface`), the landing page's dark pill as the header (`bg-surface-inverse` / `text-surface`), a segmented progress line, one centred column, and larger centred Gowun headlines with a short eyebrow.
+- **Quiz:** answer tiles with letter keys (A, B, C…) that also work from the keyboard; choosing an answer moves on after a short pause (online only), Enter submits a typed answer, Back and Continue remain. The working screen ticks checks off one at a time.
+- **Moments:** ATS score as a ring gauge with the verdict, issues as a numbered list; before and after as a paper sheet on a dark stage with a live score chip; matches with a summary strip and rows carrying a match bar; the free week as a ticket-style pass; sign-up gates lead with what is waiting.
+- **Mobile:** full-width tiles, pinned primary action, stepped-down headline sizes, compact header pill.
+- **Light only:** by request, the funnels do not follow dark mode; the shell pins `data-theme="light"`, matching the landing page.

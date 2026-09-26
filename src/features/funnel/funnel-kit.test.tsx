@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
@@ -21,7 +21,7 @@ describe('FunnelShell', () => {
   it('names the step, reports progress, and closes on Escape or the close button', async () => {
     const user = userEvent.setup()
     const onClose = vi.fn()
-    render(<FunnelShell label="Timing" progress={0.25} onClose={onClose}><p>Body</p></FunnelShell>)
+    render(<FunnelShell label="Timing" stepCount={4} currentStep={1} onClose={onClose}><p>Body</p></FunnelShell>)
 
     expect(screen.getByText('Timing')).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'Setup progress' })).toHaveAttribute('aria-valuenow', '25')
@@ -70,5 +70,32 @@ describe('FunnelQuestion', () => {
 
     await user.type(screen.getByRole('textbox', { name: text.ask }), 'D')
     expect(onChange).toHaveBeenCalledWith('D')
+  })
+
+  it('picks an answer from its letter key', () => {
+    const onChange = vi.fn()
+    render(<FunnelQuestion question={options} value="" onChange={onChange} />)
+    fireEvent.keyDown(window, { key: 'b' })
+    expect(onChange).toHaveBeenCalledWith('Within a month')
+  })
+
+  it('moves on a moment after a choice, and not at all without the callback', () => {
+    vi.useFakeTimers()
+    const onAutoAdvance = vi.fn()
+    const { unmount } = render(<FunnelQuestion question={options} value="" onChange={() => {}} onAutoAdvance={onAutoAdvance} />)
+    fireEvent.click(screen.getByRole('radio', { name: /Right away/ }))
+    expect(onAutoAdvance).not.toHaveBeenCalled()
+    act(() => { vi.advanceTimersByTime(400) })
+    expect(onAutoAdvance).toHaveBeenCalledTimes(1)
+    unmount()
+    vi.useRealTimers()
+  })
+
+  it('submits a typed answer with Enter', () => {
+    const onAutoAdvance = vi.fn()
+    const text: FunnelQuestionData = { id: 'title', tab: 'Title', ask: 'What job title are you going for?', kind: 'text', placeholder: '' }
+    render(<FunnelQuestion question={text} value="Designer" onChange={() => {}} onAutoAdvance={onAutoAdvance} />)
+    fireEvent.submit(screen.getByRole('textbox', { name: text.ask }))
+    expect(onAutoAdvance).toHaveBeenCalled()
   })
 })
