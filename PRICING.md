@@ -97,7 +97,9 @@ Auto Apply is the only row with a number in it. That is deliberate: it is the on
 
 **Why the cap exists.** Live Copilot costs real money per minute and Auto Apply costs real money per application, so "unlimited" without any bound prices the plan off one account at full tilt. The caps sit well above a normal interview day — a typical session is 45 minutes, so Pro's 2 hours covers a long final round with room over — which is what makes this fair use rather than a hidden allowance.
 
-**It is disclosed, not buried.** The pricing page says it under the plan cards and answers it in three FAQ entries; the product warns before the wall (`nearing-limit`), not at it. Selling "unlimited" and enforcing an undisclosed cap is the one version of this that is not defensible, so the disclosure is part of the feature, not decoration.
+**Where it is said — decided 2026-09-26: not on the public pricing page.** The caps are explained in the product, where someone actually meets them: the meter shows the stretch while it runs, and the warning fires before the wall (`nearing-limit`), never at it. The public pricing page sells "unlimited" and stays quiet on the cap; the in-app billing page's *How it works* explains it, and the FAQ entries drafted for the pricing page were pulled.
+
+**That leaves an exposure worth naming.** A cap a subscriber first learns about mid-interview is a refund request and a bad review, whatever the product did to warn them thirty minutes earlier. Two cheap ways to close it without putting numbers on the pricing page: state it in the Terms of Service, and say it once at checkout or first run. Neither costs the page its "unlimited" headline. Until one exists, the in-product warning is the only notice a subscriber gets.
 
 **Fair use is also the bound Premium's uncapped Auto Apply was missing** (open thread 2): 100 applications a run with a 3-hour rest puts a ceiling of roughly 800 a day on the tail case, without putting a number on the card.
 
