@@ -34,7 +34,7 @@ describe('FunnelAutoApplyView', () => {
     renderView()
     expect(screen.getByText('1 of 10')).toBeInTheDocument()
     expect(screen.getByText(/Free to match\. Sign up to apply\./)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Continue' })).toBeDisabled()
+    expect(screen.queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument()
   })
 
   it('asks the matching questions one per page', () => {

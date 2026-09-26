@@ -14,7 +14,6 @@ function renderView(overrides: Partial<FunnelResumeViewProps> = {}) {
     rewrite: resumeFunnelRewrite,
     onFile: vi.fn(),
     onJobDescriptionChange: vi.fn(),
-    onScore: vi.fn(),
     onBack: vi.fn(),
     onClose: vi.fn(),
     onShowRewrite: vi.fn(),
@@ -29,10 +28,10 @@ function renderView(overrides: Partial<FunnelResumeViewProps> = {}) {
 }
 
 describe('FunnelResumeView', () => {
-  it('says what is free before anything is uploaded, and waits for a file', () => {
+  it('says what is free before anything is uploaded, with no button to press', () => {
     renderView()
     expect(screen.getByText(/Free to score\. Create an account to download\./)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Score my resume' })).toBeDisabled()
+    expect(screen.queryByRole('button', { name: /Score/ })).not.toBeInTheDocument()
   })
 
   it('hands the chosen file over and states why a file was refused', () => {
@@ -41,13 +40,6 @@ describe('FunnelResumeView', () => {
     fireEvent.change(screen.getByLabelText(/Your resume/), { target: { files: [file] } })
     expect(props.onFile).toHaveBeenCalledWith(file)
     expect(screen.getByRole('alert')).toHaveTextContent('over 5 MB')
-  })
-
-  it('scores once a file is in', async () => {
-    const user = userEvent.setup()
-    const props = renderView({ fileName: 'darnell-smith-resume.pdf' })
-    await user.click(screen.getByRole('button', { name: 'Score my resume' }))
-    expect(props.onScore).toHaveBeenCalled()
   })
 
   it('shows the score in words as well as a number, with every issue and its impact', () => {

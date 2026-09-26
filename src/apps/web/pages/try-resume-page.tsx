@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import type { Session } from '@/contracts/identity'
@@ -7,7 +7,7 @@ import { resumeFunnelReport, resumeFunnelRewrite } from '@/mocks/funnel'
 import { anonymousSession, candidateSession } from '@/mocks/sessions'
 import { resumeUploadError, useOnline } from '../funnel-page-state'
 
-const STEPS: readonly FunnelResumeStep[] = ['upload', 'working', 'score', 'compare', 'gate', 'done']
+const STEPS: readonly FunnelResumeStep[] = ['upload', 'score', 'compare', 'gate', 'done']
 // Review-only switches, carried through every step so a reviewer can walk a whole variant.
 const REVIEW_PARAMS = ['session', 'offline'] as const
 
@@ -38,13 +38,6 @@ export function TryResumePage() {
     setParams(search, { replace })
   }
 
-  useEffect(() => {
-    if (step !== 'working') return
-    // Replaced rather than pushed, so Back from the score returns to the upload, not to a spinner.
-    const timer = window.setTimeout(() => go('score', true), 1600)
-    return () => window.clearTimeout(timer)
-  }, [step])
-
   function signedUp() {
     setSession(candidateSession)
     go('done')
@@ -63,9 +56,9 @@ export function TryResumePage() {
         const error = resumeUploadError(file)
         setUploadError(error)
         setFileName(error ? undefined : file.name)
+        if (!error && online) go('score')
       }}
       onJobDescriptionChange={setJobDescription}
-      onScore={() => go('working')}
       onBack={() => navigate('/')}
       onClose={() => navigate('/')}
       onShowRewrite={() => go('compare')}

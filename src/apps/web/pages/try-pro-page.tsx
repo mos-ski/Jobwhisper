@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import type { FunnelAnswers, FunnelCardStatus } from '@/contracts/funnel.draft'
@@ -8,7 +8,7 @@ import { trialFunnelOffer, trialFunnelQuestions } from '@/mocks/funnel'
 import { anonymousSession, candidateSession } from '@/mocks/sessions'
 import { useOnline } from '../funnel-page-state'
 
-const STEPS: readonly FunnelTrialStep[] = ['quiz', 'working', 'reward', 'account', 'card', 'done']
+const STEPS: readonly FunnelTrialStep[] = ['quiz', 'reward', 'account', 'card', 'done']
 // Review-only switches, carried through every step so a reviewer can walk a whole variant.
 const REVIEW_PARAMS = ['session', 'offline', 'card'] as const
 
@@ -47,26 +47,6 @@ export function TryProPage() {
     setParams(search, { replace })
   }
 
-  useEffect(() => {
-    if (step !== 'working') return
-    // Replaced rather than pushed, so Back from the reward returns to the quiz, not to a spinner.
-    const timer = window.setTimeout(() => go('reward', 0, true), 1400)
-    return () => window.clearTimeout(timer)
-  }, [step])
-
-  useEffect(() => {
-    if (cardStatus !== 'processing') return
-    const timer = window.setTimeout(() => {
-      if (declines) {
-        setCardStatus('declined')
-        return
-      }
-      setCardStatus('idle')
-      go('done')
-    }, 1200)
-    return () => window.clearTimeout(timer)
-  }, [cardStatus])
-
   return (
     <FunnelTrialView
       step={step}
@@ -81,7 +61,7 @@ export function TryProPage() {
       resumeName={resumeName}
       onAnswer={(id, value) => setAnswers((previous) => ({ ...previous, [id]: value }))}
       onBack={() => (questionIndex > 0 ? go('quiz', questionIndex - 1) : navigate('/'))}
-      onContinue={() => (questionIndex < trialFunnelQuestions.length - 1 ? go('quiz', questionIndex + 1) : go('working'))}
+      onContinue={() => (questionIndex < trialFunnelQuestions.length - 1 ? go('quiz', questionIndex + 1) : go('reward'))}
       onClose={() => navigate('/')}
       onClaim={() => go(session.status === 'authenticated' ? 'card' : 'account')}
       onCreateAccount={() => {
@@ -92,7 +72,11 @@ export function TryProPage() {
         setSession(candidateSession)
         go('card')
       }}
-      onSubmitCard={() => setCardStatus('processing')}
+      onSubmitCard={() => {
+        if (declines) return setCardStatus('declined')
+        setCardStatus('idle')
+        go('done')
+      }}
       onStart={() => navigate('/v3/app')}
     />
   )

@@ -24,78 +24,18 @@ const marketingRoutes = [
 const tryFunnelRoutes = [
   {
     href: '/v3/try/pro',
-    label: 'Pro week funnel',
-    description: 'Seven questions, then a free week of Pro unlocked and started with a card: $0 today, $99 a month after.',
-  },
-  {
-    href: '/v3/try/pro?step=reward&session=signed-in',
-    label: 'Pro week funnel: signed in',
-    description: 'Reward reveal for an existing account; Claim goes straight to the card step.',
-  },
-  {
-    href: '/v3/try/pro?offline=1',
-    label: 'Pro week funnel: offline',
-    description: 'Offline notice; answers are kept and Continue waits for the connection.',
-  },
-  {
-    href: '/v3/try/pro?step=card&session=signed-in&card=declined',
-    label: 'Pro week funnel: card declined',
-    description: 'Card step with the bank decline explained and the form ready for another card.',
-  },
-  {
-    href: '/v3/try/pro?step=done&session=signed-in',
-    label: 'Pro week funnel: started',
-    description: 'Confirmation of what Pro includes, the free-until date, and how to cancel.',
+    label: 'Free week of Pro',
+    description: 'The landing-page quiz, ending in a free week of Pro started with a card.',
   },
   {
     href: '/v3/try/resume',
-    label: 'Resume funnel',
-    description: 'Upload a resume, get an ATS score with named issues, drag a before and after, then sign up to download.',
-  },
-  {
-    href: '/v3/try/resume?step=score',
-    label: 'Resume funnel: ATS score',
-    description: 'Score out of 100 in words and numbers, with five issues ranked by impact.',
-  },
-  {
-    href: '/v3/try/resume?step=compare',
-    label: 'Resume funnel: before and after',
-    description: 'Drag or arrow-key slider revealing the Jobwhisper version while the score climbs from 54 to 91.',
-  },
-  {
-    href: '/v3/try/resume?step=gate',
-    label: 'Resume funnel: download gate',
-    description: 'Sign-up gate that says the tailored resume is saved and waiting.',
-  },
-  {
-    href: '/v3/try/resume?upload=error',
-    label: 'Resume funnel: upload refused',
-    description: 'Unsupported file with the fix stated and scoring held.',
+    label: 'Resume builder',
+    description: 'Upload a resume, see its ATS score and the before and after, then sign up to download.',
   },
   {
     href: '/v3/try/auto-apply',
-    label: 'Auto Apply funnel',
-    description: 'Resume plus nine matching questions, one per page, then matched jobs you can only apply to after signing up.',
-  },
-  {
-    href: '/v3/try/auto-apply?step=matches',
-    label: 'Auto Apply funnel: matches',
-    description: 'Eight matched jobs with match scores, a detail view with reasons, and Apply to all.',
-  },
-  {
-    href: '/v3/try/auto-apply?step=matches&job=lattice-csm',
-    label: 'Auto Apply funnel: job detail',
-    description: 'One matched job with why it matched and Apply to this job.',
-  },
-  {
-    href: '/v3/try/auto-apply?step=gate&apply=all',
-    label: 'Auto Apply funnel: apply gate',
-    description: 'Sign-up gate naming the matches the agent will apply to.',
-  },
-  {
-    href: '/v3/try/auto-apply?step=matches&matches=none',
-    label: 'Auto Apply funnel: no matches',
-    description: 'Empty result with the answers to widen.',
+    label: 'Auto Apply',
+    description: 'Resume plus nine questions, then matched jobs you sign up to apply to.',
   },
 ] as const
 

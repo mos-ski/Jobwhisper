@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import type { FunnelAnswers } from '@/contracts/funnel.draft'
@@ -8,7 +8,7 @@ import { autoApplyFunnelMatches, autoApplyFunnelQuestions } from '@/mocks/funnel
 import { anonymousSession, candidateSession } from '@/mocks/sessions'
 import { resumeUploadError, useOnline } from '../funnel-page-state'
 
-const STEPS: readonly FunnelAutoApplyStep[] = ['upload', 'quiz', 'working', 'matches', 'gate']
+const STEPS: readonly FunnelAutoApplyStep[] = ['upload', 'quiz', 'matches', 'gate']
 // Review-only switches, carried through every step so a reviewer can walk a whole variant.
 const REVIEW_PARAMS = ['session', 'offline', 'matches'] as const
 const LAST_QUESTION = autoApplyFunnelQuestions.length - 1
@@ -41,13 +41,6 @@ export function TryAutoApplyPage() {
     setParams(search, { replace })
   }
 
-  useEffect(() => {
-    if (step !== 'working') return
-    // Replaced rather than pushed, so Back from the matches returns to the last question.
-    const timer = window.setTimeout(() => go('matches', {}, true), 1800)
-    return () => window.clearTimeout(timer)
-  }, [step])
-
   function apply(target: string) {
     // Signed-in visitors skip the gate; the real flow picks their answers up from the account.
     if (session.status === 'authenticated') return navigate('/v3/auto-apply/review')
@@ -70,6 +63,7 @@ export function TryAutoApplyPage() {
         const error = resumeUploadError(file)
         setUploadError(error)
         setFileName(error ? undefined : file.name)
+        if (!error && online) go('quiz', { q: '0' })
       }}
       onAnswer={(id, value) => setAnswers((previous) => ({ ...previous, [id]: value }))}
       onBack={() => {
@@ -80,7 +74,7 @@ export function TryAutoApplyPage() {
       onContinue={() => {
         if (step === 'upload') return go('quiz', { q: '0' })
         if (questionIndex < LAST_QUESTION) return go('quiz', { q: String(questionIndex + 1) })
-        go('working')
+        go('matches')
       }}
       onClose={() => navigate('/')}
       onSelectJob={(jobId) => go('matches', jobId ? { job: jobId } : {})}

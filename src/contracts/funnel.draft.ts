@@ -31,7 +31,7 @@ export type FunnelTrialOffer = {
   readonly firstChargeOn: string
 }
 
-export type FunnelCardStatus = 'idle' | 'processing' | 'declined'
+export type FunnelCardStatus = 'idle' | 'declined'
 
 export type AtsIssueSeverity = 'high' | 'medium' | 'low'
 
