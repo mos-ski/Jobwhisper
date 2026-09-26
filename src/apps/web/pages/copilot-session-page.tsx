@@ -36,6 +36,8 @@ export function CopilotSessionPage() {
   const session = modeOverride ? { ...copilotLiveSession, mode: modeOverride, title: SESSION_TITLE[modeOverride] } : copilotLiveSession
   const state = params.get('state')
   const fairUse = state !== null && state in FAIR_USE_STATES ? FAIR_USE_STATES[state as keyof typeof FAIR_USE_STATES] : undefined
+  // The balance drains in real time, so the notices it raises are otherwise a 40-second wait.
+  const balanceState = state === 'low-balance' ? 'low' : state === 'out-of-balance' ? 'empty' : undefined
 
   return (
     <CopilotLiveView
@@ -47,6 +49,7 @@ export function CopilotSessionPage() {
       hasActivePlan={hasActivePlan}
       initialAutoAnswer={copilotSetup.autoAnswer}
       fairUse={fairUse}
+      balanceState={balanceState}
     />
   )
 }

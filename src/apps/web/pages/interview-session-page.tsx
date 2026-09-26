@@ -9,14 +9,18 @@ const hasActivePlan = billingPlans.some((plan) => plan.current)
 
 export function InterviewSessionPage() {
   const [params] = useSearchParams()
+  const state = params.get('state')
+  // The balance drains in real time, so the notices it raises are otherwise a 40-second wait.
+  const balanceState = state === 'low-balance' ? 'low' : state === 'out-of-balance' ? 'empty' : undefined
 
   return (
     <InterviewSessionView
       voiceHref="/v3/interview-prep/voice"
       completeHref="/v3/interview-prep/complete"
       session={interviewLiveSession}
-      isLoading={params.get('state') === 'loading'}
+      isLoading={state === 'loading'}
       hasActivePlan={hasActivePlan}
+      balanceState={balanceState}
     />
   )
 }

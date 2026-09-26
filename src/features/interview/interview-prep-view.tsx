@@ -13,6 +13,7 @@ import {
   PhoneOff,
   Play,
   Settings,
+  TriangleAlert,
   Video,
   VideoOff,
   Volume2,
@@ -35,7 +36,7 @@ import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
 import { AppShell } from '@/features/dashboard/app-nav'
 import { KnowledgeBasePickerDialog } from '@/features/documents/knowledge-base-picker-dialog'
 import { centsToCredits, creditsToCents } from '@/lib/credits'
-import { AiSuggestionAction, Avatar, Badge, Checkbox, cn, DataTable, Dialog, DialogPopup, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, Tooltip, TooltipContent, TooltipTrigger, UploadedFileDialog } from '@/ui'
+import { AiSuggestionAction, Avatar, Badge, Checkbox, cn, DataTable, Dialog, DialogPopup, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, NoticeBar, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, Tooltip, TooltipContent, TooltipTrigger, UploadedFileDialog } from '@/ui'
 import { useCameraStream } from '@/hooks/useCameraStream'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 import { useTypewriter } from '@/hooks/useTypewriter'
@@ -70,6 +71,11 @@ export type InterviewSessionViewProps = {
   readonly isLoading?: boolean
   /** Interview Prep credit top-ups require an active Ace Your Interview plan. See PRICING.md §1, §4. */
   readonly hasActivePlan?: boolean
+  /**
+   * Pins the balance so the low and out-of-balance notices can be seen without waiting for a
+   * live session to drain into them. Unset, the balance runs down as it always did.
+   */
+  readonly balanceState?: 'low' | 'empty'
 }
 
 export type InterviewCompleteViewProps = {
@@ -817,13 +823,17 @@ function InterviewLiveSettingsModal({
 
 const SESSION_RATE_CENTS_PER_MIN = 80
 const SESSION_START_BALANCE_CENTS = 60
+
+/** Notices float over the session: a bar in the flow moves the panels mid-interview. */
+const mobileNoticePosition = 'fixed inset-x-0 top-20 z-20 mx-auto max-w-[calc(100vw-2rem)]'
+const desktopNoticePosition = 'absolute inset-x-0 top-28 z-20 mx-auto max-w-[calc(100vw-2rem)]'
 const TOPUP_MINIMUM_DOLLARS = 10
 const TOPUP_CENTS_PER_CREDIT = 40
 // $0.40/credit (TOPUP_CENTS_PER_CREDIT) only divides evenly into whole credits at multiples
 // of $0.40 — $25 would be 62.5 credits, so presets stick to $10/$20/$50.
 const TOPUP_PRESET_DOLLARS = [10, 20, 50]
 
-export function InterviewSessionView({ voiceHref, completeHref, session, isLoading = false, hasActivePlan = true }: InterviewSessionViewProps) {
+export function InterviewSessionView({ voiceHref, completeHref, session, isLoading = false, hasActivePlan = true, balanceState }: InterviewSessionViewProps) {
   const [phase, setPhase] = useState<LiveSessionPhase>('ready')
   const [questionIndex, setQuestionIndex] = useState(0)
   const [transcript, setTranscript] = useState<readonly LiveTranscriptTurn[]>([])
@@ -836,9 +846,12 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
   const [isMuted, setIsMuted] = useState(false)
   const [videoEnabled, setVideoEnabled] = useState(true)
   const [isMobile, setIsMobile] = useState(() => window.matchMedia('(max-width: 1279px)').matches)
-  const [balanceCents, setBalanceCents] = useState(SESSION_START_BALANCE_CENTS)
-  const [sessionPaused, setSessionPaused] = useState(false)
+  const [balanceCents, setBalanceCents] = useState(
+    balanceState === 'low' ? SESSION_START_BALANCE_CENTS * 0.2 : balanceState === 'empty' ? 0 : SESSION_START_BALANCE_CENTS,
+  )
+  const [sessionPaused, setSessionPaused] = useState(balanceState === 'empty')
   const [topUpOpen, setTopUpOpen] = useState(false)
+  const [noticeDismissed, setNoticeDismissed] = useState(false)
   const chatRef = useRef<HTMLDivElement>(null)
   const phaseRef = useRef(phase)
   const questionIndexRef = useRef(questionIndex)
@@ -848,7 +861,7 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
   pausedRef.current = sessionPaused
 
   useEffect(() => {
-    if (phase === 'ready' || sessionPaused) return
+    if (phase === 'ready' || sessionPaused || balanceState !== undefined) return
     const id = window.setInterval(() => {
       const perTickCents = SESSION_RATE_CENTS_PER_MIN / 60
       setBalanceCents((prev) => {
@@ -861,7 +874,7 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
       })
     }, 1000)
     return () => window.clearInterval(id)
-  }, [phase, sessionPaused, hasActivePlan])
+  }, [phase, sessionPaused, hasActivePlan, balanceState])
 
   const lowBalance = balanceCents > 0 && balanceCents <= SESSION_START_BALANCE_CENTS * 0.2
 
@@ -1019,33 +1032,27 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
 
         <DraggableCandidatePiP name={session.candidate.name} imageSrc={session.candidate.imageSrc} videoEnabled={videoEnabled} />
 
-        {lowBalance && !sessionPaused ? (
-          <div role="status" className="fixed inset-x-4 top-20 z-20 flex items-center justify-between gap-3 rounded-lg bg-warning-surface px-4 py-2.5 text-sm text-warning shadow-panel">
-            <span>Running low on balance</span>
-            {hasActivePlan ? (
-              <button type="button" onClick={(event) => { event.stopPropagation(); setTopUpOpen(true) }} className="shrink-0 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-                Add funds
-              </button>
-            ) : (
-              <a href="/v3/billing/plans" onClick={(event) => event.stopPropagation()} className="shrink-0 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-                View plans
-              </a>
-            )}
-          </div>
+        {lowBalance && !sessionPaused && !noticeDismissed ? (
+          <NoticeBar
+            tone="warning"
+            icon={<TriangleAlert className="size-4" />}
+            className={mobileNoticePosition}
+            action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
+            onDismiss={() => setNoticeDismissed(true)}
+            dismissLabel="Dismiss the low balance notice"
+          >
+            Running low on balance
+          </NoticeBar>
         ) : null}
         {sessionPaused ? (
-          <div role="status" className="fixed inset-x-4 top-20 z-20 flex items-center justify-between gap-3 rounded-lg bg-danger px-4 py-2.5 text-sm font-semibold text-on-danger shadow-panel">
-            <span>Session paused</span>
-            {hasActivePlan ? (
-              <button type="button" onClick={(event) => { event.stopPropagation(); setTopUpOpen(true) }} className="shrink-0 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-                Add funds
-              </button>
-            ) : (
-              <a href="/v3/billing/plans" onClick={(event) => event.stopPropagation()} className="shrink-0 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-                View plans
-              </a>
-            )}
-          </div>
+          <NoticeBar
+            tone="danger"
+            icon={<TriangleAlert className="size-4" />}
+            className={mobileNoticePosition}
+            action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
+          >
+            Session paused
+          </NoticeBar>
         ) : null}
 
         <div className="fixed inset-x-0 bottom-0 z-20 flex items-center justify-center gap-4 bg-gradient-to-t from-black/25 to-transparent px-6 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-10">
@@ -1126,7 +1133,7 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
   }
 
   return (
-    <main className="flex h-screen flex-col overflow-hidden bg-[var(--lf-live-canvas)] text-brand-bar-text">
+    <main className="relative flex h-screen flex-col overflow-hidden bg-[var(--lf-live-canvas)] text-brand-bar-text">
       <header className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-[var(--lf-live-border)] bg-[var(--lf-live-header)] px-5 py-3">
         <div className="flex min-w-0 items-center gap-3">
           <a href={voiceHref} aria-label="Back to interviewer voices" className="grid size-7 shrink-0 place-items-center rounded-soft text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
@@ -1152,33 +1159,27 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
           Settings
         </button>
       </div>
-      {lowBalance && !sessionPaused ? (
-        <div role="status" className="flex shrink-0 items-center justify-between gap-3 border-b border-warning bg-warning-surface px-5 py-2 text-sm text-warning">
-          <span>Running low on balance.</span>
-          {hasActivePlan ? (
-            <button type="button" onClick={() => setTopUpOpen(true)} className="shrink-0 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-              Add funds
-            </button>
-          ) : (
-            <a href="/v3/billing/plans" className="shrink-0 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-              View plans
-            </a>
-          )}
-        </div>
+      {lowBalance && !sessionPaused && !noticeDismissed ? (
+        <NoticeBar
+          tone="warning"
+          icon={<TriangleAlert className="size-4" />}
+          className={desktopNoticePosition}
+          action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
+          onDismiss={() => setNoticeDismissed(true)}
+          dismissLabel="Dismiss the low balance notice"
+        >
+          Running low on balance
+        </NoticeBar>
       ) : null}
       {sessionPaused ? (
-        <div role="status" className="flex shrink-0 items-center justify-between gap-3 border-b border-danger bg-danger px-5 py-2 text-sm font-semibold text-on-danger">
-          <span>Session paused, you&apos;re out of balance.</span>
-          {hasActivePlan ? (
-            <button type="button" onClick={() => setTopUpOpen(true)} className="shrink-0 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-              Add funds to continue
-            </button>
-          ) : (
-            <a href="/v3/billing/plans" className="shrink-0 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-              View plans
-            </a>
-          )}
-        </div>
+        <NoticeBar
+          tone="danger"
+          icon={<TriangleAlert className="size-4" />}
+          className={desktopNoticePosition}
+          action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
+        >
+          Session paused, you&apos;re out of balance
+        </NoticeBar>
       ) : null}
       <section className="flex min-h-0 flex-1 flex-col gap-3 p-3 xl:flex-row">
         <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-panel border border-[var(--lf-live-border)] bg-[var(--lf-live-panel)]">

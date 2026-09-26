@@ -317,6 +317,16 @@ const appRoutes = [
     description: 'Skeleton state for the live simulator, chat panel, media cards, and controls.',
   },
   {
+    href: '/v3/interview-prep/session?state=low-balance',
+    label: 'Interview Prep low balance',
+    description: 'Compact warning notice over the session, with Add funds beside it. No waiting for the balance to drain.',
+  },
+  {
+    href: '/v3/interview-prep/session?state=out-of-balance',
+    label: 'Interview Prep out of balance',
+    description: 'Session paused notice in the danger tone, pinned so it can be reviewed on demand.',
+  },
+  {
     href: '/v3/interview-prep/complete',
     label: 'Interview complete',
     description: 'Completion confirmation and report handoff.',
@@ -375,6 +385,16 @@ const appRoutes = [
     href: '/v3/interview-copilot/session?state=loading',
     label: 'Copilot live loading',
     description: 'Skeleton state for the live response panel, screen preview, AI prompts, and composer.',
+  },
+  {
+    href: '/v3/interview-copilot/session?state=low-balance',
+    label: 'Copilot low balance',
+    description: 'Compact warning notice over the live session, with Add funds beside it and a dismiss.',
+  },
+  {
+    href: '/v3/interview-copilot/session?state=out-of-balance',
+    label: 'Copilot out of balance',
+    description: 'Session paused notice in the danger tone, pinned so it can be reviewed without waiting.',
   },
   {
     href: '/v3/interview-copilot/session?state=fair-use-nearing',
