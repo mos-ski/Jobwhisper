@@ -7,9 +7,8 @@ import { Button, FormField } from '@/ui'
 import { FunnelGate } from './funnel-gate'
 import { FunnelQuestion, FunnelQuestionFooter } from './funnel-question'
 import { FunnelOfflineNotice, FunnelShell, FunnelTitle } from './funnel-shell'
-import { FunnelWorking } from './funnel-working'
 
-export type FunnelTrialStep = 'quiz' | 'working' | 'reward' | 'account' | 'card' | 'done'
+export type FunnelTrialStep = 'quiz' | 'reward' | 'account' | 'card' | 'done'
 
 export type FunnelTrialViewProps = {
   readonly step: FunnelTrialStep
@@ -36,14 +35,11 @@ export type FunnelTrialViewProps = {
 }
 
 const STEP_LABELS: Record<Exclude<FunnelTrialStep, 'quiz'>, string> = {
-  working: 'Setting up',
   reward: 'Your reward',
   account: 'Your account',
   card: 'Start your week',
   done: 'All set',
 }
-
-const WORKING_CHECKS = ['Reading your answers', 'Matching your goal to a plan', 'Setting up your workspace'] as const
 
 function formatDate(iso: string): string {
   return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T00:00:00Z`))
@@ -51,7 +47,7 @@ function formatDate(iso: string): string {
 
 function stepFor(step: FunnelTrialStep, questionIndex: number, total: number): number {
   if (step === 'quiz') return questionIndex + 1
-  if (step === 'working' || step === 'reward') return total + 1
+  if (step === 'reward') return total + 1
   if (step === 'account' || step === 'card') return total + 2
   return total + 3
 }
@@ -70,7 +66,7 @@ export function FunnelTrialView(props: FunnelTrialViewProps) {
       currentStep={stepFor(step, questionIndex, questions.length)}
       onClose={onClose}
       notice={online ? null : <FunnelOfflineNotice />}
-      footer={step === 'quiz' && question ? <FunnelQuestionFooter position={questionIndex} total={questions.length} canContinue={online && (answers[question.id] ?? '').trim().length > 0} onBack={props.onBack} onContinue={props.onContinue} /> : undefined}
+      footer={step === 'quiz' && question ? <FunnelQuestionFooter position={questionIndex} total={questions.length} canContinue={online && (answers[question.id] ?? '').trim().length > 0} showContinue={question.kind === 'text'} onBack={props.onBack} onContinue={props.onContinue} /> : undefined}
     >
       {step === 'quiz' && question ? (
         <FunnelQuestion
@@ -82,7 +78,6 @@ export function FunnelTrialView(props: FunnelTrialViewProps) {
           onAutoAdvance={online ? props.onContinue : undefined}
         />
       ) : null}
-      {step === 'working' ? <FunnelWorking title="Putting your setup together." checks={WORKING_CHECKS} /> : null}
       {step === 'reward' ? <RewardStep {...props} /> : null}
       {step === 'account' ? <AccountStep {...props} /> : null}
       {step === 'card' ? <CardStep {...props} /> : null}
@@ -173,12 +168,11 @@ function CardStep({ offer, online, cardStatus, cardError, onSubmitCard }: Funnel
 
   const digits = number.replace(/\D/g, '')
   const complete = name.trim().length > 0 && digits.length >= 13 && digits.length <= 19 && /^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry.trim()) && /^\d{3,4}$/.test(cvc.trim())
-  const processing = cardStatus === 'processing'
   const chargeDate = formatDate(offer.firstChargeOn)
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (complete && online && !processing) onSubmitCard()
+    if (complete && online) onSubmitCard()
   }
 
   return (
@@ -216,7 +210,7 @@ function CardStep({ offer, online, cardStatus, cardError, onSubmitCard }: Funnel
           <FormField id="funnel-card-expiry" label="Expiry (MM/YY)" autoComplete="cc-exp" inputMode="numeric" placeholder="MM/YY" value={expiry} onChange={(event) => setExpiry(event.target.value)} />
           <FormField id="funnel-card-cvc" label="Security code" autoComplete="cc-csc" inputMode="numeric" value={cvc} onChange={(event) => setCvc(event.target.value)} />
         </div>
-        <Button type="submit" size="lg" className="min-h-12 text-base" loading={processing} disabled={!complete || !online || processing}>
+        <Button type="submit" size="lg" className="min-h-12 text-base" disabled={!complete || !online}>
           Start my free week
         </Button>
         <p className="flex items-start justify-center gap-2 text-center text-sm leading-6 text-ink-muted">

@@ -1,6 +1,5 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { vi } from 'vitest'
 
 import { WebRoutes } from './routes'
 
@@ -12,26 +11,19 @@ function renderAt(path: string) {
   )
 }
 
-afterEach(() => {
-  vi.useRealTimers()
-})
-
 describe('/v3/try/resume', () => {
   it('refuses a file it cannot read and says how to fix it', () => {
     renderAt('/v3/try/resume')
     const image = new File(['x'], 'headshot.png', { type: 'image/png' })
     fireEvent.change(screen.getByLabelText(/Your resume/), { target: { files: [image] } })
     expect(screen.getByRole('alert')).toHaveTextContent('Upload a PDF, DOC, DOCX or TXT file')
-    expect(screen.getByRole('button', { name: 'Score my resume' })).toBeDisabled()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('See your resume the way a hiring system does')
   })
 
   it('scores, shows the rewrite, and asks for an account at download', () => {
-    vi.useFakeTimers()
     renderAt('/v3/try/resume')
     const resume = new File(['Darnell Smith'], 'darnell-smith-resume.pdf', { type: 'application/pdf' })
     fireEvent.change(screen.getByLabelText(/Your resume/), { target: { files: [resume] } })
-    fireEvent.click(screen.getByRole('button', { name: 'Score my resume' }))
-    act(() => { vi.advanceTimersByTime(1700) })
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Likely filtered out')
     fireEvent.click(screen.getByRole('button', { name: /See it fixed/ }))

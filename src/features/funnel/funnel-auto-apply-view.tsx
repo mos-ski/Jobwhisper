@@ -7,9 +7,8 @@ import { FunnelGate } from './funnel-gate'
 import { FunnelQuestion, FunnelQuestionFooter } from './funnel-question'
 import { FunnelOfflineNotice, FunnelShell, FunnelTitle } from './funnel-shell'
 import { FunnelUpload } from './funnel-upload'
-import { FunnelWorking } from './funnel-working'
 
-export type FunnelAutoApplyStep = 'upload' | 'quiz' | 'working' | 'matches' | 'gate'
+export type FunnelAutoApplyStep = 'upload' | 'quiz' | 'matches' | 'gate'
 
 export type FunnelAutoApplyViewProps = {
   readonly step: FunnelAutoApplyStep
@@ -38,8 +37,6 @@ export type FunnelAutoApplyViewProps = {
   readonly onGoogleSignUp: () => void
 }
 
-const WORKING_CHECKS = ['Scout is searching job boards for your role', 'Filter is ranking roles against your answers', 'Tailor is lining up your resume for each one'] as const
-
 const WIDEN_SUGGESTIONS = [
   { questionId: 'location', label: 'Widen the location' },
   { questionId: 'workMode', label: 'Allow any work mode' },
@@ -53,14 +50,14 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
   const total = questions.length + 1
   const selectedJob = selectedJobId ? matches.find((job) => job.id === selectedJobId) : undefined
 
-  const label = step === 'upload' ? 'Resume' : step === 'quiz' ? question?.tab ?? '' : step === 'working' ? 'Matching' : step === 'matches' ? 'Your matches' : 'Apply'
-  const currentStep = step === 'upload' ? 1 : step === 'quiz' ? questionIndex + 2 : step === 'working' || step === 'matches' ? total + 1 : total + 2
+  const label = step === 'upload' ? 'Resume' : step === 'quiz' ? question?.tab ?? '' : step === 'matches' ? 'Your matches' : 'Apply'
+  const currentStep = step === 'upload' ? 1 : step === 'quiz' ? questionIndex + 2 : step === 'matches' ? total + 1 : total + 2
 
   let footer: ReactNode
   if (step === 'upload') {
-    footer = <FunnelQuestionFooter position={0} total={total} canContinue={online && Boolean(props.fileName)} onBack={props.onBack} onContinue={props.onContinue} />
+    footer = <FunnelQuestionFooter position={0} total={total} canContinue={online && Boolean(props.fileName)} showContinue={false} onBack={props.onBack} onContinue={props.onContinue} />
   } else if (step === 'quiz' && question) {
-    footer = <FunnelQuestionFooter position={questionIndex + 1} total={total} canContinue={online && (answers[question.id] ?? '').trim().length > 0} onBack={props.onBack} onContinue={props.onContinue} />
+    footer = <FunnelQuestionFooter position={questionIndex + 1} total={total} canContinue={online && (answers[question.id] ?? '').trim().length > 0} showContinue={question.kind === 'text'} onBack={props.onBack} onContinue={props.onContinue} />
   } else if (step === 'matches' && selectedJob) {
     footer = <Button size="lg" className="w-full sm:ms-auto sm:w-auto" onClick={() => props.onApply(selectedJob.id)}>Apply to this job</Button>
   } else if (step === 'matches' && matches.length > 0) {
@@ -93,7 +90,6 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
           onAutoAdvance={online ? props.onContinue : undefined}
         />
       ) : null}
-      {step === 'working' ? <FunnelWorking title="Your agents are looking." checks={WORKING_CHECKS} /> : null}
       {step === 'matches' && selectedJob ? <JobDetail job={selectedJob} onSelectJob={props.onSelectJob} /> : null}
       {step === 'matches' && !selectedJob && matches.length > 0 ? <MatchList {...props} /> : null}
       {step === 'matches' && !selectedJob && matches.length === 0 ? <NoMatches onEditAnswer={props.onEditAnswer} /> : null}
@@ -133,7 +129,7 @@ function MatchList({ matches, answers, onSelectJob }: FunnelAutoApplyViewProps) 
               type="button"
               onClick={() => onSelectJob(job.id)}
               aria-label={`${job.title} at ${job.company}, ${job.matchScore}% match. View job`}
-              className="grid w-full gap-3 px-5 py-4 text-start transition-colors duration-normal ease-default first:rounded-t-2xl last:rounded-b-2xl hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus motion-reduce:transition-none sm:grid-cols-[minmax(0,1fr)_9rem] sm:items-center"
+              className="grid w-full gap-3 px-5 py-4 text-start first:rounded-t-2xl last:rounded-b-2xl hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus sm:grid-cols-[minmax(0,1fr)_9rem] sm:items-center"
             >
               <span className="grid min-w-0 gap-1">
                 <span className="line-clamp-2 font-semibold text-ink">{job.title}</span>

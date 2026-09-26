@@ -45,15 +45,16 @@ function renderView(overrides: Partial<FunnelTrialViewProps> = {}) {
 }
 
 describe('FunnelTrialView', () => {
-  it('holds Continue until the question is answered', async () => {
+  it('moves on as soon as an answer is picked, with no Continue to press', async () => {
     const user = userEvent.setup()
     const props = renderView()
 
     expect(screen.getByText('1 of 2')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Continue' })).toBeDisabled()
+    expect(screen.queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument()
 
     await user.click(screen.getByRole('radio', { name: 'Practise for the interview' }))
     expect(props.onAnswer).toHaveBeenCalledWith('goal', 'Practise for the interview')
+    expect(props.onContinue).toHaveBeenCalled()
   })
 
   it('calls the last question Finish once it is answered', () => {
@@ -62,9 +63,9 @@ describe('FunnelTrialView', () => {
   })
 
   it('says what still works while offline and holds Continue', () => {
-    renderView({ online: false, answers: { goal: 'Tailor it to this job' } })
+    renderView({ online: false, questionIndex: 1, answers: { title: 'Product Designer' } })
     expect(screen.getByRole('status')).toHaveTextContent('You are offline')
-    expect(screen.getByRole('button', { name: 'Continue' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Finish' })).toBeDisabled()
   })
 
   it('reveals the free week with the terms before any card is asked for', async () => {

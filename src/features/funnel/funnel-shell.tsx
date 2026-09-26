@@ -59,7 +59,7 @@ export function FunnelShell({ label, stepCount, currentStep, onClose, closeLabel
             type="button"
             onClick={onClose}
             aria-label={closeLabel}
-            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full transition-colors duration-normal ease-default hover:bg-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus motion-reduce:transition-none"
+            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
             <X aria-hidden="true" className="size-5" />
           </button>
@@ -75,7 +75,7 @@ export function FunnelShell({ label, stepCount, currentStep, onClose, closeLabel
           {Array.from({ length: stepCount }, (_, index) => (
             <span
               key={index}
-              className={cn('h-1 flex-1 rounded-full transition-colors duration-slow ease-default motion-reduce:transition-none', index < filled ? 'bg-accent' : 'bg-border')}
+              className={cn('h-1 flex-1 rounded-full', index < filled ? 'bg-accent' : 'bg-border')}
             />
           ))}
         </div>

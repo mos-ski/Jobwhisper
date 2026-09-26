@@ -7,9 +7,8 @@ import { Button, cn } from '@/ui'
 import { FunnelGate } from './funnel-gate'
 import { FunnelOfflineNotice, FunnelShell, FunnelTitle } from './funnel-shell'
 import { FunnelUpload } from './funnel-upload'
-import { FunnelWorking } from './funnel-working'
 
-export type FunnelResumeStep = 'upload' | 'working' | 'score' | 'compare' | 'gate' | 'done'
+export type FunnelResumeStep = 'upload' | 'score' | 'compare' | 'gate' | 'done'
 
 export type FunnelResumeViewProps = {
   readonly step: FunnelResumeStep
@@ -21,7 +20,6 @@ export type FunnelResumeViewProps = {
   readonly rewrite: ResumeRewrite
   readonly onFile: (file: File) => void
   readonly onJobDescriptionChange: (value: string) => void
-  readonly onScore: () => void
   readonly onBack: () => void
   readonly onClose: () => void
   readonly onShowRewrite: () => void
@@ -31,18 +29,15 @@ export type FunnelResumeViewProps = {
   readonly onOpenEditor: () => void
 }
 
-const STEP_ORDER: readonly FunnelResumeStep[] = ['upload', 'working', 'score', 'compare', 'gate']
+const STEP_ORDER: readonly FunnelResumeStep[] = ['upload', 'score', 'compare', 'gate']
 
 const STEP_LABELS: Record<FunnelResumeStep, string> = {
   upload: 'Your resume',
-  working: 'Scoring',
   score: 'ATS score',
   compare: 'Before and after',
   gate: 'Download',
   done: 'Downloaded',
 }
-
-const WORKING_CHECKS = ['Reading your sections', 'Checking keywords against the job', 'Checking the layout a parser sees'] as const
 
 const SEVERITY_LABELS: Record<AtsIssueSeverity, string> = {
   high: 'High impact',
@@ -73,7 +68,6 @@ export function FunnelResumeView(props: FunnelResumeViewProps) {
       width={step === 'compare' || step === 'score' ? 'wide' : 'narrow'}
     >
       {step === 'upload' ? <UploadStep {...props} /> : null}
-      {step === 'working' ? <FunnelWorking title="Reading it the way a hiring system does." checks={WORKING_CHECKS} /> : null}
       {step === 'score' ? <ScoreStep {...props} /> : null}
       {step === 'compare' ? <CompareStep {...props} /> : null}
       {step === 'gate' ? (
@@ -100,7 +94,7 @@ function UploadStep({ fileName, uploadError, jobDescription, onFile, onJobDescri
         <FunnelTitle eyebrow="Free ATS check">See your resume the way a hiring system does.</FunnelTitle>
         <p className="text-center text-base leading-7 text-ink-muted">Free to score. Create an account to download.</p>
       </div>
-      <FunnelUpload fileName={fileName} error={uploadError} onFile={onFile} />
+      {/* The job description comes first: choosing a file scores it straight away. */}
       <div className="grid gap-2">
         <label htmlFor={jobId} className="text-sm font-medium text-ink">Job description <span className="font-normal text-ink-muted">(optional, sharpens the score)</span></label>
         <textarea
@@ -112,17 +106,13 @@ function UploadStep({ fileName, uploadError, jobDescription, onFile, onJobDescri
           className="w-full rounded-2xl border border-input bg-surface px-4 py-3 text-base leading-7 text-ink shadow-control outline-none placeholder:text-ink-muted focus:border-focus focus:ring-2 focus:ring-focus"
         />
       </div>
+      <FunnelUpload fileName={fileName} error={uploadError} onFile={onFile} />
     </div>
   )
 }
 
-function UploadFooter({ fileName, online, onBack, onScore }: FunnelResumeViewProps) {
-  return (
-    <>
-      <Button variant="secondary" size="lg" onClick={onBack}>Back</Button>
-      <Button size="lg" className="ms-auto" onClick={onScore} disabled={!fileName || !online}>Score my resume</Button>
-    </>
-  )
+function UploadFooter({ onBack }: FunnelResumeViewProps) {
+  return <Button variant="secondary" size="lg" onClick={onBack}>Back</Button>
 }
 
 const RING_RADIUS = 52

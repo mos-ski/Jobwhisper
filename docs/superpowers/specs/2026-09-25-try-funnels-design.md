@@ -123,3 +123,7 @@ The first build read as an in-app settings form rather than a continuation of th
 - **Moments:** ATS score as a ring gauge with the verdict, issues as a numbered list; before and after as a paper sheet on a dark stage with a live score chip; matches with a summary strip and rows carrying a match bar; the free week as a ticket-style pass; sign-up gates lead with what is waiting.
 - **Mobile:** full-width tiles, pinned primary action, stepped-down headline sizes, compact header pill.
 - **Light only:** by request, the funnels do not follow dark mode; the shell pins `data-theme="light"`, matching the landing page.
+
+## No waiting (2026-09-26)
+
+By request: no loaders, no animation, no Next for picked answers. Working screens are gone and results show immediately; choosing an answer or a valid file moves on at once; only typed answers keep Enter or Continue; the card submits without a spinner. The review index lists just the three funnels.

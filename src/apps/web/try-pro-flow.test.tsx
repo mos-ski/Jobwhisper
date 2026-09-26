@@ -1,6 +1,5 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { vi } from 'vitest'
 
 import { trialFunnelQuestions } from '@/mocks/funnel'
 import { WebRoutes } from './routes'
@@ -13,27 +12,19 @@ function renderAt(path: string) {
   )
 }
 
-afterEach(() => {
-  vi.useRealTimers()
-})
-
 describe('/v3/try/pro', () => {
   it('walks the quiz, reveals the free week, then asks for an account before the card', () => {
-    vi.useFakeTimers()
     renderAt('/v3/try/pro')
 
     for (const question of trialFunnelQuestions) {
       if (question.kind === 'text') {
         fireEvent.change(screen.getByRole('textbox', { name: question.ask }), { target: { value: 'Senior Product Designer' } })
+        fireEvent.click(screen.getByRole('button', { name: /^(Continue|Finish)$/ }))
       } else {
         const first = question.kind === 'options' ? question.options[0]?.label : question.choices[0]
         fireEvent.click(screen.getByRole('radio', { name: new RegExp(`^${first}`) }))
       }
-      fireEvent.click(screen.getByRole('button', { name: /^(Continue|Finish)$/ }))
     }
-
-    expect(screen.getByText('Putting your setup together.')).toBeInTheDocument()
-    act(() => { vi.advanceTimersByTime(1500) })
 
     fireEvent.click(screen.getByRole('button', { name: 'Claim my free week' }))
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Create your account')

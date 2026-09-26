@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
@@ -79,16 +79,13 @@ describe('FunnelQuestion', () => {
     expect(onChange).toHaveBeenCalledWith('Within a month')
   })
 
-  it('moves on a moment after a choice, and not at all without the callback', () => {
-    vi.useFakeTimers()
+  it('moves on the moment a choice is picked', () => {
+    const onChange = vi.fn()
     const onAutoAdvance = vi.fn()
-    const { unmount } = render(<FunnelQuestion question={options} value="" onChange={() => {}} onAutoAdvance={onAutoAdvance} />)
+    render(<FunnelQuestion question={options} value="" onChange={onChange} onAutoAdvance={onAutoAdvance} />)
     fireEvent.click(screen.getByRole('radio', { name: /Right away/ }))
-    expect(onAutoAdvance).not.toHaveBeenCalled()
-    act(() => { vi.advanceTimersByTime(400) })
+    expect(onChange).toHaveBeenCalledWith('Right away')
     expect(onAutoAdvance).toHaveBeenCalledTimes(1)
-    unmount()
-    vi.useRealTimers()
   })
 
   it('submits a typed answer with Enter', () => {
