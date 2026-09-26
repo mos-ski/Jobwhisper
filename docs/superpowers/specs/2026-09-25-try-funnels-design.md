@@ -122,3 +122,4 @@ The first build read as an in-app settings form rather than a continuation of th
 - **Quiz:** answer tiles with letter keys (A, B, C…) that also work from the keyboard; choosing an answer moves on after a short pause (online only), Enter submits a typed answer, Back and Continue remain. The working screen ticks checks off one at a time.
 - **Moments:** ATS score as a ring gauge with the verdict, issues as a numbered list; before and after as a paper sheet on a dark stage with a live score chip; matches with a summary strip and rows carrying a match bar; the free week as a ticket-style pass; sign-up gates lead with what is waiting.
 - **Mobile:** full-width tiles, pinned primary action, stepped-down headline sizes, compact header pill.
+- **Light only:** by request, the funnels do not follow dark mode; the shell pins `data-theme="light"`, matching the landing page.

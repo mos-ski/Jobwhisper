@@ -34,7 +34,7 @@ export function FunnelUpload({ fileName, error, onFile, label = 'Your resume' }:
           const file = event.dataTransfer.files?.[0]
           if (file) onFile(file)
         }}
-        className="grid cursor-pointer justify-items-center gap-3 rounded-panel border-2 border-dashed border-input bg-surface px-6 py-10 text-center transition-colors duration-normal ease-default hover:border-accent data-[dragging]:border-accent data-[dragging]:bg-accent-subtle has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus motion-reduce:transition-none"
+        className="grid cursor-pointer justify-items-center gap-3 rounded-3xl border-2 border-dashed border-input bg-surface-subtle px-6 py-12 text-center transition-colors duration-normal ease-default hover:border-accent data-[dragging]:border-accent data-[dragging]:bg-accent-subtle has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus motion-reduce:transition-none"
       >
         {fileName ? <FileText aria-hidden="true" className="size-8 text-accent-text" /> : <Upload aria-hidden="true" className="size-8 text-ink-muted" />}
         <span className="text-base font-semibold text-ink">{fileName ? fileName : label}</span>

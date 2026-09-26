@@ -54,7 +54,7 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
   const selectedJob = selectedJobId ? matches.find((job) => job.id === selectedJobId) : undefined
 
   const label = step === 'upload' ? 'Resume' : step === 'quiz' ? question?.tab ?? '' : step === 'working' ? 'Matching' : step === 'matches' ? 'Your matches' : 'Apply'
-  const progress = step === 'upload' ? 1 / (total + 2) : step === 'quiz' ? (questionIndex + 2) / (total + 2) : step === 'working' || step === 'matches' ? (total + 1) / (total + 2) : 1
+  const currentStep = step === 'upload' ? 1 : step === 'quiz' ? questionIndex + 2 : step === 'working' || step === 'matches' ? total + 1 : total + 2
 
   let footer: ReactNode
   if (step === 'upload') {
@@ -73,17 +73,26 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
   }
 
   return (
-    <FunnelShell label={label} progress={progress} onClose={onClose} notice={online ? null : <FunnelOfflineNotice />} footer={footer}>
+    <FunnelShell label={label} stepCount={total + 2} currentStep={currentStep} onClose={onClose} notice={online ? null : <FunnelOfflineNotice />} footer={footer} width={step === 'matches' ? 'wide' : 'narrow'}>
       {step === 'upload' ? (
-        <div className="grid gap-8">
-          <div className="grid gap-3">
-            <FunnelTitle>See the jobs we’d apply to for you.</FunnelTitle>
-            <p className="text-base leading-7 text-ink-muted">Start with your resume, then nine quick questions. Free to match. Sign up to apply.</p>
+        <div className="grid gap-10">
+          <div className="grid gap-4">
+            <FunnelTitle eyebrow={`Question 1 of ${total}`}>See the jobs we’d apply to for you.</FunnelTitle>
+            <p className="text-center text-base leading-7 text-ink-muted">Start with your resume, then nine quick questions. Free to match. Sign up to apply.</p>
           </div>
           <FunnelUpload fileName={props.fileName} error={props.uploadError} onFile={props.onFile} />
         </div>
       ) : null}
-      {step === 'quiz' && question ? <FunnelQuestion question={question} value={answers[question.id] ?? ''} onChange={(value) => props.onAnswer(question.id, value)} /> : null}
+      {step === 'quiz' && question ? (
+        <FunnelQuestion
+          key={question.id}
+          question={question}
+          eyebrow={`Question ${questionIndex + 2} of ${total}`}
+          value={answers[question.id] ?? ''}
+          onChange={(value) => props.onAnswer(question.id, value)}
+          onAutoAdvance={online ? props.onContinue : undefined}
+        />
+      ) : null}
       {step === 'working' ? <FunnelWorking title="Your agents are looking." checks={WORKING_CHECKS} /> : null}
       {step === 'matches' && selectedJob ? <JobDetail job={selectedJob} onSelectJob={props.onSelectJob} /> : null}
       {step === 'matches' && !selectedJob && matches.length > 0 ? <MatchList {...props} /> : null}
@@ -95,24 +104,49 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
 
 function MatchList({ matches, answers, onSelectJob }: FunnelAutoApplyViewProps) {
   const summary = [answers.role, answers.location, answers.workMode].filter(Boolean).join(' · ')
+  const average = Math.round(matches.reduce((sum, job) => sum + job.matchScore, 0) / matches.length)
+  const best = matches.reduce((top, job) => (job.matchScore > top.matchScore ? job : top))
   return (
-    <div className="grid gap-6">
-      <div className="grid gap-2">
-        <FunnelTitle>{matches.length} jobs we’d apply to for you.</FunnelTitle>
-        {summary ? <p className="text-base text-ink-muted">{summary}</p> : null}
-      </div>
-      <ul aria-label="Matched jobs" className="grid gap-3">
+    <div className="grid gap-8">
+      <FunnelTitle eyebrow="Your matches">{matches.length} jobs we’d apply to for you.</FunnelTitle>
+
+      <dl className="grid grid-cols-3 divide-x divide-ink-muted rounded-3xl bg-surface-inverse py-5 text-center text-surface rtl:divide-x-reverse">
+        <div className="grid gap-1 px-2">
+          <dt className="order-2 text-xs text-accent-muted sm:text-sm">Roles found</dt>
+          <dd className="order-1 font-gowun text-3xl font-bold leading-none sm:text-4xl">{matches.length}</dd>
+        </div>
+        <div className="grid gap-1 px-2">
+          <dt className="order-2 text-xs text-accent-muted sm:text-sm">Average match</dt>
+          <dd className="order-1 font-gowun text-3xl font-bold leading-none sm:text-4xl">{average}%</dd>
+        </div>
+        <div className="grid gap-1 px-2">
+          <dt className="order-2 text-xs text-accent-muted sm:text-sm">Best match</dt>
+          <dd className="order-1 font-gowun text-3xl font-bold leading-none sm:text-4xl">{best.matchScore}%</dd>
+        </div>
+      </dl>
+      {summary ? <p className="-mt-4 text-center text-sm text-ink-muted">For {summary}</p> : null}
+
+      <ul aria-label="Matched jobs" className="divide-y divide-border rounded-2xl border border-border">
         {matches.map((job) => (
-          <li key={job.id} className="grid gap-3 rounded-panel border border-border bg-surface p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
-            <div className="grid min-w-0 gap-1">
-              <p className="line-clamp-2 font-semibold text-ink">{job.title}</p>
-              <p className="text-sm text-ink-muted">{job.company} · {job.location} · {job.workMode}</p>
-              <p className="text-sm text-ink">{job.salaryRange} <span className="text-ink-muted">· {job.postedLabel}</span></p>
-            </div>
-            <div className="flex items-center gap-3 sm:flex-col sm:items-end">
-              <span className="rounded-full bg-accent-subtle px-3 py-1 text-sm font-semibold text-accent-text">{job.matchScore}% match</span>
-              <Button variant="secondary" size="md" className="min-h-11" onClick={() => onSelectJob(job.id)} aria-label={`View ${job.title} at ${job.company}`}>View job</Button>
-            </div>
+          <li key={job.id}>
+            <button
+              type="button"
+              onClick={() => onSelectJob(job.id)}
+              aria-label={`${job.title} at ${job.company}, ${job.matchScore}% match. View job`}
+              className="grid w-full gap-3 px-5 py-4 text-start transition-colors duration-normal ease-default first:rounded-t-2xl last:rounded-b-2xl hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus motion-reduce:transition-none sm:grid-cols-[minmax(0,1fr)_9rem] sm:items-center"
+            >
+              <span className="grid min-w-0 gap-1">
+                <span className="line-clamp-2 font-semibold text-ink">{job.title}</span>
+                <span className="text-sm text-ink-muted">{job.company} · {job.location} · {job.workMode}</span>
+                <span className="text-sm text-ink">{job.salaryRange} <span className="text-ink-muted">· {job.postedLabel}</span></span>
+              </span>
+              <span className="grid gap-1.5">
+                <span className="text-sm font-semibold text-accent-text sm:text-end">{job.matchScore}% match</span>
+                <span aria-hidden="true" className="h-1.5 w-full overflow-hidden rounded-full bg-surface-subtle">
+                  <span className="block h-full rounded-full bg-accent" style={{ width: `${job.matchScore}%` }} />
+                </span>
+              </span>
+            </button>
           </li>
         ))}
       </ul>
@@ -128,7 +162,7 @@ function JobDetail({ job, onSelectJob }: { readonly job: FunnelJobMatch; readonl
         All matches
       </button>
       <div className="grid gap-3">
-        <FunnelTitle>{job.title}</FunnelTitle>
+        <FunnelTitle align="start">{job.title}</FunnelTitle>
         <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-muted">
           <span className="inline-flex items-center gap-1.5"><Building2 aria-hidden="true" className="size-4" />{job.company}</span>
           <span className="inline-flex items-center gap-1.5"><MapPin aria-hidden="true" className="size-4" />{job.location} · {job.workMode}</span>
@@ -153,13 +187,13 @@ function JobDetail({ job, onSelectJob }: { readonly job: FunnelJobMatch; readonl
 
 function NoMatches({ onEditAnswer }: { readonly onEditAnswer: (questionId: string) => void }) {
   return (
-    <div className="grid gap-6">
-      <SearchX aria-hidden="true" className="size-10 text-ink-muted" />
-      <div className="grid gap-3">
+    <div className="grid justify-items-center gap-8">
+      <SearchX aria-hidden="true" className="size-12 text-ink-muted" />
+      <div className="grid gap-4">
         <FunnelTitle>No roles match every answer yet.</FunnelTitle>
-        <p className="text-base leading-7 text-ink-muted">Loosen one of these and your agents search again.</p>
+        <p className="text-center text-base leading-7 text-ink-muted">Loosen one of these and your agents search again.</p>
       </div>
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap justify-center gap-3">
         {WIDEN_SUGGESTIONS.map((suggestion) => (
           <Button key={suggestion.questionId} variant="secondary" size="lg" onClick={() => onEditAnswer(suggestion.questionId)}>{suggestion.label}</Button>
         ))}
@@ -170,11 +204,26 @@ function NoMatches({ onEditAnswer }: { readonly onEditAnswer: (questionId: strin
 
 function Gate({ applyTarget, matches, online, onCreateAccount, onGoogleSignUp }: FunnelAutoApplyViewProps) {
   const job = applyTarget && applyTarget !== 'all' ? matches.find((item) => item.id === applyTarget) : undefined
+  const waiting = job ? [job] : matches
   const what = job ? `${job.title} at ${job.company}` : `all ${matches.length} matches`
   return (
     <FunnelGate
       title="Sign up and your agent applies for you."
       body={`Your answers and resume are saved. Your agent applies to ${what} as soon as you are in, and you approve each application before it goes.`}
+      preview={
+        <ul aria-label="Waiting to apply" className="mx-auto grid w-full max-w-md gap-2">
+          {waiting.slice(0, 3).map((item) => (
+            <li key={item.id} className="flex items-center gap-3 rounded-2xl bg-surface-subtle px-4 py-3">
+              <span className="grid min-w-0 flex-1">
+                <span className="truncate text-sm font-semibold text-ink">{item.title}</span>
+                <span className="truncate text-xs text-ink-muted">{item.company} · {item.location}</span>
+              </span>
+              <span className="shrink-0 text-sm font-semibold text-accent-text">{item.matchScore}%</span>
+            </li>
+          ))}
+          {waiting.length > 3 ? <li className="text-center text-sm text-ink-muted">and {waiting.length - 3} more</li> : null}
+        </ul>
+      }
       online={online}
       emailFieldId="funnel-auto-apply-email"
       onCreateAccount={onCreateAccount}

@@ -53,7 +53,7 @@ describe('FunnelResumeView', () => {
   it('shows the score in words as well as a number, with every issue and its impact', () => {
     renderView({ step: 'score' })
     expect(screen.getByText('54')).toBeInTheDocument()
-    expect(screen.getByText('Likely filtered out before a person reads it')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Likely filtered out before a person reads it')
     expect(screen.getAllByRole('listitem')).toHaveLength(resumeFunnelReport.issues.length)
     expect(screen.getAllByText('High impact')).toHaveLength(2)
   })

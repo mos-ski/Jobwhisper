@@ -55,17 +55,21 @@ const SEVERITY_STYLES: Record<AtsIssueSeverity, string> = {
   low: 'bg-surface-subtle text-ink',
 }
 
+const cta = 'min-h-12 w-full px-7 text-base sm:w-auto'
+
 export function FunnelResumeView(props: FunnelResumeViewProps) {
-  const { step, online, onClose } = props
+  const { step, online, onClose, rewrite } = props
   const position = step === 'done' ? STEP_ORDER.length : STEP_ORDER.indexOf(step) + 1
 
   return (
     <FunnelShell
       label={STEP_LABELS[step]}
-      progress={position / STEP_ORDER.length}
+      stepCount={STEP_ORDER.length}
+      currentStep={position}
       onClose={onClose}
       notice={online ? null : <FunnelOfflineNotice />}
       footer={step === 'upload' ? <UploadFooter {...props} /> : undefined}
+      width={step === 'compare' || step === 'score' ? 'wide' : 'narrow'}
     >
       {step === 'upload' ? <UploadStep {...props} /> : null}
       {step === 'working' ? <FunnelWorking title="Reading it the way a hiring system does." checks={WORKING_CHECKS} /> : null}
@@ -74,7 +78,8 @@ export function FunnelResumeView(props: FunnelResumeViewProps) {
       {step === 'gate' ? (
         <FunnelGate
           title="Create a free account to download it."
-          body={`Your tailored resume is saved, scoring ${props.rewrite.scoreAfter}. Your account keeps it, and you can keep editing it in Resume Builder.`}
+          body="Your tailored resume is saved. Your account keeps it, and you can tailor it to the next job in Resume Builder."
+          preview={<SavedResume rewrite={rewrite} />}
           online={online}
           emailFieldId="funnel-resume-email"
           onCreateAccount={props.onCreateAccount}
@@ -89,21 +94,21 @@ export function FunnelResumeView(props: FunnelResumeViewProps) {
 function UploadStep({ fileName, uploadError, jobDescription, onFile, onJobDescriptionChange }: FunnelResumeViewProps) {
   const jobId = useId()
   return (
-    <div className="grid gap-8">
-      <div className="grid gap-3">
-        <FunnelTitle>See your resume the way a hiring system does.</FunnelTitle>
-        <p className="text-base leading-7 text-ink-muted">Free to score. Create an account to download.</p>
+    <div className="grid gap-10">
+      <div className="grid gap-4">
+        <FunnelTitle eyebrow="Free ATS check">See your resume the way a hiring system does.</FunnelTitle>
+        <p className="text-center text-base leading-7 text-ink-muted">Free to score. Create an account to download.</p>
       </div>
       <FunnelUpload fileName={fileName} error={uploadError} onFile={onFile} />
       <div className="grid gap-2">
         <label htmlFor={jobId} className="text-sm font-medium text-ink">Job description <span className="font-normal text-ink-muted">(optional, sharpens the score)</span></label>
         <textarea
           id={jobId}
-          rows={5}
+          rows={4}
           value={jobDescription}
           onChange={(event) => onJobDescriptionChange(event.target.value)}
           placeholder="Paste the posting you are applying to"
-          className="w-full rounded-lg border border-input bg-surface px-4 py-3 text-base leading-7 text-ink shadow-control outline-none placeholder:text-ink-muted focus:border-focus focus:ring-2 focus:ring-focus"
+          className="w-full rounded-2xl border border-input bg-surface px-4 py-3 text-base leading-7 text-ink shadow-control outline-none placeholder:text-ink-muted focus:border-focus focus:ring-2 focus:ring-focus"
         />
       </div>
     </div>
@@ -119,40 +124,73 @@ function UploadFooter({ fileName, online, onBack, onScore }: FunnelResumeViewPro
   )
 }
 
+const RING_RADIUS = 52
+const RING_LENGTH = 2 * Math.PI * RING_RADIUS
+
+function ringTone(score: number): string {
+  if (score < 60) return 'stroke-danger'
+  if (score < 80) return 'stroke-warning'
+  return 'stroke-positive'
+}
+
+function ScoreRing({ score }: { readonly score: number }) {
+  const clamped = Math.min(Math.max(score, 0), 100)
+  return (
+    <div className="relative mx-auto size-52 sm:size-60">
+      <svg viewBox="0 0 120 120" aria-hidden="true" className="size-full -rotate-90">
+        <circle cx="60" cy="60" r={RING_RADIUS} fill="none" strokeWidth="10" className="stroke-surface-subtle" />
+        <circle
+          cx="60"
+          cy="60"
+          r={RING_RADIUS}
+          fill="none"
+          strokeWidth="10"
+          strokeLinecap="round"
+          strokeDasharray={RING_LENGTH}
+          strokeDashoffset={RING_LENGTH * (1 - clamped / 100)}
+          className={ringTone(clamped)}
+        />
+      </svg>
+      <p className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="font-gowun text-6xl font-bold leading-none text-ink sm:text-7xl">{score}</span>
+        <span className="mt-1 text-sm text-ink-muted">out of 100</span>
+      </p>
+    </div>
+  )
+}
+
 function ScoreStep({ report, rewrite, onShowRewrite }: FunnelResumeViewProps) {
   return (
-    <div className="grid gap-8">
-      <FunnelTitle>Your ATS score</FunnelTitle>
-      <section aria-label="Score" className="grid gap-4 rounded-panel border border-border bg-surface p-6">
-        <p className="flex items-baseline gap-2">
-          <span className="font-gowun text-6xl font-bold leading-none text-ink">{report.score}</span>
-          <span className="text-lg text-ink-muted">out of 100</span>
-        </p>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-surface-subtle" aria-hidden="true">
-          <div className="h-full rounded-full bg-warning" style={{ width: `${report.score}%` }} />
-        </div>
-        <p className="text-base font-semibold text-ink">{report.verdict}</p>
-      </section>
+    <div className="grid gap-12">
+      <div className="grid gap-6">
+        <FunnelTitle eyebrow="Your ATS score">{report.verdict}.</FunnelTitle>
+        <ScoreRing score={report.score} />
+      </div>
 
-      <section aria-labelledby="funnel-resume-issues" className="grid gap-4">
-        <h2 id="funnel-resume-issues" className="text-lg font-semibold text-ink">What is holding it back</h2>
-        <ul className="grid gap-3">
-          {report.issues.map((issue) => (
-            <li key={issue.id} className="grid gap-2 rounded-lg border border-border bg-surface p-4">
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <span className="font-semibold text-ink">{issue.label}</span>
-                <span className={cn('shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold', SEVERITY_STYLES[issue.severity])}>{SEVERITY_LABELS[issue.severity]}</span>
+      <section aria-labelledby="funnel-resume-issues" className="mx-auto grid w-full max-w-2xl gap-4">
+        <h2 id="funnel-resume-issues" className="text-center text-lg font-semibold text-ink">What is holding it back</h2>
+        <ol className="divide-y divide-border rounded-2xl border border-border">
+          {report.issues.map((issue, index) => (
+            <li key={issue.id} className="flex gap-4 px-5 py-4">
+              <span aria-hidden="true" className="flex size-7 shrink-0 items-center justify-center rounded-full bg-surface-subtle text-sm font-semibold text-ink">{index + 1}</span>
+              <div className="grid min-w-0 flex-1 gap-1">
+                <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
+                  <span className="font-semibold text-ink">{issue.label}</span>
+                  <span className={cn('shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold', SEVERITY_STYLES[issue.severity])}>{SEVERITY_LABELS[issue.severity]}</span>
+                </div>
+                <span className="text-sm leading-6 text-ink-muted">{issue.fix}</span>
               </div>
-              <span className="text-sm leading-6 text-ink-muted">{issue.fix}</span>
             </li>
           ))}
-        </ul>
+        </ol>
       </section>
 
-      <Button size="lg" onClick={onShowRewrite} className="w-full sm:w-auto sm:justify-self-start">
-        See it fixed, scoring {rewrite.scoreAfter}
-        <ArrowRight aria-hidden="true" className="size-4" />
-      </Button>
+      <div className="grid justify-items-center">
+        <Button size="lg" onClick={onShowRewrite} className={cta}>
+          See it fixed, scoring {rewrite.scoreAfter}
+          <ArrowRight aria-hidden="true" className="size-4 rtl:rotate-180" />
+        </Button>
+      </div>
     </div>
   )
 }
@@ -167,46 +205,49 @@ function CompareStep({ rewrite, onDownload }: FunnelResumeViewProps) {
       : `${reveal}% of the Jobwhisper version shown, ATS score ${score}`
 
   return (
-    <div className="grid gap-6">
-      <div className="grid gap-3">
-        <FunnelTitle>Drag to see what changes.</FunnelTitle>
-        <p className="flex items-baseline gap-2 text-ink">
-          <span className="text-sm text-ink-muted">ATS score</span>
-          <span className="font-gowun text-4xl font-bold leading-none tabular-nums">{score}</span>
-          <span className="text-sm text-ink-muted">from {rewrite.scoreBefore}</span>
+    <div className="grid gap-8">
+      <FunnelTitle eyebrow="Before and after">Drag to see what changes.</FunnelTitle>
+
+      <div className="grid gap-5 rounded-3xl bg-surface-inverse p-3 text-surface sm:p-8">
+        <p className="flex items-baseline justify-center gap-3">
+          <span className="text-sm">ATS score</span>
+          <span className="font-gowun text-5xl font-bold leading-none tabular-nums">{score}</span>
+          <span className="text-sm text-accent-muted">from {rewrite.scoreBefore}</span>
         </p>
+
+        <div className="relative grid overflow-hidden rounded-xl shadow-panel has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus">
+          <div className="col-start-1 row-start-1">
+            <ResumePage document={rewrite.before} />
+          </div>
+          <div aria-hidden="true" className="col-start-1 row-start-1" style={{ clipPath: `inset(0 ${100 - reveal}% 0 0)` }}>
+            <ResumePage document={rewrite.after} />
+          </div>
+          <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-accent" style={{ left: `${reveal}%` }}>
+            <span className="absolute left-1/2 top-1/2 flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-accent text-on-accent shadow-panel"><MoveHorizontal className="size-5" /></span>
+          </div>
+          <span aria-hidden="true" className="pointer-events-none absolute left-3 top-3 rounded-full bg-accent px-2.5 py-0.5 text-xs font-semibold text-on-accent">Jobwhisper version</span>
+          <span aria-hidden="true" className="pointer-events-none absolute right-3 top-3 rounded-full bg-surface-inverse px-2.5 py-0.5 text-xs font-semibold text-surface">Your resume</span>
+          <input
+            type="range"
+            min={0}
+            max={100}
+            step={1}
+            value={reveal}
+            onChange={(event) => setReveal(Number(event.target.value))}
+            aria-label="Show the Jobwhisper version"
+            aria-valuetext={valueText}
+            className="absolute inset-0 h-full w-full cursor-ew-resize opacity-0"
+          />
+        </div>
+        <p className="text-center text-sm text-accent-muted">Drag across the page, or focus it and use the arrow keys.</p>
       </div>
 
-      <div className="relative grid overflow-hidden rounded-panel border border-border has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus">
-        <div className="col-start-1 row-start-1">
-          <ResumePage document={rewrite.before} />
-        </div>
-        <div aria-hidden="true" className="col-start-1 row-start-1" style={{ clipPath: `inset(0 ${100 - reveal}% 0 0)` }}>
-          <ResumePage document={rewrite.after} />
-        </div>
-        <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-accent" style={{ left: `${reveal}%` }}>
-          <span className="absolute top-1/2 left-1/2 flex size-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-accent text-on-accent shadow-panel"><MoveHorizontal className="size-5" /></span>
-        </div>
-        <span aria-hidden="true" className="pointer-events-none absolute left-3 top-3 rounded-full bg-accent px-2.5 py-0.5 text-xs font-semibold text-on-accent">Jobwhisper version</span>
-        <span aria-hidden="true" className="pointer-events-none absolute right-3 top-3 rounded-full bg-surface-inverse px-2.5 py-0.5 text-xs font-semibold text-canvas">Your resume</span>
-        <input
-          type="range"
-          min={0}
-          max={100}
-          step={1}
-          value={reveal}
-          onChange={(event) => setReveal(Number(event.target.value))}
-          aria-label="Show the Jobwhisper version"
-          aria-valuetext={valueText}
-          className="absolute inset-0 h-full w-full cursor-ew-resize opacity-0"
-        />
+      <div className="grid justify-items-center">
+        <Button size="lg" onClick={onDownload} className={cta}>
+          <Download aria-hidden="true" className="size-4" />
+          Download my resume
+        </Button>
       </div>
-      <p className="text-sm text-ink-muted">Drag across the page, or focus it and use the arrow keys.</p>
-
-      <Button size="lg" onClick={onDownload} className="w-full sm:w-auto sm:justify-self-start">
-        <Download aria-hidden="true" className="size-4" />
-        Download my resume
-      </Button>
     </div>
   )
 }
@@ -236,20 +277,33 @@ function ResumePage({ document }: { readonly document: FunnelResumeDocument }) {
   )
 }
 
+function SavedResume({ rewrite }: { readonly rewrite: ResumeRewrite }) {
+  return (
+    <div className="mx-auto flex w-full max-w-md items-center gap-4 rounded-2xl bg-surface-subtle px-5 py-4">
+      <FileCheck aria-hidden="true" className="size-7 shrink-0 text-positive" />
+      <div className="grid min-w-0 flex-1">
+        <span className="truncate font-semibold text-ink">{rewrite.after.name}, {rewrite.after.headline}</span>
+        <span className="text-sm text-ink-muted">Tailored and saved</span>
+      </div>
+      <span className="shrink-0 rounded-full bg-positive-surface px-3 py-1 text-sm font-semibold text-positive">ATS {rewrite.scoreAfter}</span>
+    </div>
+  )
+}
+
 function DoneStep({ rewrite, onOpenEditor }: FunnelResumeViewProps) {
   return (
-    <div className="grid gap-8">
-      <FunnelTitle>Your resume is downloading.</FunnelTitle>
-      <div className="flex items-start gap-4 rounded-panel border border-border bg-surface p-6">
-        <FileCheck aria-hidden="true" className="mt-1 size-6 shrink-0 text-positive" />
-        <p className="text-base leading-7 text-ink">
+    <div className="grid gap-10">
+      <FunnelTitle eyebrow="Download started">Your resume is downloading.</FunnelTitle>
+      <SavedResume rewrite={rewrite} />
+      <div className="grid justify-items-center gap-4 text-center">
+        <p className="max-w-md text-base leading-7 text-ink-muted">
           The Jobwhisper version scores {rewrite.scoreAfter}, up from {rewrite.scoreBefore}. It is saved to your account, so you can tailor it to the next job in a minute.
         </p>
+        <Button size="lg" onClick={onOpenEditor} className={cta}>
+          Keep editing in Resume Builder
+          <ArrowRight aria-hidden="true" className="size-4 rtl:rotate-180" />
+        </Button>
       </div>
-      <Button size="lg" onClick={onOpenEditor} className="w-full sm:w-auto sm:justify-self-start">
-        Keep editing in Resume Builder
-        <ArrowRight aria-hidden="true" className="size-4" />
-      </Button>
     </div>
   )
 }
