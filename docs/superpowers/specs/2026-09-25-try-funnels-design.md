@@ -109,5 +109,7 @@ Pages expose callbacks named for the tracking plan events. The production team a
 
 - Component tests for each view cover every state and the gate destinations.
 - Add rows to `MANIFEST.md` and a section to `FLOWS.md` for each funnel. Add the `/` review index entries.
-- Visually check each funnel at 360 px and desktop, in light and dark themes.
+- Visually check each funnel at 360 px and desktop. The funnels are light-only: `FunnelShell` pins
+  `data-theme="light"` on its root and `index.html` skips the theme bootstrap on `/try/` paths, so the
+  web app's dark preference never reaches the public site.
 - The full test suite and production build pass.

@@ -30,6 +30,16 @@ describe('FunnelShell', () => {
     await user.click(screen.getByRole('button', { name: 'Leave setup' }))
     expect(onClose).toHaveBeenCalledTimes(2)
   })
+
+  it('pins itself to the light palette, so a dark app session cannot repaint the funnel', () => {
+    document.documentElement.dataset.theme = 'dark'
+    render(<FunnelShell label="Timing" progress={0.25} onClose={() => {}}><p>Body</p></FunnelShell>)
+
+    // The funnel is the public website. Dark mode is the web app's preference, so the
+    // whole subtree restates the light tokens rather than inheriting dark ones.
+    const shell = screen.getByText('Body').closest('[data-slot="funnel-shell"]')
+    expect(shell).toHaveAttribute('data-theme', 'light')
+  })
 })
 
 describe('FunnelQuestion', () => {
