@@ -100,7 +100,7 @@ export function FunnelShell({ label, stepCount, currentStep, onClose, closeLabel
 export type FunnelTitleProps = {
   readonly children: ReactNode
   readonly id?: string
-  /** A short line above the title, e.g. "Question 3 of 10". */
+  /** A short line above the title, e.g. "Your ATS score". */
   readonly eyebrow?: string
   /** Defaults to `center`; `start` for detail screens that read like a document. */
   readonly align?: 'center' | 'start'

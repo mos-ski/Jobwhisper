@@ -9,7 +9,7 @@ export type FunnelQuestionProps = {
   readonly question: FunnelQuestionData
   readonly value: string
   readonly onChange: (value: string) => void
-  /** e.g. "Question 3 of 10". */
+  /** A short line above the question. */
   readonly eyebrow?: string
   /**
    * Called as soon as a choice is picked, or when a typed answer is submitted with Enter.

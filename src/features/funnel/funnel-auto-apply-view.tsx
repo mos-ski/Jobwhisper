@@ -74,7 +74,7 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
       {step === 'upload' ? (
         <div className="grid gap-10">
           <div className="grid gap-4">
-            <FunnelTitle eyebrow={`Question 1 of ${total}`}>See the jobs we’d apply to for you.</FunnelTitle>
+            <FunnelTitle>See the jobs we’d apply to for you.</FunnelTitle>
             <p className="text-center text-base leading-7 text-ink-muted">Start with your resume, then nine quick questions. Free to match. Sign up to apply.</p>
           </div>
           <FunnelUpload fileName={props.fileName} error={props.uploadError} onFile={props.onFile} />
@@ -84,7 +84,6 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
         <FunnelQuestion
           key={question.id}
           question={question}
-          eyebrow={`Question ${questionIndex + 2} of ${total}`}
           value={answers[question.id] ?? ''}
           onChange={(value) => props.onAnswer(question.id, value)}
           onAutoAdvance={online ? props.onContinue : undefined}
