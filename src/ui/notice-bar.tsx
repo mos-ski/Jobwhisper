@@ -3,7 +3,7 @@ import { X } from 'lucide-react'
 
 import { cn } from './cn'
 
-export type NoticeBarTone = 'info' | 'warning' | 'danger'
+export type NoticeBarTone = 'neutral' | 'warning' | 'danger'
 
 export type NoticeBarAction = {
   readonly label: string
@@ -24,25 +24,22 @@ export type NoticeBarProps = HTMLAttributes<HTMLDivElement> &
   }
 
 const toneStyles: Record<NoticeBarTone, string> = {
-  info: 'border-accent/40 bg-accent-subtle text-accent-text',
-  warning: 'border-warning/40 bg-warning-surface text-warning',
-  danger: 'border-danger bg-danger text-on-danger',
-}
-
-const actionStyles: Record<NoticeBarTone, string> = {
-  info: 'hover:bg-accent/15',
-  warning: 'hover:bg-warning/15',
-  danger: 'hover:bg-on-danger/15',
+  neutral: 'bg-surface-subtle text-ink',
+  warning: 'bg-warning-surface text-warning',
+  danger: 'bg-danger-surface text-danger',
 }
 
 /**
- * A short interruption that sits over the thing it interrupts: one line, its action beside
- * it, and no more width than it needs. Full-bleed was the wrong shape for this — a stripe
- * across a 1440px session puts the message and its button a screen apart, and reads as
- * chrome rather than as something to act on.
+ * A quiet line of state docked to the surface it belongs to: the message on one side, the
+ * one thing to do about it on the other, and nothing else. No icon, no border, no shadow,
+ * no card — it is a status line, not an alert, and dressing it up as an alert is what makes
+ * it shout over the work it is interrupting.
+ *
+ * Tone tints the strip rather than filling it. Meaning lives in the words, so a reader who
+ * cannot separate the tints still reads the same notice.
  */
 export const NoticeBar = forwardRef<HTMLDivElement, NoticeBarProps>(function NoticeBar(
-  { className, tone = 'info', icon, action, onDismiss, dismissLabel, children, ...props },
+  { className, tone = 'neutral', icon, action, onDismiss, dismissLabel, children, ...props },
   ref,
 ) {
   return (
@@ -51,11 +48,7 @@ export const NoticeBar = forwardRef<HTMLDivElement, NoticeBarProps>(function Not
       role="status"
       data-slot="notice-bar"
       data-tone={tone}
-      className={cn(
-        'flex min-h-11 w-fit max-w-full items-center gap-2 rounded-pill border pe-1 ps-4 text-sm shadow-control',
-        toneStyles[tone],
-        className,
-      )}
+      className={cn('flex min-h-11 w-full items-center gap-3 px-4 text-sm', toneStyles[tone], className)}
       {...props}
     >
       {icon ? (
@@ -63,16 +56,13 @@ export const NoticeBar = forwardRef<HTMLDivElement, NoticeBarProps>(function Not
           {icon}
         </span>
       ) : null}
-      <span className="min-w-0 truncate font-medium leading-5">{children}</span>
+      <span className="min-w-0 flex-1 truncate leading-5">{children}</span>
       {action ? (
         action.href ? (
           <a
             href={action.href}
             onClick={(event) => event.stopPropagation()}
-            className={cn(
-              'inline-flex min-h-11 shrink-0 items-center rounded-pill px-3 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
-              actionStyles[tone],
-            )}
+            className="inline-flex min-h-11 shrink-0 items-center px-1 font-medium underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
             {action.label}
           </a>
@@ -83,10 +73,7 @@ export const NoticeBar = forwardRef<HTMLDivElement, NoticeBarProps>(function Not
               event.stopPropagation()
               action.onClick?.()
             }}
-            className={cn(
-              'inline-flex min-h-11 shrink-0 items-center rounded-pill px-3 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
-              actionStyles[tone],
-            )}
+            className="inline-flex min-h-11 shrink-0 items-center px-1 font-medium underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
             {action.label}
           </button>
@@ -100,10 +87,7 @@ export const NoticeBar = forwardRef<HTMLDivElement, NoticeBarProps>(function Not
             event.stopPropagation()
             onDismiss()
           }}
-          className={cn(
-            'grid size-11 shrink-0 place-items-center rounded-pill focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
-            actionStyles[tone],
-          )}
+          className="-me-3 grid size-11 shrink-0 place-items-center opacity-70 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
         >
           <X aria-hidden="true" className="size-4" />
         </button>

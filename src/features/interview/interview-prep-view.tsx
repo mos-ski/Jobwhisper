@@ -13,7 +13,6 @@ import {
   PhoneOff,
   Play,
   Settings,
-  TriangleAlert,
   Video,
   VideoOff,
   Volume2,
@@ -825,8 +824,8 @@ const SESSION_RATE_CENTS_PER_MIN = 80
 const SESSION_START_BALANCE_CENTS = 60
 
 /** Notices float over the session: a bar in the flow moves the panels mid-interview. */
-const mobileNoticePosition = 'fixed inset-x-0 top-20 z-20 mx-auto max-w-[calc(100vw-2rem)]'
-const desktopNoticePosition = 'absolute inset-x-0 top-28 z-20 mx-auto max-w-[calc(100vw-2rem)]'
+const mobileNoticePosition = 'fixed inset-x-0 top-[4.5rem] z-20 border-b border-[var(--lf-live-border)] bg-[var(--lf-live-strip)] text-brand-bar-text'
+const desktopNoticePosition = 'shrink-0 border-b border-[var(--lf-live-border)] bg-[var(--lf-live-strip)] px-5 text-brand-bar-text'
 const TOPUP_MINIMUM_DOLLARS = 10
 const TOPUP_CENTS_PER_CREDIT = 40
 // $0.40/credit (TOPUP_CENTS_PER_CREDIT) only divides evenly into whole credits at multiples
@@ -1034,8 +1033,7 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
 
         {lowBalance && !sessionPaused && !noticeDismissed ? (
           <NoticeBar
-            tone="warning"
-            icon={<TriangleAlert className="size-4" />}
+            tone="neutral"
             className={mobileNoticePosition}
             action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
             onDismiss={() => setNoticeDismissed(true)}
@@ -1046,8 +1044,7 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
         ) : null}
         {sessionPaused ? (
           <NoticeBar
-            tone="danger"
-            icon={<TriangleAlert className="size-4" />}
+            tone="neutral"
             className={mobileNoticePosition}
             action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
           >
@@ -1161,8 +1158,7 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
       </div>
       {lowBalance && !sessionPaused && !noticeDismissed ? (
         <NoticeBar
-          tone="warning"
-          icon={<TriangleAlert className="size-4" />}
+          tone="neutral"
           className={desktopNoticePosition}
           action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
           onDismiss={() => setNoticeDismissed(true)}
@@ -1173,8 +1169,7 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
       ) : null}
       {sessionPaused ? (
         <NoticeBar
-          tone="danger"
-          icon={<TriangleAlert className="size-4" />}
+          tone="neutral"
           className={desktopNoticePosition}
           action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
         >

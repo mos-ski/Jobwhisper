@@ -1,5 +1,5 @@
 import { SupportChatShell } from '@/features/support/support-chat-shell'
-import { ArrowUpRight, ChevronRight, CircleHelp, ExternalLink, Lock, LogOut, Mail, Menu, Monitor, PanelLeftClose, PanelLeftOpen, Play, Settings, TriangleAlert, User, X } from 'lucide-react'
+import { ArrowUpRight, ChevronRight, CircleHelp, ExternalLink, Lock, LogOut, Mail, Menu, Monitor, PanelLeftClose, PanelLeftOpen, Play, Settings, User, X } from 'lucide-react'
 import { FaApple } from 'react-icons/fa'
 import { SiGoogleplay } from 'react-icons/si'
 import { useState, type ReactNode } from 'react'
@@ -296,10 +296,9 @@ function CreditNotice({ variant, remainingCents, totalCents }: { readonly varian
 
   return (
     <NoticeBar
-      tone={isLow ? 'info' : 'danger'}
+      tone={isLow ? 'neutral' : 'danger'}
       aria-label={isLow ? 'Low balance notice' : 'Empty balance notice'}
-      icon={<TriangleAlert className="size-4" />}
-      className="absolute inset-x-0 top-16 z-10 mx-auto max-w-[calc(100vw-2rem)]"
+      className="absolute start-1/2 top-14 z-10 w-[min(560px,calc(100vw-2rem))] -translate-x-1/2 rounded-b-xl shadow-control"
       action={{ label: 'Upgrade', href: '/v3/billing' }}
       onDismiss={() => setDismissed(true)}
       dismissLabel="Dismiss balance notice"

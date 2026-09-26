@@ -5,12 +5,20 @@ import { describe, expect, it, vi } from 'vitest'
 import { NoticeBar } from './notice-bar'
 
 describe('NoticeBar', () => {
-  it('hugs its content instead of spanning its container', () => {
+  it('is a flat status line, not a card', () => {
     render(<NoticeBar tone="warning">Running low on balance</NoticeBar>)
 
-    // The whole point of the rewrite: a stripe across a session puts the message and its
-    // action a screen apart. w-fit is what keeps them together.
-    expect(screen.getByRole('status')).toHaveClass('w-fit')
+    // It docks to the surface it belongs to. A border, a shadow or a radius turns it into
+    // something dropped on top of the work, which is what made it shout.
+    const notice = screen.getByRole('status')
+    expect(notice).toHaveClass('w-full')
+    expect(notice.className).not.toMatch(/\bshadow-|\brounded-|\bborder\b/)
+  })
+
+  it('stays quiet by default rather than reaching for a colour', () => {
+    render(<NoticeBar>You have hit your monthly limit</NoticeBar>)
+
+    expect(screen.getByRole('status')).toHaveAttribute('data-tone', 'neutral')
   })
 
   it('runs its action without letting the click reach the surface underneath', async () => {

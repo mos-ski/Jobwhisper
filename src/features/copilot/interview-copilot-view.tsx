@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode, type RefObject } from 'react'
-import { ArrowLeft, ArrowUpDown, ChevronDown, ChevronRight, ChevronUp, CircleHelp, Clock, Code2, FileText, MessageCircle, Pause, PhoneOff, Play, Plus, Send, Settings, TriangleAlert, Users, Video, VideoOff, X } from 'lucide-react'
+import { ArrowLeft, ArrowUpDown, ChevronDown, ChevronRight, ChevronUp, CircleHelp, Code2, FileText, MessageCircle, Pause, PhoneOff, Play, Plus, Send, Settings, Users, Video, VideoOff, X } from 'lucide-react'
 
 import type { ContextDocumentRow } from '@/contracts/documents.draft'
 import type { ResumeHistoryRow } from '@/contracts/resume.draft'
@@ -1644,8 +1644,13 @@ function CopilotCodingPanel({
  * layout makes the panels jump when a balance dips, mid-interview, which is the worst moment
  * for the screen to move.
  */
-const mobileNoticePosition = 'fixed inset-x-0 top-20 z-20 mx-auto max-w-[calc(100vw-2rem)]'
-const desktopNoticePosition = 'absolute inset-x-0 top-28 z-20 mx-auto max-w-[calc(100vw-2rem)]'
+/**
+ * Docked flush under the session's own strip and taken out of flow: it reads as another line
+ * of that chrome rather than a card dropped on top, and the panels do not move when it
+ * appears. The live surface keeps its own dark palette whatever the app theme is doing.
+ */
+const mobileNoticePosition = 'fixed inset-x-0 top-[4.5rem] z-20 border-b border-[var(--lf-live-divider)] bg-[var(--lf-live-strip)] text-brand-bar-text'
+const desktopNoticePosition = 'shrink-0 border-b border-[var(--lf-live-divider)] bg-[var(--lf-live-strip)] px-5 text-brand-bar-text'
 
 const COPILOT_RATE_CENTS_PER_MIN = 80
 const COPILOT_START_BALANCE_CENTS = 60
@@ -1771,8 +1776,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
 
         {lowBalance && !sessionPaused && !noticeDismissed ? (
           <NoticeBar
-            tone="warning"
-            icon={<TriangleAlert className="size-4" />}
+            tone="neutral"
             className={mobileNoticePosition}
             action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
             onDismiss={() => setNoticeDismissed(true)}
@@ -1783,8 +1787,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
         ) : null}
         {sessionPaused ? (
           <NoticeBar
-            tone="danger"
-            icon={<TriangleAlert className="size-4" />}
+            tone="neutral"
             className={mobileNoticePosition}
             action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
           >
@@ -1794,9 +1797,8 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
 
         {fairUse && (fairUseNearing || fairUseSpent) ? (
           <NoticeBar
-            tone={fairUseSpent ? 'danger' : 'warning'}
-            icon={fairUseSpent ? <Clock className="size-4" /> : <TriangleAlert className="size-4" />}
-            className={cn(mobileNoticePosition, lowBalance || sessionPaused ? 'top-32' : undefined)}
+            tone="neutral"
+            className={cn(mobileNoticePosition, lowBalance || sessionPaused ? 'top-[7.25rem]' : undefined)}
             action={fairUse.policy.topUpUnlocks ? { label: 'Keep going', onClick: () => setFairUseDialogOpen(true) } : undefined}
           >
             {fairUseSpent
@@ -1917,7 +1919,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
   }
 
   return (
-    <main className="relative min-h-screen bg-[var(--lf-live-workspace)] text-brand-bar-text">
+    <main className="flex min-h-screen flex-col bg-[var(--lf-live-workspace)] text-brand-bar-text xl:h-screen xl:overflow-hidden">
       <header className="flex min-h-[57px] flex-wrap items-center justify-between gap-3 border-b border-[var(--lf-live-divider)] bg-[var(--lf-live-header)] px-5 py-3">
         <div className="flex min-w-0 items-center gap-3">
           <a href={completeHref} aria-label="Back from live copilot" className="grid size-7 shrink-0 place-items-center rounded-soft text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
@@ -1943,8 +1945,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
       </div>
       {lowBalance && !sessionPaused && !noticeDismissed ? (
         <NoticeBar
-          tone="warning"
-          icon={<TriangleAlert className="size-4" />}
+          tone="neutral"
           className={desktopNoticePosition}
           action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
           onDismiss={() => setNoticeDismissed(true)}
@@ -1955,8 +1956,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
       ) : null}
       {sessionPaused ? (
         <NoticeBar
-          tone="danger"
-          icon={<TriangleAlert className="size-4" />}
+          tone="neutral"
           className={desktopNoticePosition}
           action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
         >
@@ -1965,9 +1965,8 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
       ) : null}
       {fairUse && (fairUseNearing || fairUseSpent) ? (
         <NoticeBar
-          tone={fairUseSpent ? 'danger' : 'warning'}
-          icon={fairUseSpent ? <Clock className="size-4" /> : <TriangleAlert className="size-4" />}
-          className={cn(desktopNoticePosition, lowBalance || sessionPaused ? 'top-32' : undefined)}
+          tone="neutral"
+          className={desktopNoticePosition}
           action={fairUse.policy.topUpUnlocks ? { label: 'Keep going', onClick: () => setFairUseDialogOpen(true) } : undefined}
         >
           {fairUseSpent
@@ -1977,7 +1976,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
       ) : null}
       <section
         className={cn(
-          'grid gap-3 overflow-hidden p-3 xl:h-[calc(100vh-6.0625rem)]',
+          'grid gap-3 overflow-hidden p-3 xl:min-h-0 xl:flex-1',
           demoMode ? '' : 'xl:grid-cols-[minmax(0,1fr)_6px_28.5rem]',
         )}
       >
