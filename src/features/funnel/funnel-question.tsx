@@ -1,4 +1,4 @@
-import { useEffect, useId, type FormEvent } from 'react'
+import { useEffect, useId, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { Check } from 'lucide-react'
 
 import type { FunnelQuestion as FunnelQuestionData } from '@/contracts/funnel.draft'
@@ -55,23 +55,11 @@ export function FunnelQuestion({ question, value, onChange, eyebrow, onAutoAdvan
   }, [question.id])
 
   if (question.kind === 'text') {
-    const submit = (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault()
-      if (value.trim() && onAutoAdvance) onAutoAdvance()
-    }
     return (
-      <form data-slot="funnel-question" data-kind="text" onSubmit={submit} className="grid gap-8">
+      <div data-slot="funnel-question" data-kind="text" className="grid gap-8">
         <FunnelTitle id={headingId} eyebrow={eyebrow}>{question.ask}</FunnelTitle>
-        <input
-          aria-labelledby={headingId}
-          autoFocus
-          value={value}
-          placeholder={question.placeholder}
-          onChange={(event) => onChange(event.target.value)}
-          className="min-h-14 w-full rounded-2xl border border-input bg-surface px-5 text-center text-xl text-ink shadow-control outline-none placeholder:text-ink-muted focus:border-focus focus:ring-2 focus:ring-focus"
-        />
-        <p className="text-center text-sm text-ink-muted">Press Enter to continue</p>
-      </form>
+        <TextAnswer labelledBy={headingId} placeholder={question.placeholder} suggestions={question.suggestions ?? []} value={value} onChange={onChange} onAutoAdvance={onAutoAdvance} />
+      </div>
     )
   }
 
@@ -104,6 +92,145 @@ export function FunnelQuestion({ question, value, onChange, eyebrow, onAutoAdvan
             ))}
       </fieldset>
     </div>
+  )
+}
+
+const MAX_MATCHES = 8
+const CHIP_COUNT = 6
+
+function matchesFor(suggestions: readonly string[], value: string): readonly string[] {
+  const query = value.trim().toLowerCase()
+  if (!query) return []
+  const hits = suggestions.filter((item) => item.toLowerCase().includes(query) && item.toLowerCase() !== query)
+  // Titles that start with what was typed read as the closest answers, so they lead.
+  return [...hits.filter((item) => item.toLowerCase().startsWith(query)), ...hits.filter((item) => !item.toLowerCase().startsWith(query))].slice(0, MAX_MATCHES)
+}
+
+function Highlighted({ text, query }: { readonly text: string; readonly query: string }) {
+  const start = text.toLowerCase().indexOf(query.trim().toLowerCase())
+  if (start < 0 || !query.trim()) return <>{text}</>
+  const end = start + query.trim().length
+  return <>{text.slice(0, start)}<strong className="font-semibold text-ink">{text.slice(start, end)}</strong>{text.slice(end)}</>
+}
+
+type TextAnswerProps = {
+  readonly labelledBy: string
+  readonly placeholder: string
+  readonly suggestions: readonly string[]
+  readonly value: string
+  readonly onChange: (value: string) => void
+  readonly onAutoAdvance?: () => void
+}
+
+function TextAnswer({ labelledBy, placeholder, suggestions, value, onChange, onAutoAdvance }: TextAnswerProps) {
+  const listId = useId()
+  const [open, setOpen] = useState(false)
+  const [active, setActive] = useState(-1)
+  const matches = matchesFor(suggestions, value)
+  const showList = open && matches.length > 0
+  const chips = suggestions.slice(0, CHIP_COUNT)
+
+  function pick(choice: string) {
+    onChange(choice)
+    setOpen(false)
+    setActive(-1)
+    onAutoAdvance?.()
+  }
+
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (value.trim() && onAutoAdvance) onAutoAdvance()
+  }
+
+  function onKeyDown(event: ReactKeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'ArrowDown' && matches.length > 0) {
+      event.preventDefault()
+      setOpen(true)
+      setActive((index) => Math.min(index + 1, matches.length - 1))
+    } else if (event.key === 'ArrowUp' && showList) {
+      event.preventDefault()
+      setActive((index) => Math.max(index - 1, -1))
+    } else if (event.key === 'Enter' && showList && active >= 0) {
+      const choice = matches[active]
+      if (choice === undefined) return
+      event.preventDefault()
+      pick(choice)
+    } else if (event.key === 'Escape' && showList) {
+      // Close the list only; without this the shell would read Escape as "leave the funnel".
+      event.preventDefault()
+      event.stopPropagation()
+      setOpen(false)
+      setActive(-1)
+    }
+  }
+
+  return (
+    <form onSubmit={submit} className="grid gap-6">
+      <div className="relative">
+        <input
+          role="combobox"
+          aria-labelledby={labelledBy}
+          aria-autocomplete="list"
+          aria-expanded={showList}
+          aria-controls={listId}
+          aria-activedescendant={showList && active >= 0 ? `${listId}-${active}` : undefined}
+          autoComplete="off"
+          autoFocus
+          value={value}
+          placeholder={placeholder}
+          onChange={(event) => {
+            onChange(event.target.value)
+            setOpen(true)
+            setActive(-1)
+          }}
+          onFocus={() => setOpen(true)}
+          onBlur={() => setOpen(false)}
+          onKeyDown={onKeyDown}
+          className="min-h-14 w-full rounded-2xl border border-input bg-surface px-5 text-center text-xl text-ink shadow-control outline-none placeholder:text-ink-muted focus:border-focus focus:ring-2 focus:ring-focus"
+        />
+        <ul
+          id={listId}
+          role="listbox"
+          aria-labelledby={labelledBy}
+          hidden={!showList}
+          className="absolute inset-x-0 top-full z-dropdown mt-2 max-h-72 overflow-y-auto rounded-2xl border border-border bg-surface py-2 shadow-panel"
+        >
+          {matches.map((match, index) => (
+            <li
+              key={match}
+              id={`${listId}-${index}`}
+              role="option"
+              aria-selected={index === active}
+              // Keeps focus in the input so the list does not close before the click lands.
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => pick(match)}
+              onMouseEnter={() => setActive(index)}
+              className={cn('flex min-h-11 cursor-pointer items-center px-5 text-base text-ink-muted', index === active && 'bg-accent-subtle text-ink')}
+            >
+              <span><Highlighted text={match} query={value} /></span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      {chips.length > 0 ? (
+        <div className="grid gap-3">
+          <p className="text-center text-sm text-ink-muted">Popular picks</p>
+          <div className="flex flex-wrap justify-center gap-2">
+            {chips.map((chip) => (
+              <button
+                key={chip}
+                type="button"
+                onClick={() => pick(chip)}
+                className={cn('inline-flex min-h-11 items-center rounded-full border px-4 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus', value === chip ? 'border-accent bg-accent-subtle text-ink' : 'border-border bg-surface text-ink hover:border-ink-muted')}
+              >
+                {chip}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
+      <p className="text-center text-sm text-ink-muted">Or type your own and press Enter</p>
+    </form>
   )
 }
 

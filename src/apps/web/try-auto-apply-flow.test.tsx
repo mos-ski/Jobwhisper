@@ -22,7 +22,7 @@ describe('/v3/try/auto-apply', () => {
     for (const question of autoApplyFunnelQuestions) {
       expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(question.ask)
       if (question.kind === 'text') {
-        fireEvent.change(screen.getByRole('textbox', { name: question.ask }), { target: { value: 'Customer Success Manager' } })
+        fireEvent.change(screen.getByRole('combobox', { name: question.ask }), { target: { value: 'Customer Success Manager' } })
         fireEvent.click(screen.getByRole('button', { name: /^(Continue|Finish)$/ }))
       } else {
         const first = question.kind === 'options' ? question.options[0]?.label : question.choices[0]

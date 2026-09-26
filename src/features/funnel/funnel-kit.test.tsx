@@ -68,7 +68,7 @@ describe('FunnelQuestion', () => {
     const text: FunnelQuestionData = { id: 'title', tab: 'Title', ask: 'What job title are you going for?', kind: 'text', placeholder: 'e.g. Senior Product Designer' }
     render(<FunnelQuestion question={text} value="" onChange={onChange} />)
 
-    await user.type(screen.getByRole('textbox', { name: text.ask }), 'D')
+    await user.type(screen.getByRole('combobox', { name: text.ask }), 'D')
     expect(onChange).toHaveBeenCalledWith('D')
   })
 
@@ -92,7 +92,49 @@ describe('FunnelQuestion', () => {
     const onAutoAdvance = vi.fn()
     const text: FunnelQuestionData = { id: 'title', tab: 'Title', ask: 'What job title are you going for?', kind: 'text', placeholder: '' }
     render(<FunnelQuestion question={text} value="Designer" onChange={() => {}} onAutoAdvance={onAutoAdvance} />)
-    fireEvent.submit(screen.getByRole('textbox', { name: text.ask }))
+    fireEvent.submit(screen.getByRole('combobox', { name: text.ask }))
     expect(onAutoAdvance).toHaveBeenCalled()
+  })
+
+  it('offers matching suggestions as you type and moves on when one is picked', () => {
+    const onChange = vi.fn()
+    const onAutoAdvance = vi.fn()
+    const text: FunnelQuestionData = { id: 'role', tab: 'Role', ask: 'What role do you want next?', kind: 'text', placeholder: '', suggestions: ['Product Manager', 'Product Designer', 'Data Analyst'] }
+    render(<FunnelQuestion question={text} value="prod" onChange={onChange} onAutoAdvance={onAutoAdvance} />)
+
+    const input = screen.getByRole('combobox', { name: text.ask })
+    fireEvent.focus(input)
+    const list = screen.getByRole('listbox')
+    expect(list).toBeVisible()
+    expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual(['Product Manager', 'Product Designer'])
+
+    fireEvent.keyDown(input, { key: 'ArrowDown' })
+    fireEvent.keyDown(input, { key: 'ArrowDown' })
+    fireEvent.keyDown(input, { key: 'Enter' })
+    expect(onChange).toHaveBeenLastCalledWith('Product Designer')
+    expect(onAutoAdvance).toHaveBeenCalledTimes(1)
+  })
+
+  it('answers in one click from a popular pick', () => {
+    const onChange = vi.fn()
+    const onAutoAdvance = vi.fn()
+    const text: FunnelQuestionData = { id: 'role', tab: 'Role', ask: 'What role do you want next?', kind: 'text', placeholder: '', suggestions: ['Product Manager', 'Data Analyst'] }
+    render(<FunnelQuestion question={text} value="" onChange={onChange} onAutoAdvance={onAutoAdvance} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Data Analyst' }))
+    expect(onChange).toHaveBeenCalledWith('Data Analyst')
+    expect(onAutoAdvance).toHaveBeenCalled()
+  })
+
+  it('closes the suggestions on Escape without leaving the funnel', () => {
+    const onClose = vi.fn()
+    const text: FunnelQuestionData = { id: 'role', tab: 'Role', ask: 'What role do you want next?', kind: 'text', placeholder: '', suggestions: ['Product Manager'] }
+    render(<FunnelShell label="Role" stepCount={2} currentStep={1} onClose={onClose}><FunnelQuestion question={text} value="prod" onChange={() => {}} /></FunnelShell>)
+
+    const input = screen.getByRole('combobox', { name: text.ask })
+    fireEvent.focus(input)
+    fireEvent.keyDown(input, { key: 'Escape' })
+    expect(screen.getByRole('listbox', { hidden: true })).not.toBeVisible()
+    expect(onClose).not.toHaveBeenCalled()
   })
 })

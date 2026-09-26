@@ -18,7 +18,7 @@ describe('/v3/try/pro', () => {
 
     for (const question of trialFunnelQuestions) {
       if (question.kind === 'text') {
-        fireEvent.change(screen.getByRole('textbox', { name: question.ask }), { target: { value: 'Senior Product Designer' } })
+        fireEvent.change(screen.getByRole('combobox', { name: question.ask }), { target: { value: 'Senior Product Designer' } })
         fireEvent.click(screen.getByRole('button', { name: /^(Continue|Finish)$/ }))
       } else {
         const first = question.kind === 'options' ? question.options[0]?.label : question.choices[0]

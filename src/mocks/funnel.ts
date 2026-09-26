@@ -1,5 +1,66 @@
 import type { AtsReport, FunnelJobMatch, FunnelQuestion, FunnelTrialOffer, ResumeRewrite } from '@/contracts/funnel.draft'
 
+const JOB_TITLE_SUGGESTIONS: readonly string[] = [
+  'Product Manager',
+  'Software Engineer',
+  'Customer Success Manager',
+  'Data Analyst',
+  'Product Designer',
+  'Marketing Manager',
+  'Senior Product Manager',
+  'Senior Software Engineer',
+  'Frontend Engineer',
+  'Backend Engineer',
+  'Full Stack Engineer',
+  'Data Scientist',
+  'Machine Learning Engineer',
+  'DevOps Engineer',
+  'Engineering Manager',
+  'UX Designer',
+  'UX Researcher',
+  'Business Analyst',
+  'Project Manager',
+  'Program Manager',
+  'Account Executive',
+  'Account Manager',
+  'Sales Development Representative',
+  'Customer Support Specialist',
+  'Operations Manager',
+  'Growth Marketing Manager',
+  'Content Marketing Manager',
+  'Product Marketing Manager',
+  'Financial Analyst',
+  'Accountant',
+  'HR Business Partner',
+  'Recruiter',
+  'Technical Writer',
+  'QA Engineer',
+  'Solutions Engineer',
+  'Head of Product',
+]
+
+const LOCATION_SUGGESTIONS: readonly string[] = [
+  'Remote, anywhere in the US',
+  'New York, NY',
+  'San Francisco, CA',
+  'Austin, TX',
+  'Atlanta, GA',
+  'Chicago, IL',
+  'Seattle, WA',
+  'Los Angeles, CA',
+  'Boston, MA',
+  'Denver, CO',
+  'Dallas, TX',
+  'Houston, TX',
+  'Miami, FL',
+  'Washington, DC',
+  'Phoenix, AZ',
+  'Remote, worldwide',
+  'Toronto, Canada',
+  'London, United Kingdom',
+  'Lagos, Nigeria',
+]
+
 export const trialFunnelQuestions: readonly FunnelQuestion[] = [
   {
     id: 'goal',
@@ -55,6 +116,7 @@ export const trialFunnelQuestions: readonly FunnelQuestion[] = [
     ask: 'What job title are you going for?',
     kind: 'text',
     placeholder: 'e.g. Senior Product Designer',
+    suggestions: JOB_TITLE_SUGGESTIONS,
   },
   {
     id: 'reason',
@@ -169,7 +231,7 @@ export const resumeFunnelRewrite: ResumeRewrite = {
 }
 
 export const autoApplyFunnelQuestions: readonly FunnelQuestion[] = [
-  { id: 'role', tab: 'Role', ask: 'What role do you want next?', kind: 'text', placeholder: 'e.g. Customer Success Manager' },
+  { id: 'role', tab: 'Role', ask: 'What role do you want next?', kind: 'text', placeholder: 'e.g. Customer Success Manager', suggestions: JOB_TITLE_SUGGESTIONS },
   {
     id: 'experience',
     tab: 'Experience',
@@ -195,7 +257,7 @@ export const autoApplyFunnelQuestions: readonly FunnelQuestion[] = [
       { label: 'Over $180k' },
     ],
   },
-  { id: 'location', tab: 'Location', ask: 'Where do you want to work?', kind: 'text', placeholder: 'e.g. Atlanta, GA, or anywhere in the US' },
+  { id: 'location', tab: 'Location', ask: 'Where do you want to work?', kind: 'text', placeholder: 'e.g. Atlanta, GA, or anywhere in the US', suggestions: LOCATION_SUGGESTIONS },
   { id: 'jobType', tab: 'Job type', ask: 'What kind of contract?', kind: 'pills', choices: ['Full-time', 'Contract', 'Part-time', 'Internship'] },
   {
     id: 'workMode',
