@@ -57,7 +57,7 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
   if (step === 'upload') {
     footer = <FunnelQuestionFooter position={0} total={total} canContinue={online && Boolean(props.fileName)} showContinue={false} onBack={props.onBack} onContinue={props.onContinue} />
   } else if (step === 'quiz' && question) {
-    footer = <FunnelQuestionFooter position={questionIndex + 1} total={total} canContinue={online && (answers[question.id] ?? '').trim().length > 0} showContinue={question.kind === 'text'} onBack={props.onBack} onContinue={props.onContinue} />
+    footer = <FunnelQuestionFooter position={questionIndex + 1} total={total} canContinue={online && (answers[question.id] ?? '').trim().length > 0} showContinue={question.kind === 'text' || question.kind === 'range'} onBack={props.onBack} onContinue={props.onContinue} />
   } else if (step === 'matches' && selectedJob) {
     footer = <Button size="lg" className="w-full sm:ms-auto sm:w-auto" onClick={() => props.onApply(selectedJob.id)}>Apply to this job</Button>
   } else if (step === 'matches' && matches.length > 0) {

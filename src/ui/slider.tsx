@@ -16,6 +16,10 @@ export type SliderProps = Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> & {
   readonly showValue?: boolean
   readonly minLabel?: string
   readonly maxLabel?: string
+  /** One accessible name per thumb, e.g. ["Minimum salary", "Maximum salary"]. Required for range sliders. */
+  readonly thumbLabels?: readonly string[]
+  /** Spoken value for a thumb, e.g. `(value) => '$80,000'`. */
+  readonly formatValueText?: (value: number) => string
 }
 
 export const Slider = forwardRef<HTMLDivElement, SliderProps>(
@@ -34,10 +38,14 @@ export const Slider = forwardRef<HTMLDivElement, SliderProps>(
       showValue = false,
       minLabel,
       maxLabel,
+      thumbLabels,
+      formatValueText,
       ...props
     },
     ref,
   ) {
+    const thumbValues = value ?? defaultValue
+
     return (
       <div ref={ref} data-slot="slider" className={cn('flex flex-col gap-2', className)} {...props}>
         {(label || showValue) && (
@@ -56,28 +64,37 @@ export const Slider = forwardRef<HTMLDivElement, SliderProps>(
           min={min}
           max={max}
           step={step}
-          onValueChange={onValueChange}
+          // Base UI reports a single-thumb change as a bare number; consumers always get an array.
+          onValueChange={onValueChange ? (next: number | readonly number[]) => onValueChange(typeof next === 'number' ? [next] : [...next]) : undefined}
           orientation={orientation}
           disabled={disabled}
-          className={cn(
-            'relative flex touch-none select-none items-center',
-            orientation === 'vertical' ? 'h-48 w-5 flex-col' : 'h-5 w-full',
-            disabled && 'opacity-50',
-          )}
+          className={cn(disabled && 'opacity-50')}
         >
-          <BaseSlider.Track
+          {/* Control is the part Base UI listens to for pointer drags; without it only the keyboard moves the thumbs. */}
+          <BaseSlider.Control
             className={cn(
-              'relative grow rounded-full bg-muted',
-              orientation === 'vertical' ? 'w-1.5' : 'h-1.5',
+              'relative flex touch-none select-none items-center',
+              orientation === 'vertical' ? 'h-48 w-5 flex-col' : 'h-11 w-full',
             )}
           >
-            <BaseSlider.Indicator className="absolute rounded-full bg-accent" />
-          </BaseSlider.Track>
-          <BaseSlider.Thumb
-            className={cn(
-              'block size-5 rounded-full border-2 border-accent bg-surface shadow-control transition-colors duration-fast ease-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface hover:bg-accent-subtle disabled:pointer-events-none',
-            )}
-          />
+            <BaseSlider.Track
+              className={cn(
+                'relative grow rounded-full bg-muted',
+                orientation === 'vertical' ? 'h-full w-1.5' : 'h-1.5',
+              )}
+            >
+              <BaseSlider.Indicator className="absolute rounded-full bg-accent" />
+              {thumbValues.map((_, index) => (
+                <BaseSlider.Thumb
+                  key={index}
+                  index={index}
+                  getAriaLabel={thumbLabels ? (thumb) => thumbLabels[thumb] ?? '' : undefined}
+                  getAriaValueText={formatValueText ? (_formatted, thumbValue) => formatValueText(thumbValue) : undefined}
+                  className="block size-5 rounded-full border-2 border-accent bg-surface shadow-control transition-colors duration-fast ease-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface hover:bg-accent-subtle disabled:pointer-events-none"
+                />
+              ))}
+            </BaseSlider.Track>
+          </BaseSlider.Control>
         </BaseSlider.Root>
         {(minLabel || maxLabel) && (
           <div className="flex items-center justify-between">

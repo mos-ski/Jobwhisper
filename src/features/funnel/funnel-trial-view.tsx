@@ -66,7 +66,7 @@ export function FunnelTrialView(props: FunnelTrialViewProps) {
       currentStep={stepFor(step, questionIndex, questions.length)}
       onClose={onClose}
       notice={online ? null : <FunnelOfflineNotice />}
-      footer={step === 'quiz' && question ? <FunnelQuestionFooter position={questionIndex} total={questions.length} canContinue={online && (answers[question.id] ?? '').trim().length > 0} showContinue={question.kind === 'text'} onBack={props.onBack} onContinue={props.onContinue} /> : undefined}
+      footer={step === 'quiz' && question ? <FunnelQuestionFooter position={questionIndex} total={questions.length} canContinue={online && (answers[question.id] ?? '').trim().length > 0} showContinue={question.kind === 'text' || question.kind === 'range'} onBack={props.onBack} onContinue={props.onContinue} /> : undefined}
     >
       {step === 'quiz' && question ? (
         <FunnelQuestion
