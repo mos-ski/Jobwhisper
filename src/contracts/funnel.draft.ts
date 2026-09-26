@@ -15,7 +15,12 @@ type FunnelQuestionBase = {
 export type FunnelQuestion =
   | (FunnelQuestionBase & { readonly kind: 'options'; readonly options: readonly FunnelChoice[] })
   | (FunnelQuestionBase & { readonly kind: 'pills'; readonly choices: readonly string[] })
-  | (FunnelQuestionBase & { readonly kind: 'text'; readonly placeholder: string })
+  | (FunnelQuestionBase & {
+      readonly kind: 'text'
+      readonly placeholder: string
+      /** Offered in a dropdown as the visitor types; the first few also show as one-click chips. */
+      readonly suggestions?: readonly string[]
+    })
 
 /** Keyed by `FunnelQuestion.id`. */
 export type FunnelAnswers = Readonly<Record<string, string>>
