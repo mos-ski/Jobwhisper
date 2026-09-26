@@ -105,7 +105,7 @@ describe('v3 web auth flow', () => {
       { route: '/v3/app?dropdown=help', name: 'Whats new?' },
       { route: '/v3/app?dropdown=credits', name: 'Credit balances' },
       { route: '/v3/app?credit=empty', name: '0% remaining this cycle' },
-      { route: '/v3/app?credit=low', name: '0% left this cycle!' },
+      { route: '/v3/app?credit=low', name: '0% left this cycle' },
     ] as const
 
     for (const item of cases) {

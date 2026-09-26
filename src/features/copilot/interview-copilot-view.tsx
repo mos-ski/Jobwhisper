@@ -22,7 +22,9 @@ import type {
   CopilotTalkTime,
   CopilotTranscriptTurn,
 } from '@/contracts/copilot.draft'
+import type { FairUseSnapshot } from '@/contracts/fair-use.draft'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
+import { FairUseLimitDialog, formatFairUseAmount } from '@/features/billing/fair-use'
 import { centsToCredits, creditsToCents } from '@/lib/credits'
 import {
   AiSuggestionAction,
@@ -43,6 +45,7 @@ import {
   FormTextArea,
   JobwhisperAiIcon,
   ListPickerDialog,
+  NoticeBar,
   PermissionSteps,
   ShellBar,
   SourcePicker,
@@ -118,6 +121,17 @@ export type CopilotLiveViewProps = {
   /** Interview Copilot credit top-ups require an active Ace Your Interview plan. See PRICING.md §1, §4. */
   readonly hasActivePlan?: boolean
   readonly initialAutoAnswer?: boolean
+  /**
+   * Fair use on an unlimited plan: how far into the stretch this session is. Absent on a
+   * plan with no stretch cap, which renders exactly as it did before (PRICING.md §1.2).
+   */
+  readonly fairUse?: FairUseSnapshot
+  readonly onFairUseUnlock?: () => void
+  /**
+   * Pins the balance so the low and out-of-balance notices can be seen without waiting for a
+   * live session to drain into them. Unset, the balance runs down as it always did.
+   */
+  readonly balanceState?: 'low' | 'empty'
 }
 
 export type CopilotCompleteViewProps = {
@@ -1625,6 +1639,19 @@ function CopilotCodingPanel({
   )
 }
 
+/**
+ * Notices float over the session rather than sitting in its flow: a bar that takes a row of
+ * layout makes the panels jump when a balance dips, mid-interview, which is the worst moment
+ * for the screen to move.
+ */
+/**
+ * Docked flush under the session's own strip and taken out of flow: it reads as another line
+ * of that chrome rather than a card dropped on top, and the panels do not move when it
+ * appears. The live surface keeps its own dark palette whatever the app theme is doing.
+ */
+const mobileNoticePosition = 'fixed inset-x-0 top-[4.5rem] z-20 border-b border-[var(--lf-live-divider)] bg-[var(--lf-live-strip)] text-brand-bar-text'
+const desktopNoticePosition = 'shrink-0 border-b border-[var(--lf-live-divider)] bg-[var(--lf-live-strip)] px-5 text-brand-bar-text'
+
 const COPILOT_RATE_CENTS_PER_MIN = 80
 const COPILOT_START_BALANCE_CENTS = 60
 const TOPUP_MINIMUM_DOLLARS = 10
@@ -1633,7 +1660,7 @@ const TOPUP_CENTS_PER_CREDIT = 40
 // of $0.40 — $25 would be 62.5 credits, so presets stick to $10/$20/$50.
 const TOPUP_PRESET_DOLLARS = [10, 20, 50]
 
-export function CopilotLiveView({ completeHref, session, isLoading = false, transcriptBank = [], codingBank = [], demoMode = false, hasActivePlan = true, initialAutoAnswer = false }: CopilotLiveViewProps) {
+export function CopilotLiveView({ completeHref, session, isLoading = false, transcriptBank = [], codingBank = [], demoMode = false, hasActivePlan = true, initialAutoAnswer = false, fairUse, onFairUseUnlock, balanceState }: CopilotLiveViewProps) {
   const [assistantMessages, setAssistantMessages] = useState<readonly AiAssistantMessage[]>([])
   const [draft, setDraft] = useState('')
   const assistantScrollRef = useRef<HTMLDivElement>(null)
@@ -1652,9 +1679,17 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
   const [showChat, setShowChat] = useState(false)
   const [videoEnabled, setVideoEnabled] = useState(true)
   const [isMobile, setIsMobile] = useState(() => window.matchMedia('(max-width: 1279px)').matches)
-  const [balanceCents, setBalanceCents] = useState(COPILOT_START_BALANCE_CENTS)
-  const [sessionPaused, setSessionPaused] = useState(false)
+  const [balanceCents, setBalanceCents] = useState(
+    balanceState === 'low' ? COPILOT_START_BALANCE_CENTS * 0.2 : balanceState === 'empty' ? 0 : COPILOT_START_BALANCE_CENTS,
+  )
+  const [sessionPaused, setSessionPaused] = useState(balanceState === 'empty')
+  const [noticeDismissed, setNoticeDismissed] = useState(false)
   const [topUpOpen, setTopUpOpen] = useState(false)
+  // The wall opens itself once. Dismissing it leaves the banner, so the session never looks
+  // live again while the feature is resting.
+  const [fairUseDialogOpen, setFairUseDialogOpen] = useState(fairUse?.state === 'cooling-down')
+  const fairUseSpent = fairUse?.state === 'cooling-down'
+  const fairUseNearing = fairUse?.state === 'nearing-limit'
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 1279px)')
@@ -1664,7 +1699,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
   }, [])
 
   useEffect(() => {
-    if (isLoading || sessionPaused || demoMode) return
+    if (isLoading || sessionPaused || demoMode || balanceState !== undefined) return
     const id = window.setInterval(() => {
       const perTickCents = COPILOT_RATE_CENTS_PER_MIN / 60
       setBalanceCents((prev) => {
@@ -1677,7 +1712,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
       })
     }, 1000)
     return () => window.clearInterval(id)
-  }, [isLoading, sessionPaused, hasActivePlan])
+  }, [isLoading, sessionPaused, hasActivePlan, demoMode, balanceState])
 
   const lowBalance = !demoMode && balanceCents > 0 && balanceCents <= COPILOT_START_BALANCE_CENTS * 0.2
 
@@ -1739,33 +1774,37 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
 
         {session.mode === 'interview' && !demoMode ? <DraggableAvatar name="You" videoEnabled={videoEnabled} /> : null}
 
-        {lowBalance && !sessionPaused ? (
-          <div role="status" className="fixed inset-x-4 top-20 z-20 flex items-center justify-between gap-3 rounded-lg bg-warning-surface px-4 py-2.5 text-sm text-warning shadow-panel">
-            <span>Running low on balance</span>
-            {hasActivePlan ? (
-              <button type="button" onClick={(event) => { event.stopPropagation(); setTopUpOpen(true) }} className="shrink-0 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-                Add funds
-              </button>
-            ) : (
-              <a href="/v3/billing/plans" onClick={(event) => event.stopPropagation()} className="shrink-0 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-                View plans
-              </a>
-            )}
-          </div>
+        {lowBalance && !sessionPaused && !noticeDismissed ? (
+          <NoticeBar
+            tone="neutral"
+            className={mobileNoticePosition}
+            action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
+            onDismiss={() => setNoticeDismissed(true)}
+            dismissLabel="Dismiss the low balance notice"
+          >
+            Running low on balance
+          </NoticeBar>
         ) : null}
         {sessionPaused ? (
-          <div role="status" className="fixed inset-x-4 top-20 z-20 flex items-center justify-between gap-3 rounded-lg bg-danger px-4 py-2.5 text-sm font-semibold text-on-danger shadow-panel">
-            <span>Session paused</span>
-            {hasActivePlan ? (
-              <button type="button" onClick={(event) => { event.stopPropagation(); setTopUpOpen(true) }} className="shrink-0 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-                Add funds
-              </button>
-            ) : (
-              <a href="/v3/billing/plans" onClick={(event) => event.stopPropagation()} className="shrink-0 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-                View plans
-              </a>
-            )}
-          </div>
+          <NoticeBar
+            tone="neutral"
+            className={mobileNoticePosition}
+            action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
+          >
+            Session paused
+          </NoticeBar>
+        ) : null}
+
+        {fairUse && (fairUseNearing || fairUseSpent) ? (
+          <NoticeBar
+            tone="neutral"
+            className={cn(mobileNoticePosition, lowBalance || sessionPaused ? 'top-[7.25rem]' : undefined)}
+            action={fairUse.policy.topUpUnlocks ? { label: 'Keep going', onClick: () => setFairUseDialogOpen(true) } : undefined}
+          >
+            {fairUseSpent
+              ? `Stretch up. Back in ${fairUse.cooldownRemainingLabel ?? `${fairUse.policy.cooldownHours}h`}`
+              : `${formatFairUseAmount(Math.max(0, fairUse.policy.stretchLimit - fairUse.used), fairUse.policy.unit)} left in this stretch`}
+          </NoticeBar>
         ) : null}
 
         <div className="fixed inset-x-0 bottom-0 z-20 flex items-center justify-center gap-4 bg-gradient-to-t from-black/80 to-transparent px-6 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-10">
@@ -1866,12 +1905,21 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
           autoReloadHint="Buy more automatically if you run out mid-session."
           onPurchase={handleAddFunds}
         />
+        {fairUse ? (
+          <FairUseLimitDialog
+            open={fairUseDialogOpen}
+            onOpenChange={setFairUseDialogOpen}
+            snapshot={fairUse}
+            featureName="Interview Copilot"
+            onUnlock={onFairUseUnlock}
+          />
+        ) : null}
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen bg-[var(--lf-live-workspace)] text-brand-bar-text">
+    <main className="flex min-h-screen flex-col bg-[var(--lf-live-workspace)] text-brand-bar-text xl:h-screen xl:overflow-hidden">
       <header className="flex min-h-[57px] flex-wrap items-center justify-between gap-3 border-b border-[var(--lf-live-divider)] bg-[var(--lf-live-header)] px-5 py-3">
         <div className="flex min-w-0 items-center gap-3">
           <a href={completeHref} aria-label="Back from live copilot" className="grid size-7 shrink-0 place-items-center rounded-soft text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
@@ -1895,37 +1943,40 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
           Settings
         </button>
       </div>
-      {lowBalance && !sessionPaused ? (
-        <div role="status" className="flex shrink-0 items-center justify-between gap-3 border-b border-warning bg-warning-surface px-5 py-2 text-sm text-warning">
-          <span>Running low on balance.</span>
-          {hasActivePlan ? (
-            <button type="button" onClick={() => setTopUpOpen(true)} className="shrink-0 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-              Add funds
-            </button>
-          ) : (
-            <a href="/v3/billing/plans" className="shrink-0 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-              View plans
-            </a>
-          )}
-        </div>
+      {lowBalance && !sessionPaused && !noticeDismissed ? (
+        <NoticeBar
+          tone="neutral"
+          className={desktopNoticePosition}
+          action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
+          onDismiss={() => setNoticeDismissed(true)}
+          dismissLabel="Dismiss the low balance notice"
+        >
+          Running low on balance
+        </NoticeBar>
       ) : null}
       {sessionPaused ? (
-        <div role="status" className="flex shrink-0 items-center justify-between gap-3 border-b border-danger bg-danger px-5 py-2 text-sm font-semibold text-on-danger">
-          <span>Session paused, you&apos;re out of balance.</span>
-          {hasActivePlan ? (
-            <button type="button" onClick={() => setTopUpOpen(true)} className="shrink-0 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-              Add funds to continue
-            </button>
-          ) : (
-            <a href="/v3/billing/plans" className="shrink-0 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-              View plans
-            </a>
-          )}
-        </div>
+        <NoticeBar
+          tone="neutral"
+          className={desktopNoticePosition}
+          action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
+        >
+          Session paused, you&apos;re out of balance
+        </NoticeBar>
+      ) : null}
+      {fairUse && (fairUseNearing || fairUseSpent) ? (
+        <NoticeBar
+          tone="neutral"
+          className={desktopNoticePosition}
+          action={fairUse.policy.topUpUnlocks ? { label: 'Keep going', onClick: () => setFairUseDialogOpen(true) } : undefined}
+        >
+          {fairUseSpent
+            ? `Stretch up. Copilot is back${fairUse.resumesAtLabel ? ` at ${fairUse.resumesAtLabel}` : ''}`
+            : `${formatFairUseAmount(Math.max(0, fairUse.policy.stretchLimit - fairUse.used), fairUse.policy.unit)} left in this stretch`}
+        </NoticeBar>
       ) : null}
       <section
         className={cn(
-          'grid gap-3 overflow-hidden p-3 xl:h-[calc(100vh-6.0625rem)]',
+          'grid gap-3 overflow-hidden p-3 xl:min-h-0 xl:flex-1',
           demoMode ? '' : 'xl:grid-cols-[minmax(0,1fr)_6px_28.5rem]',
         )}
       >
@@ -2010,6 +2061,15 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
         autoReloadHint="Buy more automatically if you run out mid-session."
         onPurchase={handleAddFunds}
       />
+      {fairUse ? (
+        <FairUseLimitDialog
+          open={fairUseDialogOpen}
+          onOpenChange={setFairUseDialogOpen}
+          snapshot={fairUse}
+          featureName="Interview Copilot"
+          onUnlock={onFairUseUnlock}
+        />
+      ) : null}
     </main>
   )
 }

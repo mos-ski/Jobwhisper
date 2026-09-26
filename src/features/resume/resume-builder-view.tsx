@@ -2,8 +2,10 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, Download, FileText, HelpCircle, Minus, Plus, Target, X } from 'lucide-react'
 
 import type { ResumeBuilderSession, ResumeBuilderTab, ResumeChatState, ResumeDocument, ResumeHistoryRow, ResumeSectionId, ResumeTemplate } from '@/contracts/resume.draft'
+import type { FairUseSnapshot } from '@/contracts/fair-use.draft'
 import { AiSuggestionAction, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, FormField, FormPanel, FormPanelFooter, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, TipModal, TipModalTrigger, UploadedFileDialog } from '@/ui'
 import { AppShell } from '@/features/dashboard/app-nav'
+import { FairUseLimitDialog, FairUseMeter } from '@/features/billing/fair-use'
 import { InterviewPrepFeatureWidget } from '@/features/interview/interview-prep-feature-widget'
 import { useTypewriter } from '@/hooks/useTypewriter'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
@@ -35,6 +37,9 @@ export type ResumeEditorViewProps = {
   readonly tab: ResumeBuilderTab
   readonly chatState: ResumeChatState
   readonly jd?: string
+  /** Fair use on an unlimited plan: how many prompts this sitting has spent (PRICING.md §1.2). */
+  readonly fairUse?: FairUseSnapshot
+  readonly onFairUseUnlock?: () => void
 }
 
 export type ResumeHistoryViewProps = {
@@ -559,6 +564,7 @@ function ChatSidebar({
   onSend,
   onAccept,
   onReject,
+  fairUse,
 }: {
   readonly session: ResumeBuilderSession
   readonly messages: readonly ChatMessage[]
@@ -570,6 +576,7 @@ function ChatSidebar({
   readonly onSend: () => void
   readonly onAccept: () => void
   readonly onReject: () => void
+  readonly fairUse?: FairUseSnapshot
 }) {
   const chatRef = useRef<HTMLDivElement>(null)
 
@@ -623,6 +630,9 @@ function ChatSidebar({
             ) : null}
           </div>
         )}
+        {fairUse && fairUse.state !== 'running' ? (
+          <FairUseMeter snapshot={fairUse} featureName="Resume Builder" className="mx-4 mb-3" />
+        ) : null}
         <ChatComposer
           prompts={session.promptSuggestions}
           draft={draft}
@@ -1383,7 +1393,7 @@ function useIsMobileViewport() {
   return isMobile
 }
 
-export function ResumeEditorView({ homeHref, document, session, templates, tab, chatState, jd }: ResumeEditorViewProps) {
+export function ResumeEditorView({ homeHref, document, session, templates, tab, chatState, jd, fairUse, onFairUseUnlock }: ResumeEditorViewProps) {
   const hasJd = Boolean(jd && jd.trim())
   const [messages, setMessages] = useState<readonly ChatMessage[]>(() => {
     if (hasJd) {
@@ -1415,6 +1425,7 @@ export function ResumeEditorView({ homeHref, document, session, templates, tab, 
   })
   const [previewOpen, setPreviewOpen] = useState(false)
   const [showInterviewPrepWidget, setShowInterviewPrepWidget] = useState(true)
+  const [fairUseDialogOpen, setFairUseDialogOpen] = useState(fairUse?.state === 'cooling-down')
   const isMobileViewport = useIsMobileViewport()
 
   function revealSuggestion() {
@@ -1493,6 +1504,7 @@ export function ResumeEditorView({ homeHref, document, session, templates, tab, 
             onSend={handleSend}
             onAccept={handleAccept}
             onReject={handleReject}
+            fairUse={fairUse}
           />
         ) : null}
         {tab === 'create' ? (
@@ -1573,6 +1585,15 @@ export function ResumeEditorView({ homeHref, document, session, templates, tab, 
           onOpenChange={setShowPostAcceptTip}
           title="Keep refining"
           body="Ask for more rewrites, accept the changes, or keep editing, your resume updates in real time."
+        />
+      ) : null}
+      {fairUse ? (
+        <FairUseLimitDialog
+          open={fairUseDialogOpen}
+          onOpenChange={setFairUseDialogOpen}
+          snapshot={fairUse}
+          featureName="Resume Builder"
+          onUnlock={onFairUseUnlock}
         />
       ) : null}
     </Workspace>

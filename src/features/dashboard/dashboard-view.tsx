@@ -7,7 +7,7 @@ import { useState, type ReactNode } from 'react'
 import type { DashboardAction, DashboardActionId, DashboardInstallPrompt, DashboardNavItem } from '@/contracts/dashboard.draft'
 import type { UserIdentity } from '@/contracts/identity'
 import { centsToCredits, formatCredits, usagePercent } from '@/lib/credits'
-import { Button, cn, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, JobwhisperIcon, JobwhisperMark, SideMenu, UpgradeDialog } from '@/ui'
+import { Button, cn, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, JobwhisperIcon, JobwhisperMark, NoticeBar, SideMenu, UpgradeDialog } from '@/ui'
 import {
   AutoApplyIcon,
   BillingIcon,
@@ -290,24 +290,21 @@ function CreditDropdown({
 function CreditNotice({ variant, remainingCents, totalCents }: { readonly variant: 'low' | 'empty'; readonly remainingCents: number; readonly totalCents: number }) {
   const isLow = variant === 'low'
   const remainingPercent = usagePercent(remainingCents, totalCents)
+  const [dismissed, setDismissed] = useState(false)
+
+  if (dismissed) return null
 
   return (
-    <div
-      role="status"
+    <NoticeBar
+      tone={isLow ? 'neutral' : 'danger'}
       aria-label={isLow ? 'Low balance notice' : 'Empty balance notice'}
-      className={cn(
-        'absolute start-1/2 top-14 z-10 flex min-h-9 w-[min(684px,calc(100vw-2rem))] -translate-x-1/2 items-center gap-1 rounded-b-xl ps-6 pe-3 text-sm font-semibold shadow-control',
-        isLow ? 'bg-accent-subtle text-accent' : 'bg-danger text-on-danger',
-      )}
+      className="absolute start-1/2 top-14 z-10 w-[min(560px,calc(100vw-2rem))] -translate-x-1/2 rounded-b-xl shadow-control"
+      action={{ label: 'Upgrade', href: '/v3/billing' }}
+      onDismiss={() => setDismissed(true)}
+      dismissLabel="Dismiss balance notice"
     >
-      <p className="min-w-0 flex-1 truncate leading-6">{isLow ? `${remainingPercent}% left this cycle!` : '0% remaining this cycle'}</p>
-      <a href="/v3/billing" className="shrink-0 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-        Upgrade
-      </a>
-      <button type="button" aria-label="Dismiss balance notice" className="grid size-6 shrink-0 place-items-center rounded-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-        <X aria-hidden="true" className="size-4" />
-      </button>
-    </div>
+      {isLow ? `${remainingPercent}% left this cycle` : '0% remaining this cycle'}
+    </NoticeBar>
   )
 }
 

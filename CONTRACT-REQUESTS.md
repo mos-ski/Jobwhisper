@@ -184,3 +184,19 @@ What a real implementation needs that this draft does not model: what happens wh
 - `AtsReport` gives the score with a `verdict` in words, so the screen never leans on colour, and each `AtsIssue` pairs the problem with the fix and a three-level severity. Production scoring should return the fix text too, not just a code.
 - `ResumeRewrite` carries both documents as structured `FunnelResumeDocument`s plus the two scores, so the before and after can render as a page rather than an image. The real resume contract (`resume.draft.ts`) should be able to produce this shape.
 - `FunnelJobMatch` is a flat match with pre-formatted `salaryRange` and `postedLabel` and a list of human `reasons`. Production matching should return the reasons it used, since they are what sells the sign-up.
+## Fair Use Draft Contract
+
+`src/contracts/fair-use.draft.ts` backs the ceiling that sits under "unlimited" (`PRICING.md` §1.2): one uninterrupted stretch runs to a cap, the feature then rests for a set number of hours, and a top-up can end that rest early. `AdminPlanFairUseRule` in `admin-configuration.draft.ts` is the per-plan editable form of the same rule.
+
+Three shapes are worth carrying into the real contract:
+
+- **The unit is fixed by the feature, not chosen beside it.** `FairUseUnit` is `'minutes' | 'prompts' | 'applications'` and each feature owns one, so a policy cannot be stored with a cap in minutes against a feature counted in applications. An admin types a number; nothing picks a unit that could disagree with what the product meters.
+- **`nearing-limit` is a state in the union, not a threshold each view re-derives.** Where the warning fires is a product decision with money attached — it is the last moment someone can top up without interrupting a live call — so it belongs to whoever owns the policy, not to whichever screen renders the meter.
+- **The unlock is an offer on the snapshot, not a price the view computes.** `FairUseUnlockOffer` carries cents, units and a display label together, so a cooldown is priced once, at pay-as-you-go rates, wherever it is sold past.
+
+What a real implementation needs that this draft does not model:
+
+- **What a stretch actually is on the server.** These snapshots are pre-resolved (`used`, plus display strings for the countdown), which is right for a view but says nothing about when a stretch starts, what gap between sessions ends one, or whether a dropped call resumes the same stretch or begins another. That rule decides whether the cap feels fair, and it is the one thing a UI cannot define.
+- **Whether a bought stretch is a new stretch or an extension**, and whether its cap is the plan's or the purchase's. Today's copy says "starts a fresh stretch", which implies the plan's cap applies again — a subscriber could in principle chain them all day at $10 a time. That is the intended monetisation, but it needs a stated ceiling before it is a policy.
+- **Where the cooldown clock lives across devices.** Someone hitting the cap on desktop mid-interview will reach for their phone. The cooldown has to be per account, not per client, or the cap does not hold at all.
+- **An entitlement for the bypass itself.** `CopilotAccessBlockReason` has no member for "in a fair-use cooldown", and it is not `'insufficient-credits'` — the person may have credits and still be resting. A covered feature that is temporarily shut is a distinct block reason and should be one in the real union.

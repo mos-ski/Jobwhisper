@@ -218,7 +218,7 @@ const SUPPORTING_CONTENT: SupportingContent = {
     {
       question: 'What does unlimited mean on these plans?',
       answer:
-        'Interview Prep and every Copilot are unlimited on every plan — no credit balance, no minute counting, nothing to top up mid-interview. Auto Apply is the one metered thing: 500 jobs a month on Pro, uncapped on Premium.',
+        'No monthly allowance and no credit balance: use Interview Prep and every Copilot as many times as you like, for as long as your plan runs. Auto Apply is the one thing metered by volume: 500 jobs a month on Pro, uncapped on Premium.',
     },
     {
       question: 'How does the Starter plan bill?',

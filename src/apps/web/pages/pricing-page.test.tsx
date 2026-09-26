@@ -118,6 +118,9 @@ describe('PricingPage', () => {
     expect(screen.getByText('What happens after 500 Auto Apply jobs on Pro?')).toBeInTheDocument()
     expect(screen.getByText('How does the Starter plan bill?')).toBeInTheDocument()
     expect(screen.getByText('Can I buy interview minutes without a plan?')).toBeInTheDocument()
+    // Fair use is deliberately not sold on this page: the caps are explained in the product,
+    // where someone meets them, not in the FAQ where they read as fine print on "unlimited".
+    expect(screen.queryByText(/fair-use cap/)).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'How billing works' })).toBeInTheDocument()
   })
 

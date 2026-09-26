@@ -359,7 +359,13 @@ While you browse the Jobs page, you may also see the Done For You option. It con
 
 ### How pricing works
 
-The billing page introduces the three ways Lightforth charges. Interview plans are recurring subscriptions, and live Interview Prep and Copilot usage is measured in minutes, with one credit representing one minute. Auto Apply and Resume Builder use prepaid credits without a subscription: Auto Apply charges for each successful application, while Resume Builder charges for each AI prompt. Both prepaid credit balances remain valid for 30 days from purchase. Done For You is a separate, one-time managed service with an interview guarantee. Users can replay this explanation at any time from **How it works** in the Your Plan section.
+The billing page introduces the three ways Lightforth charges. Plans are recurring subscriptions — Starter renews weekly, Pro and Premium monthly — and everything a plan covers is unlimited: no credit balance to watch, and nothing that runs out before your renewal.
+
+What a plan does bound is how long you go without a break. One uninterrupted stretch of Interview Prep or Copilot runs to 90 minutes on Starter, two hours on Pro and three on Premium. Resume Builder allows 25 prompts in a sitting, Auto Apply 50 applications in a run. When a stretch finishes, that one feature rests for a few hours and then opens again at no cost — everything else keeps working in the meantime. We tell you before you get there, not after.
+
+If you are still on a call when your stretch ends, ten dollars of interview minutes starts a fresh one immediately. Waiting costs nothing, and either way your transcript, your notes and your recording stay exactly where they are.
+
+Without a plan, Auto Apply and Resume Builder are still available as prepaid credits: Auto Apply charges for each successful application, Resume Builder for each AI prompt, and both balances stay valid for 30 days from purchase. Done For You is a separate, one-time managed service with an interview guarantee. You can replay this explanation at any time from **How it works** in the Your Plan section.
 
 ### Tailor — Prepares Your Resume
 
@@ -698,6 +704,12 @@ Or maybe you simply need help structuring your response.
 That’s where Copilot comes in.
 
 You’re still the person having the interview.
+
+One more thing worth knowing before you start.
+
+Copilot is unlimited on your plan, but a single unbroken stretch is capped — two hours on Pro, three on Premium, 90 minutes on Starter. That is well past a normal interview, so most people never see it.
+
+If you are getting close, a line appears at the top of the session telling you how long is left. If you do reach it, Copilot rests for a few hours and comes back on its own, or ten dollars of minutes starts you again straight away. Nothing you have recorded is affected either way.
 
 ### Copilot Controls
 

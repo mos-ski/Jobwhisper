@@ -82,6 +82,8 @@ export type { TipModalItem, TipModalProps, TipModalTriggerProps } from './tip-mo
 export type { DialogProps, DialogPortalProps, DialogBackdropProps, DialogPopupProps, DialogTitleProps, DialogDescriptionProps, DialogCloseProps } from './dialog'
 export { EmptyState } from './empty-state'
 export type { EmptyStateProps } from './empty-state'
+export { NoticeBar } from './notice-bar'
+export type { NoticeBarAction, NoticeBarProps, NoticeBarTone } from './notice-bar'
 export { Menu, MenuTrigger, MenuContent, MenuItem, MenuSeparator } from './menu'
 export type { MenuProps, MenuContentProps, MenuItemProps, MenuItemVariant } from './menu'
 export { RadioGroup, RadioGroupItem } from './radio-group'

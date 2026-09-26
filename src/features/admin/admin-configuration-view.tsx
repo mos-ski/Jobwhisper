@@ -18,12 +18,14 @@ import type {
   AdminMarketplacePricingConfig,
   AdminOnboardingSurveyConfig,
   AdminPlanConfig,
+  AdminPlanFairUseRule,
   AdminReferralProgramConfig,
   AdminSurveyQuestionType,
   AdminTrialConfig,
   AdminUnsubscribedAllowanceConfig,
 } from '@/contracts/admin-configuration.draft'
 import type { AdminNavItem, AdminNotification, AdminSearchResult } from '@/contracts/admin.draft'
+import type { FairUseFeature } from '@/contracts/fair-use.draft'
 import type { UserIdentity } from '@/contracts/identity'
 import {
   Checkbox,
@@ -125,6 +127,42 @@ function countLabel(value: string): string {
 
 function onOffLabel(enabled: boolean): string {
   return enabled ? 'On' : 'Off'
+}
+
+function hoursLabel(value: string): string {
+  const parsed = parseWhole(value)
+  if (parsed === null) return value.trim() || 'blank'
+  return parsed === 1 ? '1 hour' : `${numberFormatter.format(parsed)} hours`
+}
+
+/**
+ * What a stretch is made of, per feature. The unit is fixed by the feature, so the admin
+ * types a number and never picks a unit that could disagree with what the product counts.
+ */
+const fairUseCopy: Readonly<Record<FairUseFeature, {
+  readonly legend: string
+  readonly unitLabel: string
+  readonly unitWord: string
+  readonly detail: string
+}>> = {
+  interview: {
+    legend: 'Interview Prep and Copilot',
+    unitLabel: 'Minutes in one stretch',
+    unitWord: 'minutes',
+    detail: 'Counts Prep and live Copilot together. This is the one that fires mid-interview.',
+  },
+  'resume-builder': {
+    legend: 'Resume Builder',
+    unitLabel: 'Prompts in one stretch',
+    unitWord: 'prompts',
+    detail: 'Tailoring prompts in a sitting, before the builder rests.',
+  },
+  'auto-apply': {
+    legend: 'Auto Apply',
+    unitLabel: 'Applications in one run',
+    unitWord: 'applications',
+    detail: 'Caps a single run. The monthly job allowance above still applies on top.',
+  },
 }
 
 function formatCalendarDate(value: string): string {
@@ -259,6 +297,79 @@ function AllowanceField({
       ) : (
         <p className="text-xs leading-5 text-ink-muted">
           No ceiling. Subscribers on this plan see “Unlimited” rather than a balance.
+        </p>
+      )}
+    </fieldset>
+  )
+}
+
+/**
+ * One plan's fair-use rule for one feature. Switched off, the feature has no stretch cap and
+ * the fields go with it — a disabled input still showing 90 reads as a rule that applies.
+ */
+function FairUseRuleField({
+  planId,
+  planName,
+  rule,
+  stretchError,
+  cooldownError,
+  onChange,
+}: {
+  readonly planId: AdminConfigPlanId
+  readonly planName: string
+  readonly rule: FairUseRuleForm
+  readonly stretchError?: string
+  readonly cooldownError?: string
+  readonly onChange: (patch: Partial<FairUseRuleForm>) => void
+}) {
+  const copy = fairUseCopy[rule.feature]
+  const idBase = `${planId}-fair-use-${rule.feature}`
+
+  return (
+    <fieldset className="grid gap-3 rounded-soft border border-border p-3">
+      <legend className="px-1 text-xs font-semibold uppercase tracking-wide text-ink-muted">{copy.legend}</legend>
+      <Switch
+        label="Cap one stretch"
+        aria-label={`Cap one ${copy.legend} stretch, ${planName} plan`}
+        checked={rule.enabled}
+        onCheckedChange={(next) => onChange({ enabled: next })}
+      />
+      {rule.enabled ? (
+        <>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <ConfigField
+              id={`${idBase}-limit`}
+              label={copy.unitLabel}
+              inputMode="numeric"
+              value={rule.stretchLimit}
+              error={stretchError}
+              onChange={(value) => onChange({ stretchLimit: value })}
+            />
+            <ConfigField
+              id={`${idBase}-cooldown`}
+              label="Cooldown, hours"
+              inputMode="numeric"
+              value={rule.cooldownHours}
+              error={cooldownError}
+              onChange={(value) => onChange({ cooldownHours: value })}
+            />
+          </div>
+          <Switch
+            label="A top-up ends the cooldown early"
+            aria-label={`A top-up ends the ${copy.legend} cooldown early, ${planName} plan`}
+            checked={rule.topUpUnlocks}
+            onCheckedChange={(next) => onChange({ topUpUnlocks: next })}
+          />
+          <p className="text-xs leading-5 text-ink-muted">
+            {copy.detail}{' '}
+            {rule.topUpUnlocks
+              ? 'Hitting the cap offers credits as the way back in now.'
+              : 'Hitting the cap offers nothing to buy: the clock is the only way through.'}
+          </p>
+        </>
+      ) : (
+        <p className="text-xs leading-5 text-ink-muted">
+          No stretch cap. Subscribers can run {copy.unitWord} on this plan without stopping.
         </p>
       )}
     </fieldset>
@@ -517,6 +628,17 @@ function toFeatureToggles(
   return definitions.map((definition) => ({ id: definition.id, enabled: record[definition.id] }))
 }
 
+/**
+ * A fair-use rule only means something where the plan grants the feature. Starter has no
+ * Resume Builder to cap, so its rule stays in the data and out of the form.
+ */
+function fairUseAppliesTo(plan: PlanForm, feature: FairUseFeature): boolean {
+  const enabled = (id: AdminConfigFeatureId) => plan.features.find((toggle) => toggle.id === id)?.enabled ?? false
+  if (feature === 'interview') return enabled('interview-prep') || enabled('interview-copilot')
+  if (feature === 'resume-builder') return enabled('resume-builder')
+  return enabled('auto-apply')
+}
+
 function setFeatureToggle(
   toggles: readonly FeatureToggle[],
   featureId: AdminConfigFeatureId,
@@ -528,6 +650,14 @@ function setFeatureToggle(
 /* ------------------------------------------------------------------ pricing tab */
 
 type AllowanceKind = 'limited' | 'unlimited'
+
+type FairUseRuleForm = {
+  readonly feature: FairUseFeature
+  readonly enabled: boolean
+  readonly stretchLimit: string
+  readonly cooldownHours: string
+  readonly topUpUnlocks: boolean
+}
 
 type PlanForm = {
   readonly id: AdminConfigPlanId
@@ -543,6 +673,7 @@ type PlanForm = {
   readonly autoApplyKind: AllowanceKind
   readonly autoApplyAmount: string
   readonly knowledgeBaseDocumentLimit: string
+  readonly fairUse: readonly FairUseRuleForm[]
   readonly features: readonly FeatureToggle[]
   readonly introOfferLabel: string | null
   readonly introOfferEnabled: boolean
@@ -572,6 +703,14 @@ function allowanceLabel(kind: AllowanceKind, amount: string, unit: string): stri
   return kind === 'unlimited' ? 'Unlimited' : `${countLabel(amount)} ${unit}`
 }
 
+/** The whole rule on one line, so the review dialog shows what actually changes for a subscriber. */
+function fairUseLabel(rule: FairUseRuleForm): string {
+  if (!rule.enabled) return 'No cap'
+  const unit = fairUseCopy[rule.feature].unitWord
+  const unlock = rule.topUpUnlocks ? 'top-up unlocks' : 'no way to buy past it'
+  return `${countLabel(rule.stretchLimit)} ${unit}, then ${hoursLabel(rule.cooldownHours)} off, ${unlock}`
+}
+
 function buildPricingForm(
   plans: readonly AdminPlanConfig[],
   definitions: readonly AdminConfigFeatureDefinition[],
@@ -593,6 +732,13 @@ function buildPricingForm(
       autoApplyKind: plan.autoApplyAllowance.kind,
       autoApplyAmount: plan.autoApplyAllowance.kind === 'limited' ? String(plan.autoApplyAllowance.amount) : '',
       knowledgeBaseDocumentLimit: String(plan.knowledgeBaseDocumentLimit),
+      fairUse: plan.fairUse.map((rule) => ({
+        feature: rule.feature,
+        enabled: rule.enabled,
+        stretchLimit: String(rule.stretchLimit),
+        cooldownHours: String(rule.cooldownHours),
+        topUpUnlocks: rule.topUpUnlocks,
+      })),
       features: toFeatureToggles(definitions, plan.features),
       introOfferLabel: plan.introOffer ? plan.introOffer.label : null,
       introOfferEnabled: plan.introOffer ? plan.introOffer.enabled : false,
@@ -645,6 +791,23 @@ function validatePricing(form: PricingForm): Readonly<Record<string, string>> {
     const documents = parseWhole(plan.knowledgeBaseDocumentLimit)
     if (documents === null || documents < 1 || documents > 100) {
       errors[`${plan.id}-documents`] = 'Enter a whole number between 1 and 100 documents.'
+    }
+    for (const rule of plan.fairUse) {
+      if (!rule.enabled) continue
+      const copy = fairUseCopy[rule.feature]
+      const stretch = parseWhole(rule.stretchLimit)
+      if (stretch === null || stretch < 1) {
+        errors[`${plan.id}-fair-use-${rule.feature}-limit`] =
+          `Enter a whole number of ${copy.unitWord}, at least 1, or switch the cap off.`
+      }
+      const cooldown = parseWhole(rule.cooldownHours)
+      if (cooldown === null || cooldown < 1) {
+        errors[`${plan.id}-fair-use-${rule.feature}-cooldown`] = 'Enter a whole number of hours, at least 1.'
+      } else if (cooldown > 24) {
+        // A cooldown longer than a day reads as a suspension, and support pays for it.
+        errors[`${plan.id}-fair-use-${rule.feature}-cooldown`] =
+          'Keep the cooldown at 24 hours or less. Longer than a day is a suspension, not fair use.'
+      }
     }
     if (plan.introOfferLabel !== null && plan.introOfferEnabled) {
       const intro = parseCents(plan.introFirstMonthPrice)
@@ -747,6 +910,17 @@ function pricingChanges(
       countLabel(base.knowledgeBaseDocumentLimit),
       countLabel(plan.knowledgeBaseDocumentLimit),
     )
+    for (const rule of plan.fairUse) {
+      const baseRule = base.fairUse.find((item) => item.feature === rule.feature)
+      if (!baseRule) continue
+      push(
+        `${plan.id}-fair-use-${rule.feature}`,
+        section,
+        `Fair use — ${fairUseCopy[rule.feature].legend}`,
+        fairUseLabel(baseRule),
+        fairUseLabel(rule),
+      )
+    }
     if (plan.introOfferLabel !== null) {
       push(`${plan.id}-intro-enabled`, section, plan.introOfferLabel, onOffLabel(base.introOfferEnabled), onOffLabel(plan.introOfferEnabled))
       push(
@@ -850,10 +1024,11 @@ function PricingTab({
   // Which plans had a price or an allowance move, and how many people are on them — the
   // blast radius the reset question is actually about.
   const affectedSubscribers = useMemo(() => {
+    // A fair-use edit lands on live sessions the same way a price or allowance edit does,
+    // so it asks the reset question too.
+    const reach = /-(monthly|annual|credits|auto-apply|fair-use-(?:interview|resume-builder|auto-apply))$/
     const touched = new Set(
-      changes
-        .filter((change) => /-(monthly|annual|credits|auto-apply)$/.test(change.id))
-        .map((change) => change.id.replace(/-(monthly|annual|credits|auto-apply)$/, '')),
+      changes.filter((change) => reach.test(change.id)).map((change) => change.id.replace(reach, '')),
     )
     return form.plans.filter((plan) => touched.has(plan.id)).reduce((total, plan) => total + plan.subscriberCount, 0)
   }, [changes, form.plans])
@@ -977,6 +1152,33 @@ function PricingTab({
                     onChange={(value) => updatePlan(plan.id, { knowledgeBaseDocumentLimit: value })}
                   />
                 </div>
+
+                <fieldset className="grid gap-3 border-t border-border pt-4">
+                  <legend className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Fair use</legend>
+                  <p className="text-xs leading-5 text-ink-muted">
+                    Unlimited across the cycle, bounded per stretch. Nobody loses access for the month — they hit a
+                    cap, the feature rests, and a top-up buys the rest away.
+                  </p>
+                  {plan.fairUse
+                    .filter((rule) => fairUseAppliesTo(plan, rule.feature))
+                    .map((rule) => (
+                      <FairUseRuleField
+                        key={rule.feature}
+                        planId={plan.id}
+                        planName={plan.name}
+                        rule={rule}
+                        stretchError={errors[`${plan.id}-fair-use-${rule.feature}-limit`]}
+                        cooldownError={errors[`${plan.id}-fair-use-${rule.feature}-cooldown`]}
+                        onChange={(patch) =>
+                          updatePlan(plan.id, {
+                            fairUse: plan.fairUse.map((item) =>
+                              item.feature === rule.feature ? { ...item, ...patch } : item,
+                            ),
+                          })
+                        }
+                      />
+                    ))}
+                </fieldset>
 
                 {plan.introOfferLabel !== null ? (
                   <div className="grid gap-3 rounded-soft border border-accent/30 bg-accent-subtle p-3">

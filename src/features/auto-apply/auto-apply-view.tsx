@@ -3,6 +3,7 @@ import { AlertTriangle, ArrowLeft, ArrowRight, Check, CheckCircle2, ChevronDown,
 import { SiGooglechrome, SiGoogleplay } from 'react-icons/si'
 
 import type { AutoApplyApplication, AutoApplyApplicationDetails, AutoApplyJob, AutoApplyOutcome, AutoApplySetup } from '@/contracts/auto-apply.draft'
+import type { FairUseSnapshot } from '@/contracts/fair-use.draft'
 import {
   DEFAULT_AUTO_APPLY_SETUP,
   EMPLOYMENT_TYPES,
@@ -18,6 +19,7 @@ import {
   WORK_SCHEDULE_OPTIONS,
 } from '@/contracts/auto-apply.draft'
 import type { ResumeDocument, ResumeHistoryRow } from '@/contracts/resume.draft'
+import { FairUseLimitDialog, FairUseMeter } from '@/features/billing/fair-use'
 import { AppShell as AppNavShell } from '@/features/dashboard/app-nav'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 import { COUNTRIES } from '@/data/countries'
@@ -76,6 +78,9 @@ export type AutoApplyAgentViewProps = {
   readonly agentHref: string
   readonly jobsHref: string
   readonly appliedHref: string
+  /** Fair use on an unlimited plan: how far into this run the agent is (PRICING.md §1.2). */
+  readonly fairUse?: FairUseSnapshot
+  readonly onFairUseUnlock?: () => void
 }
 
 export type AutoApplyJobsViewProps = {
@@ -1245,13 +1250,15 @@ function AgentFeed({ events }: { readonly events: FeedEvent[] }) {
   )
 }
 
-export function AutoApplyAgentView({ homeHref, setupHref, agentHref, jobsHref, appliedHref }: AutoApplyAgentViewProps) {
+export function AutoApplyAgentView({ homeHref, setupHref, agentHref, jobsHref, appliedHref, fairUse, onFairUseUnlock }: AutoApplyAgentViewProps) {
   const session = useAgentSession('auto-apply')
+  const [fairUseDialogOpen, setFairUseDialogOpen] = useState(fairUse?.state === 'cooling-down')
 
   return (
     <AppShell homeHref={homeHref} title="Agents" active="agent" setupHref={setupHref} agentHref={agentHref} jobsHref={jobsHref} appliedHref={appliedHref}>
       <div className="pt-5">
         <AgentStatsSummary stats={session.stats} />
+        {fairUse ? <FairUseMeter snapshot={fairUse} featureName="Auto Apply" className="mt-4" /> : null}
         <div className="mt-4">
           <AgentStatusCards agents={session.agents} />
         </div>
@@ -1259,6 +1266,15 @@ export function AutoApplyAgentView({ homeHref, setupHref, agentHref, jobsHref, a
           <AgentFeed events={session.events} />
         </div>
       </div>
+      {fairUse ? (
+        <FairUseLimitDialog
+          open={fairUseDialogOpen}
+          onOpenChange={setFairUseDialogOpen}
+          snapshot={fairUse}
+          featureName="Auto Apply"
+          onUnlock={onFairUseUnlock}
+        />
+      ) : null}
     </AppShell>
   )
 }
