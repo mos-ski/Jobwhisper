@@ -11,6 +11,13 @@
     <meta name="robots" content="noindex, nofollow" />
     <script>
       (() => {
+        // The /try funnels are the public website and are light-only. Dark mode is a
+        // preference of the signed-in web app, so it must not paint them, not even for
+        // the frame before the app mounts.
+        if (window.location.pathname.includes('/try/')) {
+          document.documentElement.dataset.theme = 'light';
+          return;
+        }
         const stored = window.localStorage.getItem('jobwhisper-theme');
         if (stored === 'light' || stored === 'dark') {
           document.documentElement.dataset.theme = stored;

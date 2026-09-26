@@ -4,6 +4,12 @@
 
 All colors are defined in `src/tokens/theme.css` and `src/tokens/tokens.ts` with light and dark variants.
 
+**Dark is an app preference, not a site theme.** Only the signed-in web app honors `data-theme="dark"`.
+Public surfaces restate `data-theme="light"` on their own root element, so a reader's stored choice or a
+dark system never repaints them: `FunnelShell` for `/v3/try/*`, and the pricing and legal pages. The
+`index.html` bootstrap also skips theme resolution on `/try/` paths, so a hard load of a funnel never
+paints a dark frame before the app mounts.
+
 ### Surface
 
 | Token | Tailwind | Purpose |

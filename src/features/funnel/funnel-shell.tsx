@@ -36,7 +36,10 @@ export function FunnelShell({ label, progress, onClose, closeLabel = 'Leave setu
   }, [label])
 
   return (
-    <div data-slot="funnel-shell" className="flex h-dvh flex-col bg-canvas text-ink">
+    // The funnel is the public website, and the website is light-only. Dark mode is a
+    // preference of the signed-in web app, so pin the subtree to light tokens here instead
+    // of letting a reader's stored choice or dark system repaint these screens.
+    <div data-slot="funnel-shell" data-theme="light" className="flex h-dvh flex-col bg-canvas text-ink">
       <header className="shrink-0 border-b border-border bg-surface">
         <div className="mx-auto flex w-full max-w-2xl items-center gap-4 px-4 py-2 sm:px-6">
           <a href="/" aria-label="Jobwhisper home" className="inline-flex min-h-11 items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
