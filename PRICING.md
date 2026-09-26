@@ -14,7 +14,7 @@ This is the live, editable source of truth for pricing: what's actually charged 
 
 **Annual billing applies to the monthly plans only** — 20% off, on Pro and Premium. **Starter is weekly and opts out**: switching a billing toggle to annual leaves its price where it is, and every surface that offers the switch says so on Starter's card — "Annual billing does not apply to weekly plans" — rather than letting the card look like it missed the toggle. That note is live on the pricing page, the signup plan picker and the in-app plan comparison.
 
-**Unlimited means the interview side, on every plan** — Prep and every Copilot, no credit balance, no minute counting, no mid-session top-up. **Auto Apply is the one metered thing left inside a plan**, and its volume is what separates Pro from Premium. The credit economy otherwise survives only for people **without** a plan (§2.1).
+**Unlimited means the interview side, on every plan** — Prep and every Copilot, no credit balance, no minute counting, no monthly ceiling. **Auto Apply is the one thing metered by volume inside a plan**, and that volume is what separates Pro from Premium. **Unlimited is bounded per stretch, not per cycle** (added 2026-09-26): one uninterrupted session runs to a cap, the feature rests for a few hours, and a $10 top-up starts a fresh stretch immediately for anyone still on a call — see §1.2. The credit economy otherwise survives only for people **without** a plan (§2.1).
 
 **Every platform on every plan** (revised 2026-09-23): web, desktop and mobile, with no platform held back for a higher tier. **Call recording is on every plan too**, for the same reason — it was briefly Premium's differentiator and is now universal.
 
@@ -31,7 +31,7 @@ This is the live, editable source of truth for pricing: what's actually charged 
 ### Open threads on this model
 
 1. **~~Premium's second differentiator~~ — resolved 2026-09-23.** It is Auto Apply without a job cap, and the price now has arithmetic behind it: at the $1/successful-application pay-as-you-go rate (§3), Pro's 500-job allowance is worth ~$500, so **Premium's $497 is priced at roughly what Pro's cap is worth.** Someone applying past 500 a month is better off on Premium, which is exactly the upgrade argument the old "2x credits" framing never made.
-2. **~~A fair-use ceiling on Auto Apply~~ — mostly resolved.** Pro's 500 jobs a month is that ceiling. **Premium's uncapped Auto Apply is the remaining exposure**: every application carries real marginal cost, and nothing bounds it but how many roles a person can plausibly be matched to. The $497 price covers ~500 applications at cost, so the risk is confined to the tail — a Premium subscriber applying to thousands. Worth watching in the data before it needs a policy.
+2. **~~A fair-use ceiling on Auto Apply~~ — mostly resolved.** Pro's 500 jobs a month is that ceiling. ~~**Premium's uncapped Auto Apply is the remaining exposure**~~ — **bounded 2026-09-26** by the fair-use run cap (§1.2): 100 applications a run, then a 3-hour rest. The monthly figure stays uncapped on the card, which is what is sold, while the tail case is bounded in practice at roughly 800 a day.
 3. **Starter's $47/week is priced above Pro in practice** — see below.
 4. **Knowledge Base caps survive** (Starter 3, Pro 5, Premium 10) and are the one per-tier ceiling left. Decide deliberately whether "unlimited" should swallow them too; today it does not, and they give the tiers texture beyond the feature list.
 4. **Migration.** Existing subscribers are on $47/$99/$497 with credit balances, and today's Starter is monthly with Interview Prep. What happens to unspent balances, to annual subscribers, and to Starter subscribers moving to a weekly plan without Prep is unresolved — see `docs/superpowers/plans/2026-09-23-merged-pricing-system.md` Task 7.
@@ -82,6 +82,26 @@ The three plans above are one product sold at three commitment levels, not three
 | Knowledge Base documents | 3 | 5 | 10 |
 
 Auto Apply is the only row with a number in it. That is deliberate: it is the one capability with a real per-use cost, so it is the one that ladders.
+
+### 1.2 Fair use — what bounds "unlimited" (added 2026-09-26)
+
+**Unlimited is unlimited across the cycle, bounded per stretch.** There is no monthly allowance, no credit balance and nothing that runs out before the renewal. What is capped is one *uninterrupted* stretch: it runs to its limit, that feature rests for a few hours, and then opens again at no cost. Everything else keeps working while one feature rests.
+
+| Feature | Stretch cap | Cooldown | Starter | Pro | Premium |
+|---|---|---|---|---|---|
+| Interview Prep + Copilot | minutes in one session | hours | **90 min, then 5h** | **120 min, then 3h** | **180 min, then 2h** |
+| Resume Builder | prompts in one sitting | hours | — | **25 prompts, then 3h** | **40 prompts, then 2h** |
+| Auto Apply | applications in one run | hours | — | **50 a run, then 5h** | **100 a run, then 3h** |
+
+**The cooldown is the top-up moment.** Someone still on a call when the stretch ends is offered a fresh stretch immediately for **$10** of interview minutes — pay-as-you-go rates (§2.1), so buying past a cooldown costs exactly what buying without a plan costs. Waiting is always free, and nothing is lost either way: transcript, notes and recording are untouched. Whether a cooldown can be bought past at all is per plan, per feature, and set in admin — switched off, the clock is the only way through.
+
+**Why the cap exists.** Live Copilot costs real money per minute and Auto Apply costs real money per application, so "unlimited" without any bound prices the plan off one account at full tilt. The caps sit well above a normal interview day — a typical session is 45 minutes, so Pro's 2 hours covers a long final round with room over — which is what makes this fair use rather than a hidden allowance.
+
+**It is disclosed, not buried.** The pricing page says it under the plan cards and answers it in three FAQ entries; the product warns before the wall (`nearing-limit`), not at it. Selling "unlimited" and enforcing an undisclosed cap is the one version of this that is not defensible, so the disclosure is part of the feature, not decoration.
+
+**Fair use is also the bound Premium's uncapped Auto Apply was missing** (open thread 2): 100 applications a run with a 3-hour rest puts a ceiling of roughly 800 a day on the tail case, without putting a number on the card.
+
+**Open:** the cooldown ladders the wrong way against price for the tail user — Premium rests for 2 hours where Starter rests for 5, which is right as a benefit, but it means the highest-cost accounts are the least bounded. Watch the top decile before deciding whether Premium's rest should rise.
 
 **The cards carry no terms table** (removed 2026-09-23). A label/value row saying "Interview use — Unlimited" or "Auto Apply — 500 jobs" repeated what the feature list said two inches below it, and a "Billing — Monthly" row repeated the /month beside the price. What the cards show under the price instead is the annual note: what a year costs on the monthly plans, and why the switch left the weekly one alone.
 

@@ -113,11 +113,14 @@ describe('PricingPage', () => {
 
     const faqPanel = screen.getByRole('region', { name: 'Pricing questions' })
     expect(faqPanel).toHaveClass('bg-surface', 'border-border', 'rounded-sm')
-    expect(faqPanel.querySelectorAll('details')).toHaveLength(23)
+    expect(faqPanel.querySelectorAll('details')).toHaveLength(26)
     expect(screen.getByText('What does unlimited mean on these plans?')).toBeInTheDocument()
     expect(screen.getByText('What happens after 500 Auto Apply jobs on Pro?')).toBeInTheDocument()
     expect(screen.getByText('How does the Starter plan bill?')).toBeInTheDocument()
     expect(screen.getByText('Can I buy interview minutes without a plan?')).toBeInTheDocument()
+    // Unlimited has a stretch cap under it, so the page has to say so where it sells the word.
+    expect(screen.getByText('What is the fair-use cap, exactly?')).toBeInTheDocument()
+    expect(screen.getByText('What happens if I hit the cap mid-interview?')).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'How billing works' })).toBeInTheDocument()
   })
 

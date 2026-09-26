@@ -70,6 +70,11 @@ export const adminPlanConfigs: readonly AdminPlanConfig[] = [
     interviewAllowance: { kind: 'unlimited' },
     autoApplyAllowance: { kind: 'limited', amount: 0 },
     knowledgeBaseDocumentLimit: 3,
+    fairUse: [
+      { feature: 'interview', enabled: true, stretchLimit: 90, cooldownHours: 5, topUpUnlocks: true },
+      { feature: 'resume-builder', enabled: false, stretchLimit: 25, cooldownHours: 3, topUpUnlocks: true },
+      { feature: 'auto-apply', enabled: false, stretchLimit: 50, cooldownHours: 5, topUpUnlocks: true },
+    ],
     features: {
       'interview-prep': true,
       'interview-copilot': true,
@@ -93,6 +98,11 @@ export const adminPlanConfigs: readonly AdminPlanConfig[] = [
     interviewAllowance: { kind: 'unlimited' },
     autoApplyAllowance: { kind: 'limited', amount: 500 },
     knowledgeBaseDocumentLimit: 5,
+    fairUse: [
+      { feature: 'interview', enabled: true, stretchLimit: 120, cooldownHours: 3, topUpUnlocks: true },
+      { feature: 'resume-builder', enabled: true, stretchLimit: 25, cooldownHours: 3, topUpUnlocks: true },
+      { feature: 'auto-apply', enabled: true, stretchLimit: 50, cooldownHours: 5, topUpUnlocks: true },
+    ],
     features: {
       'interview-prep': true,
       'interview-copilot': true,
@@ -121,6 +131,11 @@ export const adminPlanConfigs: readonly AdminPlanConfig[] = [
     interviewAllowance: { kind: 'unlimited' },
     autoApplyAllowance: { kind: 'unlimited' },
     knowledgeBaseDocumentLimit: 10,
+    fairUse: [
+      { feature: 'interview', enabled: true, stretchLimit: 180, cooldownHours: 2, topUpUnlocks: true },
+      { feature: 'resume-builder', enabled: true, stretchLimit: 40, cooldownHours: 2, topUpUnlocks: true },
+      { feature: 'auto-apply', enabled: true, stretchLimit: 100, cooldownHours: 3, topUpUnlocks: true },
+    ],
     features: {
       'interview-prep': true,
       'interview-copilot': true,

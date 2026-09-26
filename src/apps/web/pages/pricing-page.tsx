@@ -210,6 +210,7 @@ const SUPPORTING_CONTENT: SupportingContent = {
     { label: 'Starter', value: 'Renews every week until you cancel' },
     { label: 'Pro and Premium', value: 'Monthly, or annually for 20% less a month' },
     { label: 'Usage', value: 'Unlimited interviews on every plan — no credits to track' },
+    { label: 'Fair use', value: 'One stretch runs to its cap, then rests a few hours. Nothing runs out for the month' },
     { label: 'Without a plan', value: 'Interview minutes, resume prompts and applications, bought as you go' },
   ],
   faqTitle: 'Pricing questions',
@@ -218,7 +219,22 @@ const SUPPORTING_CONTENT: SupportingContent = {
     {
       question: 'What does unlimited mean on these plans?',
       answer:
-        'Interview Prep and every Copilot are unlimited on every plan — no credit balance, no minute counting, nothing to top up mid-interview. Auto Apply is the one metered thing: 500 jobs a month on Pro, uncapped on Premium.',
+        'No monthly allowance and no credit balance: use Interview Prep and every Copilot as many times as you like. What is bounded is one uninterrupted stretch — 90 minutes on Starter, 2 hours on Pro, 3 hours on Premium — after which the feature rests for a few hours. Auto Apply is the one thing metered by volume: 500 jobs a month on Pro, uncapped on Premium.',
+    },
+    {
+      question: 'What is the fair-use cap, exactly?',
+      answer:
+        'A single stretch of Interview Prep or Copilot runs to 90 minutes on Starter, 2 hours on Pro and 3 hours on Premium. Resume Builder allows 25 prompts in a sitting on Pro and 40 on Premium; Auto Apply applies to 50 jobs a run on Pro and 100 on Premium. When a stretch finishes, that feature rests — 5 hours on Starter, 3 on Pro, 2 on Premium — and then opens again at no cost. Everything else keeps working while one feature rests.',
+    },
+    {
+      question: 'What happens if I hit the cap mid-interview?',
+      answer:
+        'You are told before you reach it, not after. If you are still on the call when the stretch ends, $10 of interview minutes starts a fresh one immediately. If you would rather wait, the cooldown costs nothing and your transcript, notes and recording are untouched either way.',
+    },
+    {
+      question: 'Why cap an unlimited plan at all?',
+      answer:
+        'Live Copilot costs us real money per minute. The stretch cap is what keeps a plan unlimited in the way that matters — no monthly ceiling, no running out mid-search — without one account at full tilt setting the price for everyone else. The caps sit well above a normal interview day: a typical session is 45 minutes.',
     },
     {
       question: 'How does the Starter plan bill?',
@@ -462,6 +478,12 @@ function SubscriptionPlans({ annual }: { readonly annual: boolean }) {
           />
         ))}
       </PlanCarousel>
+      <p className="mt-5 max-w-3xl text-sm leading-6 text-ink-muted">
+        Unlimited means no monthly allowance and no credit balance. One uninterrupted stretch is capped for
+        fair use — 90 minutes of interview on Starter, 2 hours on Pro, 3 hours on Premium — and the feature
+        rests a few hours before the next one. You are warned before you reach it, and you can start a fresh
+        stretch straight away for $10 if you are still on the call.
+      </p>
       {showProOffer ? <ProOfferWidget onDismiss={() => setShowProOffer(false)} onClaim={() => navigate('/v3/auth/choose-plan?plan=pro&offer=welcome-60')} /> : null}
     </section>
   )

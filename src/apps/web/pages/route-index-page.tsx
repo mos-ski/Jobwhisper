@@ -277,6 +277,16 @@ const appRoutes = [
     description: 'Template gallery with Compact Executive selected and preview applied.',
   },
   {
+    href: '/v3/resume/editor?tab=chat&state=suggestions&fair-use=nearing',
+    label: 'Resume Builder fair use, nearing',
+    description: 'The prompt meter in the chat sidebar as a sitting approaches its 25-prompt cap.',
+  },
+  {
+    href: '/v3/resume/editor?tab=chat&state=suggestions&fair-use=spent',
+    label: 'Resume Builder fair use, spent',
+    description: 'Cooldown wall in the builder, with prompts for sale to start a fresh sitting.',
+  },
+  {
     href: '/v3/resume/history',
     label: 'Resume history',
     description: 'Past resumes table with search, create-new action, ATS score, and pagination.',
@@ -367,6 +377,21 @@ const appRoutes = [
     description: 'Skeleton state for the live response panel, screen preview, AI prompts, and composer.',
   },
   {
+    href: '/v3/interview-copilot/session?state=fair-use-nearing',
+    label: 'Copilot fair use, nearing',
+    description: 'Live session with the stretch running out: how much is left before Copilot rests.',
+  },
+  {
+    href: '/v3/interview-copilot/session?state=fair-use-spent',
+    label: 'Copilot fair use, stretch spent',
+    description: 'The cooldown wall mid-interview, with minutes for sale as the way to carry on now.',
+  },
+  {
+    href: '/v3/interview-copilot/session?state=fair-use-spent-locked',
+    label: 'Copilot fair use, no way past',
+    description: 'The same wall on a plan whose cooldown cannot be bought out: the clock is the only route.',
+  },
+  {
     href: '/v3/interview-copilot/complete',
     label: 'Copilot complete',
     description: 'Completion card with recorded-response copy and report handoff.',
@@ -405,6 +430,16 @@ const appRoutes = [
     href: '/v3/auto-apply/agent',
     label: 'Auto Apply agent',
     description: 'Agent dashboard with metrics, worker status cards, and live activity stream.',
+  },
+  {
+    href: '/v3/auto-apply/agent?fair-use=running',
+    label: 'Auto Apply fair use, running',
+    description: 'Run meter under the agent stats: applications used of the 50 this run allows.',
+  },
+  {
+    href: '/v3/auto-apply/agent?fair-use=spent',
+    label: 'Auto Apply fair use, run spent',
+    description: 'The agent resting after a full run, with credits offered to start the next one now.',
   },
   {
     href: '/v3/auto-apply/jobs',

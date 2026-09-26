@@ -5,6 +5,8 @@
  * calendar strings a date input produces, which are compared lexicographically, never parsed.
  */
 
+import type { FairUseFeature } from './fair-use.draft'
+
 export type AdminConfigPlanId = 'starter' | 'pro' | 'premium'
 
 /** The capability rows of the plan feature matrix (PRICING.md §1.1). */
@@ -27,6 +29,21 @@ export type AdminConfigFeatureId =
 export type AdminPlanAllowance =
   | { readonly kind: 'limited'; readonly amount: number }
   | { readonly kind: 'unlimited' }
+
+/**
+ * One plan's fair-use rule for one feature: how long an uninterrupted stretch runs, how long
+ * the feature then rests, and whether a top-up ends that rest early. Unlimited is still
+ * unlimited across a cycle — this bounds the stretch, not the total (PRICING.md §1.2).
+ */
+export type AdminPlanFairUseRule = {
+  readonly feature: FairUseFeature
+  /** Off means the feature runs without a stretch cap on this plan. */
+  readonly enabled: boolean
+  /** Minutes for interview, prompts for Resume Builder, applications for Auto Apply. */
+  readonly stretchLimit: number
+  readonly cooldownHours: number
+  readonly topUpUnlocks: boolean
+}
 
 export type AdminConfigFeatureDefinition = {
   readonly id: AdminConfigFeatureId
@@ -57,6 +74,8 @@ export type AdminPlanConfig = {
   /** Auto Apply jobs per cycle. Only meaningful where the auto-apply feature is on. */
   readonly autoApplyAllowance: AdminPlanAllowance
   readonly knowledgeBaseDocumentLimit: number
+  /** One rule per unlimited feature. Absent features simply have no rule in the list. */
+  readonly fairUse: readonly AdminPlanFairUseRule[]
   readonly features: Readonly<Record<AdminConfigFeatureId, boolean>>
   /** Present only on the tier that carries a first-time offer. */
   readonly introOffer?: AdminIntroOfferConfig

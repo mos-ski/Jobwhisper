@@ -22,7 +22,9 @@ import type {
   CopilotTalkTime,
   CopilotTranscriptTurn,
 } from '@/contracts/copilot.draft'
+import type { FairUseSnapshot } from '@/contracts/fair-use.draft'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
+import { FairUseLimitDialog, formatFairUseAmount } from '@/features/billing/fair-use'
 import { centsToCredits, creditsToCents } from '@/lib/credits'
 import {
   AiSuggestionAction,
@@ -118,6 +120,12 @@ export type CopilotLiveViewProps = {
   /** Interview Copilot credit top-ups require an active Ace Your Interview plan. See PRICING.md §1, §4. */
   readonly hasActivePlan?: boolean
   readonly initialAutoAnswer?: boolean
+  /**
+   * Fair use on an unlimited plan: how far into the stretch this session is. Absent on a
+   * plan with no stretch cap, which renders exactly as it did before (PRICING.md §1.2).
+   */
+  readonly fairUse?: FairUseSnapshot
+  readonly onFairUseUnlock?: () => void
 }
 
 export type CopilotCompleteViewProps = {
@@ -1633,7 +1641,7 @@ const TOPUP_CENTS_PER_CREDIT = 40
 // of $0.40 — $25 would be 62.5 credits, so presets stick to $10/$20/$50.
 const TOPUP_PRESET_DOLLARS = [10, 20, 50]
 
-export function CopilotLiveView({ completeHref, session, isLoading = false, transcriptBank = [], codingBank = [], demoMode = false, hasActivePlan = true, initialAutoAnswer = false }: CopilotLiveViewProps) {
+export function CopilotLiveView({ completeHref, session, isLoading = false, transcriptBank = [], codingBank = [], demoMode = false, hasActivePlan = true, initialAutoAnswer = false, fairUse, onFairUseUnlock }: CopilotLiveViewProps) {
   const [assistantMessages, setAssistantMessages] = useState<readonly AiAssistantMessage[]>([])
   const [draft, setDraft] = useState('')
   const assistantScrollRef = useRef<HTMLDivElement>(null)
@@ -1655,6 +1663,11 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
   const [balanceCents, setBalanceCents] = useState(COPILOT_START_BALANCE_CENTS)
   const [sessionPaused, setSessionPaused] = useState(false)
   const [topUpOpen, setTopUpOpen] = useState(false)
+  // The wall opens itself once. Dismissing it leaves the banner, so the session never looks
+  // live again while the feature is resting.
+  const [fairUseDialogOpen, setFairUseDialogOpen] = useState(fairUse?.state === 'cooling-down')
+  const fairUseSpent = fairUse?.state === 'cooling-down'
+  const fairUseNearing = fairUse?.state === 'nearing-limit'
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 1279px)')
@@ -1768,6 +1781,31 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
           </div>
         ) : null}
 
+        {fairUse && (fairUseNearing || fairUseSpent) ? (
+          <div
+            role="status"
+            className={cn(
+              'fixed inset-x-4 top-32 z-20 flex items-center justify-between gap-3 rounded-lg px-4 py-2.5 text-sm shadow-panel',
+              fairUseSpent ? 'bg-danger font-semibold text-on-danger' : 'bg-warning-surface text-warning',
+            )}
+          >
+            <span>
+              {fairUseSpent
+                ? `Stretch finished. Copilot reopens in ${fairUse.cooldownRemainingLabel ?? `${fairUse.policy.cooldownHours}h`}.`
+                : `${formatFairUseAmount(Math.max(0, fairUse.policy.stretchLimit - fairUse.used), fairUse.policy.unit)} left in this stretch.`}
+            </span>
+            {fairUse.policy.topUpUnlocks ? (
+              <button
+                type="button"
+                onClick={(event) => { event.stopPropagation(); setFairUseDialogOpen(true) }}
+                className="shrink-0 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                Keep going
+              </button>
+            ) : null}
+          </div>
+        ) : null}
+
         <div className="fixed inset-x-0 bottom-0 z-20 flex items-center justify-center gap-4 bg-gradient-to-t from-black/80 to-transparent px-6 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-10">
           <button
             type="button"
@@ -1866,6 +1904,15 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
           autoReloadHint="Buy more automatically if you run out mid-session."
           onPurchase={handleAddFunds}
         />
+        {fairUse ? (
+          <FairUseLimitDialog
+            open={fairUseDialogOpen}
+            onOpenChange={setFairUseDialogOpen}
+            snapshot={fairUse}
+            featureName="Interview Copilot"
+            onUnlock={onFairUseUnlock}
+          />
+        ) : null}
       </main>
     )
   }
@@ -1921,6 +1968,32 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
               View plans
             </a>
           )}
+        </div>
+      ) : null}
+      {fairUse && (fairUseNearing || fairUseSpent) ? (
+        <div
+          role="status"
+          className={cn(
+            'flex shrink-0 items-center justify-between gap-3 border-b px-5 py-2 text-sm',
+            fairUseSpent
+              ? 'border-danger bg-danger font-semibold text-on-danger'
+              : 'border-warning bg-warning-surface text-warning',
+          )}
+        >
+          <span>
+            {fairUseSpent
+              ? `Fair use: this stretch is finished. Interview Copilot reopens${fairUse.resumesAtLabel ? ` at ${fairUse.resumesAtLabel}` : ''}${fairUse.cooldownRemainingLabel ? `, in ${fairUse.cooldownRemainingLabel}` : ''}.`
+              : `Fair use: ${formatFairUseAmount(Math.max(0, fairUse.policy.stretchLimit - fairUse.used), fairUse.policy.unit)} left before this stretch rests.`}
+          </span>
+          {fairUse.policy.topUpUnlocks ? (
+            <button
+              type="button"
+              onClick={() => setFairUseDialogOpen(true)}
+              className="shrink-0 font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              Keep going now
+            </button>
+          ) : null}
         </div>
       ) : null}
       <section
@@ -2010,6 +2083,15 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
         autoReloadHint="Buy more automatically if you run out mid-session."
         onPurchase={handleAddFunds}
       />
+      {fairUse ? (
+        <FairUseLimitDialog
+          open={fairUseDialogOpen}
+          onOpenChange={setFairUseDialogOpen}
+          snapshot={fairUse}
+          featureName="Interview Copilot"
+          onUnlock={onFairUseUnlock}
+        />
+      ) : null}
     </main>
   )
 }
