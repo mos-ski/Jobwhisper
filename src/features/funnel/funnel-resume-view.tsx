@@ -1,7 +1,8 @@
 import { useId, useState } from 'react'
 import { ArrowRight, Download, FileCheck, MoveHorizontal } from 'lucide-react'
 
-import type { AtsIssueSeverity, AtsReport, FunnelResumeDocument, ResumeRewrite } from '@/contracts/funnel.draft'
+import type { AtsIssueSeverity, AtsReport, ResumeRewrite } from '@/contracts/funnel.draft'
+import { ClassicResume } from '@/features/resume/resume-templates'
 import { Button, cn } from '@/ui'
 import { FunnelGate } from './funnel-gate'
 import { FunnelOfflineNotice, FunnelShell, FunnelTitle } from './funnel-shell'
@@ -215,12 +216,13 @@ function CompareStep({ rewrite, onDownload }: FunnelResumeViewProps) {
           <span className="text-sm text-accent-muted">from {rewrite.scoreBefore}</span>
         </p>
 
-        <div className="relative grid overflow-hidden rounded-xl shadow-panel has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus">
-          <div className="col-start-1 row-start-1">
-            <ResumePage document={rewrite.before} />
+        <div className="relative mx-auto grid w-full max-w-[44rem] overflow-hidden rounded-xl shadow-panel has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus">
+          {/* The template carries its own h1 for the candidate's name, so both pages are visual only; the list below reads the changes out. */}
+          <div aria-hidden="true" className="col-start-1 row-start-1">
+            <ClassicResume document={rewrite.document} showImproved={false} highlightChanges={false} showPageBreaks={false} />
           </div>
           <div aria-hidden="true" className="col-start-1 row-start-1" style={{ clipPath: `inset(0 ${100 - reveal}% 0 0)` }}>
-            <ResumePage document={rewrite.after} />
+            <ClassicResume document={rewrite.document} showImproved highlightChanges showPageBreaks={false} />
           </div>
           <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-accent" style={{ left: `${reveal}%` }}>
             <span className="absolute left-1/2 top-1/2 flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-accent text-on-accent shadow-panel"><MoveHorizontal className="size-5" /></span>
@@ -239,7 +241,18 @@ function CompareStep({ rewrite, onDownload }: FunnelResumeViewProps) {
             className="absolute inset-0 h-full w-full cursor-ew-resize opacity-0"
           />
         </div>
-        <p className="text-center text-sm text-accent-muted">Drag across the page, or focus it and use the arrow keys.</p>
+        <p className="text-center text-sm text-accent-muted">Drag across the page, or focus it and use the arrow keys. Changed lines are highlighted.</p>
+        <div className="sr-only">
+          <h2>What the Jobwhisper version changes</h2>
+          <p>Summary, before: {rewrite.document.summary}</p>
+          <p>Summary, after: {rewrite.document.improvedSummary}</p>
+          <ul>
+            {rewrite.document.improvedFirstRoleBullets.map((bullet, index) => (
+              <li key={bullet}>{rewrite.document.roles[0]?.bullets[index] ?? ''} becomes: {bullet}</li>
+            ))}
+          </ul>
+          <p>Skills, after: {rewrite.document.improvedSkills.join(', ')}</p>
+        </div>
       </div>
 
       <div className="grid justify-items-center">
@@ -252,37 +265,12 @@ function CompareStep({ rewrite, onDownload }: FunnelResumeViewProps) {
   )
 }
 
-function ResumePage({ document }: { readonly document: FunnelResumeDocument }) {
-  return (
-    <article className="bg-paper px-5 pb-6 pt-14 text-paper-ink sm:px-10 sm:pb-10">
-      <h2 className="font-gowun text-2xl font-bold leading-tight">{document.name}</h2>
-      <p className="mt-1 text-sm font-semibold">{document.headline}</p>
-      <p className="text-xs text-paper-muted">{document.contact}</p>
-      <p className="mt-4 text-sm leading-6">{document.summary}</p>
-      <h3 className="mt-5 border-b border-border pb-1 text-xs font-bold uppercase tracking-wide text-paper-muted">Experience</h3>
-      {document.roles.map((role) => (
-        <section key={`${role.company}-${role.title}`} className="mt-3">
-          <p className="flex flex-wrap justify-between gap-x-3 text-sm font-semibold">
-            <span>{role.title}, {role.company}</span>
-            <span className="font-normal text-paper-muted">{role.dates}</span>
-          </p>
-          <ul className="mt-1 list-disc ps-5 text-sm leading-6">
-            {role.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}
-          </ul>
-        </section>
-      ))}
-      <h3 className="mt-5 border-b border-border pb-1 text-xs font-bold uppercase tracking-wide text-paper-muted">Skills</h3>
-      <p className="mt-2 text-sm leading-6">{document.skills.join(' · ')}</p>
-    </article>
-  )
-}
-
 function SavedResume({ rewrite }: { readonly rewrite: ResumeRewrite }) {
   return (
     <div className="mx-auto flex w-full max-w-md items-center gap-4 rounded-2xl bg-surface-subtle px-5 py-4">
       <FileCheck aria-hidden="true" className="size-7 shrink-0 text-positive" />
       <div className="grid min-w-0 flex-1">
-        <span className="truncate font-semibold text-ink">{rewrite.after.name}, {rewrite.after.headline}</span>
+        <span className="truncate font-semibold text-ink">{rewrite.document.roles[0]?.title ?? 'Your resume'} resume</span>
         <span className="text-sm text-ink-muted">Tailored and saved</span>
       </div>
       <span className="shrink-0 rounded-full bg-positive-surface px-3 py-1 text-sm font-semibold text-positive">ATS {rewrite.scoreAfter}</span>

@@ -1,3 +1,5 @@
+import type { ResumeDocument } from './resume.draft'
+
 export type FunnelChoice = {
   readonly label: string
   readonly hint?: string
@@ -50,25 +52,9 @@ export type AtsReport = {
   readonly issues: readonly AtsIssue[]
 }
 
-export type FunnelResumeRole = {
-  readonly title: string
-  readonly company: string
-  readonly dates: string
-  readonly bullets: readonly string[]
-}
-
-export type FunnelResumeDocument = {
-  readonly name: string
-  readonly headline: string
-  readonly contact: string
-  readonly summary: string
-  readonly roles: readonly FunnelResumeRole[]
-  readonly skills: readonly string[]
-}
-
 export type ResumeRewrite = {
-  readonly before: FunnelResumeDocument
-  readonly after: FunnelResumeDocument
+  /** One resume; the template shows `summary`, `roles` and `skills` as uploaded and the `improved*` fields as rewritten. */
+  readonly document: ResumeDocument
   readonly scoreBefore: number
   readonly scoreAfter: number
 }
