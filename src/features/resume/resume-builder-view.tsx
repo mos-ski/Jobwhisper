@@ -635,10 +635,18 @@ type SectionNavProps = {
   readonly onAdd: (kind: ResumeExtraSectionKind) => void
   /** The section being edited on the canvas, marked in the list. */
   readonly activeSection: string | null
+  /**
+   * Told which section was picked. On a phone the canvas is not on screen beside this list,
+   * so the anchor these rows carry had nothing to jump to and a tap did nothing; the editor
+   * takes the screen instead, and this is what opens it.
+   */
+  readonly onPick: (id: string) => void
+  /** True while a phone is showing the editor rather than this list. */
+  readonly hiddenOnMobile: boolean
 }
 
 /** The Edit tab's panel: one link per section, jumping to it on the canvas, and Add Section. */
-function SectionNav({ hiddenSections, extraSections, onRestore, onAdd, activeSection }: SectionNavProps) {
+function SectionNav({ hiddenSections, extraSections, onRestore, onAdd, activeSection, onPick, hiddenOnMobile }: SectionNavProps) {
   const sections = (Object.entries(sectionLabels) as ReadonlyArray<[ResumeSectionId, string]>).filter(([id]) => !hiddenSections.includes(id))
   const addable = EXTRA_SECTION_OPTIONS.filter(([kind]) => kind === 'custom' || !extraSections.some((section) => section.kind === kind))
   const link = (id: string) => cn(
@@ -647,7 +655,12 @@ function SectionNav({ hiddenSections, extraSections, onRestore, onAdd, activeSec
   )
 
   return (
-    <aside className="flex w-full flex-1 flex-col overflow-hidden border-e border-border bg-surface lg:h-full lg:w-[21.25rem] lg:flex-none">
+    <aside
+      className={cn(
+        'w-full flex-1 flex-col overflow-hidden border-e border-border bg-surface lg:flex lg:h-full lg:w-[21.25rem] lg:flex-none',
+        hiddenOnMobile ? 'hidden' : 'flex',
+      )}
+    >
       <div className="border-b border-border p-3">
         <TabRail tab="edit" />
       </div>
@@ -655,7 +668,7 @@ function SectionNav({ hiddenSections, extraSections, onRestore, onAdd, activeSec
         <ul>
           {sections.map(([id, label]) => (
             <li key={id} className="py-0.5">
-              <a href={`#${resumeSectionAnchor(id)}`} aria-current={id === activeSection ? 'location' : undefined} className={link(id)}>
+              <a href={`#${resumeSectionAnchor(id)}`} onClick={() => onPick(id)} aria-current={id === activeSection ? 'location' : undefined} className={link(id)}>
                 {label}
                 <ChevronRight aria-hidden="true" className="size-4 text-ink-muted rtl:rotate-180" />
               </a>
@@ -663,7 +676,7 @@ function SectionNav({ hiddenSections, extraSections, onRestore, onAdd, activeSec
           ))}
           {extraSections.map((section) => (
             <li key={section.id} className="py-0.5">
-              <a href={`#${resumeSectionAnchor(section.id)}`} aria-current={section.id === activeSection ? 'location' : undefined} className={link(section.id)}>
+              <a href={`#${resumeSectionAnchor(section.id)}`} onClick={() => onPick(section.id)} aria-current={section.id === activeSection ? 'location' : undefined} className={link(section.id)}>
                 <span className="truncate">{section.title || 'Untitled section'}</span>
                 <ChevronRight aria-hidden="true" className="size-4 shrink-0 text-ink-muted rtl:rotate-180" />
               </a>
@@ -1171,6 +1184,8 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
   const [extraSections, setExtraSections] = useState<readonly ResumeExtraSection[]>([])
   const [hiddenSections, setHiddenSections] = useState<readonly ResumeSectionId[]>([])
   const [activeSection, setActiveSection] = useState<string | null>(null)
+  // On a phone the list and the editor take turns on the one screen: null is the list.
+  const [phoneSection, setPhoneSection] = useState<string | null>(null)
   const [showInterviewPrepWidget, setShowInterviewPrepWidget] = useState(true)
   const [fairUseDialogOpen, setFairUseDialogOpen] = useState(fairUse?.state === 'cooling-down')
   const isMobileViewport = useIsMobileViewport()
@@ -1178,6 +1193,13 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
   // Adding or restoring a section lands the canvas on it, the same way the panel's links do.
   function jumpTo(id: string) {
     window.requestAnimationFrame(() => { window.location.hash = resumeSectionAnchor(id) })
+  }
+
+  // The row's own href does the jump on a wide screen, where the canvas is already beside the
+  // list. On a phone the editor has to mount first, so the jump waits a frame for it.
+  function pickSection(id: string) {
+    setPhoneSection(id)
+    jumpTo(id)
   }
 
   function addSection(kind: ResumeExtraSectionKind) {
@@ -1277,7 +1299,15 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
             onFairUseAction={() => setFairUseDialogOpen(true)}
           />
         ) : (
-          <SectionNav hiddenSections={hiddenSections} extraSections={extraSections} onRestore={restoreSection} onAdd={addSection} activeSection={activeSection} />
+          <SectionNav
+            hiddenSections={hiddenSections}
+            extraSections={extraSections}
+            onRestore={restoreSection}
+            onAdd={addSection}
+            activeSection={activeSection}
+            onPick={pickSection}
+            hiddenOnMobile={phoneSection !== null}
+          />
         )}
         <ResumePreviewTray
           onOpen={() => setPreviewOpen(true)}
@@ -1314,7 +1344,15 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
           </div>
         ) : (
         // Manual editing gets the resume itself to edit; Chat keeps the preview.
-        <div className="relative hidden min-w-0 flex-1 flex-col lg:flex">
+        <div className={cn('relative min-w-0 flex-1 flex-col lg:flex', phoneSection === null ? 'hidden' : 'flex')}>
+          <button
+            type="button"
+            onClick={() => setPhoneSection(null)}
+            className="sticky top-0 z-10 flex min-h-12 shrink-0 items-center gap-2 border-b border-border bg-surface px-4 text-sm font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus lg:hidden"
+          >
+            <ChevronRight aria-hidden="true" className="size-4 rotate-180 text-ink-muted rtl:rotate-0" />
+            All sections
+          </button>
           <ResumeInlineEditor
             extraSections={extraSections}
             hiddenSections={hiddenSections}
