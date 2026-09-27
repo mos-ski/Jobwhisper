@@ -97,16 +97,16 @@ export type BillingViewProps = {
   /** Pay-as-you-go balances; each defaults to empty. */
   readonly autoApplyCredits?: { readonly balance: number; readonly total: number }
   readonly resumeBuilderCredits?: { readonly balance: number; readonly total: number }
-  /** Which plan tab is open, from `?plan=`; defaults to `interview`. */
+  /** Which plan tab is open, from `?plan=`; defaults to `subscription`. Named as on the public pricing page. */
   readonly planTab?: BillingPlanTab
 }
 
-export type BillingPlanTab = 'interview' | 'jobs' | 'done-for-you'
+export type BillingPlanTab = 'subscription' | 'pay-as-you-go' | 'done-for-you'
 
 const PLAN_TABS: readonly { readonly value: BillingPlanTab; readonly label: string }[] = [
-  { value: 'interview', label: 'Ace Your Interview' },
-  { value: 'jobs', label: 'Find Jobs Yourself' },
-  { value: 'done-for-you', label: 'Done For You' },
+  { value: 'subscription', label: 'Subscription plans' },
+  { value: 'pay-as-you-go', label: 'Pay as you go' },
+  { value: 'done-for-you', label: 'Done for you' },
 ]
 
 export type CreditHistoryViewProps = {
@@ -1007,7 +1007,7 @@ function BillingReferralPrompt({ referralsHref }: { readonly referralsHref: stri
   )
 }
 
-export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet, faqs, autoApplyCredits, resumeBuilderCredits, planTab = 'interview' }: BillingViewProps) {
+export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet, faqs, autoApplyCredits, resumeBuilderCredits, planTab = 'subscription' }: BillingViewProps) {
   const currentPlan = plans.find((plan) => plan.current) ?? plans[0]
   // Interview Copilot credits are a subscription benefit — only purchasable with an active plan. Resume
   // Builder and Auto Apply are standalone and always purchasable. See PRICING.md §1, §4.
@@ -1027,8 +1027,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
   const copilotBalanceCredits = Math.round(centsToCredits(remainingCents))
   const copilotTotalCredits = Math.round(centsToCredits(totalCents))
   const findJobsTotalCredits = autoApplyBalance + resumeBuilderBalance
-  // The tour walks the plan first, then the two Find Jobs balances, so it opens the tab it is pointing at.
-  const shownTab: BillingPlanTab = pricingGuideOpen ? (pricingGuideStep === 0 ? 'interview' : 'jobs') : planTab
+  const shownTab = planTab
 
   function openPricingGuide() {
     setPricingGuideStep(0)
@@ -1041,7 +1040,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
   }
 
   function showNextPricingGuideStep() {
-    setPricingGuideStep((current) => Math.min(current + 1, 2) as BillingPricingGuideStep)
+    setPricingGuideStep((current) => Math.min(current + 1, 1) as BillingPricingGuideStep)
   }
 
   return (
@@ -1064,11 +1063,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
           <TitledPanel
             title="Your Plan"
             action={
-              <div className="flex flex-wrap items-center gap-x-5">
-                <a href="/v3/billing/usage" className="inline-flex min-h-11 items-center text-sm font-semibold text-accent-text underline underline-offset-4 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-                  View usage details
-                </a>
-                <button
+              <button
                   ref={pricingGuideTriggerRef}
                   type="button"
                   onClick={openPricingGuide}
@@ -1077,14 +1072,13 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   <CircleHelp aria-hidden="true" className="size-4" />
                   How it works
                 </button>
-              </div>
             }
           >
             <nav aria-label="Plans" className="-mt-2 mb-5 flex gap-6 overflow-x-auto border-b border-border">
               {PLAN_TABS.map((tab) => (
                 <a
                   key={tab.value}
-                  href={tab.value === 'interview' ? '/v3/billing' : `/v3/billing?plan=${tab.value}`}
+                  href={tab.value === 'subscription' ? '/v3/billing' : `/v3/billing?plan=${tab.value}`}
                   aria-current={shownTab === tab.value ? 'page' : undefined}
                   className={cn(
                     'inline-flex min-h-11 shrink-0 items-center border-b-2 px-1 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
@@ -1096,42 +1090,18 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
               ))}
             </nav>
 
-            {shownTab === 'interview' ? (
+            {shownTab === 'subscription' ? (
             <div className="grid gap-6">
-              <div className={cn('relative', pricingGuideOpen && pricingGuideStep === 0 && 'z-overlay')}>
-                <div className={cn('-mx-4 bg-surface sm:-mx-6 lg:-mx-8', pricingGuideOpen && pricingGuideStep === 0 && 'ring-2 ring-accent')}>
+              <div>
+                <div className="-mx-4 bg-surface sm:-mx-6 lg:-mx-8">
                   <BillingPlanCards plans={plans} annualToggle={false} />
                 </div>
-                {pricingGuideOpen && pricingGuideStep === 0 ? (
-                  <BillingPricingGuideCard step={0} learnMoreHref="/v3/billing/done-for-you" linkLabel="View plan" linkHref="/v3/billing/plans" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
-                ) : null}
               </div>
 
-              {hasActivePlan ? (
-                <UnlimitedAccessCard title="Interview Prep &amp; Copilot" planName={`${currentPlan?.name.charAt(0) ?? ''}${currentPlan?.name.slice(1).toLowerCase() ?? ''}`} />
-              ) : (
-              <CreditBalanceCard
-                title="Interview Copilot Credits"
-                rateLabel="$0.10 / credit / min"
-                balanceCredits={copilotBalanceCredits}
-                totalCredits={copilotTotalCredits}
-                centsPerCredit={TOPUP_CENTS_PER_CREDIT}
-                minimumDollars={TOPUP_MINIMUM_DOLLARS}
-                presetDollars={TOPUP_PRESET_DOLLARS}
-                reloadHint="Buy more automatically if you run out mid-session."
-                requiresActivePlan
-                hasActivePlan={hasActivePlan}
-                onPurchase={(credits) => {
-                  const addedCents = creditsToCents(credits)
-                  setRemainingCents((prev) => prev + addedCents)
-                  setTotalCents((prev) => prev + addedCents)
-                }}
-              />
-              )}
             </div>
             ) : null}
 
-            {shownTab === 'jobs' ? (
+            {shownTab === 'pay-as-you-go' ? (
             <div className="grid gap-6">
               <div>
                 <div
@@ -1160,44 +1130,6 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                 </div>
               </div>
 
-              {autoApplyPurchase ? (
-                <CreditBalanceCard
-                  title="Auto Apply Credits"
-                  rateLabel={autoApplyPurchase.rateLabel}
-                  balanceCredits={autoApplyBalance}
-                  totalCredits={autoApplyTotalCredits}
-                  centsPerCredit={autoApplyPurchase.centsPerCredit}
-                  minimumDollars={autoApplyPurchase.minimumDollars}
-                  presetDollars={autoApplyPurchase.presetDollars}
-                  reloadHint="Buy more automatically when your balance runs low."
-                  guide={pricingGuideOpen && pricingGuideStep === 1 ? (
-                    <BillingPricingGuideCard step={1} learnMoreHref="/v3/billing/done-for-you" linkLabel="View usage details" linkHref="/v3/billing/usage" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
-                  ) : undefined}
-                  onPurchase={(credits) => {
-                    setAutoApplyBalance((prev) => prev + credits)
-                    setAutoApplyTotalCredits((prev) => prev + credits)
-                  }}
-                />
-              ) : null}
-              {resumeBuilderPurchase ? (
-                <CreditBalanceCard
-                  title="Resume Builder Credits"
-                  rateLabel={resumeBuilderPurchase.rateLabel}
-                  balanceCredits={resumeBuilderBalance}
-                  totalCredits={resumeBuilderTotalCredits}
-                  centsPerCredit={resumeBuilderPurchase.centsPerCredit}
-                  minimumDollars={resumeBuilderPurchase.minimumDollars}
-                  presetDollars={resumeBuilderPurchase.presetDollars}
-                  reloadHint="Buy more automatically when your balance runs low."
-                  guide={pricingGuideOpen && pricingGuideStep === 2 ? (
-                    <BillingPricingGuideCard step={2} learnMoreHref="/help" linkLabel="Buy credits" linkHref="/v3/billing/credits" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
-                  ) : undefined}
-                  onPurchase={(credits) => {
-                    setResumeBuilderBalance((prev) => prev + credits)
-                    setResumeBuilderTotalCredits((prev) => prev + credits)
-                  }}
-                />
-              ) : null}
             </div>
             ) : null}
 
@@ -1226,6 +1158,77 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
               </div>
             </div>
             ) : null}
+          </TitledPanel>
+
+          <TitledPanel
+            title="Credits &amp; Balances"
+            action={
+              <a href="/v3/billing/usage" className="inline-flex min-h-11 items-center text-sm font-semibold text-accent-text underline underline-offset-4 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                View usage details
+              </a>
+            }
+          >
+            <div className="grid gap-6">
+              {hasActivePlan ? (
+                <UnlimitedAccessCard title="Interview Prep &amp; Copilot" planName={`${currentPlan?.name.charAt(0) ?? ''}${currentPlan?.name.slice(1).toLowerCase() ?? ''}`} />
+              ) : (
+              <CreditBalanceCard
+                title="Interview Copilot Credits"
+                rateLabel="$0.10 / credit / min"
+                balanceCredits={copilotBalanceCredits}
+                totalCredits={copilotTotalCredits}
+                centsPerCredit={TOPUP_CENTS_PER_CREDIT}
+                minimumDollars={TOPUP_MINIMUM_DOLLARS}
+                presetDollars={TOPUP_PRESET_DOLLARS}
+                reloadHint="Buy more automatically if you run out mid-session."
+                requiresActivePlan
+                hasActivePlan={hasActivePlan}
+                onPurchase={(credits) => {
+                  const addedCents = creditsToCents(credits)
+                  setRemainingCents((prev) => prev + addedCents)
+                  setTotalCents((prev) => prev + addedCents)
+                }}
+              />
+              )}
+              {autoApplyPurchase ? (
+                <CreditBalanceCard
+                  title="Auto Apply Credits"
+                  rateLabel={autoApplyPurchase.rateLabel}
+                  balanceCredits={autoApplyBalance}
+                  totalCredits={autoApplyTotalCredits}
+                  centsPerCredit={autoApplyPurchase.centsPerCredit}
+                  minimumDollars={autoApplyPurchase.minimumDollars}
+                  presetDollars={autoApplyPurchase.presetDollars}
+                  reloadHint="Buy more automatically when your balance runs low."
+                  guide={pricingGuideOpen && pricingGuideStep === 0 ? (
+                    <BillingPricingGuideCard step={0} learnMoreHref="/v3/billing/done-for-you" linkLabel="View usage details" linkHref="/v3/billing/usage" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
+                  ) : undefined}
+                  onPurchase={(credits) => {
+                    setAutoApplyBalance((prev) => prev + credits)
+                    setAutoApplyTotalCredits((prev) => prev + credits)
+                  }}
+                />
+              ) : null}
+              {resumeBuilderPurchase ? (
+                <CreditBalanceCard
+                  title="Resume Builder Credits"
+                  rateLabel={resumeBuilderPurchase.rateLabel}
+                  balanceCredits={resumeBuilderBalance}
+                  totalCredits={resumeBuilderTotalCredits}
+                  centsPerCredit={resumeBuilderPurchase.centsPerCredit}
+                  minimumDollars={resumeBuilderPurchase.minimumDollars}
+                  presetDollars={resumeBuilderPurchase.presetDollars}
+                  reloadHint="Buy more automatically when your balance runs low."
+                  guide={pricingGuideOpen && pricingGuideStep === 1 ? (
+                    <BillingPricingGuideCard step={1} learnMoreHref="/help" linkLabel="Buy credits" linkHref="/v3/billing/credits" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
+                  ) : undefined}
+                  onPurchase={(credits) => {
+                    setResumeBuilderBalance((prev) => prev + credits)
+                    setResumeBuilderTotalCredits((prev) => prev + credits)
+                  }}
+                />
+              ) : null}
+            </div>
           </TitledPanel>
 
           <TitledPanel title="Payment Method">

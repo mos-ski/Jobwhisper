@@ -5,7 +5,7 @@ import { accountFaqs, billingPlans, billingStandalonePurchases, creditUsageRows 
 import { AUTO_APPLY_WALLET, CREDIT_WALLET, RESUME_BUILDER_WALLET } from '@/mocks/wallet'
 
 function readPlanTab(value: string | null): BillingPlanTab {
-  return value === 'jobs' || value === 'done-for-you' ? value : 'interview'
+  return value === 'pay-as-you-go' || value === 'done-for-you' ? value : 'subscription'
 }
 
 export function BillingPage() {

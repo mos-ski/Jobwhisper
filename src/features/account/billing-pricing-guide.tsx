@@ -2,7 +2,7 @@ import { useEffect, useRef, type KeyboardEvent } from 'react'
 
 import { cn } from '@/ui'
 
-export type BillingPricingGuideStep = 0 | 1 | 2
+export type BillingPricingGuideStep = 0 | 1
 
 export type BillingPricingGuideCardProps = {
   readonly step: BillingPricingGuideStep
@@ -16,23 +16,19 @@ export type BillingPricingGuideCardProps = {
 
 const GUIDE_CONTENT: Readonly<Record<BillingPricingGuideStep, { readonly title: string; readonly body: string }>> = {
   0: {
-    title: 'Ace Your Interview Plan',
-    body: 'Your plan makes Interview Prep and every Copilot unlimited. There are no credits and no minutes to count, so use them as much as you need.',
+    title: 'View usage',
+    body: 'Auto Apply uses one credit per successful application and Resume Builder one per AI prompt. The bar shows how much of your last purchase is left, and turns red below 20%. View usage details lists every credit spent.',
   },
   1: {
-    title: 'Credits and balances',
-    body: 'Auto Apply and Resume Builder run on prepaid credits. The number is what you have left, and the bar shows how much of your last purchase remains. It turns red below 20%. Auto Apply uses one credit per successful application; Resume Builder uses one per AI prompt.',
-  },
-  2: {
-    title: 'Topping up',
-    body: 'Press Buy credits on any balance to add more: from $10 for Auto Apply or $5 for Resume Builder. Credits last 12 months. Turn on Automatic reload and a balance tops itself up when it runs low.',
+    title: 'See credits',
+    body: 'Each balance is what you have left to spend. Press Buy credits to add more: from $10 for Auto Apply or $5 for Resume Builder. Credits last 12 months, and Automatic reload tops a balance up when it runs low.',
   },
 }
 
 export function BillingPricingGuideCard({ step, learnMoreHref, linkLabel, linkHref, onNext, onDismiss }: BillingPricingGuideCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const content = GUIDE_CONTENT[step]
-  const isLastStep = step === 2
+  const isLastStep = step === 1
 
   useEffect(() => {
     cardRef.current?.focus()
@@ -92,8 +88,8 @@ export function BillingPricingGuideCard({ step, learnMoreHref, linkLabel, linkHr
 
       <div className="border-t border-border pt-[14.4px]">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex gap-[2px]" aria-label={`Step ${step + 1} of 3`}>
-            {[0, 1, 2].map((dot) => (
+          <div className="flex gap-[2px]" aria-label={`Step ${step + 1} of 2`}>
+            {[0, 1].map((dot) => (
               <span
                 key={dot}
                 aria-hidden="true"

@@ -517,27 +517,20 @@ describe('v3 web auth flow', () => {
       </MemoryRouter>,
     )
 
-    const interviewGuide = screen.getByRole('dialog', { name: 'Ace Your Interview Plan' })
-    expect(interviewGuide).toHaveClass('rounded-[2px]', 'p-6', 'sm:w-[352px]')
-    expect(interviewGuide.querySelector('h2')).toHaveClass('text-sm', 'leading-5')
-    expect(interviewGuide.querySelector('p')).toHaveClass('text-sm', 'leading-[22.75px]')
-    expect(interviewGuide).toHaveTextContent(/Interview Prep and every Copilot unlimited/i)
-    expect(within(interviewGuide).getByRole('link', { name: 'View plan' })).toHaveAttribute('href', '/v3/billing/plans')
+    expect(screen.getByRole('link', { name: 'Subscription plans' })).toHaveAttribute('aria-current', 'page')
     expect(screen.getByText('Unlimited')).toBeInTheDocument()
+
+    const usageGuide = screen.getByRole('dialog', { name: 'View usage' })
+    expect(usageGuide).toHaveClass('rounded-[2px]', 'p-6', 'sm:w-[352px]')
+    expect(usageGuide).toHaveTextContent(/successful application/i)
+    expect(within(usageGuide).getByRole('link', { name: 'View usage details' })).toHaveAttribute('href', '/v3/billing/usage')
     expect(screen.getByRole('button', { name: 'Next' })).toHaveClass('min-h-9', 'w-[92px]', 'rounded-[7.2px]')
 
     await user.click(screen.getByRole('button', { name: 'Next' }))
 
-    const balanceGuide = screen.getByRole('dialog', { name: 'Credits and balances' })
-    expect(balanceGuide).toHaveTextContent(/the bar shows how much of your last purchase remains/i)
-    expect(balanceGuide).toHaveTextContent(/successful application/i)
-    expect(within(balanceGuide).getByRole('link', { name: 'View usage details' })).toHaveAttribute('href', '/v3/billing/usage')
-
-    await user.click(screen.getByRole('button', { name: 'Next' }))
-
-    const topUpGuide = screen.getByRole('dialog', { name: 'Topping up' })
-    expect(topUpGuide).toHaveTextContent(/Automatic reload/i)
-    expect(within(topUpGuide).getByRole('link', { name: 'Buy credits' })).toHaveAttribute('href', '/v3/billing/credits')
+    const creditsGuide = screen.getByRole('dialog', { name: 'See credits' })
+    expect(creditsGuide).toHaveTextContent(/Automatic reload/i)
+    expect(within(creditsGuide).getByRole('link', { name: 'Buy credits' })).toHaveAttribute('href', '/v3/billing/credits')
 
     await user.click(screen.getByRole('button', { name: 'Done' }))
 
@@ -545,6 +538,6 @@ describe('v3 web auth flow', () => {
 
     await user.click(screen.getByRole('button', { name: 'How it works' }))
 
-    expect(screen.getByRole('dialog', { name: 'Ace Your Interview Plan' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'View usage' })).toBeInTheDocument()
   })
 })

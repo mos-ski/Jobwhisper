@@ -4,10 +4,11 @@ import { vi } from 'vitest'
 import { BillingPricingGuideCard } from './billing-pricing-guide'
 
 describe('BillingPricingGuideCard', () => {
-  it('links each step to its plan', () => {
-    render(<BillingPricingGuideCard step={0} learnMoreHref="/v3/billing/done-for-you" linkLabel="View plan" linkHref="/v3/billing/plans" onNext={vi.fn()} onDismiss={vi.fn()} />)
-    expect(screen.getByRole('dialog', { name: 'Ace Your Interview Plan' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'View plan' })).toHaveAttribute('href', '/v3/billing/plans')
+  it('runs two steps, usage then credits', () => {
+    render(<BillingPricingGuideCard step={0} learnMoreHref="/v3/billing/done-for-you" linkLabel="View usage details" linkHref="/v3/billing/usage" onNext={vi.fn()} onDismiss={vi.fn()} />)
+    expect(screen.getByRole('dialog', { name: 'View usage' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Step 1 of 2')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'View usage details' })).toHaveAttribute('href', '/v3/billing/usage')
     expect(screen.getByRole('button', { name: 'Skip tour' })).toBeInTheDocument()
   })
 })
