@@ -37,8 +37,6 @@ export type ResumeEditorViewProps = {
   readonly session: ResumeBuilderSession
   /** What the ATS check flagged, shown section by section on the Edit tab. */
   readonly issues: readonly ResumeIssue[]
-  /** e.g. "Last analysed 2 days ago". */
-  readonly analysedLabel: string
   readonly tab: ResumeBuilderTab
   readonly chatState: ResumeChatState
   readonly jd?: string
@@ -1179,7 +1177,7 @@ function useIsMobileViewport() {
   return isMobile
 }
 
-export function ResumeEditorView({ homeHref, document, session, issues, analysedLabel, tab, chatState, jd, fairUse, onFairUseUnlock }: ResumeEditorViewProps) {
+export function ResumeEditorView({ homeHref, document, session, issues, tab, chatState, jd, fairUse, onFairUseUnlock }: ResumeEditorViewProps) {
   const hasJd = Boolean(jd && jd.trim())
   const [messages, setMessages] = useState<readonly ChatMessage[]>(() => {
     if (hasJd) {
@@ -1334,12 +1332,9 @@ export function ResumeEditorView({ homeHref, document, session, issues, analysed
           <ResumeInlineEditor
             document={document}
             issues={issues}
-            analysedLabel={analysedLabel}
             pendingSuggestion={pendingSuggestion}
             acceptedSuggestion={hasAcceptedChanges}
             typedSummary={typedSummary}
-            onOpenReport={() => setAtsOpen(true)}
-            onReanalyze={() => setAtsOpen(true)}
           />
           {pendingSuggestion ? (
             <InlineChangeControls onAccept={handleAccept} onReject={handleReject} />
