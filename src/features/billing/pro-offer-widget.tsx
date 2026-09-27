@@ -5,24 +5,34 @@ import { Button, Dialog, DialogPopup } from '@/ui'
 export type ProOfferWidgetProps = {
   readonly onDismiss: () => void
   readonly onClaim: () => void
+  /** When the offer expires, as epoch milliseconds. Pass the same value to every surface so they count down together. Defaults to an hour from first render. */
+  readonly endsAt?: number
+}
+
+const OFFER_WINDOW_MS = 60 * 60 * 1000
+
+function useCountdown(endsAt: number | undefined): string {
+  const [deadline] = useState(() => endsAt ?? Date.now() + OFFER_WINDOW_MS)
+  const target = endsAt ?? deadline
+  const [now, setNow] = useState(() => Date.now())
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 1000)
+    return () => window.clearInterval(timer)
+  }, [])
+
+  const secondsRemaining = Math.max(Math.ceil((target - now) / 1000), 0)
+  const minutes = Math.floor(secondsRemaining / 60).toString().padStart(2, '0')
+  const seconds = (secondsRemaining % 60).toString().padStart(2, '0')
+  return `${minutes}:${seconds}`
 }
 
 type ProOfferCardProps = ProOfferWidgetProps & {
   readonly titleId?: string
 }
 
-function ProOfferCard({ onDismiss, onClaim, titleId }: ProOfferCardProps) {
-  const [secondsRemaining, setSecondsRemaining] = useState(60 * 60)
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setSecondsRemaining((value) => Math.max(value - 1, 0))
-    }, 1000)
-    return () => window.clearInterval(timer)
-  }, [])
-
-  const minutes = Math.floor(secondsRemaining / 60).toString().padStart(2, '0')
-  const seconds = (secondsRemaining % 60).toString().padStart(2, '0')
+function ProOfferCard({ onDismiss, onClaim, titleId, endsAt }: ProOfferCardProps) {
+  const remaining = useCountdown(endsAt)
 
   return (
     <>
@@ -56,7 +66,7 @@ function ProOfferCard({ onDismiss, onClaim, titleId }: ProOfferCardProps) {
         <Button className="mt-5 min-h-12 w-full text-base" onClick={onClaim}>
           Try 1 week for $1.39
           {/* The countdown ticks every second, so it is left out of the button's spoken name. */}
-          <span aria-hidden="true" className="ms-1 tabular-nums opacity-80">Ends in {minutes}:{seconds}</span>
+          <span aria-hidden="true" className="ms-1 tabular-nums opacity-80">Ends in {remaining}</span>
         </Button>
         <p className="mt-3 text-center text-xs leading-5 text-ink-muted">Then Pro at $99/month, billed monthly. Cancel anytime.</p>
       </div>
@@ -65,14 +75,14 @@ function ProOfferCard({ onDismiss, onClaim, titleId }: ProOfferCardProps) {
 }
 
 /** The offer as a card pinned to the corner of a page the visitor is already reading. */
-export function ProOfferWidget({ onDismiss, onClaim }: ProOfferWidgetProps) {
+export function ProOfferWidget({ onDismiss, onClaim, endsAt }: ProOfferWidgetProps) {
   return (
     <aside
       role="region"
       aria-label="Pro plan offer"
       className="fixed bottom-4 end-4 z-sticky w-[min(27rem,calc(100vw-2rem))] overflow-hidden rounded-panel border border-border bg-surface shadow-panel animate-ease-in-bottom motion-reduce:animate-none"
     >
-      <ProOfferCard onDismiss={onDismiss} onClaim={onClaim} />
+      <ProOfferCard onDismiss={onDismiss} onClaim={onClaim} endsAt={endsAt} />
     </aside>
   )
 }
@@ -82,13 +92,45 @@ export type ProOfferDialogProps = ProOfferWidgetProps & {
 }
 
 /** The same offer, centred over the page as a modal, e.g. on the dashboard straight after sign-up. */
-export function ProOfferDialog({ open, onDismiss, onClaim }: ProOfferDialogProps) {
+export function ProOfferDialog({ open, onDismiss, onClaim, endsAt }: ProOfferDialogProps) {
   const titleId = useId()
   return (
     <Dialog open={open} onOpenChange={(next) => { if (!next) onDismiss() }}>
       <DialogPopup aria-labelledby={titleId} className="overflow-hidden p-0 pb-0 sm:max-w-md sm:pb-0">
-        <ProOfferCard onDismiss={onDismiss} onClaim={onClaim} titleId={titleId} />
+        <ProOfferCard onDismiss={onDismiss} onClaim={onClaim} titleId={titleId} endsAt={endsAt} />
       </DialogPopup>
     </Dialog>
+  )
+}
+
+export type ProOfferBannerProps = {
+  readonly onClaim: () => void
+  /** Same deadline as the dialog, so closing the dialog does not reset the clock. */
+  readonly endsAt?: number
+}
+
+/** The offer as a bar across the top of the page, kept after someone closes the dialog. */
+export function ProOfferBanner({ onClaim, endsAt }: ProOfferBannerProps) {
+  const remaining = useCountdown(endsAt)
+  return (
+    <aside
+      role="region"
+      aria-label="Pro trial offer"
+      data-slot="pro-offer-banner"
+      className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 bg-surface-inverse px-4 py-2.5 text-center text-sm text-surface"
+    >
+      <p>
+        <span className="font-semibold">Your special offer ends soon.</span> Try Pro for 7 days for $1.39, 94% off.
+      </p>
+      <button
+        type="button"
+        onClick={onClaim}
+        className="inline-flex min-h-11 items-center gap-2 rounded-full bg-surface px-4 text-sm font-semibold text-ink hover:bg-accent-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-inverse"
+      >
+        <span aria-hidden="true" className="tabular-nums text-ink-muted">Ends in {remaining}</span>
+        <span aria-hidden="true" className="text-ink-muted">|</span>
+        Upgrade now
+      </button>
+    </aside>
   )
 }

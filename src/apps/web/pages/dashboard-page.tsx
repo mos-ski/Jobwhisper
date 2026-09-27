@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
-import { ProOfferDialog } from '@/features/billing/pro-offer-widget'
+import { ProOfferBanner, ProOfferDialog } from '@/features/billing/pro-offer-widget'
 import { DashboardView } from '@/features/dashboard/dashboard-view'
 import { dashboardActions, dashboardInstallPrompt, dashboardNavItems } from '@/mocks/dashboard'
 import { candidateSession } from '@/mocks/sessions'
@@ -10,6 +11,9 @@ export function DashboardPage() {
   const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
   const welcome = params.get('welcome') === '1'
+  const offerBanner = params.get('offer') === 'banner'
+  // One deadline for the dialog and the banner, so closing the dialog does not restart the clock.
+  const [offerEndsAt] = useState(() => Date.now() + 60 * 60 * 1000)
   const dropdownParam = params.get('dropdown')
   const creditParam = params.get('credit')
   const activeDropdown = dropdownParam === 'help' || dropdownParam === 'credits' || dropdownParam === 'profile' ? dropdownParam : undefined
@@ -27,11 +31,15 @@ export function DashboardPage() {
     permissions: ['app:view'] as const,
   }
 
+  // Closing the dialog swaps it for the top banner, and the URL keeps the banner through a refresh.
   function closeWelcome() {
     const next = new URLSearchParams(params)
     next.delete('welcome')
+    next.set('offer', 'banner')
     setParams(next, { replace: true })
   }
+
+  const claimOffer = () => navigate('/v3/billing?plan=pro&offer=welcome-60')
 
   return (
     <>
@@ -49,8 +57,9 @@ export function DashboardPage() {
       isLoading={params.get('state') === 'loading'}
       activeDropdown={activeDropdown}
       creditNotice={creditNotice}
+      announcement={offerBanner ? <ProOfferBanner onClaim={claimOffer} endsAt={offerEndsAt} /> : undefined}
     />
-    <ProOfferDialog open={welcome} onDismiss={closeWelcome} onClaim={() => navigate('/v3/billing?plan=pro&offer=welcome-60')} />
+    <ProOfferDialog open={welcome} onDismiss={closeWelcome} onClaim={claimOffer} endsAt={offerEndsAt} />
     </>
   )
 }
