@@ -400,6 +400,7 @@ export function LandingPage() {
       preferences={consent.status === 'decided' ? consent.preferences : NO_OPTIONAL_COOKIES}
       startWithChoices={settingsOpened > 0}
       privacyHref="/privacy"
+      termsHref="/terms"
       onAcceptAll={() => { decideConsent(ALL_OPTIONAL_COOKIES); setSettingsOpened(0) }}
       onRejectAll={() => { decideConsent(NO_OPTIONAL_COOKIES); setSettingsOpened(0) }}
       onSave={(preferences) => { decideConsent(preferences); setSettingsOpened(0) }}

@@ -8,6 +8,7 @@ function renderConsent(overrides: Partial<CookieConsentProps> = {}) {
   const props: CookieConsentProps = {
     preferences: { analytics: false, marketing: false },
     privacyHref: '/privacy',
+    termsHref: '/terms',
     onAcceptAll: vi.fn(),
     onRejectAll: vi.fn(),
     onSave: vi.fn(),
@@ -39,7 +40,7 @@ describe('CookieConsent', () => {
     const user = userEvent.setup()
     const props = renderConsent()
 
-    await user.click(screen.getByRole('button', { name: 'Choose which cookies' }))
+    await user.click(screen.getByRole('button', { name: 'Cookie settings' }))
     expect(screen.getByText('Always on')).toBeInTheDocument()
     await user.click(screen.getByRole('switch', { name: 'Analytics cookies' }))
     await user.click(screen.getByRole('button', { name: 'Save choices' }))
