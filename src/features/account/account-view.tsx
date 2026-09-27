@@ -1137,6 +1137,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                     features={product.features}
                     ctaLabel="Buy credits"
                     onCta={onBuyCredits}
+                    plan={product.wash}
                   />
                 ))}
               </PlanCarousel>

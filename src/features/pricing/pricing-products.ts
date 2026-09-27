@@ -11,6 +11,8 @@ export type CreditProduct = {
   readonly terms: PlanTerms
   readonly description: string
   readonly features: readonly string[]
+  /** Which plan-card colour wash the card wears. */
+  readonly wash: 'starter' | 'pro' | 'premium'
 }
 
 export type ManagedPackage = {
@@ -26,6 +28,7 @@ export type ManagedPackage = {
 export const CREDIT_PRODUCTS: readonly CreditProduct[] = [
   {
     id: 'interview',
+    wash: 'starter',
     name: 'Interview',
     tagline: 'Pay for the minutes you use',
     amount: '$0.10',
@@ -41,6 +44,7 @@ export const CREDIT_PRODUCTS: readonly CreditProduct[] = [
   },
   {
     id: 'resume',
+    wash: 'pro',
     name: 'Resume Builder',
     tagline: 'Pay for the prompts you use',
     amount: '$0.10',
@@ -51,6 +55,7 @@ export const CREDIT_PRODUCTS: readonly CreditProduct[] = [
   },
   {
     id: 'auto-apply',
+    wash: 'premium',
     name: 'Auto Apply',
     tagline: 'Pay only when one lands',
     amount: '$1',

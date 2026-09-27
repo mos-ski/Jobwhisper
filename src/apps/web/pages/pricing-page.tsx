@@ -427,6 +427,7 @@ function PayAsYouGo() {
             features={product.features}
             ctaLabel="Buy credits"
             onCta={() => navigate('/v3/billing')}
+            plan={product.wash}
           />
         ))}
       </PlanCarousel>
