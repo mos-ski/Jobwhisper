@@ -7,6 +7,8 @@ export type BillingPricingGuideStep = 0 | 1 | 2
 export type BillingPricingGuideCardProps = {
   readonly step: BillingPricingGuideStep
   readonly learnMoreHref: string
+  /** Where this step's plan lives, e.g. the plan picker for step one. */
+  readonly viewPlanHref: string
   readonly onNext: () => void
   readonly onDismiss: () => void
 }
@@ -26,7 +28,7 @@ const GUIDE_CONTENT: Readonly<Record<BillingPricingGuideStep, { readonly title: 
   },
 }
 
-export function BillingPricingGuideCard({ step, learnMoreHref, onNext, onDismiss }: BillingPricingGuideCardProps) {
+export function BillingPricingGuideCard({ step, learnMoreHref, viewPlanHref, onNext, onDismiss }: BillingPricingGuideCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const content = GUIDE_CONTENT[step]
   const isLastStep = step === 2
@@ -112,6 +114,12 @@ export function BillingPricingGuideCard({ step, learnMoreHref, onNext, onDismiss
           </button>
         )}
       </div>
+      <a
+        href={viewPlanHref}
+        className="mt-2 inline-flex min-h-11 w-full items-center justify-center rounded-[7.2px] border border-input text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+      >
+        View plan
+      </a>
     </div>
   )
 }
