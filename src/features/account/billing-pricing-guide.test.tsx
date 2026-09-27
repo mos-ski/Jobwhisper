@@ -8,6 +8,6 @@ describe('BillingPricingGuideCard', () => {
     render(<BillingPricingGuideCard step={0} learnMoreHref="/v3/billing/done-for-you" linkLabel="View plan" linkHref="/v3/billing/plans" onNext={vi.fn()} onDismiss={vi.fn()} />)
     expect(screen.getByRole('dialog', { name: 'Ace Your Interview Plan' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'View plan' })).toHaveAttribute('href', '/v3/billing/plans')
-    expect(screen.getByRole('button', { name: 'Skip Tutor' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Skip tour' })).toBeInTheDocument()
   })
 })
