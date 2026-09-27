@@ -1007,23 +1007,25 @@ function BillingReferralPrompt({ referralsHref }: { readonly referralsHref: stri
         <X aria-hidden="true" className="size-4" />
       </button>
       <div className="flex items-center gap-3">
-        <span className="grid size-16 shrink-0 place-items-center rounded-soft bg-surface text-accent">
-          <Gift aria-hidden="true" className="size-7" />
+        <span className="grid size-11 shrink-0 place-items-center rounded-soft bg-surface text-accent sm:size-16">
+          <Gift aria-hidden="true" className="size-5 sm:size-7" />
         </span>
-        <div className="grid gap-2 pe-8">
-          <p className="text-sm font-medium text-accent">Earn {REFERRAL_BONUS_CREDITS.toLocaleString()} credits when your referral subscribes.</p>
-          <div className="flex flex-wrap gap-2">
+        <div className="grid gap-2">
+          {/* Only the sentence needs to clear the close button; the buttons below it do not,
+              and giving them that inset was part of what left no room for the second one. */}
+          <p className="pe-8 text-sm font-medium text-accent">Earn {REFERRAL_BONUS_CREDITS.toLocaleString()} credits when your referral subscribes.</p>
+          <div className="flex gap-2">
             <button
               type="button"
               onClick={handleCopy}
-              className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-pill bg-accent px-3 text-xs font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              className="inline-flex min-h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-pill bg-accent px-3 text-xs font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
             >
               <Copy aria-hidden="true" className="size-4" />
-              {copied ? 'Copied!' : 'Copy referral link'}
+              {copied ? 'Copied!' : 'Copy link'}
             </button>
             <a
               href={referralsHref}
-              className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-pill bg-accent px-3 text-xs font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              className="inline-flex min-h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-pill bg-accent px-3 text-xs font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
             >
               <Gift aria-hidden="true" className="size-4" />
               View referrals
