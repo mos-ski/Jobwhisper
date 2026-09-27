@@ -1,7 +1,7 @@
 import { Clock, TriangleAlert, Zap } from 'lucide-react'
 
 import type { FairUseFeature, FairUseSnapshot, FairUseUnit } from '@/contracts/fair-use.draft'
-import { Button, cn, Dialog, DialogDescription, DialogPopup, DialogTitle, formatUsd, ProgressBar } from '@/ui'
+import { Button, cn, Dialog, DialogDescription, DialogPopup, DialogTitle, formatUsd, NoticeCard, ProgressBar } from '@/ui'
 
 /**
  * Minutes read as time, everything else reads as a count. A 135-minute stretch shown as
@@ -69,8 +69,10 @@ export function FairUseMeter({ snapshot, featureName, className }: FairUseMeterP
     >
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <p className="text-sm font-medium text-ink">
-          {formatFairUseAmount(Math.min(used, policy.stretchLimit), policy.unit)} of{' '}
-          {formatFairUseAmount(policy.stretchLimit, policy.unit)} in this {featureCopy[policy.feature].noun}
+          {policy.unit === 'minutes'
+            ? `${formatFairUseAmount(Math.min(used, policy.stretchLimit), policy.unit)} of ${formatFairUseAmount(policy.stretchLimit, policy.unit)}`
+            : `${Math.min(used, policy.stretchLimit)} of ${formatFairUseAmount(policy.stretchLimit, policy.unit)}`}{' '}
+          in this {featureCopy[policy.feature].noun}
         </p>
         <p className="text-xs text-ink-muted">{featureName}</p>
       </div>
@@ -106,6 +108,39 @@ export function FairUseMeter({ snapshot, featureName, className }: FairUseMeterP
         </p>
       )}
     </div>
+  )
+}
+
+export type FairUseNoticeProps = {
+  readonly snapshot: FairUseSnapshot
+  readonly featureName: string
+  readonly onAction?: () => void
+  readonly className?: string
+}
+
+/**
+ * The card form of the meter, for a phone: what is left, when it comes back, and one
+ * full-width button. The meter's progress bar earns its space on a wide screen beside the
+ * work; on a phone the sentence and the button are the whole of it.
+ */
+export function FairUseNotice({ snapshot, featureName, onAction, className }: FairUseNoticeProps) {
+  const { policy, used, state } = snapshot
+  const spent = state === 'cooling-down'
+  const remaining = Math.max(0, policy.stretchLimit - used)
+  const noun = featureCopy[policy.feature].noun
+
+  return (
+    <NoticeCard
+      tone="neutral"
+      className={className}
+      title={spent ? `${featureName} is resting` : 'Approaching your limit'}
+      description={
+        spent
+          ? `Back${snapshot.resumesAtLabel ? ` at ${snapshot.resumesAtLabel}` : ''}${snapshot.cooldownRemainingLabel ? `, in ${snapshot.cooldownRemainingLabel}` : ''}.`
+          : `${formatFairUseAmount(remaining, policy.unit)} left in this ${noun}.`
+      }
+      action={policy.topUpUnlocks ? { label: 'Keep going now', onClick: onAction } : undefined}
+    />
   )
 }
 

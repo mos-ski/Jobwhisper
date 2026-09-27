@@ -19,7 +19,7 @@ import {
   WORK_SCHEDULE_OPTIONS,
 } from '@/contracts/auto-apply.draft'
 import type { ResumeDocument, ResumeHistoryRow } from '@/contracts/resume.draft'
-import { FairUseLimitDialog, FairUseMeter } from '@/features/billing/fair-use'
+import { FairUseLimitDialog, FairUseMeter, FairUseNotice } from '@/features/billing/fair-use'
 import { AppShell as AppNavShell } from '@/features/dashboard/app-nav'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 import { COUNTRIES } from '@/data/countries'
@@ -1258,7 +1258,20 @@ export function AutoApplyAgentView({ homeHref, setupHref, agentHref, jobsHref, a
     <AppShell homeHref={homeHref} title="Agents" active="agent" setupHref={setupHref} agentHref={agentHref} jobsHref={jobsHref} appliedHref={appliedHref}>
       <div className="pt-5">
         <AgentStatsSummary stats={session.stats} />
-        {fairUse ? <FairUseMeter snapshot={fairUse} featureName="Auto Apply" className="mt-4" /> : null}
+        {fairUse ? (
+          <>
+            {/* A run that is simply under way is not a notice. The meter still shows it. */}
+            {fairUse.state !== 'running' ? (
+              <FairUseNotice
+                snapshot={fairUse}
+                featureName="Auto Apply"
+                onAction={() => setFairUseDialogOpen(true)}
+                className="mt-4 sm:hidden"
+              />
+            ) : null}
+            <FairUseMeter snapshot={fairUse} featureName="Auto Apply" className="mt-4 hidden sm:grid" />
+          </>
+        ) : null}
         <div className="mt-4">
           <AgentStatusCards agents={session.agents} />
         </div>

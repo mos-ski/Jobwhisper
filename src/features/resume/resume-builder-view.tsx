@@ -5,7 +5,7 @@ import type { ResumeBuilderSession, ResumeBuilderTab, ResumeChatState, ResumeDoc
 import type { FairUseSnapshot } from '@/contracts/fair-use.draft'
 import { AiSuggestionAction, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, FormField, FormPanel, FormPanelFooter, FormTextArea, JobwhisperAiIcon, ListPickerDialog, Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger, ShellBar, SourcePicker, TipModal, TipModalTrigger, UploadedFileDialog } from '@/ui'
 import { AppShell } from '@/features/dashboard/app-nav'
-import { FairUseLimitDialog, FairUseMeter } from '@/features/billing/fair-use'
+import { FairUseLimitDialog, FairUseMeter, FairUseNotice } from '@/features/billing/fair-use'
 import { InterviewPrepFeatureWidget } from '@/features/interview/interview-prep-feature-widget'
 import { useTypewriter } from '@/hooks/useTypewriter'
 import { ResumeInlineEditor, resumeSectionAnchor } from './resume-inline-editor'
@@ -525,6 +525,7 @@ function ChatSidebar({
   onAccept,
   onReject,
   fairUse,
+  onFairUseAction,
 }: {
   readonly session: ResumeBuilderSession
   readonly messages: readonly ChatMessage[]
@@ -537,6 +538,7 @@ function ChatSidebar({
   readonly onAccept: () => void
   readonly onReject: () => void
   readonly fairUse?: FairUseSnapshot
+  readonly onFairUseAction?: () => void
 }) {
   const chatRef = useRef<HTMLDivElement>(null)
 
@@ -591,7 +593,18 @@ function ChatSidebar({
           </div>
         )}
         {fairUse && fairUse.state !== 'running' ? (
-          <FairUseMeter snapshot={fairUse} featureName="Resume Builder" className="mx-4 mb-3" />
+          <>
+            {/* Above the composer either way, the way Claude does it. The card is the phone
+                shape: on a 390px screen the meter's bar and its two lines of small print cost
+                more room than the one sentence and the button that actually matter. */}
+            <FairUseNotice
+              snapshot={fairUse}
+              featureName="Resume Builder"
+              onAction={onFairUseAction}
+              className="mx-4 mb-3 sm:hidden"
+            />
+            <FairUseMeter snapshot={fairUse} featureName="Resume Builder" className="mx-4 mb-3 hidden sm:grid" />
+          </>
         ) : null}
         <ChatComposer
           prompts={session.promptSuggestions}
@@ -1261,6 +1274,7 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
             onAccept={handleAccept}
             onReject={handleReject}
             fairUse={fairUse}
+            onFairUseAction={() => setFairUseDialogOpen(true)}
           />
         ) : (
           <SectionNav hiddenSections={hiddenSections} extraSections={extraSections} onRestore={restoreSection} onAdd={addSection} activeSection={activeSection} />
