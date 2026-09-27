@@ -203,19 +203,21 @@ export function SuccessManagerPicker({ setupHref, profile, savedCard, directory,
 
   return (
     <div>
-        <h3 className="mx-auto mt-10 max-w-2xl text-center font-gowun text-2xl leading-tight text-ink sm:text-3xl">
-          A Success Manager Who Applies for You,
-          <br />
-          Built to <strong className="font-bold">Land Your Next Interview</strong>
-        </h3>
-        <ul aria-label="What your success manager does" className="mx-auto mt-5 flex max-w-3xl flex-wrap justify-center gap-x-6 gap-y-2">
-          {FEATURES.map((feature) => (
-            <li key={feature} className="flex items-center gap-2 text-sm font-medium text-ink">
-              <Check aria-hidden="true" className="size-4 shrink-0 text-positive" />
-              {feature}
-            </li>
-          ))}
-        </ul>
+        <header className="pb-16 pt-12">
+          <h3 className="mx-auto max-w-2xl text-center font-gowun text-2xl leading-tight text-ink sm:text-3xl">
+            A Success Manager Who Applies for You,
+            <br />
+            Built to <strong className="font-bold">Land Your Next Interview</strong>
+          </h3>
+          <ul aria-label="What your success manager does" className="mx-auto mt-5 flex max-w-3xl flex-wrap justify-center gap-x-6 gap-y-2">
+            {FEATURES.map((feature) => (
+              <li key={feature} className="flex items-center gap-2 text-sm font-medium text-ink">
+                <Check aria-hidden="true" className="size-4 shrink-0 text-positive" />
+                {feature}
+              </li>
+            ))}
+          </ul>
+        </header>
 
         {directory.status === 'loading' ? <DirectorySkeleton /> : null}
 
@@ -238,7 +240,7 @@ export function SuccessManagerPicker({ setupHref, profile, savedCard, directory,
 
         {directory.status === 'ready' && available.length > 0 ? (
           <>
-            <section aria-labelledby="all-managers" className="mt-16">
+            <section aria-labelledby="all-managers">
               <h3 id="all-managers" className="sr-only">Success managers</h3>
               <ul className="grid gap-4">
                 {managers.map((manager, index) => (
