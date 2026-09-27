@@ -2,7 +2,9 @@ import { useEffect, useRef, useState, type CSSProperties, type RefObject } from 
 import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Paperclip, Plus } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger } from '@/ui'
+import { CookieConsent } from '@/features/marketing/cookie-consent'
 import { MarketingFooter, MarketingNav } from '@/features/marketing/marketing-chrome'
+import { ALL_OPTIONAL_COOKIES, NO_OPTIONAL_COOKIES, useCookieConsent } from '../cookie-consent-state'
 import './landing-page.css'
 
 /** [title, full description, short description]. The short one runs on mobile, where the
@@ -371,6 +373,10 @@ export function LandingPage() {
   const { hash } = useLocation()
   const heroRef = useRef<HTMLElement>(null)
   const [showSocialProof, setShowSocialProof] = useState(false)
+  const [consent, decideConsent] = useCookieConsent()
+  // Counts reopenings from the footer, so each one remounts the banner on its toggles.
+  const [settingsOpened, setSettingsOpened] = useState(0)
+  const showConsent = consent.status === 'undecided' || settingsOpened > 0
 
   useEffect(() => {
     if (!hash) window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
@@ -387,5 +393,15 @@ export function LandingPage() {
 
   // The sections are wrapped so they can carry the opaque sheet that covers the pinned
   // footer — on the page element itself the background paints under the footer instead.
-  return <main className="figma-landing-page"><div className="landing-content"><BrandAnnouncement /><Hero heroRef={heroRef} /><Demo /><CopilotShowcase /><ProductFacts /><Journey /><TryItNow /><Faq /><Closing /></div><MarketingFooter />{showSocialProof ? <SocialProofSignup /> : null}</main>
+  return <main className="figma-landing-page"><div className="landing-content"><BrandAnnouncement /><Hero heroRef={heroRef} /><Demo /><CopilotShowcase /><ProductFacts /><Journey /><TryItNow /><Faq /><Closing /></div><MarketingFooter onCookieSettings={() => setSettingsOpened((count) => count + 1)} />{showSocialProof && !showConsent ? <SocialProofSignup /> : null}{showConsent ? (
+    <CookieConsent
+      key={settingsOpened}
+      preferences={consent.status === 'decided' ? consent.preferences : NO_OPTIONAL_COOKIES}
+      startWithChoices={settingsOpened > 0}
+      privacyHref="/privacy"
+      onAcceptAll={() => { decideConsent(ALL_OPTIONAL_COOKIES); setSettingsOpened(0) }}
+      onRejectAll={() => { decideConsent(NO_OPTIONAL_COOKIES); setSettingsOpened(0) }}
+      onSave={(preferences) => { decideConsent(preferences); setSettingsOpened(0) }}
+    />
+  ) : null}</main>
 }

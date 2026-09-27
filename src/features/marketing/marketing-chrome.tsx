@@ -147,7 +147,12 @@ const FOOTER_COMPANY = [
   ['Instagram', '#'],
 ] as const
 
-export function MarketingFooter() {
+export type MarketingFooterProps = {
+  /** Reopens the cookie choices; the link only shows on pages that pass it. */
+  readonly onCookieSettings?: () => void
+}
+
+export function MarketingFooter({ onCookieSettings }: MarketingFooterProps = {}) {
   const links = (items: readonly (readonly [string, string])[]) => items.map(([label, href]) => <a href={href} key={label}>{label}</a>)
   return <footer className="landing-footer">
     <div className="landing-footer-inner">
@@ -162,7 +167,7 @@ export function MarketingFooter() {
       </nav>
       <div className="landing-footer-meta">
         <span>© Jobwhisper 2026</span>
-        <div><a href="/privacy">Privacy Policy</a><a href="/terms">Terms of Service</a></div>
+        <div><a href="/privacy">Privacy Policy</a><a href="/terms">Terms of Service</a>{onCookieSettings ? <button type="button" onClick={onCookieSettings}>Cookie settings</button> : null}</div>
       </div>
     </div>
   </footer>

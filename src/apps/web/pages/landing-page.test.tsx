@@ -7,6 +7,8 @@ import { LandingPage } from './landing-page'
 const intersectionVisibilityCallbacks = new Map<Element, (isIntersecting: boolean) => void>()
 
 beforeEach(() => {
+  // A returning visitor who has already answered the cookie banner, which otherwise hides the social-proof pill.
+  document.cookie = `jw_cookie_consent=${encodeURIComponent('analytics=0&marketing=0')}; Path=/`
   intersectionVisibilityCallbacks.clear()
   vi.stubGlobal(
     'IntersectionObserver',
@@ -30,6 +32,7 @@ beforeEach(() => {
 })
 
 afterAll(() => {
+  document.cookie = 'jw_cookie_consent=; Max-Age=0; Path=/'
   vi.unstubAllGlobals()
 })
 
