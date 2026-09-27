@@ -1069,10 +1069,14 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
     else if (overshootStart > 0) list.scrollLeft -= overshootStart
   }, [shownTab])
 
-  // The tour explains Credits & Balances, so it waits until that section is on screen, and only offers itself once.
+  // The tour explains Credits & Balances, so it waits until that section is on screen, and only
+  // offers itself once. Not on a phone: there the card is a full-screen overlay over a page the
+  // reader is already scrolling through, and it interrupts rather than explains. "How it works"
+  // still opens it on any size, because that one was asked for.
   useEffect(() => {
     const section = creditsRef.current
     if (!section || typeof IntersectionObserver === 'undefined') return
+    if (window.matchMedia?.('(max-width: 639px)').matches) return
     const observer = new IntersectionObserver((entries) => {
       if (pricingGuideShownRef.current || !entries.some((entry) => entry.isIntersecting)) return
       pricingGuideShownRef.current = true

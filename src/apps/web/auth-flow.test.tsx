@@ -100,14 +100,10 @@ describe('v3 web auth flow', () => {
     }
   })
 
-  it('renders dashboard nav dropdown and credit notification states from URL params', () => {
+  it('renders the dashboard nav dropdowns from URL params', () => {
     const cases = [
       { route: '/v3/app?dropdown=help', name: 'Whats new?' },
       { route: '/v3/app?dropdown=credits', name: 'Credit balances' },
-      // Two shapes of the same notice: the card docks on a phone, the line sits above the
-      // content from sm up, and jsdom renders both.
-      { route: '/v3/app?credit=empty', name: 'Your credits are used up for this cycle' },
-      { route: '/v3/app?credit=low', name: '0% of your credits left this cycle' },
     ] as const
 
     for (const item of cases) {

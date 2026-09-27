@@ -15,14 +15,10 @@ export function DashboardPage() {
   // One deadline for the dialog and the banner, so closing the dialog does not restart the clock.
   const [offerEndsAt] = useState(() => Date.now() + 60 * 60 * 1000)
   const dropdownParam = params.get('dropdown')
-  const creditParam = params.get('credit')
   const activeDropdown = dropdownParam === 'help' || dropdownParam === 'credits' || dropdownParam === 'profile' ? dropdownParam : undefined
-  const creditNotice = creditParam === 'low' || creditParam === 'empty' ? creditParam : undefined
-  const creditBalanceCents = activeDropdown === 'credits' || creditNotice === 'empty'
-    ? 0
-    : creditNotice === 'low'
-      ? 12
-      : CREDIT_WALLET.balanceCents
+  // The credit dropdown still has an empty state to show; the home page no longer carries a
+  // limit notice of its own (it belongs where the feature is being used).
+  const creditBalanceCents = activeDropdown === 'credits' ? 0 : CREDIT_WALLET.balanceCents
   const user = candidateSession.status === 'authenticated' ? candidateSession.user : {
     id: 'review-user',
     email: 'review@jobwhisper.ai',
@@ -56,7 +52,6 @@ export function DashboardPage() {
       resumeBuilderTotalCredits={RESUME_BUILDER_WALLET.totalCredits}
       isLoading={params.get('state') === 'loading'}
       activeDropdown={activeDropdown}
-      creditNotice={creditNotice}
       announcement={offerBanner ? <ProOfferBanner onClaim={claimOffer} endsAt={offerEndsAt} /> : undefined}
     />
     <ProOfferDialog open={welcome} onDismiss={closeWelcome} onClaim={claimOffer} endsAt={offerEndsAt} />

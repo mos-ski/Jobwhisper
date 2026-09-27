@@ -97,16 +97,6 @@ const appRoutes = [
     description: 'Credit popover with upgrade action, remaining/allocated rows, progress, used count, and free-credits CTA.',
   },
   {
-    href: '/v3/app?credit=empty',
-    label: 'Dashboard empty credits',
-    description: 'Centered red credit notification banner for zero remaining credits.',
-  },
-  {
-    href: '/v3/app?credit=low',
-    label: 'Dashboard low credits',
-    description: 'Centered blue credit notification banner for low remaining credits.',
-  },
-  {
     href: '/v3/job-directory',
     label: 'Job Directory',
     description: 'Trusted job-board directory with search, focus filters, curated in-app job previews, and external application handoff.',
