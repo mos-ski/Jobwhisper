@@ -50,7 +50,7 @@
 
 5. Entry condition: user opens the Edit tab at `/v3/resume/editor?tab=edit` (old `tab=create` and `tab=template` links land here too). The left panel lists the sections; each links to its place on the canvas; the canvas on the right is the resume itself, edited in place. The Chat tab keeps its resume preview.
    Exit condition: the resume is edited in place on the canvas; each flagged section shows its issue counts, and its Fix lists its issues and, where a rewrite exists (summary, top role bullets, skills), Accept applies it and the count drops. Sections reorder by drag handle or arrow keys, collapse from their heading, and can be removed and restored or added through Add Section; the left list highlights the section being edited.
-   Failure branch: sections without a rewrite offer "Mark as fixed" with the advice on what to change; the header's ATS Score opens the full report.
+   Failure branch: sections without a rewrite offer "Fix for me" with the advice on what to change; the header's ATS Score opens the full report.
 
 6. Entry condition: user opens `/v3/resume/history`.
    Exit condition: user searches, creates a new resume, or opens an existing history row in a later state slice.
