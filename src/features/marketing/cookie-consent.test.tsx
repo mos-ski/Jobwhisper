@@ -18,14 +18,16 @@ function renderConsent(overrides: Partial<CookieConsentProps> = {}) {
 }
 
 describe('CookieConsent', () => {
-  it('makes rejecting as easy as accepting', async () => {
+  it('leads with Accept, keeps Reject beside it at the same size', async () => {
     const user = userEvent.setup()
     const props = renderConsent()
 
     expect(screen.getByRole('region', { name: 'Cookies on Jobwhisper' })).toBeInTheDocument()
     const accept = screen.getByRole('button', { name: 'Accept all' })
     const reject = screen.getByRole('button', { name: 'Reject all' })
-    expect(accept.dataset.variant).toBe(reject.dataset.variant)
+    expect(accept.dataset.variant).toBe('primary')
+    expect(reject.dataset.variant).toBe('secondary')
+    expect(accept.dataset.size).toBe(reject.dataset.size)
 
     await user.click(reject)
     expect(props.onRejectAll).toHaveBeenCalled()

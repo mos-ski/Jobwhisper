@@ -70,11 +70,11 @@ export function CookieConsent({ preferences, startWithChoices = false, privacyHr
           </div>
         </div>
       ) : (
-        // Accept and reject sit side by side at the same size: refusing has to be as easy as agreeing.
+        // Reject sits beside Accept at the same size, so refusing stays as easy as agreeing.
         <div className="mt-5 grid gap-2">
           <div className="grid grid-cols-2 gap-2">
             <Button size="lg" className={black} onClick={onAcceptAll}>Accept all</Button>
-            <Button size="lg" className={black} onClick={onRejectAll}>Reject all</Button>
+            <Button size="lg" variant="secondary" onClick={onRejectAll}>Reject all</Button>
           </div>
           <Button size="lg" variant="ghost" onClick={() => setChoosing(true)}>Choose which cookies</Button>
         </div>
