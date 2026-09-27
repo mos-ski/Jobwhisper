@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, Download, FileText, HelpCircle, Minus, Plus, Target, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, ChevronRight, Download, FileText, HelpCircle, Minus, Plus, Target, X } from 'lucide-react'
 
 import type { ResumeBuilderSession, ResumeBuilderTab, ResumeChatState, ResumeDocument, ResumeHistoryRow, ResumeIssue, ResumeSectionId } from '@/contracts/resume.draft'
 import type { FairUseSnapshot } from '@/contracts/fair-use.draft'
@@ -8,7 +8,7 @@ import { AppShell } from '@/features/dashboard/app-nav'
 import { FairUseLimitDialog, FairUseMeter } from '@/features/billing/fair-use'
 import { InterviewPrepFeatureWidget } from '@/features/interview/interview-prep-feature-widget'
 import { useTypewriter } from '@/hooks/useTypewriter'
-import { ResumeInlineEditor } from './resume-inline-editor'
+import { ResumeInlineEditor, resumeSectionAnchor } from './resume-inline-editor'
 import { ClassicResume } from './resume-templates'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 
@@ -149,19 +149,6 @@ function PaperShell({ children, compact = false }: { readonly children: ReactNod
     <article className={cn('mx-auto min-h-[56rem] w-full bg-surface p-8 shadow-panel', compact ? 'max-w-3xl' : 'max-w-[44rem]')} aria-label="Resume preview">
       {children}
     </article>
-  )
-}
-
-function AiSuggestionLabel({ onClick }: { readonly onClick?: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="inline-flex min-h-8 items-center gap-1.5 self-start text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-    >
-      <JobwhisperAiIcon className="size-3.5 shrink-0" />
-      <span className="text-accent-text">AI Suggestion</span>
-    </button>
   )
 }
 
@@ -618,115 +605,35 @@ function ChatSidebar({
   )
 }
 
-const sectionFields: Record<ResumeSectionId, readonly { readonly id: string; readonly label: string; readonly placeholder: string; readonly multiline?: boolean }[]> = {
-  'personal-information': [
-    { id: 'full-name', label: 'Full Name', placeholder: 'Adedamola Adewale' },
-    { id: 'headline', label: 'Headline', placeholder: 'Senior Product Manager' },
-  ],
-  'professional-summary': [
-    { id: 'summary', label: 'Summary', placeholder: 'A brief overview of your professional background and key strengths...', multiline: true },
-  ],
-  experience: [
-    { id: 'company', label: 'Company', placeholder: 'Jobwhisper' },
-    { id: 'title', label: 'Job Title', placeholder: 'Director of Product' },
-    { id: 'bullets', label: 'Achievements', placeholder: 'Led a cross-functional team of 12 to ship...', multiline: true },
-  ],
-  education: [
-    { id: 'school', label: 'School', placeholder: 'University of Lagos' },
-    { id: 'degree', label: 'Degree', placeholder: 'B.Sc. Computer Science' },
-  ],
-  skills: [
-    { id: 'skills', label: 'Skills', placeholder: 'Product Strategy, SQL, A/B Testing...', multiline: true },
-  ],
-  certifications: [
-    { id: 'cert-name', label: 'Certification', placeholder: 'AWS Certified Cloud Practitioner' },
-    { id: 'cert-issuer', label: 'Issuing Organization', placeholder: 'Amazon Web Services' },
-  ],
-  projects: [
-    { id: 'project-name', label: 'Project Name', placeholder: 'AI Career Platform' },
-    { id: 'project-description', label: 'Description', placeholder: 'Brief overview of the project, your role, and measurable outcomes...', multiline: true },
-    { id: 'project-year', label: 'Year', placeholder: '2024' },
-  ],
-  languages: [
-    { id: 'language', label: 'Language', placeholder: 'English' },
-    { id: 'proficiency', label: 'Proficiency', placeholder: 'Native / Fluent / Conversational' },
-  ],
-}
-
-function SectionEditor({
-  pendingSuggestion,
-  onSuggest,
-  onAccept,
-  onReject,
-}: {
-  readonly pendingSuggestion: boolean
-  readonly onSuggest: () => void
-  readonly onAccept: () => void
-  readonly onReject: () => void
-}) {
+/** The Edit tab's panel: one link per section, jumping to it on the canvas. */
+function SectionNav() {
   const sections = Object.entries(sectionLabels) as ReadonlyArray<[ResumeSectionId, string]>
-  const [expandedId, setExpandedId] = useState<ResumeSectionId | null>('professional-summary')
 
   return (
     <aside className="flex w-full flex-1 flex-col overflow-hidden border-e border-border bg-surface lg:h-full lg:w-[21.25rem] lg:flex-none">
       <div className="border-b border-border p-3">
         <TabRail tab="edit" />
       </div>
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <div className="flex-1 overflow-auto px-3 py-1">
-          {sections.map(([id, label]) => {
-            const expanded = expandedId === id
-            return (
-              <section key={id} className="border-b border-border py-2">
-                <button
-                  type="button"
-                  onClick={() => setExpandedId(expanded ? null : id)}
-                  aria-expanded={expanded}
-                  className="flex min-h-10 w-full items-center justify-between text-sm font-medium text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                >
-                  {label}
-                  <ChevronDown aria-hidden="true" className={cn('size-4 text-ink-muted transition-transform', expanded ? 'rotate-180' : '')} />
-                </button>
-                {expanded ? (
-                  <div className="grid gap-3 pb-3">
-                    {sectionFields[id].map((field) => (
-                      <div key={field.id} className="grid gap-2">
-                        <label htmlFor={`${id}-${field.id}`} className="text-xs font-medium text-ink-muted">
-                          {field.label}
-                        </label>
-                        {field.multiline ? (
-                          <textarea id={`${id}-${field.id}`} className="min-h-20 rounded-md border border-border bg-surface px-3 py-2 text-xs text-ink outline-none placeholder:text-ink-muted focus:border-focus focus:ring-2 focus:ring-focus" placeholder={field.placeholder} />
-                        ) : (
-                          <input id={`${id}-${field.id}`} type="text" className="min-h-9 rounded-md border border-border bg-surface px-3 text-xs text-ink outline-none placeholder:text-ink-muted focus:border-focus focus:ring-2 focus:ring-focus" placeholder={field.placeholder} />
-                        )}
-                      </div>
-                    ))}
-                    {pendingSuggestion ? (
-                      <div className="flex gap-2">
-                        <button type="button" onClick={onReject} className="inline-flex min-h-8 items-center gap-1 rounded-pill border border-border px-3 text-xs font-semibold text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-                          <X aria-hidden="true" className="size-3" />
-                          Reject All
-                        </button>
-                        <button type="button" onClick={onAccept} className="inline-flex min-h-8 items-center gap-1 rounded-pill bg-accent px-3 text-xs font-semibold text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-                          <Check aria-hidden="true" className="size-3" />
-                          Accept All
-                        </button>
-                      </div>
-                    ) : (
-                      <AiSuggestionLabel onClick={onSuggest} />
-                    )}
-                  </div>
-                ) : null}
-              </section>
-            )
-          })}
-        </div>
-        <div className="border-t border-border p-3">
-          <button type="button" className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-lg border border-dashed border-input text-sm font-medium text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-            <Plus aria-hidden="true" className="size-4" />
-            Add Section
-          </button>
-        </div>
+      <nav aria-label="Resume sections" className="flex-1 overflow-auto px-3 py-1">
+        <ul>
+          {sections.map(([id, label]) => (
+            <li key={id} className="border-b border-border">
+              <a
+                href={`#${resumeSectionAnchor(id)}`}
+                className="flex min-h-12 w-full items-center justify-between text-sm font-medium text-ink hover:text-accent-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                {label}
+                <ChevronRight aria-hidden="true" className="size-4 text-ink-muted rtl:rotate-180" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <div className="border-t border-border p-3">
+        <button type="button" className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-lg border border-dashed border-input text-sm font-medium text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+          <Plus aria-hidden="true" className="size-4" />
+          Add Section
+        </button>
       </div>
     </aside>
   )
@@ -1291,7 +1198,7 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
             fairUse={fairUse}
           />
         ) : (
-          <SectionEditor pendingSuggestion={pendingSuggestion} onSuggest={revealSuggestion} onAccept={handleAccept} onReject={handleReject} />
+          <SectionNav />
         )}
         <ResumePreviewTray
           onOpen={() => setPreviewOpen(true)}

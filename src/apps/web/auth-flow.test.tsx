@@ -197,12 +197,12 @@ describe('v3 web auth flow', () => {
       {
         route: '/v3/resume/editor?tab=edit',
         heading: 'ADEDAMOLA ADEWALE',
-        text: 'AI Suggestion',
+        text: 'Add Section',
       },
       {
         route: '/v3/resume/editor?tab=create',
         heading: 'ADEDAMOLA ADEWALE',
-        text: 'AI Suggestion',
+        text: 'Add Section',
       },
       {
         route: '/v3/resume/history',

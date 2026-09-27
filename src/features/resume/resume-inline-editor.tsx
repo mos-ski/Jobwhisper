@@ -59,6 +59,11 @@ function GrowingTextarea({ value, className, ...props }: TextareaHTMLAttributes<
   return <textarea ref={ref} rows={1} value={value} className={cn('overflow-hidden', className)} {...props} />
 }
 
+/** The canvas id for a section, so the Edit panel can link straight to it. */
+export function resumeSectionAnchor(section: ResumeSectionId): string {
+  return `resume-edit-${section}`
+}
+
 function issueKey(section: BodySection, roleIndex?: number): string {
   return roleIndex === undefined ? section : `${section}:${roleIndex}`
 }
@@ -365,10 +370,10 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
 
   return (
     <div data-slot="resume-inline-editor" className="flex min-h-0 flex-1 flex-col bg-canvas">
-      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6">
+      <div className="min-h-0 flex-1 scroll-smooth overflow-y-auto px-4 py-6 motion-reduce:scroll-auto sm:px-6">
         <div className="mx-auto w-full max-w-5xl rounded-panel border border-border bg-surface px-4 py-6 shadow-panel sm:px-10 sm:py-8">
           <h1 className="sr-only">{draft.candidateName}</h1>
-          <header className="grid gap-2 border-b border-border pb-6">
+          <header id={resumeSectionAnchor('personal-information')} className="grid scroll-mt-4 gap-2 border-b border-border pb-6">
             <input aria-label="Full name" value={draft.candidateName} onChange={(event) => update({ candidateName: event.target.value })} className={cn(field, 'font-gowun text-3xl font-bold')} />
             <div className="grid gap-2 sm:grid-cols-3">
               <label className="flex items-center gap-2 text-sm text-ink-muted"><Mail aria-hidden="true" className="size-4 shrink-0" /><span className="sr-only">Email</span><input value={draft.email} onChange={(event) => update({ email: event.target.value })} className={cn(field, 'text-sm')} /></label>
@@ -386,12 +391,13 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
             return (
               <section
                 key={section}
+                id={resumeSectionAnchor(section)}
                 aria-labelledby={`resume-section-${section}`}
                 draggable={dragging === section}
                 onDragOver={(event) => { if (dragging) event.preventDefault() }}
                 onDrop={(event) => { event.preventDefault(); if (dragging) move(dragging, order.indexOf(section)); setDragging(null) }}
                 onDragEnd={() => setDragging(null)}
-                className={cn('border-b border-border py-6 last:border-b-0', dragging === section && 'opacity-60')}
+                className={cn('scroll-mt-4 border-b border-border py-6 last:border-b-0', dragging === section && 'opacity-60')}
               >
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-1">

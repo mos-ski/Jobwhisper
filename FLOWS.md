@@ -48,7 +48,7 @@
    Exit condition: user accepts, declines, downloads, or continues editing.
    Failure branch: failed AI generation shows retry in the chat panel in a later state slice.
 
-5. Entry condition: user opens the Edit tab at `/v3/resume/editor?tab=edit` (old `tab=create` and `tab=template` links land here too). The left panel is the section list as before; the canvas on the right is the resume itself, edited in place. The Chat tab keeps its resume preview.
+5. Entry condition: user opens the Edit tab at `/v3/resume/editor?tab=edit` (old `tab=create` and `tab=template` links land here too). The left panel lists the sections; each links to its place on the canvas; the canvas on the right is the resume itself, edited in place. The Chat tab keeps its resume preview.
    Exit condition: the resume is edited in place on the canvas; each flagged section shows its issue counts, and its Fix lists its issues and, where a rewrite exists (summary, top role bullets, skills), Accept applies it and the count drops. Sections reorder by drag handle or arrow keys.
    Failure branch: sections without a rewrite offer "Mark as fixed" with the advice on what to change; the header's ATS Score opens the full report.
 
