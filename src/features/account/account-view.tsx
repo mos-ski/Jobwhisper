@@ -1,4 +1,4 @@
-import { AlertTriangle, Bug, Check, ChevronDown, CircleHelp, Clock, Copy, CreditCard, ExternalLink, EyeOff, Flag, Gift, Lightbulb, Mail, MessageCircle, Moon, Play, Search, ShoppingCart, Star, Sun, Trash2, Upload } from 'lucide-react'
+import { AlertTriangle, Bug, Check, ChevronDown, CircleHelp, Clock, Copy, CreditCard, ExternalLink, EyeOff, Flag, Gift, Infinity as InfinityIcon, Lightbulb, Mail, MessageCircle, Moon, Play, Search, ShoppingCart, Star, Sun, Trash2, Upload } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 import type { AccountFaqEntry, BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, SupportRequestKind, SupportRequestType, SupportTicketStatus, SupportTicketSummary, TutorialItem } from '@/contracts/account.draft'
@@ -865,22 +865,25 @@ type CreditBalanceCardProps = {
   /** Set when this credit type requires an active plan to purchase (e.g. Interview Copilot). See PRICING.md §1, §4. */
   readonly requiresActivePlan?: boolean
   readonly hasActivePlan?: boolean
+  /** The billing tour's card for this balance, when the tour is on it. */
+  readonly guide?: ReactNode
 }
 
-function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, centsPerCredit, minimumDollars, presetDollars, onPurchase, reloadHint, requiresActivePlan, hasActivePlan }: CreditBalanceCardProps) {
+function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, centsPerCredit, minimumDollars, presetDollars, onPurchase, reloadHint, requiresActivePlan, hasActivePlan, guide }: CreditBalanceCardProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [autoReload, setAutoReload] = useState(false)
-  const percentLeft = totalCredits > 0 ? Math.max(0, Math.min(100, Math.round((balanceCredits / totalCredits) * 100))) : 100
+  // Nothing bought yet is an empty bar, not a full one.
+  const percentLeft = totalCredits > 0 ? Math.max(0, Math.min(100, Math.round((balanceCredits / totalCredits) * 100))) : 0
   const featureName = title.replace(/ Credits$/, '')
   const locked = Boolean(requiresActivePlan) && !hasActivePlan
 
   return (
-    <section>
+    <section className={cn('relative', guide && 'z-overlay')}>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="font-gowun text-base font-bold text-ink">{title}</h3>
-        <p className="text-sm text-ink-muted">{rateLabel}</p>
+        <h3 className={cn('font-gowun text-base font-bold', guide ? 'text-surface' : 'text-ink')}>{title}</h3>
+        <p className={cn('text-sm', guide ? 'text-surface' : 'text-ink-muted')}>{rateLabel}</p>
       </div>
-      <div className="mt-3 border border-border bg-surface">
+      <div className={cn('mt-3 border bg-surface', guide ? 'border-accent shadow-control' : 'border-border')}>
         <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-ink">{balanceCredits} credits</p>
@@ -888,7 +891,7 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
               <div className="h-2 max-w-64 flex-1 overflow-hidden rounded-pill bg-surface-subtle">
                 <div className={cn('h-full rounded-pill', percentLeft > 20 ? 'bg-accent' : 'bg-danger')} style={{ inlineSize: `${percentLeft}%` }} />
               </div>
-              <span className="shrink-0 text-sm text-ink">{percentLeft}% left</span>
+              <span className="shrink-0 text-sm text-ink">{totalCredits > 0 ? `${percentLeft}% left` : 'No credits yet'}</span>
             </div>
             {locked ? <p className="mt-2 text-sm text-ink-muted">Requires an active Ace Your Interview plan.</p> : null}
           </div>
@@ -923,6 +926,29 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
         autoReloadHint={reloadHint}
         onPurchase={onPurchase}
       />
+      {guide}
+    </section>
+  )
+}
+
+/** What a plan subscriber sees instead of a credit balance: the plan covers this feature without counting. */
+function UnlimitedAccessCard({ title, planName }: { readonly title: string; readonly planName: string }) {
+  return (
+    <section>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h3 className="font-gowun text-base font-bold text-ink">{title}</h3>
+        <p className="text-sm text-ink-muted">Included in {planName}</p>
+      </div>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border border-border bg-surface p-4 sm:p-5">
+        <div className="min-w-0 flex-1">
+          <p className="flex items-center gap-2 text-sm font-semibold text-ink">
+            <InfinityIcon aria-hidden="true" className="size-5 text-accent-text" />
+            Unlimited
+          </p>
+          <p className="mt-1 text-sm text-ink-muted">No credits and no minutes to count. Use Interview Prep and every Copilot as much as you need.</p>
+        </div>
+        <span className="shrink-0 rounded-pill bg-positive-surface px-3 py-1 text-xs font-semibold text-positive">Active</span>
+      </div>
     </section>
   )
 }
@@ -1052,7 +1078,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                       <p className="font-gowun text-[14.4px] font-semibold leading-[21.6px] text-ink">{currentPlan?.name.charAt(0)}{currentPlan?.name.slice(1).toLowerCase()} plan</p>
                       <span className="rounded-pill bg-accent-subtle px-[9px] py-[1.8px] text-[10.8px] font-medium text-accent-text">Active</span>
                     </div>
-                    <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">{currentPlan?.price} per month &middot; Renews {wallet.resetDateLabel}</p>
+                    <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">{currentPlan?.price} per month &middot; Unlimited Interview Prep and Copilot &middot; Renews {wallet.resetDateLabel}</p>
                   </div>
                   <a
                     href="/v3/billing/plans"
@@ -1062,17 +1088,17 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   </a>
                 </div>
                 {pricingGuideOpen && pricingGuideStep === 0 ? (
-                  <BillingPricingGuideCard step={0} learnMoreHref="/v3/billing/done-for-you" viewPlanHref="/v3/billing/plans" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
+                  <BillingPricingGuideCard step={0} learnMoreHref="/v3/billing/done-for-you" linkLabel="View plan" linkHref="/v3/billing/plans" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
                 ) : null}
               </div>
 
-              <div className={cn('relative', pricingGuideOpen && pricingGuideStep === 1 && 'z-overlay')}>
+              <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Find Jobs Yourself</p>
                 <div
                   style={{ animationDelay: '60ms', animationFillMode: 'backwards' }}
                   className={cn(
                     'flex animate-ease-in-bottom items-start gap-[24px] border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control',
-                    pricingGuideOpen && pricingGuideStep === 1 ? 'border-accent shadow-control' : 'border-border',
+                    'border-border',
                   )}
                 >
                   <img src="/v3-assets/figma/plan-row-jobs.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
@@ -1092,18 +1118,15 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                     Buy credits
                   </a>
                 </div>
-                {pricingGuideOpen && pricingGuideStep === 1 ? (
-                  <BillingPricingGuideCard step={1} learnMoreHref="/v3/billing/done-for-you" viewPlanHref="/v3/billing/credits" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
-                ) : null}
               </div>
 
-              <div className={cn('relative', pricingGuideOpen && pricingGuideStep === 2 && 'z-overlay')}>
+              <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Done For You</p>
                 <div
                   style={{ animationDelay: '120ms', animationFillMode: 'backwards' }}
                   className={cn(
                     'flex animate-ease-in-bottom items-start gap-[24px] border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control',
-                    pricingGuideOpen && pricingGuideStep === 2 ? 'border-accent shadow-control' : 'border-border',
+                    'border-border',
                   )}
                 >
                   <img src="/v3-assets/figma/plan-row-dfy.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
@@ -1118,9 +1141,6 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                     Sign up
                   </a>
                 </div>
-                {pricingGuideOpen && pricingGuideStep === 2 ? (
-                  <BillingPricingGuideCard step={2} learnMoreHref="/v3/billing/done-for-you" viewPlanHref="/v3/billing/done-for-you" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
-                ) : null}
               </div>
             </div>
           </TitledPanel>
@@ -1142,6 +1162,9 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
             }
           >
             <div className="grid gap-6">
+              {hasActivePlan ? (
+                <UnlimitedAccessCard title="Interview Prep &amp; Copilot" planName={`${currentPlan?.name.charAt(0) ?? ''}${currentPlan?.name.slice(1).toLowerCase() ?? ''}`} />
+              ) : (
               <CreditBalanceCard
                 title="Interview Copilot Credits"
                 rateLabel="$0.10 / credit / min"
@@ -1159,6 +1182,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   setTotalCents((prev) => prev + addedCents)
                 }}
               />
+              )}
               {autoApplyPurchase ? (
                 <CreditBalanceCard
                   title="Auto Apply Credits"
@@ -1169,6 +1193,9 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   minimumDollars={autoApplyPurchase.minimumDollars}
                   presetDollars={autoApplyPurchase.presetDollars}
                   reloadHint="Buy more automatically when your balance runs low."
+                  guide={pricingGuideOpen && pricingGuideStep === 1 ? (
+                    <BillingPricingGuideCard step={1} learnMoreHref="/v3/billing/done-for-you" linkLabel="View usage details" linkHref="/v3/billing/usage" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
+                  ) : undefined}
                   onPurchase={(credits) => {
                     setAutoApplyBalance((prev) => prev + credits)
                     setAutoApplyTotalCredits((prev) => prev + credits)
@@ -1185,6 +1212,9 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   minimumDollars={resumeBuilderPurchase.minimumDollars}
                   presetDollars={resumeBuilderPurchase.presetDollars}
                   reloadHint="Buy more automatically when your balance runs low."
+                  guide={pricingGuideOpen && pricingGuideStep === 2 ? (
+                    <BillingPricingGuideCard step={2} learnMoreHref="/help" linkLabel="Buy credits" linkHref="/v3/billing/credits" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
+                  ) : undefined}
                   onPurchase={(credits) => {
                     setResumeBuilderBalance((prev) => prev + credits)
                     setResumeBuilderTotalCredits((prev) => prev + credits)

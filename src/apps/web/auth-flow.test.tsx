@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { Toaster } from 'sonner'
@@ -521,21 +521,23 @@ describe('v3 web auth flow', () => {
     expect(interviewGuide).toHaveClass('rounded-[2px]', 'p-6', 'sm:w-[352px]')
     expect(interviewGuide.querySelector('h2')).toHaveClass('text-sm', 'leading-5')
     expect(interviewGuide.querySelector('p')).toHaveClass('text-sm', 'leading-[22.75px]')
-    expect(screen.getByText(/recurring subscription/i)).toBeInTheDocument()
-    expect(screen.getByText(/one credit gives you one minute/i)).toBeInTheDocument()
+    expect(interviewGuide).toHaveTextContent(/Interview Prep and every Copilot unlimited/i)
+    expect(within(interviewGuide).getByRole('link', { name: 'View plan' })).toHaveAttribute('href', '/v3/billing/plans')
+    expect(screen.getByText('Unlimited')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Next' })).toHaveClass('min-h-9', 'w-[92px]', 'rounded-[7.2px]')
 
     await user.click(screen.getByRole('button', { name: 'Next' }))
 
-    const usageGuide = screen.getByRole('dialog', { name: 'Auto Apply and Resume Builder' })
-    expect(usageGuide).toHaveTextContent(/prepaid credits with no subscription/i)
-    expect(usageGuide).toHaveTextContent(/successful application/i)
-    expect(usageGuide).toHaveTextContent(/each AI prompt/i)
+    const balanceGuide = screen.getByRole('dialog', { name: 'Credits and balances' })
+    expect(balanceGuide).toHaveTextContent(/the bar shows how much of your last purchase remains/i)
+    expect(balanceGuide).toHaveTextContent(/successful application/i)
+    expect(within(balanceGuide).getByRole('link', { name: 'View usage details' })).toHaveAttribute('href', '/v3/billing/usage')
 
     await user.click(screen.getByRole('button', { name: 'Next' }))
 
-    expect(screen.getByRole('dialog', { name: 'Done For You' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Learn More' })).toHaveAttribute('href', '/v3/billing/done-for-you')
+    const topUpGuide = screen.getByRole('dialog', { name: 'Topping up' })
+    expect(topUpGuide).toHaveTextContent(/Automatic reload/i)
+    expect(within(topUpGuide).getByRole('link', { name: 'Buy credits' })).toHaveAttribute('href', '/v3/billing/credits')
 
     await user.click(screen.getByRole('button', { name: 'Done' }))
 
