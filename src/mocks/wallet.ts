@@ -8,16 +8,16 @@ export const CREDIT_WALLET = {
   resetDateLabel: 'Oct 10, 2026',
 } as const
 
-// Free tier: 10 Auto Apply credits per month (pay-as-you-go, $1/credit)
+// Auto Apply credits bought pay-as-you-go ($1/credit), part spent
 export const AUTO_APPLY_WALLET = {
-  balanceCredits: 10,
-  totalCredits: 10,
+  balanceCredits: 64,
+  totalCredits: 100,
 } as const
 
-// Free tier: 10 Resume Builder credits per month (pay-as-you-go, $0.10/credit)
+// Resume Builder credits bought pay-as-you-go ($0.10/credit), part spent
 export const RESUME_BUILDER_WALLET = {
-  balanceCredits: 10,
-  totalCredits: 10,
+  balanceCredits: 38,
+  totalCredits: 50,
 } as const
 
 export const FEATURE_RATES = {

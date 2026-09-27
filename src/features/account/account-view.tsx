@@ -5,6 +5,7 @@ import type { AccountFaqEntry, BillingPlanCard, BillingStandalonePurchase, Credi
 import type { MarketplaceItem } from '@/contracts/marketplace.draft'
 import type { BadgeVariant } from '@/ui'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
+import { BillingPlanCards } from '@/features/billing/plan-compare-view'
 import { AppShell } from '@/features/dashboard/app-nav'
 import { centsToCredits, creditsToCents, formatCredits } from '@/lib/credits'
 import { BillingPricingGuideCard, type BillingPricingGuideStep } from './billing-pricing-guide'
@@ -31,9 +32,6 @@ import {
   SelectField,
   ShellBar,
   Switch,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
 } from '@/ui'
 
 const REFERRAL_BONUS_CREDITS = 100
@@ -96,7 +94,20 @@ export type BillingViewProps = {
   readonly usageRows: readonly CreditUsageRow[]
   readonly wallet: BillingWallet
   readonly faqs: readonly AccountFaqEntry[]
+  /** Pay-as-you-go balances; each defaults to empty. */
+  readonly autoApplyCredits?: { readonly balance: number; readonly total: number }
+  readonly resumeBuilderCredits?: { readonly balance: number; readonly total: number }
+  /** Which plan tab is open, from `?plan=`; defaults to `interview`. */
+  readonly planTab?: BillingPlanTab
 }
+
+export type BillingPlanTab = 'interview' | 'jobs' | 'done-for-you'
+
+const PLAN_TABS: readonly { readonly value: BillingPlanTab; readonly label: string }[] = [
+  { value: 'interview', label: 'Ace Your Interview' },
+  { value: 'jobs', label: 'Find Jobs Yourself' },
+  { value: 'done-for-you', label: 'Done For You' },
+]
 
 export type CreditHistoryViewProps = {
   readonly homeHref: string
@@ -996,17 +1007,17 @@ function BillingReferralPrompt({ referralsHref }: { readonly referralsHref: stri
   )
 }
 
-export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet, faqs }: BillingViewProps) {
+export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet, faqs, autoApplyCredits, resumeBuilderCredits, planTab = 'interview' }: BillingViewProps) {
   const currentPlan = plans.find((plan) => plan.current) ?? plans[0]
   // Interview Copilot credits are a subscription benefit — only purchasable with an active plan. Resume
   // Builder and Auto Apply are standalone and always purchasable. See PRICING.md §1, §4.
   const hasActivePlan = plans.some((plan) => plan.current)
   const [remainingCents, setRemainingCents] = useState(wallet.remainingCents)
   const [totalCents, setTotalCents] = useState(wallet.totalCents)
-  const [autoApplyBalance, setAutoApplyBalance] = useState(0)
-  const [autoApplyTotalCredits, setAutoApplyTotalCredits] = useState(0)
-  const [resumeBuilderBalance, setResumeBuilderBalance] = useState(0)
-  const [resumeBuilderTotalCredits, setResumeBuilderTotalCredits] = useState(0)
+  const [autoApplyBalance, setAutoApplyBalance] = useState(autoApplyCredits?.balance ?? 0)
+  const [autoApplyTotalCredits, setAutoApplyTotalCredits] = useState(autoApplyCredits?.total ?? 0)
+  const [resumeBuilderBalance, setResumeBuilderBalance] = useState(resumeBuilderCredits?.balance ?? 0)
+  const [resumeBuilderTotalCredits, setResumeBuilderTotalCredits] = useState(resumeBuilderCredits?.total ?? 0)
   const [pricingGuideOpen, setPricingGuideOpen] = useState(true)
   const [pricingGuideStep, setPricingGuideStep] = useState<BillingPricingGuideStep>(0)
   const pricingGuideTriggerRef = useRef<HTMLButtonElement>(null)
@@ -1016,6 +1027,8 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
   const copilotBalanceCredits = Math.round(centsToCredits(remainingCents))
   const copilotTotalCredits = Math.round(centsToCredits(totalCents))
   const findJobsTotalCredits = autoApplyBalance + resumeBuilderBalance
+  // The tour walks the plan first, then the two Find Jobs balances, so it opens the tab it is pointing at.
+  const shownTab: BillingPlanTab = pricingGuideOpen ? (pricingGuideStep === 0 ? 'interview' : 'jobs') : planTab
 
   function openPricingGuide() {
     setPricingGuideStep(0)
@@ -1051,51 +1064,78 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
           <TitledPanel
             title="Your Plan"
             action={
-              <button
-                ref={pricingGuideTriggerRef}
-                type="button"
-                onClick={openPricingGuide}
-                className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-accent-text hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-              >
-                <CircleHelp aria-hidden="true" className="size-4" />
-                How it works
-              </button>
+              <div className="flex flex-wrap items-center gap-x-5">
+                <a href="/v3/billing/usage" className="inline-flex min-h-11 items-center text-sm font-semibold text-accent-text underline underline-offset-4 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                  View usage details
+                </a>
+                <button
+                  ref={pricingGuideTriggerRef}
+                  type="button"
+                  onClick={openPricingGuide}
+                  className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-accent-text hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                >
+                  <CircleHelp aria-hidden="true" className="size-4" />
+                  How it works
+                </button>
+              </div>
             }
           >
-            <div className="grid gap-[12px]">
-              <div className={cn('relative', pricingGuideOpen && pricingGuideStep === 0 && 'z-overlay')}>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Ace Your Interview</p>
-                <div
-                  style={{ animationFillMode: 'backwards' }}
+            <nav aria-label="Plans" className="-mt-2 mb-5 flex gap-6 overflow-x-auto border-b border-border">
+              {PLAN_TABS.map((tab) => (
+                <a
+                  key={tab.value}
+                  href={tab.value === 'interview' ? '/v3/billing' : `/v3/billing?plan=${tab.value}`}
+                  aria-current={shownTab === tab.value ? 'page' : undefined}
                   className={cn(
-                    'flex animate-ease-in-bottom items-start gap-[24px] border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control',
-                    pricingGuideOpen && pricingGuideStep === 0 ? 'border-accent shadow-control' : 'border-border',
+                    'inline-flex min-h-11 shrink-0 items-center border-b-2 px-1 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+                    shownTab === tab.value ? 'border-accent text-accent-text' : 'border-transparent text-ink-muted hover:text-ink',
                   )}
                 >
-                  <img src="/v3-assets/figma/plan-row-interview.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-gowun text-[14.4px] font-semibold leading-[21.6px] text-ink">{currentPlan?.name.charAt(0)}{currentPlan?.name.slice(1).toLowerCase()} plan</p>
-                      <span className="rounded-pill bg-accent-subtle px-[9px] py-[1.8px] text-[10.8px] font-medium text-accent-text">Active</span>
-                    </div>
-                    <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">{currentPlan?.price} per month &middot; Unlimited Interview Prep and Copilot &middot; Renews {wallet.resetDateLabel}</p>
-                  </div>
-                  <a
-                    href="/v3/billing/plans"
-                    className="inline-flex min-h-[36px] shrink-0 items-center justify-center rounded-[7.2px] border border-input px-[14.4px] text-[11.7px] font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                  >
-                    View plans
-                  </a>
+                  {tab.label}
+                </a>
+              ))}
+            </nav>
+
+            {shownTab === 'interview' ? (
+            <div className="grid gap-6">
+              <div className={cn('relative', pricingGuideOpen && pricingGuideStep === 0 && 'z-overlay')}>
+                <div className={cn('-mx-4 bg-surface sm:-mx-6 lg:-mx-8', pricingGuideOpen && pricingGuideStep === 0 && 'ring-2 ring-accent')}>
+                  <BillingPlanCards plans={plans} annualToggle={false} />
                 </div>
                 {pricingGuideOpen && pricingGuideStep === 0 ? (
                   <BillingPricingGuideCard step={0} learnMoreHref="/v3/billing/done-for-you" linkLabel="View plan" linkHref="/v3/billing/plans" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
                 ) : null}
               </div>
 
+              {hasActivePlan ? (
+                <UnlimitedAccessCard title="Interview Prep &amp; Copilot" planName={`${currentPlan?.name.charAt(0) ?? ''}${currentPlan?.name.slice(1).toLowerCase() ?? ''}`} />
+              ) : (
+              <CreditBalanceCard
+                title="Interview Copilot Credits"
+                rateLabel="$0.10 / credit / min"
+                balanceCredits={copilotBalanceCredits}
+                totalCredits={copilotTotalCredits}
+                centsPerCredit={TOPUP_CENTS_PER_CREDIT}
+                minimumDollars={TOPUP_MINIMUM_DOLLARS}
+                presetDollars={TOPUP_PRESET_DOLLARS}
+                reloadHint="Buy more automatically if you run out mid-session."
+                requiresActivePlan
+                hasActivePlan={hasActivePlan}
+                onPurchase={(credits) => {
+                  const addedCents = creditsToCents(credits)
+                  setRemainingCents((prev) => prev + addedCents)
+                  setTotalCents((prev) => prev + addedCents)
+                }}
+              />
+              )}
+            </div>
+            ) : null}
+
+            {shownTab === 'jobs' ? (
+            <div className="grid gap-6">
               <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Find Jobs Yourself</p>
                 <div
-                  style={{ animationDelay: '60ms', animationFillMode: 'backwards' }}
+                  style={{ animationFillMode: 'backwards' }}
                   className={cn(
                     'flex animate-ease-in-bottom items-start gap-[24px] border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control',
                     'border-border',
@@ -1120,69 +1160,6 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                 </div>
               </div>
 
-              <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">Done For You</p>
-                <div
-                  style={{ animationDelay: '120ms', animationFillMode: 'backwards' }}
-                  className={cn(
-                    'flex animate-ease-in-bottom items-start gap-[24px] border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control',
-                    'border-border',
-                  )}
-                >
-                  <img src="/v3-assets/figma/plan-row-dfy.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <p className="font-gowun text-[14.4px] font-semibold leading-[21.6px] text-ink">10–20 Interviews Guaranteed</p>
-                    <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">A career specialist applies on your behalf until your interviews are guaranteed. Pay once, access to this service until it's fulfilled.</p>
-                  </div>
-                  <a
-                    href="/v3/billing/done-for-you"
-                    className="inline-flex min-h-[36px] shrink-0 items-center justify-center rounded-[7.2px] border border-input px-[14.4px] text-[11.7px] font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                  >
-                    Sign up
-                  </a>
-                </div>
-              </div>
-            </div>
-          </TitledPanel>
-
-          <div id="add-ons">
-          <TitledPanel
-            title="Credits &amp; Balances"
-            action={
-              <Tooltip>
-                <TooltipTrigger
-                  render={
-                    <a href="/v3/billing/usage" className="text-sm font-semibold text-accent-text underline underline-offset-4 hover:text-accent">
-                      View usage details
-                    </a>
-                  }
-                />
-                <TooltipContent>See a breakdown of how your credits were used</TooltipContent>
-              </Tooltip>
-            }
-          >
-            <div className="grid gap-6">
-              {hasActivePlan ? (
-                <UnlimitedAccessCard title="Interview Prep &amp; Copilot" planName={`${currentPlan?.name.charAt(0) ?? ''}${currentPlan?.name.slice(1).toLowerCase() ?? ''}`} />
-              ) : (
-              <CreditBalanceCard
-                title="Interview Copilot Credits"
-                rateLabel="$0.10 / credit / min"
-                balanceCredits={copilotBalanceCredits}
-                totalCredits={copilotTotalCredits}
-                centsPerCredit={TOPUP_CENTS_PER_CREDIT}
-                minimumDollars={TOPUP_MINIMUM_DOLLARS}
-                presetDollars={TOPUP_PRESET_DOLLARS}
-                reloadHint="Buy more automatically if you run out mid-session."
-                requiresActivePlan
-                hasActivePlan={hasActivePlan}
-                onPurchase={(credits) => {
-                  const addedCents = creditsToCents(credits)
-                  setRemainingCents((prev) => prev + addedCents)
-                  setTotalCents((prev) => prev + addedCents)
-                }}
-              />
-              )}
               {autoApplyPurchase ? (
                 <CreditBalanceCard
                   title="Auto Apply Credits"
@@ -1222,8 +1199,34 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                 />
               ) : null}
             </div>
+            ) : null}
+
+            {shownTab === 'done-for-you' ? (
+            <div className="grid gap-6">
+              <div>
+                <div
+                  style={{ animationFillMode: 'backwards' }}
+                  className={cn(
+                    'flex animate-ease-in-bottom items-start gap-[24px] border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control',
+                    'border-border',
+                  )}
+                >
+                  <img src="/v3-assets/figma/plan-row-dfy.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-gowun text-[14.4px] font-semibold leading-[21.6px] text-ink">10–20 Interviews Guaranteed</p>
+                    <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">A career specialist applies on your behalf until your interviews are guaranteed. Pay once, access to this service until it's fulfilled.</p>
+                  </div>
+                  <a
+                    href="/v3/billing/done-for-you"
+                    className="inline-flex min-h-[36px] shrink-0 items-center justify-center rounded-[7.2px] border border-input px-[14.4px] text-[11.7px] font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  >
+                    Sign up
+                  </a>
+                </div>
+              </div>
+            </div>
+            ) : null}
           </TitledPanel>
-          </div>
 
           <TitledPanel title="Payment Method">
             <div className="flex flex-wrap items-center justify-between gap-4 border border-border p-4 sm:p-5">
