@@ -84,7 +84,7 @@ describe('FairUseLimitDialog', () => {
     )
 
     expect(screen.getByRole('heading', { name: 'Your 2h stretch is up' })).toBeInTheDocument()
-    expect(screen.getByText(/100 interview minutes for \$10.00 starts a fresh stretch/)).toBeInTheDocument()
+    expect(screen.getByText(/100 more minutes for \$10.00 starts a fresh stretch/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Wait until 6:20 PM' })).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Add $10.00 and keep going' }))

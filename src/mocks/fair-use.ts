@@ -32,7 +32,7 @@ export const interviewFairUseSpent: FairUseSnapshot = {
   state: 'cooling-down',
   cooldownRemainingLabel: '2h 47m',
   resumesAtLabel: '6:20 PM',
-  unlockOffer: { priceCents: 1_000, unitsGranted: 100, label: '100 interview minutes' },
+  unlockOffer: { priceCents: 1_000, unitsGranted: 100, label: '100 more minutes' },
 }
 
 /** The same wall on a plan that does not sell a way past it — the clock is the only route. */
@@ -56,7 +56,7 @@ export const resumeFairUseSpent: FairUseSnapshot = {
   state: 'cooling-down',
   cooldownRemainingLabel: '2h 12m',
   resumesAtLabel: '4:45 PM',
-  unlockOffer: { priceCents: 500, unitsGranted: 50, label: '50 Resume Builder prompts' },
+  unlockOffer: { priceCents: 500, unitsGranted: 50, label: '50 more prompts' },
 }
 
 export const autoApplyFairUseRunning: FairUseSnapshot = {
@@ -71,5 +71,5 @@ export const autoApplyFairUseSpent: FairUseSnapshot = {
   state: 'cooling-down',
   cooldownRemainingLabel: '4h 31m',
   resumesAtLabel: '9:05 PM',
-  unlockOffer: { priceCents: 1_000, unitsGranted: 10, label: '10 Auto Apply credits' },
+  unlockOffer: { priceCents: 1_000, unitsGranted: 10, label: '10 more applications' },
 }
