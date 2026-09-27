@@ -10,7 +10,7 @@ import { PlanAmount, PlanCard, PlanCarousel } from '@/features/pricing/plan-card
 import { CREDIT_PRODUCTS, MANAGED_PACKAGES } from '@/features/pricing/pricing-products'
 import { AppShell } from '@/features/dashboard/app-nav'
 import { centsToCredits, creditsToCents, formatCredits } from '@/lib/credits'
-import { BillingPricingGuideCard, type BillingPricingGuideStep } from './billing-pricing-guide'
+import { BillingPricingGuideCard } from './billing-pricing-guide'
 import {
   Accordion,
   AccordionItem,
@@ -33,7 +33,6 @@ import {
   FormTextArea,
   SelectField,
   ShellBar,
-  Switch,
 } from '@/ui'
 
 const REFERRAL_BONUS_CREDITS = 100
@@ -101,6 +100,8 @@ export type BillingViewProps = {
   readonly onPlanTabChange?: (tab: BillingPlanTab) => void
   readonly onBuyCredits?: () => void
   readonly onDoneForYou?: () => void
+  /** When the subscriber's Interview Prep & Copilot usage limit resets, if they have hit it. */
+  readonly interviewLimitResetLabel?: string
 }
 
 export type BillingPlanTab = 'subscription' | 'pay-as-you-go' | 'done-for-you'
@@ -880,11 +881,16 @@ type CreditBalanceCardProps = {
   readonly hasActivePlan?: boolean
   /** The billing tour's card for this balance, when the tour is on it. */
   readonly guide?: ReactNode
+  /** Set for subscribers: the plan makes this feature unlimited, and bought credits are extra usage on top. */
+  readonly planName?: string
+  /** What extra credits are for, shown to subscribers. */
+  readonly extraHint?: string
+  /** Set when the subscriber has hit the plan's usage limit: when it resets, e.g. "4:58 PM, June 4". */
+  readonly limitResetLabel?: string
 }
 
-function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, centsPerCredit, minimumDollars, presetDollars, onPurchase, reloadHint, requiresActivePlan, hasActivePlan, guide }: CreditBalanceCardProps) {
+function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, centsPerCredit, minimumDollars, presetDollars, onPurchase, reloadHint, requiresActivePlan, hasActivePlan, guide, planName, extraHint, limitResetLabel }: CreditBalanceCardProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [autoReload, setAutoReload] = useState(false)
   // Nothing bought yet is an empty bar, not a full one.
   const percentLeft = totalCredits > 0 ? Math.max(0, Math.min(100, Math.round((balanceCredits / totalCredits) * 100))) : 0
   const featureName = title.replace(/ Credits$/, '')
@@ -894,19 +900,46 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
     <section className={cn('relative', guide && 'z-overlay')}>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h3 className={cn('font-gowun text-base font-bold', guide ? 'text-surface' : 'text-ink')}>{title}</h3>
-        <p className={cn('text-sm', guide ? 'text-surface' : 'text-ink-muted')}>{rateLabel}</p>
+        <p className={cn('text-sm', guide ? 'text-surface' : 'text-ink-muted')}>{planName ? `Included in ${planName}` : rateLabel}</p>
       </div>
       <div className={cn('mt-3 border bg-surface', guide ? 'border-accent shadow-control' : 'border-border')}>
+        {planName && limitResetLabel ? (
+          <div role="status" className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-warning-surface p-4 sm:p-5">
+            <div className="min-w-0">
+              <p className="flex items-center gap-2 text-sm font-semibold text-ink">
+                <Clock aria-hidden="true" className="size-5 text-warning" />
+                You've reached your usage limit
+              </p>
+              <p className="mt-1 text-sm text-ink">Available again at {limitResetLabel}. Buy credits to keep going now.</p>
+            </div>
+            <span className="shrink-0 rounded-pill bg-surface px-3 py-1 text-xs font-semibold text-ink">Resets {limitResetLabel}</span>
+          </div>
+        ) : planName ? (
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4 sm:p-5">
+            <p className="flex items-center gap-2 text-sm font-semibold text-ink">
+              <InfinityIcon aria-hidden="true" className="size-5 text-accent-text" />
+              Unlimited with your {planName} plan
+            </p>
+            <span className="shrink-0 rounded-pill bg-positive-surface px-3 py-1 text-xs font-semibold text-positive">Active</span>
+          </div>
+        ) : null}
         <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-ink">{balanceCredits} credits</p>
-            <div className="mt-2 flex items-center gap-3">
-              <div className="h-2 max-w-64 flex-1 overflow-hidden rounded-pill bg-surface-subtle">
-                <div className={cn('h-full rounded-pill', percentLeft > 20 ? 'bg-accent' : 'bg-danger')} style={{ inlineSize: `${percentLeft}%` }} />
-              </div>
-              <span className="shrink-0 text-sm text-ink">{totalCredits > 0 ? `${percentLeft}% left` : 'No credits yet'}</span>
-            </div>
-            {locked ? <p className="mt-2 text-sm text-ink-muted">Requires an active Ace Your Interview plan.</p> : null}
+            <p className="text-sm font-semibold text-ink">{planName ? `Extra credits: ${balanceCredits}` : `${balanceCredits} credits`}</p>
+            {planName && totalCredits === 0 ? (
+              <p className="mt-1 text-sm text-ink-muted">{extraHint}</p>
+            ) : (
+              <>
+                <div className="mt-2 flex items-center gap-3">
+                  <div className="h-2 max-w-64 flex-1 overflow-hidden rounded-pill bg-surface-subtle">
+                    <div className={cn('h-full rounded-pill', percentLeft > 20 ? 'bg-accent' : 'bg-danger')} style={{ inlineSize: `${percentLeft}%` }} />
+                  </div>
+                  <span className="shrink-0 text-sm text-ink">{totalCredits > 0 ? `${percentLeft}% left` : 'No credits yet'}</span>
+                </div>
+                {planName ? <p className="mt-2 text-sm text-ink-muted">{extraHint} {rateLabel}.</p> : null}
+              </>
+            )}
+            {locked ? <p className="mt-2 text-sm text-ink-muted">Requires an active subscription plan.</p> : null}
           </div>
           {locked ? (
             <a
@@ -916,15 +949,8 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
               View plans
             </a>
           ) : (
-            <Button onClick={() => setDialogOpen(true)} className="shrink-0">Buy credits</Button>
+            <Button variant={planName && !limitResetLabel ? 'secondary' : 'primary'} onClick={() => setDialogOpen(true)} className="shrink-0">Buy credits</Button>
           )}
-        </div>
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border p-4 sm:p-5">
-          <div>
-            <p className="text-sm font-semibold text-ink">Automatic reload</p>
-            <p className="text-sm text-ink-muted">{reloadHint}</p>
-          </div>
-          <Switch checked={autoReload && !locked} onCheckedChange={setAutoReload} disabled={locked} aria-label={`Toggle automatic reload for ${title}`} />
         </div>
       </div>
       <AddCreditsDialog
@@ -943,29 +969,6 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
     </section>
   )
 }
-
-/** What a plan subscriber sees instead of a credit balance: the plan covers this feature without counting. */
-function UnlimitedAccessCard({ title, planName }: { readonly title: string; readonly planName: string }) {
-  return (
-    <section>
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="font-gowun text-base font-bold text-ink">{title}</h3>
-        <p className="text-sm text-ink-muted">Included in {planName}</p>
-      </div>
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border border-border bg-surface p-4 sm:p-5">
-        <div className="min-w-0 flex-1">
-          <p className="flex items-center gap-2 text-sm font-semibold text-ink">
-            <InfinityIcon aria-hidden="true" className="size-5 text-accent-text" />
-            Unlimited
-          </p>
-          <p className="mt-1 text-sm text-ink-muted">No credits and no minutes to count. Use Interview Prep and every Copilot as much as you need.</p>
-        </div>
-        <span className="shrink-0 rounded-pill bg-positive-surface px-3 py-1 text-xs font-semibold text-positive">Active</span>
-      </div>
-    </section>
-  )
-}
-
 
 function BillingReferralPrompt({ referralsHref }: { readonly referralsHref: string }) {
   const [copied, setCopied] = useState(false)
@@ -1009,19 +1012,20 @@ function BillingReferralPrompt({ referralsHref }: { readonly referralsHref: stri
   )
 }
 
-export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet, faqs, autoApplyCredits, resumeBuilderCredits, planTab = 'subscription', onPlanTabChange, onBuyCredits, onDoneForYou }: BillingViewProps) {
+export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet, faqs, autoApplyCredits, resumeBuilderCredits, planTab = 'subscription', onPlanTabChange, onBuyCredits, onDoneForYou, interviewLimitResetLabel }: BillingViewProps) {
   const currentPlan = plans.find((plan) => plan.current) ?? plans[0]
   // Interview Copilot credits are a subscription benefit — only purchasable with an active plan. Resume
   // Builder and Auto Apply are standalone and always purchasable. See PRICING.md §1, §4.
   const hasActivePlan = plans.some((plan) => plan.current)
-  const [remainingCents, setRemainingCents] = useState(wallet.remainingCents)
-  const [totalCents, setTotalCents] = useState(wallet.totalCents)
+  // A subscriber's interview balance is extra usage they bought, not a free allowance, so it starts empty.
+  const [remainingCents, setRemainingCents] = useState(hasActivePlan ? 0 : wallet.remainingCents)
+  const [totalCents, setTotalCents] = useState(hasActivePlan ? 0 : wallet.totalCents)
+  const planName = hasActivePlan && currentPlan ? `${currentPlan.name.charAt(0)}${currentPlan.name.slice(1).toLowerCase()}` : undefined
   const [autoApplyBalance, setAutoApplyBalance] = useState(autoApplyCredits?.balance ?? 0)
   const [autoApplyTotalCredits, setAutoApplyTotalCredits] = useState(autoApplyCredits?.total ?? 0)
   const [resumeBuilderBalance, setResumeBuilderBalance] = useState(resumeBuilderCredits?.balance ?? 0)
   const [resumeBuilderTotalCredits, setResumeBuilderTotalCredits] = useState(resumeBuilderCredits?.total ?? 0)
   const [pricingGuideOpen, setPricingGuideOpen] = useState(true)
-  const [pricingGuideStep, setPricingGuideStep] = useState<BillingPricingGuideStep>(0)
   const pricingGuideTriggerRef = useRef<HTMLButtonElement>(null)
 
   const autoApplyPurchase = standalonePurchases.find((purchase) => purchase.id === 'auto-apply')
@@ -1031,7 +1035,6 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
   const shownTab = planTab
 
   function openPricingGuide() {
-    setPricingGuideStep(0)
     setPricingGuideOpen(true)
   }
 
@@ -1040,9 +1043,6 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
     window.requestAnimationFrame(() => pricingGuideTriggerRef.current?.focus())
   }
 
-  function showNextPricingGuideStep() {
-    setPricingGuideStep((current) => Math.min(current + 1, 1) as BillingPricingGuideStep)
-  }
 
   return (
     <AppWorkspace>
@@ -1175,12 +1175,9 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
             }
           >
             <div className="grid gap-6">
-              {hasActivePlan ? (
-                <UnlimitedAccessCard title="Interview Prep &amp; Copilot" planName={`${currentPlan?.name.charAt(0) ?? ''}${currentPlan?.name.slice(1).toLowerCase() ?? ''}`} />
-              ) : (
               <CreditBalanceCard
-                title="Interview Copilot Credits"
-                rateLabel="$0.10 / credit / min"
+                title="Interview Prep &amp; Copilot"
+                rateLabel="$0.10 per minute"
                 balanceCredits={copilotBalanceCredits}
                 totalCredits={copilotTotalCredits}
                 centsPerCredit={TOPUP_CENTS_PER_CREDIT}
@@ -1189,13 +1186,16 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                 reloadHint="Buy more automatically if you run out mid-session."
                 requiresActivePlan
                 hasActivePlan={hasActivePlan}
+                planName={planName}
+                extraHint="If a long session reaches your plan's usage limit, extra credits keep it going."
+                limitResetLabel={interviewLimitResetLabel}
+                guide={pricingGuideOpen ? <BillingPricingGuideCard linkLabel="View usage details" linkHref="/v3/billing/usage" onDismiss={closePricingGuide} /> : undefined}
                 onPurchase={(credits) => {
                   const addedCents = creditsToCents(credits)
                   setRemainingCents((prev) => prev + addedCents)
                   setTotalCents((prev) => prev + addedCents)
                 }}
               />
-              )}
               {autoApplyPurchase ? (
                 <CreditBalanceCard
                   title="Auto Apply Credits"
@@ -1206,9 +1206,8 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   minimumDollars={autoApplyPurchase.minimumDollars}
                   presetDollars={autoApplyPurchase.presetDollars}
                   reloadHint="Buy more automatically when your balance runs low."
-                  guide={pricingGuideOpen && pricingGuideStep === 0 ? (
-                    <BillingPricingGuideCard step={0} learnMoreHref="/v3/billing/done-for-you" linkLabel="View usage details" linkHref="/v3/billing/usage" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
-                  ) : undefined}
+                  planName={planName}
+                  extraHint="Used only if you reach your plan's usage limit."
                   onPurchase={(credits) => {
                     setAutoApplyBalance((prev) => prev + credits)
                     setAutoApplyTotalCredits((prev) => prev + credits)
@@ -1225,9 +1224,8 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   minimumDollars={resumeBuilderPurchase.minimumDollars}
                   presetDollars={resumeBuilderPurchase.presetDollars}
                   reloadHint="Buy more automatically when your balance runs low."
-                  guide={pricingGuideOpen && pricingGuideStep === 1 ? (
-                    <BillingPricingGuideCard step={1} learnMoreHref="/help" linkLabel="Buy credits" linkHref="/v3/billing/credits" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
-                  ) : undefined}
+                  planName={planName}
+                  extraHint="Used only if you reach your plan's usage limit."
                   onPurchase={(credits) => {
                     setResumeBuilderBalance((prev) => prev + credits)
                     setResumeBuilderTotalCredits((prev) => prev + credits)

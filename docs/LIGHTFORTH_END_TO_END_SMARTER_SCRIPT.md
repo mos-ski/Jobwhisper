@@ -365,7 +365,7 @@ What a plan does bound is how long you go without a break. One uninterrupted str
 
 If you are still on a call when your stretch ends, ten dollars of interview minutes starts a fresh one immediately. Waiting costs nothing, and either way your transcript, your notes and your recording stay exactly where they are.
 
-Without a plan, Auto Apply and Resume Builder are still available as prepaid credits: Auto Apply charges for each successful application, Resume Builder for each AI prompt, and both balances stay valid for 30 days from purchase. Done For You is a separate, one-time managed service with an interview guarantee. You can replay this explanation at any time from **How it works** in the Your Plan section.
+Without a plan, Auto Apply and Resume Builder are still available as prepaid credits: Auto Apply charges for each successful application, Resume Builder for each AI prompt, and both balances stay valid for 30 days from purchase. Done For You is a separate, one-time managed service with an interview guarantee. On any plan, Interview Prep, Copilot, Auto Apply and Resume Builder are unlimited; if you ever reach the plan's usage limit, Billing shows when it resets and you can buy extra credits to keep going, with automatic reload offered in the Buy credits dialog. You can replay this explanation at any time from **How it works** in the Your Plan section.
 
 ### Tailor — Prepares Your Resume
 

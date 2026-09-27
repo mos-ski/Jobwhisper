@@ -21,6 +21,7 @@ export function BillingPage() {
       faqs={accountFaqs}
       planTab={readPlanTab(params.get('plan'))}
       onBuyCredits={() => navigate('/v3/billing/credits')}
+      interviewLimitResetLabel={params.get('state') === 'active' ? undefined : '4:58 PM, June 4'}
       onDoneForYou={() => navigate('/v3/billing/done-for-you')}
       onPlanTabChange={(tab) => setParams(tab === 'subscription' ? {} : { plan: tab }, { replace: true, preventScrollReset: true })}
       autoApplyCredits={{ balance: AUTO_APPLY_WALLET.balanceCredits, total: AUTO_APPLY_WALLET.totalCredits }}

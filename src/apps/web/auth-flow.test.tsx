@@ -518,26 +518,22 @@ describe('v3 web auth flow', () => {
     )
 
     expect(screen.getByRole('tab', { name: 'Subscription plans' })).toHaveAttribute('aria-selected', 'true')
-    expect(screen.getByText('Unlimited')).toBeInTheDocument()
+    expect(screen.getAllByText('Unlimited with your Pro plan')).toHaveLength(2)
+    expect(screen.getByRole('status')).toHaveTextContent('Available again at 4:58 PM, June 4')
+    expect(screen.queryByText('Automatic reload')).not.toBeInTheDocument()
 
-    const usageGuide = screen.getByRole('dialog', { name: 'View usage' })
-    expect(usageGuide).toHaveClass('rounded-[2px]', 'p-6', 'sm:w-[352px]')
-    expect(usageGuide).toHaveTextContent(/successful application/i)
-    expect(within(usageGuide).getByRole('link', { name: 'View usage details' })).toHaveAttribute('href', '/v3/billing/usage')
-    expect(screen.getByRole('button', { name: 'Next' })).toHaveClass('min-h-9', 'w-[92px]', 'rounded-[7.2px]')
+    const guide = screen.getByRole('dialog', { name: 'Your credits and balances' })
+    expect(guide).toHaveClass('rounded-[2px]', 'p-6', 'sm:w-[352px]')
+    expect(guide).toHaveTextContent(/usage limit, extra credits keep you going/i)
+    expect(within(guide).getByRole('link', { name: 'View usage details' })).toHaveAttribute('href', '/v3/billing/usage')
+    expect(screen.queryByRole('button', { name: 'Next' })).not.toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: 'Next' }))
-
-    const creditsGuide = screen.getByRole('dialog', { name: 'See credits' })
-    expect(creditsGuide).toHaveTextContent(/Automatic reload/i)
-    expect(within(creditsGuide).getByRole('link', { name: 'Buy credits' })).toHaveAttribute('href', '/v3/billing/credits')
-
-    await user.click(screen.getByRole('button', { name: 'Done' }))
+    await user.click(screen.getByRole('button', { name: 'Got it' }))
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'How it works' }))
 
-    expect(screen.getByRole('dialog', { name: 'View usage' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Your credits and balances' })).toBeInTheDocument()
   })
 })
