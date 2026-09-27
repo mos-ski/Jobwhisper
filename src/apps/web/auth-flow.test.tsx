@@ -517,7 +517,7 @@ describe('v3 web auth flow', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByRole('link', { name: 'Subscription plans' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getByRole('tab', { name: 'Subscription plans' })).toHaveAttribute('aria-selected', 'true')
     expect(screen.getByText('Unlimited')).toBeInTheDocument()
 
     const usageGuide = screen.getByRole('dialog', { name: 'View usage' })
