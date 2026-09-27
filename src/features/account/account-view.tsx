@@ -32,6 +32,7 @@ import {
   DialogTrigger,
   FormField,
   FormTextArea,
+  NoticeCard,
   SelectField,
   ShellBar,
 } from '@/ui'
@@ -909,16 +910,15 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
       </div>
       <div className={cn('mt-3 border bg-surface', guide ? 'border-accent shadow-control' : 'border-border')}>
         {planName && limitResetLabel ? (
-          <div role="status" className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-warning-surface p-4 sm:p-5">
-            <div className="min-w-0">
-              <p className="flex items-center gap-2 text-sm font-semibold text-ink">
-                <Clock aria-hidden="true" className="size-5 text-warning" />
-                You've reached your usage limit
-              </p>
-              <p className="mt-1 text-sm text-ink">Available again at {limitResetLabel}. Buy credits to keep going now.</p>
-            </div>
-            <span className="shrink-0 rounded-pill bg-surface px-3 py-1 text-xs font-semibold text-ink">Resets {limitResetLabel}</span>
-          </div>
+          // The same notice the product shows in a live session, so hitting the limit reads the
+          // same wherever you are. The reset time is the description, not a pill repeating it.
+          <NoticeCard
+            tone="warning"
+            title="Usage limit reached"
+            description={`Back at ${limitResetLabel}. Buy credits to keep going now.`}
+            action={{ label: 'Buy credits', onClick: () => setDialogOpen(true) }}
+            className="rounded-none border-0 border-b shadow-none"
+          />
         ) : planName ? (
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4 sm:p-5">
             <p className="flex items-center gap-2 text-sm font-semibold text-ink">

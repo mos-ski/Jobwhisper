@@ -104,8 +104,10 @@ describe('v3 web auth flow', () => {
     const cases = [
       { route: '/v3/app?dropdown=help', name: 'Whats new?' },
       { route: '/v3/app?dropdown=credits', name: 'Credit balances' },
-      { route: '/v3/app?credit=empty', name: '0% remaining this cycle' },
-      { route: '/v3/app?credit=low', name: '0% left this cycle' },
+      // Two shapes of the same notice: the card docks on a phone, the line sits above the
+      // content from sm up, and jsdom renders both.
+      { route: '/v3/app?credit=empty', name: 'Your credits are used up for this cycle' },
+      { route: '/v3/app?credit=low', name: '0% of your credits left this cycle' },
     ] as const
 
     for (const item of cases) {
@@ -519,7 +521,9 @@ describe('v3 web auth flow', () => {
 
     expect(screen.getByRole('tab', { name: 'Subscription plans' })).toHaveAttribute('aria-selected', 'true')
     expect(screen.getAllByText('Unlimited with your Pro plan')).toHaveLength(2)
-    expect(screen.getByRole('status')).toHaveTextContent('Available again at 4:58 PM, June 4')
+    // The limit notice is the shared NoticeCard now, so it reads the same here as in a session.
+    expect(screen.getByRole('status')).toHaveTextContent('Usage limit reached')
+    expect(screen.getByRole('status')).toHaveTextContent('Back at 4:58 PM, June 4')
     expect(screen.queryByText('Automatic reload')).not.toBeInTheDocument()
 
     // The tour waits until Credits & Balances scrolls into view; How it works opens it straight away.

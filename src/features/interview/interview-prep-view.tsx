@@ -35,7 +35,7 @@ import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
 import { AppShell } from '@/features/dashboard/app-nav'
 import { KnowledgeBasePickerDialog } from '@/features/documents/knowledge-base-picker-dialog'
 import { centsToCredits, creditsToCents } from '@/lib/credits'
-import { AiSuggestionAction, Avatar, Badge, Checkbox, cn, DataTable, Dialog, DialogPopup, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, NoticeBar, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, Tooltip, TooltipContent, TooltipTrigger, UploadedFileDialog } from '@/ui'
+import { AiSuggestionAction, Avatar, Badge, Checkbox, cn, DataTable, Dialog, DialogPopup, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, NoticeBar, NoticeCard, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, Tooltip, TooltipContent, TooltipTrigger, UploadedFileDialog } from '@/ui'
 import { useCameraStream } from '@/hooks/useCameraStream'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 import { useTypewriter } from '@/hooks/useTypewriter'
@@ -824,7 +824,8 @@ const SESSION_RATE_CENTS_PER_MIN = 80
 const SESSION_START_BALANCE_CENTS = 60
 
 /** Notices float over the session: a bar in the flow moves the panels mid-interview. */
-const mobileNoticePosition = 'fixed inset-x-0 top-[4.5rem] z-20 border-b border-[var(--lf-live-border)] bg-[var(--lf-live-strip)] text-brand-bar-text'
+/** On a phone the notice docks at the bottom, by the thumb, above the session controls. */
+const mobileNoticePosition = 'fixed inset-x-3 bottom-[max(7rem,calc(env(safe-area-inset-bottom)+7rem))] z-20'
 const desktopNoticePosition = 'shrink-0 border-b border-[var(--lf-live-border)] bg-[var(--lf-live-strip)] px-5 text-brand-bar-text'
 const TOPUP_MINIMUM_DOLLARS = 10
 const TOPUP_CENTS_PER_CREDIT = 40
@@ -1032,24 +1033,23 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
         <DraggableCandidatePiP name={session.candidate.name} imageSrc={session.candidate.imageSrc} videoEnabled={videoEnabled} />
 
         {lowBalance && !sessionPaused && !noticeDismissed ? (
-          <NoticeBar
+          <NoticeCard
             tone="neutral"
             className={mobileNoticePosition}
+            title="Approaching your limit"
+            description="Top up to keep this session going."
             action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
             onDismiss={() => setNoticeDismissed(true)}
             dismissLabel="Dismiss the low balance notice"
-          >
-            Running low on balance
-          </NoticeBar>
-        ) : null}
-        {sessionPaused ? (
-          <NoticeBar
+          />
+        ) : sessionPaused ? (
+          <NoticeCard
             tone="neutral"
             className={mobileNoticePosition}
+            title="Session paused"
+            description="You're out of balance. Add funds to carry on."
             action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
-          >
-            Session paused
-          </NoticeBar>
+          />
         ) : null}
 
         <div className="fixed inset-x-0 bottom-0 z-20 flex items-center justify-center gap-4 bg-gradient-to-t from-black/25 to-transparent px-6 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-10">

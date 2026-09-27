@@ -46,6 +46,7 @@ import {
   JobwhisperAiIcon,
   ListPickerDialog,
   NoticeBar,
+  NoticeCard,
   PermissionSteps,
   ShellBar,
   SourcePicker,
@@ -1649,7 +1650,12 @@ function CopilotCodingPanel({
  * of that chrome rather than a card dropped on top, and the panels do not move when it
  * appears. The live surface keeps its own dark palette whatever the app theme is doing.
  */
-const mobileNoticePosition = 'fixed inset-x-0 top-[4.5rem] z-20 border-b border-[var(--lf-live-divider)] bg-[var(--lf-live-strip)] text-brand-bar-text'
+/**
+ * On a phone the notice docks at the bottom, above the session controls and clear of the
+ * home bar: that is where the thumb already is, so topping up is one reach rather than a
+ * stretch to the top of the screen. The desktop strip stays at the top, in the chrome.
+ */
+const mobileNoticePosition = 'fixed inset-x-3 bottom-[max(7rem,calc(env(safe-area-inset-bottom)+7rem))] z-20'
 const desktopNoticePosition = 'shrink-0 border-b border-[var(--lf-live-divider)] bg-[var(--lf-live-strip)] px-5 text-brand-bar-text'
 
 const COPILOT_RATE_CENTS_PER_MIN = 80
@@ -1774,37 +1780,36 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
 
         {session.mode === 'interview' && !demoMode ? <DraggableAvatar name="You" videoEnabled={videoEnabled} /> : null}
 
-        {lowBalance && !sessionPaused && !noticeDismissed ? (
-          <NoticeBar
+        {fairUse && (fairUseNearing || fairUseSpent) ? (
+          <NoticeCard
             tone="neutral"
             className={mobileNoticePosition}
+            title={fairUseSpent ? 'Stretch finished' : 'Approaching your limit'}
+            description={
+              fairUseSpent
+                ? `Copilot is back in ${fairUse.cooldownRemainingLabel ?? `${fairUse.policy.cooldownHours}h`}.`
+                : `${formatFairUseAmount(Math.max(0, fairUse.policy.stretchLimit - fairUse.used), fairUse.policy.unit)} left in this stretch.`
+            }
+            action={fairUse.policy.topUpUnlocks ? { label: 'Keep going now', onClick: () => setFairUseDialogOpen(true) } : undefined}
+          />
+        ) : lowBalance && !sessionPaused && !noticeDismissed ? (
+          <NoticeCard
+            tone="neutral"
+            className={mobileNoticePosition}
+            title="Approaching your limit"
+            description="Top up to keep this session going."
             action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
             onDismiss={() => setNoticeDismissed(true)}
             dismissLabel="Dismiss the low balance notice"
-          >
-            Running low on balance
-          </NoticeBar>
-        ) : null}
-        {sessionPaused ? (
-          <NoticeBar
+          />
+        ) : sessionPaused ? (
+          <NoticeCard
             tone="neutral"
             className={mobileNoticePosition}
+            title="Session paused"
+            description="You're out of balance. Add funds to carry on."
             action={hasActivePlan ? { label: 'Add funds', onClick: () => setTopUpOpen(true) } : { label: 'View plans', href: '/v3/billing/plans' }}
-          >
-            Session paused
-          </NoticeBar>
-        ) : null}
-
-        {fairUse && (fairUseNearing || fairUseSpent) ? (
-          <NoticeBar
-            tone="neutral"
-            className={cn(mobileNoticePosition, lowBalance || sessionPaused ? 'top-[7.25rem]' : undefined)}
-            action={fairUse.policy.topUpUnlocks ? { label: 'Keep going', onClick: () => setFairUseDialogOpen(true) } : undefined}
-          >
-            {fairUseSpent
-              ? `Stretch up. Back in ${fairUse.cooldownRemainingLabel ?? `${fairUse.policy.cooldownHours}h`}`
-              : `${formatFairUseAmount(Math.max(0, fairUse.policy.stretchLimit - fairUse.used), fairUse.policy.unit)} left in this stretch`}
-          </NoticeBar>
+          />
         ) : null}
 
         <div className="fixed inset-x-0 bottom-0 z-20 flex items-center justify-center gap-4 bg-gradient-to-t from-black/80 to-transparent px-6 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-10">

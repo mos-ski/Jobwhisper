@@ -7,7 +7,7 @@ import { useState, type ReactNode } from 'react'
 import type { DashboardAction, DashboardActionId, DashboardInstallPrompt, DashboardNavItem } from '@/contracts/dashboard.draft'
 import type { UserIdentity } from '@/contracts/identity'
 import { centsToCredits, formatCredits, usagePercent } from '@/lib/credits'
-import { Button, cn, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, JobwhisperIcon, JobwhisperMark, NoticeBar, SideMenu, UpgradeDialog } from '@/ui'
+import { Button, cn, Dialog, DialogClose, DialogPopup, DialogTitle, DialogTrigger, JobwhisperIcon, JobwhisperMark, NoticeBar, NoticeCard, SideMenu, UpgradeDialog } from '@/ui'
 import {
   AutoApplyIcon,
   BillingIcon,
@@ -296,17 +296,36 @@ function CreditNotice({ variant, remainingCents, totalCents }: { readonly varian
 
   if (dismissed) return null
 
+  const label = isLow ? `${remainingPercent}% of your credits left this cycle` : 'Your credits are used up for this cycle'
+
   return (
-    <NoticeBar
-      tone={isLow ? 'neutral' : 'danger'}
-      aria-label={isLow ? 'Low balance notice' : 'Empty balance notice'}
-      className="absolute start-1/2 top-14 z-10 w-[min(560px,calc(100vw-2rem))] -translate-x-1/2 rounded-b-xl shadow-control"
-      action={{ label: 'Upgrade', href: '/v3/billing' }}
-      onDismiss={() => setDismissed(true)}
-      dismissLabel="Dismiss balance notice"
-    >
-      {isLow ? `${remainingPercent}% left this cycle` : '0% remaining this cycle'}
-    </NoticeBar>
+    <>
+      {/* A phone gets the card, docked where the thumb already is, clear of the support button:
+          a line of text with an underlined link at the end of it is a poor tap target. */}
+      <NoticeCard
+        tone={isLow ? 'neutral' : 'danger'}
+        aria-label={isLow ? 'Low balance notice' : 'Empty balance notice'}
+        title={isLow ? 'Approaching your limit' : 'Credits used up'}
+        description={isLow ? `${remainingPercent}% left. Resets next cycle.` : 'Upgrade to keep going this cycle.'}
+        action={{ label: 'Upgrade', href: '/v3/billing' }}
+        onDismiss={() => setDismissed(true)}
+        dismissLabel="Dismiss balance notice"
+        className="fixed inset-x-4 bottom-20 z-shell sm:hidden"
+      />
+      {/* Above that it is one quiet line, centred over the content rather than stretched across
+          the whole window: the sidebar is not what the notice is about. In flow, not floating,
+          so it never lands on top of the heading. */}
+      <NoticeBar
+        tone={isLow ? 'neutral' : 'danger'}
+        aria-label={isLow ? 'Low balance notice' : 'Empty balance notice'}
+        className="mx-auto mb-6 hidden w-fit max-w-full rounded-lg shadow-control sm:flex"
+        action={{ label: 'Upgrade', href: '/v3/billing' }}
+        onDismiss={() => setDismissed(true)}
+        dismissLabel="Dismiss balance notice"
+      >
+        {label}
+      </NoticeBar>
+    </>
   )
 }
 
@@ -362,7 +381,6 @@ function DashboardHeader({
   resumeBuilderBalanceCredits,
   resumeBuilderTotalCredits,
   activeDropdown,
-  creditNotice,
   collapsed,
   onToggleCollapse,
 }: {
@@ -375,7 +393,6 @@ function DashboardHeader({
   readonly resumeBuilderBalanceCredits: number
   readonly resumeBuilderTotalCredits: number
   readonly activeDropdown?: 'help' | 'credits' | 'profile'
-  readonly creditNotice?: 'low' | 'empty'
   readonly collapsed: boolean
   readonly onToggleCollapse: () => void
 }) {
@@ -429,7 +446,6 @@ function DashboardHeader({
           <ProfileDropdown user={user} forceOpen={activeDropdown === 'profile'} />
         </div>
       </div>
-      {creditNotice ? <CreditNotice variant={creditNotice} remainingCents={creditBalanceCents} totalCents={totalCreditsCents} /> : null}
     </header>
   )
 }
@@ -628,7 +644,6 @@ export function DashboardView({
         resumeBuilderBalanceCredits={resumeBuilderBalanceCredits}
         resumeBuilderTotalCredits={resumeBuilderTotalCredits}
         activeDropdown={activeDropdown}
-        creditNotice={creditNotice}
         collapsed={collapsed}
         onToggleCollapse={() => setCollapsed((prev) => !prev)}
       />
@@ -640,6 +655,7 @@ export function DashboardView({
             padding stays generous because the prompt is absolute over it; without that the
             cards run underneath it once the viewport is short. */}
         <section className="relative min-h-[calc(100vh-3.5rem)] flex-1 px-4 py-10 sm:px-6 sm:py-12 lg:px-16 lg:pt-14 lg:pb-28">
+          {creditNotice ? <CreditNotice variant={creditNotice} remainingCents={creditBalanceCents} totalCents={totalCreditsCents} /> : null}
           <div className="mx-auto w-full max-w-3xl">
             <h1 className="font-gowun text-xl font-semibold leading-tight text-ink sm:text-2xl">Welcome, what would you like to do today?</h1>
             <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-2 xl:grid-cols-3">
