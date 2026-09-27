@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, Download, FileText, HelpCircle, Plus, Target, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, Download, FileText, HelpCircle, Minus, Plus, Target, X } from 'lucide-react'
 
 import type { ResumeBuilderSession, ResumeBuilderTab, ResumeChatState, ResumeDocument, ResumeHistoryRow, ResumeIssue, ResumeSectionId } from '@/contracts/resume.draft'
 import type { FairUseSnapshot } from '@/contracts/fair-use.draft'
@@ -734,6 +734,32 @@ function SectionEditor({
   )
 }
 
+function ZoomControls({ zoom, onChange }: { readonly zoom: number; readonly onChange: (zoom: number) => void }) {
+  const label = `${Math.round(zoom * 100)}%`
+  return (
+    <div className="absolute end-4 top-4 z-10 hidden items-center gap-1 rounded-pill border border-border bg-surface px-2 py-1 text-xs font-medium text-ink-muted shadow-control lg:flex">
+      <button
+        type="button"
+        aria-label="Zoom out"
+        onClick={() => onChange(Math.max(0.5, Number((zoom - 0.1).toFixed(2))))}
+        className="grid size-6 place-items-center rounded-pill hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+      >
+        <Minus aria-hidden="true" className="size-3" />
+      </button>
+      <span className="min-w-[2.5rem] text-center">{label}</span>
+      <button
+        type="button"
+        aria-label="Zoom in"
+        onClick={() => onChange(Math.min(1.5, Number((zoom + 0.1).toFixed(2))))}
+        className="grid size-6 place-items-center rounded-pill hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+      >
+        <Plus aria-hidden="true" className="size-3" />
+      </button>
+    </div>
+  )
+}
+
+
 function InlineChangeControls({ onAccept, onReject }: { readonly onAccept: () => void; readonly onReject: () => void }) {
   return (
     <div id="walkthrough-diff-actions" className="absolute end-40 top-36 hidden gap-2 lg:flex">
@@ -1178,7 +1204,11 @@ export function ResumeEditorView({ homeHref, document, session, issues, analysed
   const [atsOpen, setAtsOpen] = useState(false)
   const [showPostAcceptTip, setShowPostAcceptTip] = useState(false)
   const [typedSummary, setTypedSummary] = useState<string | null>(null)
-  const { type: typeSummary } = useTypewriter()
+  const { type: typeSummary, isTyping: isTypingSummary } = useTypewriter()
+  const [zoom, setZoom] = useState(() => {
+    const parsed = parseInt(session.zoomLabel.replace('%', ''), 10)
+    return Number.isFinite(parsed) ? parsed / 100 : 0.85
+  })
   const [previewOpen, setPreviewOpen] = useState(false)
   const [showInterviewPrepWidget, setShowInterviewPrepWidget] = useState(true)
   const [fairUseDialogOpen, setFairUseDialogOpen] = useState(fairUse?.state === 'cooling-down')
@@ -1271,6 +1301,35 @@ export function ResumeEditorView({ homeHref, document, session, issues, analysed
           changeCount={changes.length}
           atsScore={document.atsScore}
         />
+        {tab === 'chat' ? (
+          <div className="relative hidden flex-1 overflow-auto bg-canvas px-4 py-8 lg:block lg:px-8">
+            <ZoomControls zoom={zoom} onChange={setZoom} />
+            <div style={{ transform: `scale(${zoom})`, transformOrigin: 'top center' }}>
+              <ClassicResume
+                document={document}
+                showImproved={showImproved}
+                highlightChanges={pendingSuggestion}
+                typedSummary={typedSummary}
+                isTypingSummary={isTypingSummary}
+              />
+            </div>
+            {pendingSuggestion ? (
+              <InlineChangeControls onAccept={handleAccept} onReject={handleReject} />
+            ) : null}
+            {showPostAcceptTip ? (
+              <WalkthroughTooltip
+                targetId="walkthrough-chat-input"
+                side="right"
+                title="Keep refining"
+                body="Ask for more rewrites, accept the changes, or keep editing, your resume updates in real time."
+                actionLabel="Got it"
+                onAction={() => setShowPostAcceptTip(false)}
+                onDismiss={() => setShowPostAcceptTip(false)}
+              />
+            ) : null}
+          </div>
+        ) : (
+        // Manual editing gets the resume itself to edit; Chat keeps the preview.
         <div className="relative hidden min-w-0 flex-1 flex-col lg:flex">
           <ResumeInlineEditor
             document={document}
@@ -1297,6 +1356,7 @@ export function ResumeEditorView({ homeHref, document, session, issues, analysed
             />
           ) : null}
         </div>
+        )}
       </section>
       <AtsScoreDrawer
         open={atsOpen}
