@@ -1,25 +1,6 @@
-import type { DoneForYouEngagement, SuccessManager } from '@/contracts/done-for-you.draft'
+import type { SuccessManager } from '@/contracts/done-for-you.draft'
 
 export const successManagers: readonly SuccessManager[] = [
-  {
-    id: 'sm-adaeze',
-    name: 'Adaeze O.',
-    photoUrl: '/v3-assets/interview-voice-sienna.png',
-    title: 'Lead Success Manager, ex-Technical Recruiter',
-    yearsExperience: 11,
-    rating: 4.96,
-    clientsPlaced: 412,
-    companies: ['Stripe', 'Microsoft', 'Flutterwave'],
-    specialties: ['Product & Engineering', 'Career Pivots'],
-    price: 1997,
-    interviewsGuaranteed: 20,
-    bio: 'I spent eight years screening candidates for fintech and big-tech teams before moving to the other side of the table. Most people I take on are qualified; they are just sending one resume everywhere and applying to roles that were filled weeks ago. I rebuild your resume for each posting, pick the roles where you actually clear the bar, and apply within the first 48 hours a job goes live. You get a Friday update with every application, every reply and what I am changing next week.',
-    review: {
-      quote: 'Four months of applying and nothing. Adaeze rewrote my resume around shipped outcomes, retargeted me from senior to staff roles, and I had five interviews in three weeks. Two turned into offers.',
-      author: 'Kelechi N.',
-      date: '2026-08-14',
-    },
-  },
   {
     id: 'sm-marcus',
     name: 'Marcus T.',
@@ -31,22 +12,10 @@ export const successManagers: readonly SuccessManager[] = [
     companies: ['Amazon', 'Deloitte', 'Salesforce'],
     specialties: ['Operations', 'Sales & Customer Success', 'Mid-career'],
     price: 497,
+    listPrice: 697,
+    introVideoUrl: '/landing-demo.mp4',
     interviewsGuaranteed: 5,
     bio: 'Nine years placing operators and sales leaders taught me that hiring managers read the first third of a resume and decide. I lead every version with the number that matters for that team: quota, cost saved, time to close. I will also tell you plainly which roles to skip, so your guarantee is spent on interviews you want.',
-  },
-  {
-    id: 'sm-priya',
-    name: 'Priya R.',
-    photoUrl: '/v3-assets/interview-voice-zahra.png',
-    title: 'Success Manager, Data & AI',
-    yearsExperience: 7,
-    rating: 4.98,
-    clientsPlaced: 241,
-    companies: ['Google', 'NVIDIA', 'Databricks'],
-    specialties: ['Data Science', 'ML Engineering', 'Visa Sponsorship'],
-    price: 1997,
-    interviewsGuaranteed: 20,
-    bio: 'I recruited data scientists and ML engineers for a cloud platform for five years. I know which keywords the screening tools weigh and which projects hiring panels ask about, and I target employers with a track record of sponsoring visas when you need it.',
   },
   {
     id: 'sm-daniel',
@@ -58,32 +27,10 @@ export const successManagers: readonly SuccessManager[] = [
     clientsPlaced: 305,
     companies: ['Accenture', 'Shopify', 'KPMG'],
     specialties: ['New Grads', 'Internship to Full-time'],
-    price: 497,
-    interviewsGuaranteed: 5,
+    price: 1997,
+    listPrice: 2697,
+    introVideoUrl: '/landing-demo.mp4',
+    interviewsGuaranteed: 20,
     bio: 'Graduate programmes open and close fast and most of them want a different resume from the one your careers office gave you. I track the intake windows, turn coursework and part-time jobs into evidence employers screen for, and apply the day applications open.',
   },
 ]
-
-export const doneForYouEngagement: DoneForYouEngagement = {
-  managerId: 'sm-adaeze',
-  packageId: 'dfy-small',
-  interviewsGuaranteed: 5,
-  interviewsLanded: 2,
-  applicationsSent: 38,
-  replies: 7,
-  startedOn: '2026-09-01',
-  nextUpdateOn: '2026-10-02',
-  latestUpdate: {
-    date: '2026-09-25',
-    note: 'Two interviews booked this week: Paystack on Tuesday and Moniepoint on Thursday. I sent your prep notes for both by email. Next week I am shifting a third of applications to Series B fintechs in London, where your payments background is getting the most replies.',
-  },
-  applications: [
-    { id: 'dfy-app-1', company: 'Paystack', role: 'Senior Product Manager, Payments', location: 'Lagos · Hybrid', sentOn: '2026-09-15', status: 'interview' },
-    { id: 'dfy-app-2', company: 'Moniepoint', role: 'Group Product Manager', location: 'Remote', sentOn: '2026-09-16', status: 'interview' },
-    { id: 'dfy-app-3', company: 'Wise', role: 'Product Manager, Business Accounts', location: 'London · Hybrid', sentOn: '2026-09-22', status: 'viewed' },
-    { id: 'dfy-app-4', company: 'Chipper Cash', role: 'Senior Product Manager, Growth', location: 'Remote', sentOn: '2026-09-23', status: 'viewed' },
-    { id: 'dfy-app-5', company: 'Revolut', role: 'Product Owner, Merchant Acquiring', location: 'London', sentOn: '2026-09-24', status: 'sent' },
-    { id: 'dfy-app-6', company: 'Kuda', role: 'Lead Product Manager', location: 'Lagos', sentOn: '2026-09-18', status: 'rejected' },
-    { id: 'dfy-app-7', company: 'Checkout.com', role: 'Senior Product Manager, Risk', location: 'London · Hybrid', sentOn: '2026-09-25', status: 'sent' },
-  ],
-}

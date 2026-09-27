@@ -2198,7 +2198,7 @@ export function AutoApplyJobsView({ homeHref, setupHref, agentHref, jobsHref, ap
       <AutoApplyPreferencesDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
       {promoVisible ? (
         <DoneForYouPromoWidget
-          signupHref="/v3/billing/done-for-you"
+          signupHref="/v3/billing?plan=done-for-you"
           onDismiss={() => setPromoVisible(false)}
         />
       ) : null}

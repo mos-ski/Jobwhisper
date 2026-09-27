@@ -6,8 +6,9 @@ import type { MarketplaceItem } from '@/contracts/marketplace.draft'
 import type { BadgeVariant } from '@/ui'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
 import { BillingPlanCards } from '@/features/billing/plan-compare-view'
+import { SuccessManagerPicker, type SuccessManagerPickerProps } from '@/features/billing/success-manager-picker'
 import { PlanAmount, PlanCard, PlanCarousel } from '@/features/pricing/plan-card'
-import { CREDIT_PRODUCTS, MANAGED_PACKAGES } from '@/features/pricing/pricing-products'
+import { CREDIT_PRODUCTS } from '@/features/pricing/pricing-products'
 import { AppShell } from '@/features/dashboard/app-nav'
 import { centsToCredits, creditsToCents, formatCredits } from '@/lib/credits'
 import { BillingPricingGuideCard } from './billing-pricing-guide'
@@ -99,7 +100,8 @@ export type BillingViewProps = {
   readonly planTab?: BillingPlanTab
   readonly onPlanTabChange?: (tab: BillingPlanTab) => void
   readonly onBuyCredits?: () => void
-  readonly onDoneForYou?: () => void
+  /** The Done for you tab: success managers at the chosen price. */
+  readonly doneForYou: SuccessManagerPickerProps
   /** When the subscriber's Interview Prep & Copilot usage limit resets, if they have hit it. */
   readonly interviewLimitResetLabel?: string
 }
@@ -1012,7 +1014,7 @@ function BillingReferralPrompt({ referralsHref }: { readonly referralsHref: stri
   )
 }
 
-export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet, faqs, autoApplyCredits, resumeBuilderCredits, planTab = 'subscription', onPlanTabChange, onBuyCredits, onDoneForYou, interviewLimitResetLabel }: BillingViewProps) {
+export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet, faqs, autoApplyCredits, resumeBuilderCredits, planTab = 'subscription', onPlanTabChange, onBuyCredits, doneForYou, interviewLimitResetLabel }: BillingViewProps) {
   const currentPlan = plans.find((plan) => plan.current) ?? plans[0]
   // Interview Copilot credits are a subscription benefit — only purchasable with an active plan. Resume
   // Builder and Auto Apply are standalone and always purchasable. See PRICING.md §1, §4.
@@ -1025,7 +1027,9 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
   const [autoApplyTotalCredits, setAutoApplyTotalCredits] = useState(autoApplyCredits?.total ?? 0)
   const [resumeBuilderBalance, setResumeBuilderBalance] = useState(resumeBuilderCredits?.balance ?? 0)
   const [resumeBuilderTotalCredits, setResumeBuilderTotalCredits] = useState(resumeBuilderCredits?.total ?? 0)
-  const [pricingGuideOpen, setPricingGuideOpen] = useState(true)
+  const [pricingGuideOpen, setPricingGuideOpen] = useState(false)
+  const creditsRef = useRef<HTMLDivElement>(null)
+  const pricingGuideShownRef = useRef(false)
   const pricingGuideTriggerRef = useRef<HTMLButtonElement>(null)
 
   const autoApplyPurchase = standalonePurchases.find((purchase) => purchase.id === 'auto-apply')
@@ -1034,8 +1038,25 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
   const copilotTotalCredits = Math.round(centsToCredits(totalCents))
   const shownTab = planTab
 
+  // The tour explains Credits & Balances, so it waits until that section is on screen, and only offers itself once.
+  useEffect(() => {
+    const section = creditsRef.current
+    if (!section || typeof IntersectionObserver === 'undefined') return
+    const observer = new IntersectionObserver((entries) => {
+      if (pricingGuideShownRef.current || !entries.some((entry) => entry.isIntersecting)) return
+      pricingGuideShownRef.current = true
+      setPricingGuideOpen(true)
+      observer.disconnect()
+    }, { threshold: 0.25 })
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
   function openPricingGuide() {
+    pricingGuideShownRef.current = true
     setPricingGuideOpen(true)
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    creditsRef.current?.scrollIntoView?.({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
   }
 
   function closePricingGuide() {
@@ -1144,28 +1165,11 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
             </div>
             ) : null}
 
-            {shownTab === 'done-for-you' ? (
-            <div className="-mx-4 sm:-mx-6 lg:-mx-8">
-              <PlanCarousel count={MANAGED_PACKAGES.length}>
-                {MANAGED_PACKAGES.map((managedPackage) => (
-                  <PlanCard
-                    key={managedPackage.id}
-                    name={managedPackage.name}
-                    tagline={managedPackage.tagline}
-                    amount={<PlanAmount>${managedPackage.price.toLocaleString('en-US')}</PlanAmount>}
-                    unit="one time"
-                    terms={managedPackage.terms}
-                    features={managedPackage.features}
-                    ctaLabel="Sign up"
-                    onCta={onDoneForYou}
-                  />
-                ))}
-              </PlanCarousel>
-            </div>
-            ) : null}
+            {shownTab === 'done-for-you' ? <SuccessManagerPicker {...doneForYou} /> : null}
             </div>
           </TitledPanel>
 
+          <div ref={creditsRef} className="scroll-mt-4">
           <TitledPanel
             title="Credits &amp; Balances"
             action={
@@ -1234,6 +1238,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
               ) : null}
             </div>
           </TitledPanel>
+          </div>
 
           <TitledPanel title="Payment Method">
             <div className="flex flex-wrap items-center justify-between gap-4 border border-border p-4 sm:p-5">

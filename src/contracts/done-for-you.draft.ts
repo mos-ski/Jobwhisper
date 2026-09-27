@@ -17,6 +17,10 @@ export type SuccessManager = {
   readonly bio: string
   /** What this manager charges, in USD, paid once. */
   readonly price: number
+  /** The regular price when `price` is a discount; shown struck through with the saving. */
+  readonly listPrice?: number
+  /** A short video of the manager introducing themselves. */
+  readonly introVideoUrl?: string
   /** Interviews this manager guarantees for that price. */
   readonly interviewsGuaranteed: number
   readonly review?: {
@@ -33,31 +37,3 @@ export type SuccessManagerDirectory =
   | { readonly status: 'loading' }
   | { readonly status: 'error' }
   | { readonly status: 'ready'; readonly managers: readonly SuccessManager[] }
-
-export type DfyApplicationStatus = 'sent' | 'viewed' | 'interview' | 'rejected'
-
-/** One application the success manager submitted for the client. */
-export type DfyApplication = {
-  readonly id: string
-  readonly company: string
-  readonly role: string
-  readonly location: string
-  /** ISO date the application went out. */
-  readonly sentOn: string
-  readonly status: DfyApplicationStatus
-}
-
-/** A client's active Done-For-You package. */
-export type DoneForYouEngagement = {
-  readonly managerId: string
-  readonly packageId: 'dfy-small' | 'dfy-large'
-  readonly interviewsGuaranteed: number
-  readonly interviewsLanded: number
-  readonly applicationsSent: number
-  readonly replies: number
-  /** ISO dates. */
-  readonly startedOn: string
-  readonly nextUpdateOn: string
-  readonly latestUpdate: { readonly date: string; readonly note: string }
-  readonly applications: readonly DfyApplication[]
-}

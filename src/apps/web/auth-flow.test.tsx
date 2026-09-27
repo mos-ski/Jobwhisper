@@ -501,7 +501,7 @@ describe('v3 web auth flow', () => {
     expect(screen.getByTestId('done-for-you-campaign-background')).toHaveAttribute('src', '/v3-assets/figma/dfy-widget-background.svg')
     expect(screen.getByTestId('done-for-you-guarantee')).toHaveClass('text-[2.53rem]', 'tracking-[-0.2rem]')
     expect(screen.getByTestId('done-for-you-description')).toHaveClass('text-[1.12rem]', 'leading-[1.4rem]')
-    expect(screen.getByRole('link', { name: 'Sign Up Now' })).toHaveAttribute('href', '/v3/billing/done-for-you')
+    expect(screen.getByRole('link', { name: 'Sign Up Now' })).toHaveAttribute('href', '/v3/billing?plan=done-for-you')
 
     await user.click(screen.getByRole('button', { name: 'Maybe Later.' }))
 
@@ -522,6 +522,9 @@ describe('v3 web auth flow', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Available again at 4:58 PM, June 4')
     expect(screen.queryByText('Automatic reload')).not.toBeInTheDocument()
 
+    // The tour waits until Credits & Balances scrolls into view; How it works opens it straight away.
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'How it works' }))
     const guide = screen.getByRole('dialog', { name: 'Your credits and balances' })
     expect(guide).toHaveClass('rounded-[2px]', 'p-6', 'sm:w-[352px]')
     expect(guide).toHaveTextContent(/usage limit, extra credits keep you going/i)
