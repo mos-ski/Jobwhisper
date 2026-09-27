@@ -100,6 +100,13 @@ export const resumeDocument: ResumeDocument = {
     'Led end-to-end strategy and execution for 5 core products, including the AI Resume Builder and Interview Copilot, shipped the MVP in 5 months with 95% feature completion and grew active usage to 12,000+ monthly users.',
     'Built and scaled an ATS-compliant resume builder powered by generative AI, improving content-parsing accuracy by 40% and lifting application-to-interview conversion by 25% across a base of 8,000+ resumes processed.',
   ],
+  suggestedBullets: [
+    'Defined the quarterly product roadmap with engineering and design leads, cutting unplanned scope changes by 30% and keeping 9 of 10 launches on schedule.',
+    'Ran 20+ customer discovery interviews per quarter and turned the findings into prioritised opportunity briefs that shaped two new revenue lines.',
+    'Introduced a weekly metrics review covering activation, retention and revenue, giving leadership one source of truth and shortening decision cycles from weeks to days.',
+    'Partnered with sales and support to launch an in-product feedback loop, closing 150+ customer requests in six months and lifting NPS from 31 to 47.',
+    'Wrote PRDs and acceptance criteria for a 12-person squad, reducing QA rework by 35% and speeding release cadence from monthly to bi-weekly.',
+  ],
   education: [
     { school: 'University of Ilorin', degree: 'BSc Agriculture', year: '2019' },
     { school: 'Lagos Business School', degree: 'Certificate in Entrepreneurship & Innovation', year: '2021' },
