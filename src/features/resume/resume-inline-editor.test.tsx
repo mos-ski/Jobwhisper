@@ -16,24 +16,24 @@ function renderEditor(overrides: Partial<ResumeInlineEditorProps> = {}) {
 }
 
 describe('ResumeInlineEditor', () => {
-  it('shows each section's issues beside its Fix, with no score strip', () => {
+  it("shows each section's issues on its Fix button, with no score strip", () => {
     renderEditor()
     expect(screen.queryByText('Urgent fix')).not.toBeInTheDocument()
-    expect(within(screen.getByRole('region', { name: 'Summary' })).getByText('1 Critical')).toBeInTheDocument()
-    expect(within(screen.getByRole('region', { name: 'Skills' })).getByText('1 Urgent')).toBeInTheDocument()
+    expect(within(screen.getByRole('region', { name: 'Summary' })).getByRole('button', { name: 'Fix 1 critical' })).toHaveAttribute('data-variant', 'primary')
+    expect(within(screen.getByRole('region', { name: 'Skills' })).getByRole('button', { name: 'Fix 1 urgent' })).toBeInTheDocument()
   })
 
   it('offers a rewrite on Fix and applies it on Accept', async () => {
     const user = userEvent.setup()
     renderEditor()
     const summary = within(screen.getByRole('region', { name: 'Summary' }))
-    await user.click(summary.getByRole('button', { name: 'Fix' }))
+    await user.click(summary.getByRole('button', { name: 'Fix 1 critical' }))
+    expect(summary.getByRole('button', { name: 'Close 1 critical' })).toHaveAttribute('aria-expanded', 'true')
     expect(summary.getByText('Suggested summary')).toBeInTheDocument()
     await user.click(summary.getByRole('button', { name: 'Accept' }))
 
     expect(screen.getByRole('textbox', { name: 'Summary' })).toHaveValue(resumeDocument.improvedSummary)
-    expect(summary.queryByText('1 Critical')).not.toBeInTheDocument()
-    expect(summary.queryByRole('button', { name: 'Fix' })).not.toBeInTheDocument()
+    expect(summary.queryByRole('button', { name: /^(Fix|Close)/ })).not.toBeInTheDocument()
   })
 
   it('adds and removes skills as chips', async () => {
