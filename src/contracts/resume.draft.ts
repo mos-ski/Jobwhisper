@@ -1,14 +1,6 @@
-export type ResumeBuilderTab = 'chat' | 'create' | 'template'
+export type ResumeBuilderTab = 'chat' | 'edit'
 
 export type ResumeChatState = 'empty' | 'suggestions'
-
-export type ResumeTemplateId =
-  | 'professional'
-  | 'lora-modern'
-  | 'garamond-classic'
-  | 'calibri-clean'
-  | 'compact-executive'
-  | 'premium-modern'
 
 export type ResumeSectionId =
   | 'personal-information'
@@ -77,12 +69,6 @@ export type ResumeCertification = {
   readonly year: string
 }
 
-export type ResumeTemplate = {
-  readonly id: ResumeTemplateId
-  readonly name: string
-  readonly description: string
-}
-
 export type ResumeHistoryRow = {
   readonly id: string
   readonly title: string
@@ -103,6 +89,17 @@ export type ResumeBuilderSession = {
   readonly chatPrompt: string
   readonly aiResponse: string
   readonly aiDraft: string
-  readonly selectedTemplateId: ResumeTemplateId
   readonly zoomLabel: string
+}
+
+export type ResumeIssueSeverity = 'urgent' | 'critical' | 'optional'
+
+/** One thing the ATS check flagged, pinned to the section (and role) it is about. */
+export type ResumeIssue = {
+  readonly id: string
+  readonly section: ResumeSectionId
+  /** For experience issues, which role in `ResumeDocument.roles`. */
+  readonly roleIndex?: number
+  readonly severity: ResumeIssueSeverity
+  readonly detail: string
 }

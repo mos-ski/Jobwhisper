@@ -158,37 +158,3 @@ export function ClassicResume({
     </ResumePaper>
   )
 }
-
-export type ExecutiveResumeProps = {
-  readonly document: ResumeDocument
-}
-
-export function ExecutiveResume({ document }: ExecutiveResumeProps) {
-  return (
-    <ResumePaper compact>
-      <header className="pb-4">
-        <h1 className="text-2xl font-bold tracking-wide">{document.candidateName}</h1>
-        <p className="mt-2 text-xs text-paper-muted">{document.email} | {document.location} | {document.linkedinUrl} | {document.portfolioUrl}</p>
-      </header>
-      <div className="grid gap-4">
-        {[
-          ['Professional Summary', document.improvedSummary],
-          ['Experience', document.roles[0]?.bullets.join(' ') ?? ''],
-          ['Education', `${document.education[0]?.school ?? ''} - ${document.education[0]?.degree ?? ''}`],
-          ['Skills', document.skills.join(' · ')],
-          ['Certifications', document.certifications.map((item) => `${item.name}, ${item.issuer}`).join(' · ')],
-          ['Projects', document.projects.map((item) => `${item.name} (${item.year})`).join(' · ')],
-          ['Languages', document.languages.map((item) => `${item.language}: ${item.proficiency}`).join(' · ')],
-        ].map(([title, body]) => (
-          <section key={title} className="grid grid-cols-[1rem_1fr] gap-3">
-            <span className="mt-1 size-2 rounded-soft border border-paper-ink" />
-            <div>
-              <h2 className="text-xs font-bold uppercase tracking-wide">{title}</h2>
-              <p className="mt-2 text-xs leading-5 text-paper-muted">{body}</p>
-            </div>
-          </section>
-        ))}
-      </div>
-    </ResumePaper>
-  )
-}

@@ -3,17 +3,15 @@ import { useLocation } from 'react-router-dom'
 import type { ResumeBuilderTab, ResumeChatState } from '@/contracts/resume.draft'
 import { ResumeEditorView } from '@/features/resume/resume-builder-view'
 import { resumeFairUseNearing, resumeFairUseSpent } from '@/mocks/fair-use'
-import { resumeBuilderSession, resumeDocument, resumeTemplates } from '@/mocks/resume'
+import { resumeBuilderSession, resumeDocument, resumeIssues } from '@/mocks/resume'
 
-const tabs: readonly ResumeBuilderTab[] = ['chat', 'create', 'template']
+const tabs: readonly ResumeBuilderTab[] = ['chat', 'edit']
 const chatStates: readonly ResumeChatState[] = ['empty', 'suggestions']
 
 function readTab(value: string | null): ResumeBuilderTab {
-  if (value && tabs.includes(value as ResumeBuilderTab)) {
-    return value as ResumeBuilderTab
-  }
-
-  return 'chat'
+  // Links from before the tabs merged still land somewhere sensible.
+  if (value === 'create' || value === 'template') return 'edit'
+  return tabs.find((tab) => tab === value) ?? 'chat'
 }
 
 function readChatState(value: string | null): ResumeChatState {
@@ -43,7 +41,8 @@ export function ResumeEditorPage() {
       historyHref="/v3/resume/history"
       document={resumeDocument}
       session={resumeBuilderSession}
-      templates={resumeTemplates}
+      issues={resumeIssues}
+      analysedLabel="Last analysed 2 days ago"
       tab={tab}
       chatState={chatState}
       jd={jd}
