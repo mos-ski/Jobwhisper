@@ -125,7 +125,7 @@ const ROW_WASHES = ['from-positive-surface', 'from-accent-subtle'] as const
 function ManagerRow({ manager, onStart, index }: { readonly manager: SuccessManager; readonly onStart: () => void; readonly index: number }) {
   const booked = manager.nextOpening !== undefined
   return (
-    <li className={cn('grid gap-4 rounded-panel border border-border bg-surface bg-gradient-to-t via-surface to-surface p-5 md:grid-cols-[1fr_auto]', ROW_WASHES[index % ROW_WASHES.length])}>
+    <li className={cn('grid gap-4 border border-border bg-surface bg-gradient-to-t via-surface to-surface p-5 md:grid-cols-[1fr_auto]', ROW_WASHES[index % ROW_WASHES.length])}>
       <div className="grid min-w-0 gap-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
@@ -189,8 +189,8 @@ function ManagerRow({ manager, onStart, index }: { readonly manager: SuccessMana
 function DirectorySkeleton() {
   return (
     <div aria-busy="true" aria-label="Loading success managers" className="mt-6 grid gap-4">
-      <Skeleton className="h-32 rounded-panel" />
-      {[0, 1, 2].map((item) => <Skeleton key={item} className="h-44 rounded-panel" />)}
+      <Skeleton className="h-32" />
+      {[0, 1, 2].map((item) => <Skeleton key={item} className="h-44" />)}
     </div>
   )
 }
@@ -222,7 +222,7 @@ export function SuccessManagerPicker({ setupHref, profile, savedCard, directory,
         {directory.status === 'loading' ? <DirectorySkeleton /> : null}
 
         {directory.status === 'error' ? (
-          <div role="alert" className="mx-auto mt-6 grid max-w-md justify-items-center gap-3 rounded-panel border border-border bg-surface p-8 text-center">
+          <div role="alert" className="mx-auto mt-6 grid max-w-md justify-items-center gap-3 border border-border bg-surface p-8 text-center">
             <p className="font-gowun text-lg font-semibold text-ink">We couldn’t load the success managers</p>
             <p className="text-sm text-ink-muted">Your saved details are safe. Try again in a moment.</p>
             <Button variant="secondary" leadingIcon={<RotateCw aria-hidden="true" className="size-4" />} onClick={onRetry}>Try again</Button>
@@ -231,7 +231,7 @@ export function SuccessManagerPicker({ setupHref, profile, savedCard, directory,
 
         {directory.status === 'ready' && available.length === 0 ? (
           <EmptyState
-            className="mt-6 rounded-panel border border-border bg-surface"
+            className="mt-6 border border-border bg-surface"
             title="Every success manager is fully booked"
             description="New places open every week. Until then, Auto Apply can keep sending tailored applications for you."
             action={<a href={setupHref} className="inline-flex min-h-11 items-center rounded-lg bg-accent px-5 text-sm font-semibold text-on-accent hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Set up Auto Apply</a>}
