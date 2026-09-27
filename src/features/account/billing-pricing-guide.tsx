@@ -7,8 +7,9 @@ export type BillingPricingGuideStep = 0 | 1 | 2
 export type BillingPricingGuideCardProps = {
   readonly step: BillingPricingGuideStep
   readonly learnMoreHref: string
-  /** Where this step's plan lives, e.g. the plan picker for step one. */
-  readonly viewPlanHref: string
+  /** The step's own next move, e.g. "View plan" to the plan picker or "Buy credits". */
+  readonly linkLabel: string
+  readonly linkHref: string
   readonly onNext: () => void
   readonly onDismiss: () => void
 }
@@ -16,19 +17,19 @@ export type BillingPricingGuideCardProps = {
 const GUIDE_CONTENT: Readonly<Record<BillingPricingGuideStep, { readonly title: string; readonly body: string }>> = {
   0: {
     title: 'Ace Your Interview Plan',
-    body: 'Interview Prep and Copilot are included in a recurring subscription. Usage is measured in minutes, so one credit gives you one minute of live session time.',
+    body: 'Your plan makes Interview Prep and every Copilot unlimited. There are no credits and no minutes to count, so use them as much as you need.',
   },
   1: {
-    title: 'Auto Apply and Resume Builder',
-    body: 'These tools use prepaid credits with no subscription. Auto Apply charges for each successful application. Resume Builder charges for each AI prompt you send.',
+    title: 'Credits and balances',
+    body: 'Auto Apply and Resume Builder run on prepaid credits. The number is what you have left, and the bar shows how much of your last purchase remains. It turns red below 20%. Auto Apply uses one credit per successful application; Resume Builder uses one per AI prompt.',
   },
   2: {
-    title: 'Done For You',
-    body: 'Want a hands-off job search? A dedicated success manager finds matching roles, tailors your resume, and applies on your behalf. You focus on preparing for interviews.',
+    title: 'Topping up',
+    body: 'Press Buy credits on any balance to add more: from $10 for Auto Apply or $5 for Resume Builder. Credits last 12 months. Turn on Automatic reload and a balance tops itself up when it runs low.',
   },
 }
 
-export function BillingPricingGuideCard({ step, learnMoreHref, viewPlanHref, onNext, onDismiss }: BillingPricingGuideCardProps) {
+export function BillingPricingGuideCard({ step, learnMoreHref, linkLabel, linkHref, onNext, onDismiss }: BillingPricingGuideCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const content = GUIDE_CONTENT[step]
   const isLastStep = step === 2
@@ -115,10 +116,10 @@ export function BillingPricingGuideCard({ step, learnMoreHref, viewPlanHref, onN
         )}
       </div>
       <a
-        href={viewPlanHref}
+        href={linkHref}
         className="mt-2 inline-flex min-h-11 w-full items-center justify-center rounded-[7.2px] border border-input text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
       >
-        View plan
+        {linkLabel}
       </a>
     </div>
   )
