@@ -1,4 +1,4 @@
-import type { ResumeBuilderSession, ResumeDocument, ResumeHistoryRow, ResumeTemplate } from '@/contracts/resume.draft'
+import type { ResumeBuilderSession, ResumeDocument, ResumeHistoryRow, ResumeIssue } from '@/contracts/resume.draft'
 
 export const resumeDocument: ResumeDocument = {
   id: 'resume-adedamola-product',
@@ -195,17 +195,20 @@ export const resumeBuilderSession: ResumeBuilderSession = {
     "I've updated your professional summary to make it more impactful and results-driven, emphasizing measurable achievements and leadership qualities.",
   aiDraft:
     'Product Leader with 8 years of experience in fintech and AI platforms, skilled in product strategy, market expansion, and enhancing payment experiences. Expertise in aligning technical solutions with strategic business goals and achieving key milestones in MVP launches.',
-  selectedTemplateId: 'compact-executive',
   zoomLabel: '85%',
 }
 
-export const resumeTemplates: readonly ResumeTemplate[] = [
-  { id: 'professional', name: 'Professional', description: 'Clean, crisp design with Libre Baskerville serif font. Traditional and elegant.' },
-  { id: 'lora-modern', name: 'Lora Modern', description: 'Modern design with Lora font. Perfect for creative professionals.' },
-  { id: 'garamond-classic', name: 'Garamond Classic', description: 'Timeless elegance with Garamond. ATS-optimized classic design.' },
-  { id: 'calibri-clean', name: 'Calibri Clean', description: 'Professional and minimal with Calibri. Corporate standard font.' },
-  { id: 'compact-executive', name: 'Compact Executive', description: 'Minimalist design optimized for one-page resumes.' },
-  { id: 'premium-modern', name: 'Premium Modern', description: 'Contemporary two-column design with strong visual hierarchy.' },
+export const resumeIssues: readonly ResumeIssue[] = [
+  { id: 'summary-generic', section: 'professional-summary', severity: 'critical', detail: 'The summary is generic. Open with the target role, your years of experience and one signature result.' },
+  { id: 'role-0-metrics', section: 'experience', roleIndex: 0, severity: 'urgent', detail: 'Two bullets describe work without a result. Add the number that changed.' },
+  { id: 'role-1-metrics', section: 'experience', roleIndex: 1, severity: 'urgent', detail: 'Lead with the outcome in your top bullet: volume, revenue or time saved.' },
+  { id: 'role-1-length', section: 'experience', roleIndex: 1, severity: 'optional', detail: 'Eight bullets is long for one role. Keep the five strongest.' },
+  { id: 'role-2-dates', section: 'experience', roleIndex: 2, severity: 'urgent', detail: 'These dates overlap your previous role. Say which was part-time or correct them.' },
+  { id: 'role-2-verbs', section: 'experience', roleIndex: 2, severity: 'urgent', detail: 'Three bullets start with the same verb. Vary them so each reads as its own result.' },
+  { id: 'role-2-metrics', section: 'experience', roleIndex: 2, severity: 'urgent', detail: 'Add a result to the stakeholder alignment bullet.' },
+  { id: 'skills-keywords', section: 'skills', severity: 'urgent', detail: 'Missing tools the job lists: SQL, Amplitude and Mixpanel.' },
+  { id: 'education-relevance', section: 'education', severity: 'urgent', detail: 'List the certificate most relevant to product work first.' },
+  { id: 'certifications-dates', section: 'certifications', severity: 'urgent', detail: 'Add the year each certification was earned.' },
 ]
 
 export const resumeHistoryRows: readonly ResumeHistoryRow[] = [

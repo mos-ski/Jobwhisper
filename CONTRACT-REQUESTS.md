@@ -204,3 +204,7 @@ What a real implementation needs that this draft does not model:
 ## Cookie Consent Draft Contract
 
 `src/contracts/consent.draft.ts` models the homepage cookie choice: `ConsentPreferences` (`analytics`, `marketing`; essential cookies are always on and not a choice) and `ConsentState` (`undecided` or `decided` with preferences). The UI Studio stores it in a first-party `jw_cookie_consent` cookie for six months, readable by the server-rendered marketing site and a tag manager. Production should gate Google Analytics (Consent Mode v2) and Amplitude on these two flags, keep a server-side record of when consent was given for audit, and ask again when the categories or the Privacy Policy change.
+
+## Resume Issues Draft Type
+
+`ResumeIssue` in `src/contracts/resume.draft.ts` pins each ATS finding to a section (and, for experience, a role index) with a three-level severity: `urgent`, `critical`, `optional`. The Edit tab counts them into the fix tiles and shows them on the section they concern. Production's ATS analysis should return findings in this shape, including the advice text, rather than one flat list of gaps. `ResumeBuilderTab` is now `'chat' | 'edit'`; the template types (`ResumeTemplate`, `ResumeTemplateId`, `ResumeBuilderSession.selectedTemplateId`) were removed with the Template tab.

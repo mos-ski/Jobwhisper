@@ -207,14 +207,9 @@ const appRoutes = [
     description: 'AI message result with accept/reject controls and highlighted resume changes.',
   },
   {
-    href: '/v3/resume/editor?tab=create',
-    label: 'Resume editor create',
-    description: 'Section editor accordion with Light AI generated summary card.',
-  },
-  {
-    href: '/v3/resume/editor?tab=template',
-    label: 'Resume templates',
-    description: 'Template gallery with Compact Executive selected and preview applied.',
+    href: '/v3/resume/editor?tab=edit',
+    label: 'Resume editor, Edit',
+    description: 'The resume edited in place: ATS grade and Urgent / Critical / Optional fix counts, per-section Fix with suggested rewrites, skill chips, and drag-to-reorder sections.',
   },
   {
     href: '/v3/resume/editor?tab=chat&state=suggestions&fair-use=nearing',

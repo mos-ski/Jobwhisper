@@ -48,15 +48,11 @@
    Exit condition: user accepts, declines, downloads, or continues editing.
    Failure branch: failed AI generation shows retry in the chat panel in a later state slice.
 
-5. Entry condition: user opens `/v3/resume/editor?tab=create`.
-   Exit condition: user edits sections manually or inserts a Light AI draft.
-   Failure branch: validation errors stay scoped to the edited section.
+5. Entry condition: user opens the Edit tab at `/v3/resume/editor?tab=edit` (old `tab=create` and `tab=template` links land here too).
+   Exit condition: the resume is edited in place under a strip with the ATS grade and Urgent / Critical / Optional fix counts; each flagged section's Fix lists its issues and, where a rewrite exists (summary, top role bullets, skills), Accept applies it and the count drops. Sections reorder by drag handle or arrow keys.
+   Failure branch: sections without a rewrite offer "Mark as fixed" with the advice on what to change; Re-analyze and View full report open the ATS report.
 
-6. Entry condition: user opens `/v3/resume/editor?tab=template`.
-   Exit condition: user selects a template and preview updates.
-   Failure branch: unavailable templates remain disabled when billing or permissions require it in a later state slice.
-
-7. Entry condition: user opens `/v3/resume/history`.
+6. Entry condition: user opens `/v3/resume/history`.
    Exit condition: user searches, creates a new resume, or opens an existing history row in a later state slice.
    Failure branch: history loading and empty states will be rendered when real data loading is introduced.
 
