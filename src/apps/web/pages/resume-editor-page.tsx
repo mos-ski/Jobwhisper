@@ -42,7 +42,6 @@ export function ResumeEditorPage() {
       document={resumeDocument}
       session={resumeBuilderSession}
       issues={resumeIssues}
-      analysedLabel="Last analysed 2 days ago"
       tab={tab}
       chatState={chatState}
       jd={jd}

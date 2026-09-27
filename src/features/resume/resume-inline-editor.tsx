@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode, type TextareaHTMLAttributes } from 'react'
-import { ChevronRight, GripVertical, Link as LinkIcon, Mail, MapPin, Phone, Plus, X } from 'lucide-react'
+import { GripVertical, Link as LinkIcon, Mail, MapPin, Phone, Plus, X } from 'lucide-react'
 
 import type { ResumeDocument, ResumeIssue, ResumeIssueSeverity, ResumeRole, ResumeSectionId } from '@/contracts/resume.draft'
 import { Button, cn } from '@/ui'
@@ -7,16 +7,12 @@ import { Button, cn } from '@/ui'
 export type ResumeInlineEditorProps = {
   readonly document: ResumeDocument
   readonly issues: readonly ResumeIssue[]
-  /** e.g. "Last analysed 2 days ago". */
-  readonly analysedLabel: string
   /** Chat's rewrite is waiting on Accept or Reject: show it in place, highlighted. */
   readonly pendingSuggestion?: boolean
   /** Chat's rewrite was accepted: fold it into the resume. */
   readonly acceptedSuggestion?: boolean
   /** The summary as it types out while Chat's rewrite arrives. */
   readonly typedSummary?: string | null
-  readonly onOpenReport: () => void
-  readonly onReanalyze: () => void
 }
 
 type BodySection = Exclude<ResumeSectionId, 'personal-information'>
@@ -37,23 +33,10 @@ const SEVERITIES: readonly ResumeIssueSeverity[] = ['urgent', 'critical', 'optio
 
 const SEVERITY_LABELS: Record<ResumeIssueSeverity, string> = { urgent: 'Urgent', critical: 'Critical', optional: 'Optional' }
 
-const SEVERITY_TILES: Record<ResumeIssueSeverity, string> = {
-  urgent: 'bg-danger-surface border-danger',
-  critical: 'bg-warning-surface border-warning',
-  optional: 'bg-info-surface border-info',
-}
-
 const SEVERITY_DOTS: Record<ResumeIssueSeverity, string> = { urgent: 'bg-danger', critical: 'bg-warning', optional: 'bg-info' }
 
 // Inputs that read as the resume itself until you point at or focus them.
 const field = 'w-full rounded-md border border-transparent bg-transparent px-2 py-1 text-ink outline-none placeholder:text-ink-muted hover:bg-surface-subtle focus:border-focus focus:bg-surface focus:ring-2 focus:ring-focus'
-
-function gradeFor(score: number): { readonly letter: string; readonly verdict: string } {
-  if (score >= 90) return { letter: 'A', verdict: 'Excellent' }
-  if (score >= 80) return { letter: 'B', verdict: 'Good' }
-  if (score >= 70) return { letter: 'C', verdict: 'Fair' }
-  return { letter: 'D', verdict: 'Needs work' }
-}
 
 /** A textarea as tall as its text, at any width, so no part of a resume line hides behind a scrollbar. */
 function GrowingTextarea({ value, className, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement> & { readonly value: string }) {
@@ -80,7 +63,7 @@ function issueKey(section: BodySection, roleIndex?: number): string {
   return roleIndex === undefined ? section : `${section}:${roleIndex}`
 }
 
-export function ResumeInlineEditor({ document, issues, analysedLabel, pendingSuggestion = false, acceptedSuggestion = false, typedSummary, onOpenReport, onReanalyze }: ResumeInlineEditorProps) {
+export function ResumeInlineEditor({ document, issues, pendingSuggestion = false, acceptedSuggestion = false, typedSummary }: ResumeInlineEditorProps) {
   const [draft, setDraft] = useState<ResumeDocument>(document)
   const [order, setOrder] = useState<readonly BodySection[]>(DEFAULT_ORDER)
   const [resolved, setResolved] = useState<ReadonlySet<string>>(new Set())
@@ -113,7 +96,6 @@ export function ResumeInlineEditor({ document, issues, analysedLabel, pendingSug
   const changed = 'bg-accent-subtle text-accent-text'
 
   const openIssues = issues.filter((issue) => !resolved.has(issueKey(issue.section as BodySection, issue.roleIndex)))
-  const grade = gradeFor(document.atsScore)
 
   function update(patch: Partial<ResumeDocument>) {
     setDraft((current) => ({ ...current, ...patch }))
@@ -383,35 +365,6 @@ export function ResumeInlineEditor({ document, issues, analysedLabel, pendingSug
 
   return (
     <div data-slot="resume-inline-editor" className="flex min-h-0 flex-1 flex-col bg-canvas">
-      <div className="shrink-0 border-b border-border bg-surface px-4 py-3 sm:px-6">
-        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-x-6 gap-y-3">
-          <div className="flex items-center gap-3">
-            <span aria-hidden="true" className="grid size-12 place-items-center rounded-lg bg-warning-surface font-gowun text-2xl font-bold text-ink">{grade.letter}</span>
-            <div className="grid gap-0.5">
-              <span className="text-xs font-bold uppercase tracking-wide text-ink">
-                <span className="sr-only">ATS grade {grade.letter}, </span>{grade.verdict}
-              </span>
-              <button type="button" onClick={onOpenReport} className="inline-flex min-h-8 items-center gap-1 text-sm font-medium text-accent-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-                View full report
-                <ChevronRight aria-hidden="true" className="size-4 rtl:rotate-180" />
-              </button>
-            </div>
-          </div>
-          <dl className="ms-auto flex gap-2">
-            {SEVERITIES.map((severity) => (
-              <div key={severity} className={cn('grid min-w-20 justify-items-center rounded-lg border-b-2 px-3 py-1.5', SEVERITY_TILES[severity])}>
-                <dd className="order-1 text-lg font-bold leading-6 text-ink">{openIssues.filter((issue) => issue.severity === severity).length}</dd>
-                <dt className="order-2 text-xs font-semibold uppercase tracking-wide text-ink">{SEVERITY_LABELS[severity]} fix</dt>
-              </div>
-            ))}
-          </dl>
-          <div className="grid justify-items-center gap-0.5">
-            <Button onClick={onReanalyze} className="bg-surface-inverse text-surface hover:bg-ink-muted">Re-analyze</Button>
-            <span className="text-xs text-ink-muted">{analysedLabel}</span>
-          </div>
-        </div>
-      </div>
-
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6">
         <div className="mx-auto w-full max-w-5xl rounded-panel border border-border bg-surface px-4 py-6 shadow-panel sm:px-10 sm:py-8">
           <h1 className="sr-only">{draft.candidateName}</h1>

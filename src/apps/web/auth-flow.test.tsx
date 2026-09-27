@@ -202,7 +202,7 @@ describe('v3 web auth flow', () => {
       {
         route: '/v3/resume/editor?tab=create',
         heading: 'ADEDAMOLA ADEWALE',
-        text: 'Re-analyze',
+        text: 'AI Suggestion',
       },
       {
         route: '/v3/resume/history',

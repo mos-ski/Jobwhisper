@@ -9,29 +9,18 @@ function renderEditor(overrides: Partial<ResumeInlineEditorProps> = {}) {
   const props: ResumeInlineEditorProps = {
     document: resumeDocument,
     issues: resumeIssues,
-    analysedLabel: 'Last analysed 2 days ago',
-    onOpenReport: vi.fn(),
-    onReanalyze: vi.fn(),
     ...overrides,
   }
   render(<ResumeInlineEditor {...props} />)
   return props
 }
 
-function tile(label: string) {
-  return screen.getByText(`${label} fix`).parentElement
-}
-
 describe('ResumeInlineEditor', () => {
-  it('grades the resume and counts fixes by severity', async () => {
-    const user = userEvent.setup()
-    const props = renderEditor()
-    expect(screen.getByText('Good')).toBeInTheDocument()
-    expect(tile('Urgent')).toHaveTextContent('8')
-    expect(tile('Critical')).toHaveTextContent('1')
-    expect(tile('Optional')).toHaveTextContent('1')
-    await user.click(screen.getByRole('button', { name: 'View full report' }))
-    expect(props.onOpenReport).toHaveBeenCalled()
+  it('shows each section's issues beside its Fix, with no score strip', () => {
+    renderEditor()
+    expect(screen.queryByText('Urgent fix')).not.toBeInTheDocument()
+    expect(within(screen.getByRole('region', { name: 'Summary' })).getByText('1 Critical')).toBeInTheDocument()
+    expect(within(screen.getByRole('region', { name: 'Skills' })).getByText('1 Urgent')).toBeInTheDocument()
   })
 
   it('offers a rewrite on Fix and applies it on Accept', async () => {
@@ -43,7 +32,8 @@ describe('ResumeInlineEditor', () => {
     await user.click(summary.getByRole('button', { name: 'Accept' }))
 
     expect(screen.getByRole('textbox', { name: 'Summary' })).toHaveValue(resumeDocument.improvedSummary)
-    expect(tile('Critical')).toHaveTextContent('0')
+    expect(summary.queryByText('1 Critical')).not.toBeInTheDocument()
+    expect(summary.queryByRole('button', { name: 'Fix' })).not.toBeInTheDocument()
   })
 
   it('adds and removes skills as chips', async () => {
@@ -64,12 +54,12 @@ describe('ResumeInlineEditor', () => {
   })
 
   it('shows a pending Chat rewrite in place, and keeps it once accepted', () => {
-    const { rerender } = render(<ResumeInlineEditor document={resumeDocument} issues={[]} analysedLabel="" onOpenReport={vi.fn()} onReanalyze={vi.fn()} pendingSuggestion />)
+    const { rerender } = render(<ResumeInlineEditor document={resumeDocument} issues={[]} pendingSuggestion />)
     const summaries = screen.getAllByRole('textbox', { name: 'Summary' })
     expect(summaries.at(-1)).toHaveValue(resumeDocument.improvedSummary)
     expect(summaries.at(-1)).toHaveAttribute('readonly')
 
-    rerender(<ResumeInlineEditor document={resumeDocument} issues={[]} analysedLabel="" onOpenReport={vi.fn()} onReanalyze={vi.fn()} acceptedSuggestion />)
+    rerender(<ResumeInlineEditor document={resumeDocument} issues={[]} acceptedSuggestion />)
     expect(screen.getAllByRole('textbox', { name: 'Summary' }).at(-1)).toHaveValue(resumeDocument.improvedSummary)
     expect(screen.getAllByRole('textbox', { name: 'Summary' }).at(-1)).not.toHaveAttribute('readonly')
   })
