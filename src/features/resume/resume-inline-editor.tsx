@@ -17,6 +17,12 @@ export type ResumeInlineEditorProps = {
   readonly extraSections?: readonly ResumeExtraSection[]
   /** Standard sections the person removed; Add Section can bring them back. */
   readonly hiddenSections?: readonly ResumeSectionId[]
+  /**
+   * Renders this one section and nothing else. A phone has no room for the list beside the
+   * resume, so it edits one section at a time and goes back to the list for the next; the
+   * whole resume stays on screen from lg up, where the list is beside it.
+   */
+  readonly onlySection?: string | null
   readonly onRenameSection?: (id: string, title: string) => void
   /** Called with a standard section id or an added section's id. */
   readonly onRemoveSection?: (id: string) => void
@@ -119,7 +125,7 @@ function issueKey(section: BodySection, roleIndex?: number): string {
   return roleIndex === undefined ? section : `${section}:${roleIndex}`
 }
 
-export function ResumeInlineEditor({ document, issues, pendingSuggestion = false, acceptedSuggestion = false, typedSummary, extraSections = NO_EXTRA_SECTIONS, hiddenSections = NO_HIDDEN_SECTIONS, onRenameSection, onRemoveSection, onActiveSectionChange }: ResumeInlineEditorProps) {
+export function ResumeInlineEditor({ document, issues, pendingSuggestion = false, acceptedSuggestion = false, typedSummary, extraSections = NO_EXTRA_SECTIONS, hiddenSections = NO_HIDDEN_SECTIONS, onlySection = null, onRenameSection, onRemoveSection, onActiveSectionChange }: ResumeInlineEditorProps) {
   const [draft, setDraft] = useState<ResumeDocument>(document)
   const [order, setOrder] = useState<readonly string[]>(DEFAULT_ORDER)
   const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set())
@@ -737,6 +743,7 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
       <div className="min-h-0 flex-1 scroll-smooth overflow-y-auto px-4 py-6 motion-reduce:scroll-auto sm:px-6">
         <div className="mx-auto w-full max-w-5xl rounded-panel border border-border bg-surface px-4 py-6 shadow-panel sm:px-10 sm:py-8">
           <h1 className="sr-only">{draft.candidateName}</h1>
+          {onlySection && onlySection !== 'personal-information' ? null : (
           <header id={resumeSectionAnchor('personal-information')} onFocus={() => onActiveSectionChange?.('personal-information')} className="grid scroll-mt-4 gap-2 border-b border-border pb-6">
             <HugInput aria-label="Full name" value={draft.candidateName} onChange={(event) => update({ candidateName: event.target.value })} className={cn(field, 'font-gowun text-3xl font-bold')} />
             <div className="grid gap-2 sm:grid-cols-3">
@@ -747,10 +754,12 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
               <label className="flex items-center gap-2 text-sm text-ink-muted"><LinkIcon aria-hidden="true" className="size-4 shrink-0" /><span className="sr-only">Website</span><HugInput value={draft.portfolioUrl} onChange={(event) => update({ portfolioUrl: event.target.value })} className={cn(field, 'text-sm')} /></label>
             </div>
           </header>
+          )}
 
           <p role="status" className="sr-only">{announcement}</p>
 
           {order.map((key) => {
+            if (onlySection && key !== onlySection) return null
             const label = labelFor(key)
             const extra = isStandard(key) ? undefined : extraSections.find((section) => section.id === key)
             if (isStandard(key) ? hiddenSections.includes(key) : !extra) return null

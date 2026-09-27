@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react'
 import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, ChevronRight, Download, FileText, HelpCircle, Minus, Plus, Target, X } from 'lucide-react'
 
 import type { ResumeBuilderSession, ResumeBuilderTab, ResumeChatState, ResumeDocument, ResumeExtraSection, ResumeExtraSectionKind, ResumeHistoryRow, ResumeIssue, ResumeSectionId } from '@/contracts/resume.draft'
@@ -641,7 +641,7 @@ type SectionNavProps = {
    * so the anchor these rows carry had nothing to jump to and a tap did nothing; the editor
    * takes the screen instead, and this is what opens it.
    */
-  readonly onPick: (id: string) => void
+  readonly onPick: (id: string, event: ReactMouseEvent<HTMLAnchorElement>) => void
   /** True while a phone is showing the editor rather than this list. */
   readonly hiddenOnMobile: boolean
 }
@@ -669,7 +669,7 @@ function SectionNav({ hiddenSections, extraSections, onRestore, onAdd, activeSec
         <ul>
           {sections.map(([id, label]) => (
             <li key={id} className="py-0.5">
-              <a href={`#${resumeSectionAnchor(id)}`} onClick={() => onPick(id)} aria-current={id === activeSection ? 'location' : undefined} className={link(id)}>
+              <a href={`#${resumeSectionAnchor(id)}`} onClick={(event) => onPick(id, event)} aria-current={id === activeSection ? 'location' : undefined} className={link(id)}>
                 {label}
                 <ChevronRight aria-hidden="true" className="size-4 text-ink-muted rtl:rotate-180" />
               </a>
@@ -677,7 +677,7 @@ function SectionNav({ hiddenSections, extraSections, onRestore, onAdd, activeSec
           ))}
           {extraSections.map((section) => (
             <li key={section.id} className="py-0.5">
-              <a href={`#${resumeSectionAnchor(section.id)}`} onClick={() => onPick(section.id)} aria-current={section.id === activeSection ? 'location' : undefined} className={link(section.id)}>
+              <a href={`#${resumeSectionAnchor(section.id)}`} onClick={(event) => onPick(section.id, event)} aria-current={section.id === activeSection ? 'location' : undefined} className={link(section.id)}>
                 <span className="truncate">{section.title || 'Untitled section'}</span>
                 <ChevronRight aria-hidden="true" className="size-4 shrink-0 text-ink-muted rtl:rotate-180" />
               </a>
@@ -1207,11 +1207,15 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
     window.requestAnimationFrame(() => { window.location.hash = resumeSectionAnchor(id) })
   }
 
-  // The row's own href does the jump on a wide screen, where the canvas is already beside the
-  // list. On a phone the editor has to mount first, so the jump waits a frame for it.
-  function pickSection(id: string) {
+  // The row's own href does the jump on a wide screen, where the whole resume is beside the
+  // list. A phone renders that section alone, so there is nothing to scroll to and the jump
+  // would only fight the pane's own scroll position.
+  function pickSection(id: string, event: ReactMouseEvent<HTMLAnchorElement>) {
     setPhoneSection(id)
-    jumpTo(id)
+    // The anchor's own jump is what the wide layout uses. On a phone the section is the only
+    // thing rendered, so following the hash only scrolls its heading up under the sticky bar.
+    if (isMobileViewport) event.preventDefault()
+    else jumpTo(id)
   }
 
   function addSection(kind: ResumeExtraSectionKind) {
@@ -1321,12 +1325,6 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
             hiddenOnMobile={phoneSection !== null}
           />
         )}
-        <ResumePreviewTray
-          onOpen={() => setPreviewOpen(true)}
-          pendingSuggestion={pendingSuggestion}
-          changeCount={changes.length}
-          atsScore={document.atsScore}
-        />
         {tab === 'chat' ? (
           <div className="relative hidden flex-1 overflow-auto bg-canvas px-4 py-8 lg:block lg:px-8">
             <ZoomControls zoom={zoom} onChange={setZoom} />
@@ -1356,7 +1354,10 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
           </div>
         ) : (
         // Manual editing gets the resume itself to edit; Chat keeps the preview.
-        <div className={cn('relative min-w-0 flex-1 flex-col lg:flex', phoneSection === null ? 'hidden' : 'flex')}>
+        // min-h-0 is load-bearing: without it this flex item's min-height is its content, so the
+        // editor's own overflow-y-auto never gets a bounded height and the pane simply grew past
+        // the screen with nothing able to scroll.
+        <div className={cn('relative min-h-0 min-w-0 flex-1 flex-col lg:flex', phoneSection === null ? 'hidden' : 'flex')}>
           <button
             type="button"
             onClick={() => setPhoneSection(null)}
@@ -1366,6 +1367,7 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
             All sections
           </button>
           <ResumeInlineEditor
+            onlySection={isMobileViewport ? phoneSection : null}
             extraSections={extraSections}
             hiddenSections={hiddenSections}
             onRenameSection={(id, title) => setExtraSections((current) => current.map((section) => (section.id === id ? { ...section, title } : section)))}
@@ -1393,6 +1395,15 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
           ) : null}
         </div>
         )}
+        {/* Last in the column so it stays at the foot of a phone screen. It used to sit between
+            the section list and the editor, which was fine while the list was always on screen
+            and put the tray at the top the moment the list stepped aside for a section. */}
+        <ResumePreviewTray
+          onOpen={() => setPreviewOpen(true)}
+          pendingSuggestion={pendingSuggestion}
+          changeCount={changes.length}
+          atsScore={document.atsScore}
+        />
       </section>
       <AtsScoreDrawer
         open={atsOpen}
