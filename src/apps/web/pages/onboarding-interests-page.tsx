@@ -9,7 +9,8 @@ export function OnboardingInterestsPage() {
     <OnboardingInterestsView
       homeHref="/v3/app"
       backHref="/v3/onboarding/profile"
-      onComplete={() => navigate('/v3/app')}
+      // A new account lands on the dashboard with the first-month offer open.
+      onComplete={() => navigate('/v3/app?welcome=1')}
     />
   )
 }

@@ -139,6 +139,6 @@ describe('PricingPage', () => {
 
     await user.hover(screen.getByRole('heading', { level: 3, name: 'Pro' }))
     expect(screen.getByRole('region', { name: 'Pro plan offer' })).toBeInTheDocument()
-    expect(screen.getByText('First Month Pro Offer')).toBeInTheDocument()
+    expect(screen.getByText('Special One-time Trial')).toBeInTheDocument()
   })
 })

@@ -24,8 +24,8 @@ export function AuthCreateAccountPage() {
       onReferralCodeChange={setReferralCode}
       onAcceptedTermsChange={setAcceptedTerms}
       signInHref="/v3/auth/sign-in"
-      onGoogleSignUp={() => navigate('/v3/auth/choose-plan')}
-      onSubmit={() => navigate('/v3/auth/choose-plan')}
+      onGoogleSignUp={() => navigate('/v3/onboarding/profile')}
+      onSubmit={() => navigate('/v3/onboarding/profile')}
     />
   )
 }

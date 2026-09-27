@@ -1,12 +1,15 @@
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
+import { ProOfferDialog } from '@/features/billing/pro-offer-widget'
 import { DashboardView } from '@/features/dashboard/dashboard-view'
 import { dashboardActions, dashboardInstallPrompt, dashboardNavItems } from '@/mocks/dashboard'
 import { candidateSession } from '@/mocks/sessions'
 import { AUTO_APPLY_WALLET, CREDIT_WALLET, RESUME_BUILDER_WALLET } from '@/mocks/wallet'
 
 export function DashboardPage() {
-  const [params] = useSearchParams()
+  const navigate = useNavigate()
+  const [params, setParams] = useSearchParams()
+  const welcome = params.get('welcome') === '1'
   const dropdownParam = params.get('dropdown')
   const creditParam = params.get('credit')
   const activeDropdown = dropdownParam === 'help' || dropdownParam === 'credits' || dropdownParam === 'profile' ? dropdownParam : undefined
@@ -24,7 +27,14 @@ export function DashboardPage() {
     permissions: ['app:view'] as const,
   }
 
+  function closeWelcome() {
+    const next = new URLSearchParams(params)
+    next.delete('welcome')
+    setParams(next, { replace: true })
+  }
+
   return (
+    <>
     <DashboardView
       user={user}
       navItems={dashboardNavItems}
@@ -40,5 +50,7 @@ export function DashboardPage() {
       activeDropdown={activeDropdown}
       creditNotice={creditNotice}
     />
+    <ProOfferDialog open={welcome} onDismiss={closeWelcome} onClaim={() => navigate('/v3/billing?plan=pro&offer=welcome-60')} />
+    </>
   )
 }
