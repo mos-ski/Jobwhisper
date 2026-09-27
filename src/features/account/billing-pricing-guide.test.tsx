@@ -1,14 +1,17 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
 import { BillingPricingGuideCard } from './billing-pricing-guide'
 
 describe('BillingPricingGuideCard', () => {
-  it('runs two steps, usage then credits', () => {
-    render(<BillingPricingGuideCard step={0} learnMoreHref="/v3/billing/done-for-you" linkLabel="View usage details" linkHref="/v3/billing/usage" onNext={vi.fn()} onDismiss={vi.fn()} />)
-    expect(screen.getByRole('dialog', { name: 'View usage' })).toBeInTheDocument()
-    expect(screen.getByLabelText('Step 1 of 2')).toBeInTheDocument()
+  it('is one card that explains unlimited and extra credits, and closes on Got it', async () => {
+    const onDismiss = vi.fn()
+    render(<BillingPricingGuideCard linkLabel="View usage details" linkHref="/v3/billing/usage" onDismiss={onDismiss} />)
+    expect(screen.getByRole('dialog', { name: 'Your credits and balances' })).toHaveTextContent(/extra credits keep you going/)
     expect(screen.getByRole('link', { name: 'View usage details' })).toHaveAttribute('href', '/v3/billing/usage')
-    expect(screen.getByRole('button', { name: 'Skip tour' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Next' })).not.toBeInTheDocument()
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Got it' }))
+    expect(onDismiss).toHaveBeenCalled()
   })
 })
