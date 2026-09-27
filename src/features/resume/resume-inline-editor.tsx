@@ -251,7 +251,7 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
               <button
                 type="button"
                 onClick={() => updateRole(roleIndex, { bullets: [...role.bullets, ''] })}
-                className="inline-flex min-h-9 items-center gap-1.5 justify-self-start rounded-md border border-border px-3 text-sm font-medium text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                className="inline-flex min-h-10 items-center gap-1.5 justify-self-start rounded-lg px-3 text-sm font-semibold text-accent-text transition-colors duration-normal ease-default hover:bg-accent-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus motion-reduce:transition-none"
               >
                 <Plus aria-hidden="true" className="size-4" />
                 Bullet point
