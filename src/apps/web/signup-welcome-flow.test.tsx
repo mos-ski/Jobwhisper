@@ -49,7 +49,7 @@ describe('After sign-up', () => {
 
   it('claims the offer into billing', async () => {
     renderAt('/v3/app?welcome=1')
-    fireEvent.click(await screen.findByRole('button', { name: 'Try 1 week for $0.99' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Try 1 week for $1.39' }))
     expect(screen.getByTestId('where')).toHaveTextContent('/v3/billing?plan=pro&offer=welcome-60')
   })
 })

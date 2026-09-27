@@ -49,16 +49,16 @@ function ProOfferCard({ onDismiss, onClaim, titleId }: ProOfferCardProps) {
               Try Pro for 7 days
               <span className="rounded-full bg-accent-subtle px-2.5 py-0.5 text-sm font-bold text-accent-text">94% OFF</span>
             </p>
-            <p className="mt-2 font-gowun text-5xl leading-none text-ink">Just <span className="font-bold text-accent">$0.99</span></p>
-            <p className="mt-2 text-lg text-ink-muted"><s>$17.99/week</s></p>
+            <p className="mt-2 font-gowun text-5xl leading-none text-ink">Just <span className="font-bold text-accent">$1.39</span></p>
+            <p className="mt-2 text-lg text-ink-muted"><s>$22.85/week</s></p>
           </div>
         </div>
         <Button className="mt-5 min-h-12 w-full text-base" onClick={onClaim}>
-          Try 1 week for $0.99
+          Try 1 week for $1.39
           {/* The countdown ticks every second, so it is left out of the button's spoken name. */}
           <span aria-hidden="true" className="ms-1 tabular-nums opacity-80">Ends in {minutes}:{seconds}</span>
         </Button>
-        <p className="mt-3 text-center text-xs leading-5 text-ink-muted">Billed $89.99 every 3 months after trial. Cancel anytime.</p>
+        <p className="mt-3 text-center text-xs leading-5 text-ink-muted">Then Pro at $99/month, billed monthly. Cancel anytime.</p>
       </div>
     </>
   )
