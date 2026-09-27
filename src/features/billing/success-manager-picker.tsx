@@ -209,7 +209,13 @@ export function SuccessManagerPicker({ setupHref, profile, savedCard, directory,
             <br />
             Built to <strong className="font-bold">Land Your Next Interview</strong>
           </h3>
-          <ul aria-label="What your success manager does" className="mx-auto mt-5 flex max-w-3xl flex-wrap justify-center gap-x-6 gap-y-2">
+          {/* One centred row on a wide screen. On a phone every item wraps to its own line, and
+              centring each line left the ticks in five different places, so it stacks left-aligned
+              as a block that is itself centred. */}
+          <ul
+            aria-label="What your success manager does"
+            className="mx-auto mt-5 flex w-fit max-w-3xl flex-col gap-y-2 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-6"
+          >
             {FEATURES.map((feature) => (
               <li key={feature} className="flex items-center gap-2 text-sm font-medium text-ink">
                 <Check aria-hidden="true" className="size-4 shrink-0 text-positive" />

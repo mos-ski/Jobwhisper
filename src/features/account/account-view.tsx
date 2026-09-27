@@ -1,4 +1,4 @@
-import { AlertTriangle, Bug, Check, ChevronDown, CircleHelp, Clock, Copy, CreditCard, ExternalLink, EyeOff, Flag, Gift, Infinity as InfinityIcon, Lightbulb, Mail, MessageCircle, Moon, Play, Search, ShoppingCart, Star, Sun, Trash2, Upload } from 'lucide-react'
+import { AlertTriangle, Bug, Check, ChevronDown, CircleHelp, Clock, Copy, CreditCard, ExternalLink, EyeOff, Flag, Gift, Infinity as InfinityIcon, Lightbulb, Mail, MessageCircle, Moon, Play, Search, ShoppingCart, Star, Sun, Trash2, Upload, X } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 import type { AccountFaqEntry, BillingPlanCard, BillingStandalonePurchase, CreditHistoryRow, CreditUsageRow, DownloadItem, ReferralRow, SettingsProfile, SupportRequestKind, SupportRequestType, SupportTicketStatus, SupportTicketSummary, TutorialItem } from '@/contracts/account.draft'
@@ -833,7 +833,10 @@ function CreditUsageTable({ rows }: { readonly rows: readonly CreditUsageRow[] }
     <TitledPanel title="How usage works">
       <div className="relative">
         <div className="overflow-x-auto [scrollbar-width:thin]">
-          <table className="w-full min-w-[28rem] border-collapse text-sm">
+          {/* The middle column is hidden below sm, so on a phone this is two columns that wrap
+              to fit. The min-width is for the three-column layout above sm; applying it here too
+              forced a sideways scroll and clipped the rate mid-cell. */}
+          <table className="w-full min-w-0 border-collapse text-sm sm:min-w-[28rem]">
             <thead>
               <tr className="border-b border-border bg-surface-subtle text-ink-muted">
                 <th className="px-3 py-2.5 text-start font-semibold sm:px-4">Feature</th>
@@ -974,6 +977,8 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
 
 function BillingReferralPrompt({ referralsHref }: { readonly referralsHref: string }) {
   const [copied, setCopied] = useState(false)
+  // It floats over the page, and on a phone it covers the foot of it, so it has to be closable.
+  const [dismissed, setDismissed] = useState(false)
 
   function handleCopy() {
     if (typeof navigator === 'undefined') return
@@ -983,13 +988,26 @@ function BillingReferralPrompt({ referralsHref }: { readonly referralsHref: stri
     })
   }
 
+  if (dismissed) return null
+
   return (
-    <section className="animate-slide-in-right fixed bottom-4 end-4 z-shell w-fit max-w-[calc(100vw-2rem)] rounded-panel bg-accent-subtle p-3 shadow-panel" aria-label="Refer a friend">
+    <section
+      className="animate-slide-in-right fixed bottom-20 end-4 z-shell w-fit max-w-[calc(100vw-2rem)] rounded-panel bg-accent-subtle p-3 shadow-panel sm:bottom-4"
+      aria-label="Refer a friend"
+    >
+      <button
+        type="button"
+        aria-label="Dismiss the referral offer"
+        onClick={() => setDismissed(true)}
+        className="absolute end-1 top-1 grid size-9 place-items-center rounded-pill text-accent opacity-70 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+      >
+        <X aria-hidden="true" className="size-4" />
+      </button>
       <div className="flex items-center gap-3">
         <span className="grid size-16 shrink-0 place-items-center rounded-soft bg-surface text-accent">
           <Gift aria-hidden="true" className="size-7" />
         </span>
-        <div className="grid gap-2 pe-1">
+        <div className="grid gap-2 pe-8">
           <p className="text-sm font-medium text-accent">Earn {REFERRAL_BONUS_CREDITS.toLocaleString()} credits when your referral subscribes.</p>
           <div className="flex flex-wrap gap-2">
             <button
@@ -1037,6 +1055,19 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
   const copilotBalanceCredits = Math.round(centsToCredits(remainingCents))
   const copilotTotalCredits = Math.round(centsToCredits(totalCents))
   const shownTab = planTab
+  const planTabsRef = useRef<HTMLDivElement>(null)
+
+  // Three labels do not fit a 360px phone, so the row scrolls. scrollLeft rather than
+  // scrollIntoView: the latter would drag the whole page to the tabs on load.
+  useEffect(() => {
+    const list = planTabsRef.current
+    const active = list?.querySelector<HTMLElement>('[aria-selected="true"]')
+    if (!list || !active) return
+    const overshootEnd = active.offsetLeft + active.offsetWidth - (list.scrollLeft + list.clientWidth)
+    const overshootStart = list.scrollLeft - active.offsetLeft
+    if (overshootEnd > 0) list.scrollLeft += overshootEnd
+    else if (overshootStart > 0) list.scrollLeft -= overshootStart
+  }, [shownTab])
 
   // The tour explains Credits & Balances, so it waits until that section is on screen, and only offers itself once.
   useEffect(() => {
@@ -1097,9 +1128,10 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
             }
           >
             <div
+              ref={planTabsRef}
               role="tablist"
               aria-label="Plans"
-              className="-mt-2 mb-5 flex gap-6 overflow-x-auto border-b border-border"
+              className="-mt-2 mb-5 flex gap-4 overflow-x-auto border-b border-border sm:gap-6"
               onKeyDown={(event) => {
                 const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0
                 if (step === 0) return
@@ -1122,7 +1154,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   tabIndex={shownTab === tab.value ? 0 : -1}
                   onClick={() => onPlanTabChange?.(tab.value)}
                   className={cn(
-                    'inline-flex min-h-11 shrink-0 items-center border-b-2 px-1 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+                    'inline-flex min-h-11 shrink-0 items-center border-b-2 px-1 text-[13px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:text-sm',
                     shownTab === tab.value ? 'border-accent text-accent-text' : 'border-transparent text-ink-muted hover:text-ink',
                   )}
                 >
@@ -1133,18 +1165,21 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
 
             <div id="plan-tabpanel" role="tabpanel" aria-labelledby={`plan-tab-${shownTab}`}>
 
-            {/* Every tab shares one grid cell, so the panel is always as tall as the tallest and switching never moves the page. */}
-            <div className="grid">
-            <div className={cn('grid gap-6 [grid-area:1/1]', shownTab !== 'subscription' && 'invisible')} data-plan-tab="subscription">
-              <div>
-                <div className="-mx-4 bg-surface sm:-mx-6 lg:-mx-8">
+            {/* Every tab shares one grid cell, so the panel is always as tall as the tallest and
+                switching never moves the page. The track is minmax(0,1fr) and every panel clears
+                its own min-width: otherwise the cell is sized by the widest panel's max-content —
+                the plan carousel, three cards wide — and the whole page scrolls sideways on a phone. */}
+            <div className="grid grid-cols-[minmax(0,1fr)]">
+            <div className={cn('grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6 [grid-area:1/1]', shownTab !== 'subscription' && 'invisible')} data-plan-tab="subscription">
+              <div className="min-w-0">
+                <div className="min-w-0 -mx-4 bg-surface sm:-mx-6 lg:-mx-8">
                   <BillingPlanCards plans={plans} annualToggle={false} />
                 </div>
               </div>
 
             </div>
 
-            <div className={cn('-mx-4 [grid-area:1/1] sm:-mx-6 lg:-mx-8', shownTab !== 'pay-as-you-go' && 'invisible')} data-plan-tab="pay-as-you-go">
+            <div className={cn('-mx-4 min-w-0 [grid-area:1/1] sm:-mx-6 lg:-mx-8', shownTab !== 'pay-as-you-go' && 'invisible')} data-plan-tab="pay-as-you-go">
               <PlanCarousel count={CREDIT_PRODUCTS.length}>
                 {CREDIT_PRODUCTS.map((product) => (
                   <PlanCard
@@ -1163,7 +1198,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
               </PlanCarousel>
             </div>
 
-            <div className={cn('flex flex-col [grid-area:1/1]', shownTab !== 'done-for-you' && 'invisible')} data-plan-tab="done-for-you">
+            <div className={cn('flex min-w-0 flex-col [grid-area:1/1]', shownTab !== 'done-for-you' && 'invisible')} data-plan-tab="done-for-you">
               <SuccessManagerPicker {...doneForYou} />
             </div>
             </div>
