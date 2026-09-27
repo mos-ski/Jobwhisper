@@ -1169,12 +1169,16 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
 
             <div id="plan-tabpanel" role="tabpanel" aria-labelledby={`plan-tab-${shownTab}`}>
 
-            {/* Every tab shares one grid cell, so the panel is always as tall as the tallest and
-                switching never moves the page. The track is minmax(0,1fr) and every panel clears
-                its own min-width: otherwise the cell is sized by the widest panel's max-content —
-                the plan carousel, three cards wide — and the whole page scrolls sideways on a phone. */}
+            {/* From sm up every tab shares one grid cell, so the panel is always as tall as the
+                tallest and switching never moves the page. On a phone the inactive panels are
+                display:none instead: Done for you is roughly twice the height of the plan
+                carousel there, and sharing a cell with it left ~700px of blank page under the
+                cards. A tab switch moving the page is the lesser of those two.
+                The track is minmax(0,1fr) and every panel clears its own min-width: otherwise the
+                cell is sized by the widest panel's max-content — the plan carousel, three cards
+                wide — and the whole page scrolls sideways. */}
             <div className="grid grid-cols-[minmax(0,1fr)]">
-            <div className={cn('grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6 [grid-area:1/1]', shownTab !== 'subscription' && 'invisible')} data-plan-tab="subscription">
+            <div className={cn('grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6 [grid-area:1/1]', shownTab !== 'subscription' && 'hidden sm:grid sm:invisible')} data-plan-tab="subscription">
               <div className="min-w-0">
                 <div className="min-w-0 -mx-4 bg-surface sm:-mx-6 lg:-mx-8">
                   <BillingPlanCards plans={plans} annualToggle={false} />
@@ -1183,7 +1187,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
 
             </div>
 
-            <div className={cn('-mx-4 min-w-0 [grid-area:1/1] sm:-mx-6 lg:-mx-8', shownTab !== 'pay-as-you-go' && 'invisible')} data-plan-tab="pay-as-you-go">
+            <div className={cn('-mx-4 min-w-0 [grid-area:1/1] sm:-mx-6 lg:-mx-8', shownTab !== 'pay-as-you-go' && 'hidden sm:block sm:invisible')} data-plan-tab="pay-as-you-go">
               <PlanCarousel count={CREDIT_PRODUCTS.length}>
                 {CREDIT_PRODUCTS.map((product) => (
                   <PlanCard
@@ -1202,7 +1206,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
               </PlanCarousel>
             </div>
 
-            <div className={cn('flex min-w-0 flex-col [grid-area:1/1]', shownTab !== 'done-for-you' && 'invisible')} data-plan-tab="done-for-you">
+            <div className={cn('flex min-w-0 flex-col [grid-area:1/1]', shownTab !== 'done-for-you' && 'hidden sm:flex sm:invisible')} data-plan-tab="done-for-you">
               <SuccessManagerPicker {...doneForYou} />
             </div>
             </div>

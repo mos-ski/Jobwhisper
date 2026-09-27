@@ -31,6 +31,21 @@ describe('Billing plan tabs', () => {
     }
   })
 
+  it('drops the inactive panels on a phone instead of sharing their height', () => {
+    renderBilling()
+
+    // Done for you is about twice the height of the plan carousel at 390px. Sharing one cell
+    // with it left ~700px of blank page under the cards, so below sm only the active tab renders.
+    const inactive = ['pay-as-you-go', 'done-for-you']
+    for (const tab of inactive) {
+      expect(document.querySelector(`[data-plan-tab="${tab}"]`)?.className).toContain('hidden')
+    }
+    // From sm up they come back, stacked and invisible, so switching does not move the page.
+    expect(document.querySelector('[data-plan-tab="done-for-you"]')?.className).toContain('sm:flex')
+    expect(document.querySelector('[data-plan-tab="done-for-you"]')?.className).toContain('sm:invisible')
+    expect(document.querySelector('[data-plan-tab="subscription"]')?.className).not.toContain('hidden')
+  })
+
   it('keeps all three tabs reachable when they do not fit one line', () => {
     renderBilling()
 
