@@ -89,6 +89,7 @@ export type ResumeBuilderSession = {
   readonly chatPrompt: string
   readonly aiResponse: string
   readonly aiDraft: string
+  readonly zoomLabel: string
 }
 
 export type ResumeIssueSeverity = 'urgent' | 'critical' | 'optional'
