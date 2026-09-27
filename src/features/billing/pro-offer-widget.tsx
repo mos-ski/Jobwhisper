@@ -1,5 +1,4 @@
 import { useEffect, useId, useState } from 'react'
-import { Zap } from 'lucide-react'
 
 import { Button, Dialog, DialogPopup } from '@/ui'
 
@@ -47,21 +46,11 @@ function ProOfferCard({ onDismiss, onClaim, titleId }: ProOfferCardProps) {
         <div className="rounded-2xl border-2 border-dashed border-border text-center">
           <div className="px-4 pb-4 pt-5">
             <p className="flex flex-wrap items-center justify-center gap-2 text-base font-semibold text-ink">
-              <Zap aria-hidden="true" className="size-4 text-accent-text" />
               Try Pro for 7 days
               <span className="rounded-full bg-accent-subtle px-2.5 py-0.5 text-sm font-bold text-accent-text">94% OFF</span>
             </p>
             <p className="mt-2 font-gowun text-5xl leading-none text-ink">Just <span className="font-bold text-accent">$0.99</span></p>
             <p className="mt-2 text-lg text-ink-muted"><s>$17.99/week</s></p>
-          </div>
-          <div className="border-t-2 border-dashed border-border px-4 py-4">
-            <p className="text-sm leading-6 text-ink-muted">In the past 30 days, Pro users landed interviews at these companies</p>
-            <p className="mt-2 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-base font-semibold text-ink">
-              <span>Google</span>
-              <span>P&amp;G</span>
-              <span>OpenAI</span>
-              <span>Microsoft</span>
-            </p>
           </div>
         </div>
         <Button className="mt-5 min-h-12 w-full text-base" onClick={onClaim}>
