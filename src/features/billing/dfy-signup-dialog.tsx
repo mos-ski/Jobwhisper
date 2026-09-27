@@ -28,6 +28,8 @@ export type DfySignupDialogProps = {
   readonly setupHref: string
   readonly savedCard: { readonly label: string; readonly expiryLabel: string }
   readonly onComplete: (lead: DfySignupLead) => void
+  /** The success manager the client picked, e.g. "Adaeze O."; named throughout when set. */
+  readonly managerName?: string
 }
 
 type Step = 'gate' | 'questions' | 'terms' | 'payment' | 'confirmation'
@@ -38,7 +40,7 @@ const STEPPER: readonly { readonly step: Step; readonly label: string }[] = [
   { step: 'payment', label: 'Payment' },
 ]
 
-function StepIndicator({ step, guaranteeLabel }: { readonly step: Step; readonly guaranteeLabel: string }) {
+function StepIndicator({ step, guaranteeLabel, managerName }: { readonly step: Step; readonly guaranteeLabel: string; readonly managerName?: string }) {
   const activeIndex = STEPPER.findIndex((entry) => entry.step === step)
   if (activeIndex === -1) return null
 
@@ -46,7 +48,7 @@ function StepIndicator({ step, guaranteeLabel }: { readonly step: Step; readonly
     <div className="mb-4 grid gap-2.5">
       <p className="inline-flex w-fit items-center gap-1.5 bg-positive-surface px-2.5 py-1 text-xs font-semibold text-positive">
         <Check aria-hidden="true" className="size-3.5" />
-        We guarantee: {guaranteeLabel}
+        We guarantee: {guaranteeLabel}{managerName ? ` · with ${managerName}` : ''}
       </p>
       <ol className="flex items-center gap-2" aria-label="Signup progress">
         {STEPPER.map((entry, index) => (
@@ -68,14 +70,14 @@ function StepIndicator({ step, guaranteeLabel }: { readonly step: Step; readonly
   )
 }
 
-function TermsBlock() {
+function TermsBlock({ managerName }: { readonly managerName?: string }) {
   return (
     <div className="max-h-48 overflow-y-auto border border-border bg-surface-subtle p-3 text-xs leading-5 text-ink-muted [scrollbar-width:thin]">
       <p className="font-semibold text-ink">Done-For-You Service Agreement</p>
       <ul className="mt-2 grid gap-2 ps-4 list-disc">
         <li>Your package guarantees a fixed number of interviews landed through applications a Jobwhisper success manager submits on your behalf. This is a one-time purchase, not a subscription — your Jobwhisper access continues until we deliver the guarantee, however long that takes.</li>
         <li>We keep applying on your behalf until the guaranteed interview count is reached — a posting closing or you not being selected doesn&rsquo;t count against it.</li>
-        <li>Your success manager will reach out within 2 business days of signup to schedule your onboarding call.</li>
+        <li>{managerName ?? 'Your success manager'} will reach out within 2 business days of signup to schedule your onboarding call.</li>
         <li>Refunds: full refund if no applications have been submitted yet; prorated against interviews delivered after that.</li>
         <li>You can update your target roles, locations, and resume in Auto-Apply setup at any time — your success manager uses whatever is current there.</li>
       </ul>
@@ -83,7 +85,7 @@ function TermsBlock() {
   )
 }
 
-export function DfySignupDialog({ open, onOpenChange, pkg, profile, setupHref, savedCard, onComplete }: DfySignupDialogProps) {
+export function DfySignupDialog({ open, onOpenChange, pkg, profile, setupHref, savedCard, onComplete, managerName }: DfySignupDialogProps) {
   const missingFields = getMissingProfileFields(profile)
   const [step, setStep] = useState<Step>(missingFields.length > 0 ? 'gate' : 'questions')
   const [excludedCompanies, setExcludedCompanies] = useState('')
@@ -159,7 +161,7 @@ export function DfySignupDialog({ open, onOpenChange, pkg, profile, setupHref, s
 
         {step === 'questions' ? (
           <>
-            <StepIndicator step={step} guaranteeLabel={pkg.guaranteeLabel} />
+            <StepIndicator step={step} guaranteeLabel={pkg.guaranteeLabel} managerName={managerName} />
             <DialogTitle className="font-gowun">A few questions</DialogTitle>
             <DialogDescription>{pkg.guaranteeLabel} · {pkg.priceLabel}. We already have your target roles and locations from Auto-Apply setup.</DialogDescription>
 
@@ -181,7 +183,7 @@ export function DfySignupDialog({ open, onOpenChange, pkg, profile, setupHref, s
               </div>
 
               <div>
-                <p className="text-sm font-medium text-ink">How should your success manager reach you?</p>
+                <p className="text-sm font-medium text-ink">How should {managerName ?? 'your success manager'} reach you?</p>
                 <RadioGroup value={contactPreference} onValueChange={(value) => setContactPreference(value as 'email' | 'phone' | 'either')} className="mt-2 flex flex-wrap gap-4">
                   <RadioGroupItem value="email" itemLabel="Email" />
                   <RadioGroupItem value="phone" itemLabel="Phone" />
@@ -206,12 +208,12 @@ export function DfySignupDialog({ open, onOpenChange, pkg, profile, setupHref, s
 
         {step === 'terms' ? (
           <>
-            <StepIndicator step={step} guaranteeLabel={pkg.guaranteeLabel} />
+            <StepIndicator step={step} guaranteeLabel={pkg.guaranteeLabel} managerName={managerName} />
             <DialogTitle className="font-gowun">Service agreement</DialogTitle>
             <DialogDescription>Read and accept before we set up your onboarding call.</DialogDescription>
 
             <div className="mt-4 grid gap-4">
-              <TermsBlock />
+              <TermsBlock managerName={managerName} />
               <label className="flex items-start gap-3 border-t border-border pt-4">
                 <Checkbox checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked === true)} className="mt-0.5" />
                 <span className="text-sm text-ink">I have read and agree to the Done-For-You Service Agreement above.</span>
@@ -229,7 +231,7 @@ export function DfySignupDialog({ open, onOpenChange, pkg, profile, setupHref, s
 
         {step === 'payment' ? (
           <>
-            <StepIndicator step={step} guaranteeLabel={pkg.guaranteeLabel} />
+            <StepIndicator step={step} guaranteeLabel={pkg.guaranteeLabel} managerName={managerName} />
             <DialogTitle className="font-gowun">Payment</DialogTitle>
             <DialogDescription>{pkg.guaranteeLabel} · {pkg.priceLabel}</DialogDescription>
 
@@ -274,7 +276,7 @@ export function DfySignupDialog({ open, onOpenChange, pkg, profile, setupHref, s
             </span>
             <div>
               <DialogTitle className="font-gowun">You're all set</DialogTitle>
-              <DialogDescription>A success manager will review your profile and reach out within 2 business days to schedule your onboarding call.</DialogDescription>
+              <DialogDescription>{managerName ?? 'Your success manager'} will review your profile and reach out within 2 business days to schedule your onboarding call.</DialogDescription>
             </div>
             <Button className="w-full" onClick={() => handleOpenChange(false)}>Done</Button>
           </div>

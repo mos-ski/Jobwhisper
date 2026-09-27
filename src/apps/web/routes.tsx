@@ -35,7 +35,6 @@ import { BillingPage } from './pages/billing-page'
 import { BillingPlansPage } from './pages/billing-plans-page'
 import { BillingPayAsYouGoPage } from './pages/billing-pay-as-you-go-page'
 import { BillingDoneForYouPage } from './pages/billing-done-for-you-page'
-import { DoneForYouPage } from './pages/done-for-you-page'
 import { CreditHistoryPage } from './pages/credit-history-page'
 import { CopilotCompletePage } from './pages/copilot-complete-page'
 import { CopilotConfigurePage } from './pages/copilot-configure-page'
@@ -239,10 +238,6 @@ export function WebRoutes() {
 
   if (routePath === '/billing/credits') {
     return <BillingPayAsYouGoPage />
-  }
-
-  if (routePath === '/done-for-you') {
-    return <DoneForYouPage />
   }
 
   if (routePath === '/billing/done-for-you') {

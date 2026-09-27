@@ -180,17 +180,14 @@
    Exit condition: user reviews timeline, activity log, replay, or returns to Jobs.
    Failure branch: partial submission shows the last successful event, pending fields, and retry/replay actions in a later state slice.
 
-## Done For You: Billing -> Choose Manager -> Sign Up -> Track
+## Done For You: Billing -> Choose Manager -> Sign Up
 
-1. Entry condition: user opens Done For You from Billing, pricing or the Auto Apply promo (`/v3/billing/done-for-you`).
-   Exit condition: they pick a success manager from the list, each showing their price and guarantee ($497 for 5 interviews, $1,997 for 20), and Start with opens the signup dialog.
+1. Entry condition: user opens Billing's Done for you tab (`/v3/billing?plan=done-for-you`) from Billing, a pricing card's Sign up, or the Auto Apply promo.
+   Exit condition: they see one success manager per price (Marcus, $497 for 5 interviews; Daniel, $1,997 for 20), and Start with opens the signup dialog naming that manager.
    Failure branch: managers fail to load (retry); a booked manager shows the next opening; if all are booked the page points to Auto Apply.
 2. Entry condition: signup dialog open with that manager's package.
    Exit condition: preferences and payment confirmed; the package becomes active.
    Failure branch: payment declined keeps the dialog open with the card error.
-3. Entry condition: active package; user opens Done For You from the sidebar or dashboard (`/v3/done-for-you`).
-   Exit condition: they see their manager, interviews booked against the guarantee, the latest update, and every application sent with its status; Message opens support chat with the manager.
-   Failure branch: load error offers retry; before the first applications go out the table explains they arrive within 48 hours of kickoff.
 
 ## Try-It Funnel: Pro Week (Landing -> Quiz -> Free Week -> Account -> Card -> Started)
 

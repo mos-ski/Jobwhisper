@@ -157,14 +157,9 @@ const appRoutes = [
     description: 'Current plan, credit balance, plan upgrade cards, and credit usage table.',
   },
   {
-    href: '/v3/done-for-you',
-    label: 'Done For You',
-    description: 'From the dashboard: a subscriber\'s own package, success manager, guarantee progress, latest update and applications sent. States: ?state=loading, ?state=error.',
-  },
-  {
-    href: '/v3/billing/done-for-you',
-    label: 'Done For You (Billing)',
-    description: 'From billing: every available success manager with their price ($497 for 5 interviews, $1,997 for 20) and Start with. States: ?state=loading, ?state=error, ?state=empty (all booked).',
+    href: '/v3/billing?plan=done-for-you',
+    label: 'Done For You (Billing tab)',
+    description: 'One success manager per price: Marcus $497 (5 interviews), Daniel $1,997 (20). States: ?state=managers-loading, managers-error, managers-booked.',
   },
   {
     href: '/v3/billing/usage',

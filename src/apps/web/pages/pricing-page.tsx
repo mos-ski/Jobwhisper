@@ -455,7 +455,7 @@ function DoneForYou() {
             terms={managedPackage.terms}
             features={managedPackage.features}
             ctaLabel="Sign up"
-            onCta={() => navigate('/v3/billing/done-for-you')}
+            onCta={() => navigate('/v3/billing?plan=done-for-you')}
           />
         ))}
       </PlanCarousel>

@@ -355,7 +355,7 @@ Once you’ve selected the jobs you want, the rest of the Auto Apply system star
 
 When you click Apply, the job moves into the application queue and Lightforth confirms that Whisper AI has started the application.
 
-While you browse the Jobs page, you may also see the Done For You option. It connects you with a dedicated success manager who finds suitable roles, tailors your resume, and applies on your behalf, so you can focus on the interviews. From Billing, Done For You lists every available success manager with what they charge ($497 for 5 guaranteed interviews, $1,997 for 20). Once you have a package, Done For You in the sidebar shows your manager, how many of your guaranteed interviews are booked, their latest update and every application they have sent.
+While you browse the Jobs page, you may also see the Done For You option. It connects you with a dedicated success manager who finds suitable roles, tailors your resume, and applies on your behalf, so you can focus on the interviews. From Billing, Done For You lists every available success manager with what they charge ($497 for 5 guaranteed interviews, $1,997 for 20).
 
 ### How pricing works
 
