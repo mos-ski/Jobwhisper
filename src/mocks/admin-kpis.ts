@@ -55,7 +55,7 @@ const CARD_SPECS: readonly CardSpec[] = [
         shortLabel: 'large',
         kind: 'flow',
         unitNoun: 'sale',
-        priceLabel: '$1,990',
+        priceLabel: '$1,997',
         unitPriceCents: 199_000,
         planUnits: 5,
         actualUnits: { '7d': 0, '30d': 2, '90d': 11, '12m': 52 },

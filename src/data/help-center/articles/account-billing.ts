@@ -70,7 +70,7 @@ export const accountBillingArticles: readonly HelpArticle[] = [
       { type: 'paragraph', text: 'A one-time managed service rather than a subscription. A success manager scouts roles, tailors your resume, and submits applications until you reach a set number of interview invitations.' },
       { type: 'list', items: [
         '5 interviews guaranteed — $497, one time.',
-        '20 interviews guaranteed — $1,990, one time.',
+        '20 interviews guaranteed — $1,997, one time.',
       ]},
       { type: 'paragraph', text: 'Both include job scouting and match review, per-role resume tailoring, applications submitted for you, and full Jobwhisper access while the package runs. The larger package adds priority scheduling.' },
 

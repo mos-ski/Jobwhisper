@@ -6,6 +6,8 @@ import type { MarketplaceItem } from '@/contracts/marketplace.draft'
 import type { BadgeVariant } from '@/ui'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
 import { BillingPlanCards } from '@/features/billing/plan-compare-view'
+import { PlanAmount, PlanCard, PlanCarousel } from '@/features/pricing/plan-card'
+import { CREDIT_PRODUCTS, MANAGED_PACKAGES } from '@/features/pricing/pricing-products'
 import { AppShell } from '@/features/dashboard/app-nav'
 import { centsToCredits, creditsToCents, formatCredits } from '@/lib/credits'
 import { BillingPricingGuideCard, type BillingPricingGuideStep } from './billing-pricing-guide'
@@ -37,9 +39,6 @@ import {
 const REFERRAL_BONUS_CREDITS = 100
 const REFERRAL_LINK = 'https://app.jobwhisper.ai/auth/signup?code=Adedamolaiosmk'
 
-// Matches the example date in the Figma spec (node 770:7288) — standalone credits don't yet
-// track a real per-purchase expiry date anywhere in the app.
-const FIND_JOBS_CREDITS_VALID_LABEL = 'Oct 12, 2026'
 
 const TOPUP_MINIMUM_DOLLARS = 10
 // Matches lib/credits.ts's CENTS_PER_CREDIT so a top-up lands on the same credit scale
@@ -100,6 +99,8 @@ export type BillingViewProps = {
   /** Which plan tab is open, from `?plan=`; defaults to `subscription`. Named as on the public pricing page. */
   readonly planTab?: BillingPlanTab
   readonly onPlanTabChange?: (tab: BillingPlanTab) => void
+  readonly onBuyCredits?: () => void
+  readonly onDoneForYou?: () => void
 }
 
 export type BillingPlanTab = 'subscription' | 'pay-as-you-go' | 'done-for-you'
@@ -1008,7 +1009,7 @@ function BillingReferralPrompt({ referralsHref }: { readonly referralsHref: stri
   )
 }
 
-export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet, faqs, autoApplyCredits, resumeBuilderCredits, planTab = 'subscription', onPlanTabChange }: BillingViewProps) {
+export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet, faqs, autoApplyCredits, resumeBuilderCredits, planTab = 'subscription', onPlanTabChange, onBuyCredits, onDoneForYou }: BillingViewProps) {
   const currentPlan = plans.find((plan) => plan.current) ?? plans[0]
   // Interview Copilot credits are a subscription benefit — only purchasable with an active plan. Resume
   // Builder and Auto Apply are standalone and always purchasable. See PRICING.md §1, §4.
@@ -1027,7 +1028,6 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
   const resumeBuilderPurchase = standalonePurchases.find((purchase) => purchase.id === 'resume-builder')
   const copilotBalanceCredits = Math.round(centsToCredits(remainingCents))
   const copilotTotalCredits = Math.round(centsToCredits(totalCents))
-  const findJobsTotalCredits = autoApplyBalance + resumeBuilderBalance
   const shownTab = planTab
 
   function openPricingGuide() {
@@ -1124,60 +1124,42 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
             ) : null}
 
             {shownTab === 'pay-as-you-go' ? (
-            <div className="grid gap-6">
-              <div>
-                <div
-                  style={{ animationFillMode: 'backwards' }}
-                  className={cn(
-                    'flex animate-ease-in-bottom items-start gap-[24px] border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control',
-                    'border-border',
-                  )}
-                >
-                  <img src="/v3-assets/figma/plan-row-jobs.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-gowun text-[14.4px] font-semibold leading-[21.6px] text-ink">Prepaid credits</p>
-                      {findJobsTotalCredits > 0 ? <span className="rounded-pill bg-accent-subtle px-[9px] py-[1.8px] text-[10.8px] font-medium text-accent-text">Active</span> : null}
-                    </div>
-                    <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">
-                      {findJobsTotalCredits > 0 ? `${findJobsTotalCredits} Total Credits · Valid till ${FIND_JOBS_CREDITS_VALID_LABEL}` : 'Auto Apply + Resume Builder, no subscription required'}
-                    </p>
-                  </div>
-                  <a
-                    href="/v3/billing/credits"
-                    className="inline-flex min-h-[36px] shrink-0 items-center justify-center rounded-[7.2px] border border-input px-[14.4px] text-[11.7px] font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                  >
-                    Buy credits
-                  </a>
-                </div>
-              </div>
-
+            <div className="-mx-4 sm:-mx-6 lg:-mx-8">
+              <PlanCarousel count={CREDIT_PRODUCTS.length}>
+                {CREDIT_PRODUCTS.map((product) => (
+                  <PlanCard
+                    key={product.id}
+                    name={product.name}
+                    tagline={product.tagline}
+                    amount={<PlanAmount>{product.amount}</PlanAmount>}
+                    unit={product.unit}
+                    terms={product.terms}
+                    features={product.features}
+                    ctaLabel="Buy credits"
+                    onCta={onBuyCredits}
+                  />
+                ))}
+              </PlanCarousel>
             </div>
             ) : null}
 
             {shownTab === 'done-for-you' ? (
-            <div className="grid gap-6">
-              <div>
-                <div
-                  style={{ animationFillMode: 'backwards' }}
-                  className={cn(
-                    'flex animate-ease-in-bottom items-start gap-[24px] border bg-surface p-[18px] transition-shadow duration-normal ease-default hover:shadow-control',
-                    'border-border',
-                  )}
-                >
-                  <img src="/v3-assets/figma/plan-row-dfy.svg" alt="" className="h-[48.867px] w-[56.121px] shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <p className="font-gowun text-[14.4px] font-semibold leading-[21.6px] text-ink">10–20 Interviews Guaranteed</p>
-                    <p className="mt-[3.6px] text-[11.7px] leading-[17.55px] text-ink-muted">A career specialist applies on your behalf until your interviews are guaranteed. Pay once, access to this service until it's fulfilled.</p>
-                  </div>
-                  <a
-                    href="/v3/billing/done-for-you"
-                    className="inline-flex min-h-[36px] shrink-0 items-center justify-center rounded-[7.2px] border border-input px-[14.4px] text-[11.7px] font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                  >
-                    Sign up
-                  </a>
-                </div>
-              </div>
+            <div className="-mx-4 sm:-mx-6 lg:-mx-8">
+              <PlanCarousel count={MANAGED_PACKAGES.length}>
+                {MANAGED_PACKAGES.map((managedPackage) => (
+                  <PlanCard
+                    key={managedPackage.id}
+                    name={managedPackage.name}
+                    tagline={managedPackage.tagline}
+                    amount={<PlanAmount>${managedPackage.price.toLocaleString('en-US')}</PlanAmount>}
+                    unit="one time"
+                    terms={managedPackage.terms}
+                    features={managedPackage.features}
+                    ctaLabel="Sign up"
+                    onCta={onDoneForYou}
+                  />
+                ))}
+              </PlanCarousel>
             </div>
             ) : null}
             </div>
