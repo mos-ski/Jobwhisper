@@ -11,8 +11,8 @@ export function AuthSignInPage() {
       passwordValue="password"
       createAccountHref="/v3/auth/create-account"
       forgotPasswordHref="/v3/auth/forgot-password"
-      onGoogleSignIn={() => navigate('/v3/auth/choose-plan')}
-      onSubmit={() => navigate('/v3/auth/choose-plan')}
+      onGoogleSignIn={() => navigate('/v3/app')}
+      onSubmit={() => navigate('/v3/app')}
     />
   )
 }

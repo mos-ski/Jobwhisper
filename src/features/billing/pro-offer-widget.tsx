@@ -1,15 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
+import { Zap } from 'lucide-react'
 
-import { Button } from '@/ui'
+import { Button, Dialog, DialogPopup } from '@/ui'
 
 export type ProOfferWidgetProps = {
   readonly onDismiss: () => void
   readonly onClaim: () => void
 }
 
-export function ProOfferWidget({ onDismiss, onClaim }: ProOfferWidgetProps) {
-  const [secondsRemaining, setSecondsRemaining] = useState(10 * 60)
-  const offerFeatures = ['Unlimited Auto Apply', '60Hrs Interview Copilot Session', '1000+ Resume Messages', '40Hrs Interview Preps']
+type ProOfferCardProps = ProOfferWidgetProps & {
+  readonly titleId?: string
+}
+
+function ProOfferCard({ onDismiss, onClaim, titleId }: ProOfferCardProps) {
+  const [secondsRemaining, setSecondsRemaining] = useState(60 * 60)
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -22,11 +26,7 @@ export function ProOfferWidget({ onDismiss, onClaim }: ProOfferWidgetProps) {
   const seconds = (secondsRemaining % 60).toString().padStart(2, '0')
 
   return (
-    <aside
-      role="region"
-      aria-label="Pro plan offer"
-      className="fixed bottom-4 end-4 z-sticky w-[min(27rem,calc(100vw-2rem))] overflow-hidden rounded-panel border border-border bg-surface shadow-panel animate-ease-in-bottom motion-reduce:animate-none"
-    >
+    <>
       <div className="relative h-52 overflow-hidden bg-accent px-6 pt-7 text-on-accent">
         <img src="/v3-assets/figma/dfy-widget-background.svg" alt="" className="pointer-events-none absolute inset-0 size-full object-cover" />
         <img src="/v3-assets/figma/dfy-widget-wordmark.svg" alt="Jobwhisper" className="absolute inset-x-0 top-7 mx-auto h-6 w-auto" />
@@ -38,30 +38,68 @@ export function ProOfferWidget({ onDismiss, onClaim }: ProOfferWidgetProps) {
         >
           <span aria-hidden="true" className="text-2xl leading-none">×</span>
         </button>
-        <div className="absolute inset-x-0 top-24 text-center font-gowun leading-tight">
-          <h2 className="text-4xl font-normal tracking-[-0.2rem]">First Month Pro Offer</h2>
-          <p className="mt-1 text-2xl tracking-[-0.08rem]">Get 60% off your first month</p>
-          <p className="mt-2 text-sm font-rethink tracking-normal" aria-live="polite">Offer ends in {minutes}:{seconds}</p>
+        <div className="absolute inset-x-0 top-20 text-center font-gowun leading-tight">
+          <h2 id={titleId} className="text-4xl font-normal tracking-[-0.2rem]">Special One-time Trial</h2>
+          <p className="mt-2 text-xl tracking-[-0.06rem]">Land 3x more interviews with Pro now</p>
         </div>
       </div>
-      <div className="px-7 pb-6 pt-8">
-        <div className="flex items-end gap-2 font-gowun leading-none whitespace-nowrap">
-          <span className="text-4xl text-ink-muted line-through">$99</span>
-          <span className="text-4xl text-accent">$39.60</span>
-          <span className="pb-1 text-lg text-ink">/Month</span>
+      <div className="px-6 pb-6 pt-6 sm:px-7">
+        <div className="rounded-2xl border-2 border-dashed border-border text-center">
+          <div className="px-4 pb-4 pt-5">
+            <p className="flex flex-wrap items-center justify-center gap-2 text-base font-semibold text-ink">
+              <Zap aria-hidden="true" className="size-4 text-accent-text" />
+              Try Pro for 7 days
+              <span className="rounded-full bg-accent-subtle px-2.5 py-0.5 text-sm font-bold text-accent-text">94% OFF</span>
+            </p>
+            <p className="mt-2 font-gowun text-5xl leading-none text-ink">Just <span className="font-bold text-accent">$0.99</span></p>
+            <p className="mt-2 text-lg text-ink-muted"><s>$17.99/week</s></p>
+          </div>
+          <div className="border-t-2 border-dashed border-border px-4 py-4">
+            <p className="text-sm leading-6 text-ink-muted">In the past 30 days, Pro users landed interviews at these companies</p>
+            <p className="mt-2 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-base font-semibold text-ink">
+              <span>Google</span>
+              <span>P&amp;G</span>
+              <span>OpenAI</span>
+              <span>Microsoft</span>
+            </p>
+          </div>
         </div>
-        <ul className="mt-5 grid gap-3 text-base leading-6 text-ink-muted">
-          {offerFeatures.map((feature) => (
-            <li key={feature} className="flex items-center gap-2">
-              <span aria-hidden="true" className="flex h-3 w-5 items-center justify-end rounded-sm bg-accent p-0.5">
-                <span className="block h-2 w-2 rounded-sm bg-surface" />
-              </span>
-              <span>{feature}</span>
-            </li>
-          ))}
-        </ul>
-        <Button className="mt-6 w-full" onClick={onClaim}>Take offer now!</Button>
+        <Button className="mt-5 min-h-12 w-full text-base" onClick={onClaim}>
+          Try 1 week for $0.99
+          {/* The countdown ticks every second, so it is left out of the button's spoken name. */}
+          <span aria-hidden="true" className="ms-1 tabular-nums opacity-80">Ends in {minutes}:{seconds}</span>
+        </Button>
+        <p className="mt-3 text-center text-xs leading-5 text-ink-muted">Billed $89.99 every 3 months after trial. Cancel anytime.</p>
       </div>
+    </>
+  )
+}
+
+/** The offer as a card pinned to the corner of a page the visitor is already reading. */
+export function ProOfferWidget({ onDismiss, onClaim }: ProOfferWidgetProps) {
+  return (
+    <aside
+      role="region"
+      aria-label="Pro plan offer"
+      className="fixed bottom-4 end-4 z-sticky w-[min(27rem,calc(100vw-2rem))] overflow-hidden rounded-panel border border-border bg-surface shadow-panel animate-ease-in-bottom motion-reduce:animate-none"
+    >
+      <ProOfferCard onDismiss={onDismiss} onClaim={onClaim} />
     </aside>
+  )
+}
+
+export type ProOfferDialogProps = ProOfferWidgetProps & {
+  readonly open: boolean
+}
+
+/** The same offer, centred over the page as a modal, e.g. on the dashboard straight after sign-up. */
+export function ProOfferDialog({ open, onDismiss, onClaim }: ProOfferDialogProps) {
+  const titleId = useId()
+  return (
+    <Dialog open={open} onOpenChange={(next) => { if (!next) onDismiss() }}>
+      <DialogPopup aria-labelledby={titleId} className="overflow-hidden p-0 pb-0 sm:max-w-md sm:pb-0">
+        <ProOfferCard onDismiss={onDismiss} onClaim={onClaim} titleId={titleId} />
+      </DialogPopup>
+    </Dialog>
   )
 }

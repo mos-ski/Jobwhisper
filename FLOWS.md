@@ -1,18 +1,24 @@
 # Lightforth V3 Flows
 
-## Auth: Sign In -> Plan Selection
+## Auth: Sign Up -> Profile Setup -> Dashboard
 
-1. Entry condition: user opens `/v3/auth/sign-in` without an authenticated session.
-   Exit condition: user submits credentials or chooses Google sign-in.
+1. Entry condition: a new visitor opens `/v3/auth/create-account`.
+   Exit condition: they submit the form or choose Google, and `/v3/onboarding/profile` opens. Sign-up no longer routes to the plan picker.
    Failure branch: validation and provider failures stay on the same view with field or banner errors in a later state slice.
 
-2. Entry condition: sign-in succeeds or reviewer opens `/v3/auth/choose-plan` directly.
-   Exit condition: user selects a subscription plan or chooses to do it later.
-   Failure branch: payment and entitlement errors route to future billing states.
+2. Entry condition: `/v3/onboarding/profile`, then `/v3/onboarding/interests`.
+   Exit condition: Complete opens `/v3/app?welcome=1`; Go Home skips straight to the dashboard without the offer.
+   Failure branch: Complete stays disabled until the required answers are in.
 
-3. Entry condition: user chooses "I'll do this later."
-   Exit condition: user returns to the v3 review index at `/v3`.
-   Failure branch: none for this static review route.
+3. Entry condition: the dashboard opens with `welcome=1`.
+   Exit condition: the "Special One-time Trial" Pro offer ($0.99 for 7 days) shows as a centred modal (a bottom sheet on phones). Try 1 week for $0.99 opens `/v3/billing?plan=pro&offer=welcome-60`; closing or Esc removes `welcome` from the URL so a refresh does not show it again.
+   Failure branch: none in this slice.
+
+4. Entry condition: a returning user signs in at `/v3/auth/sign-in`.
+   Exit condition: the dashboard at `/v3/app`, with no offer.
+   Failure branch: validation and provider failures stay on the sign-in view.
+
+`/v3/auth/choose-plan` remains reachable from billing and the review index; it is no longer a step after sign-up or sign-in.
 
 ## Web App: Dashboard Entry
 
