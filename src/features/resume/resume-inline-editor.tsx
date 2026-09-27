@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode, type TextareaHTMLAttributes } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode, type TextareaHTMLAttributes } from 'react'
 import { ChevronRight, GripVertical, Link as LinkIcon, Mail, MapPin, Phone, Plus, X } from 'lucide-react'
 
 import type { ResumeDocument, ResumeIssue, ResumeIssueSeverity, ResumeRole, ResumeSectionId } from '@/contracts/resume.draft'
@@ -9,8 +9,12 @@ export type ResumeInlineEditorProps = {
   readonly issues: readonly ResumeIssue[]
   /** e.g. "Last analysed 2 days ago". */
   readonly analysedLabel: string
-  /** The Chat / Edit switch, rendered by the editor shell so both tabs share it. */
-  readonly tabSwitch: ReactNode
+  /** Chat's rewrite is waiting on Accept or Reject: show it in place, highlighted. */
+  readonly pendingSuggestion?: boolean
+  /** Chat's rewrite was accepted: fold it into the resume. */
+  readonly acceptedSuggestion?: boolean
+  /** The summary as it types out while Chat's rewrite arrives. */
+  readonly typedSummary?: string | null
   readonly onOpenReport: () => void
   readonly onReanalyze: () => void
 }
@@ -76,7 +80,7 @@ function issueKey(section: BodySection, roleIndex?: number): string {
   return roleIndex === undefined ? section : `${section}:${roleIndex}`
 }
 
-export function ResumeInlineEditor({ document, issues, analysedLabel, tabSwitch, onOpenReport, onReanalyze }: ResumeInlineEditorProps) {
+export function ResumeInlineEditor({ document, issues, analysedLabel, pendingSuggestion = false, acceptedSuggestion = false, typedSummary, onOpenReport, onReanalyze }: ResumeInlineEditorProps) {
   const [draft, setDraft] = useState<ResumeDocument>(document)
   const [order, setOrder] = useState<readonly BodySection[]>(DEFAULT_ORDER)
   const [resolved, setResolved] = useState<ReadonlySet<string>>(new Set())
@@ -85,6 +89,28 @@ export function ResumeInlineEditor({ document, issues, analysedLabel, tabSwitch,
   const [announcement, setAnnouncement] = useState('')
   const [phone, setPhone] = useState('')
   const [newSkill, setNewSkill] = useState('')
+
+  // Accepting Chat's rewrite writes it into the resume once, like accepting a Fix does.
+  useEffect(() => {
+    if (!acceptedSuggestion) return
+    setDraft((current) => ({
+      ...current,
+      summary: document.improvedSummary,
+      skills: document.improvedSkills,
+      roles: current.roles.map((role, index) => (index === 0 ? { ...role, bullets: [...document.improvedFirstRoleBullets, ...role.bullets.slice(document.improvedFirstRoleBullets.length)] } : role)),
+    }))
+  }, [acceptedSuggestion])
+
+  // While Chat's rewrite waits, the resume shows it in place, highlighted and read-only.
+  const shown: ResumeDocument = pendingSuggestion
+    ? {
+        ...draft,
+        summary: typedSummary ?? document.improvedSummary,
+        skills: document.improvedSkills,
+        roles: draft.roles.map((role, index) => (index === 0 ? { ...role, bullets: [...document.improvedFirstRoleBullets, ...role.bullets.slice(document.improvedFirstRoleBullets.length)] } : role)),
+      }
+    : draft
+  const changed = 'bg-accent-subtle text-accent-text'
 
   const openIssues = issues.filter((issue) => !resolved.has(issueKey(issue.section as BodySection, issue.roleIndex)))
   const grade = gradeFor(document.atsScore)
@@ -205,7 +231,7 @@ export function ResumeInlineEditor({ document, issues, analysedLabel, tabSwitch,
     if (section === 'professional-summary') {
       return (
         <>
-          <GrowingTextarea aria-label="Summary" value={draft.summary} onChange={(event) => update({ summary: event.target.value })} className={cn(field, 'resize-none text-sm leading-6')} />
+          <GrowingTextarea aria-label="Summary" value={shown.summary} readOnly={pendingSuggestion} onChange={(event) => update({ summary: event.target.value })} className={cn(field, 'resize-none text-sm leading-6', pendingSuggestion && changed)} />
           {fixPanel(section)}
         </>
       )
@@ -213,7 +239,7 @@ export function ResumeInlineEditor({ document, issues, analysedLabel, tabSwitch,
     if (section === 'experience') {
       return (
         <div className="grid gap-6">
-          {draft.roles.map((role, roleIndex) => (
+          {shown.roles.map((role, roleIndex) => (
             <article key={`${role.company}-${roleIndex}`} className="grid gap-1 border-b border-border pb-5 last:border-b-0 last:pb-0">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="grid min-w-0 flex-1 gap-1 sm:grid-cols-2">
@@ -231,8 +257,9 @@ export function ResumeInlineEditor({ document, issues, analysedLabel, tabSwitch,
                     <GrowingTextarea
                       aria-label={`Bullet ${bulletIndex + 1}, ${role.company}`}
                       value={bullet}
+                      readOnly={pendingSuggestion && roleIndex === 0 && bulletIndex < document.improvedFirstRoleBullets.length}
                       onChange={(event) => updateRole(roleIndex, { bullets: role.bullets.map((b, i) => (i === bulletIndex ? event.target.value : b)) })}
-                      className={cn(field, 'resize-none text-sm leading-6')}
+                      className={cn(field, 'resize-none text-sm leading-6', pendingSuggestion && roleIndex === 0 && bulletIndex < document.improvedFirstRoleBullets.length && changed)}
                     />
                     <button
                       type="button"
@@ -269,8 +296,8 @@ export function ResumeInlineEditor({ document, issues, analysedLabel, tabSwitch,
       return (
         <>
           <ul aria-label="Skills" className="flex flex-wrap gap-2">
-            {draft.skills.map((skill) => (
-              <li key={skill} className="inline-flex items-center gap-1 rounded-md bg-surface-subtle ps-3 text-sm text-ink">
+            {shown.skills.map((skill) => (
+              <li key={skill} className={cn('inline-flex items-center gap-1 rounded-md ps-3 text-sm', pendingSuggestion && !draft.skills.includes(skill) ? changed : 'bg-surface-subtle text-ink')}>
                 {skill}
                 <button
                   type="button"
@@ -358,7 +385,6 @@ export function ResumeInlineEditor({ document, issues, analysedLabel, tabSwitch,
     <div data-slot="resume-inline-editor" className="flex min-h-0 flex-1 flex-col bg-canvas">
       <div className="shrink-0 border-b border-border bg-surface px-4 py-3 sm:px-6">
         <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-x-6 gap-y-3">
-          <div className="w-full max-w-56 sm:w-56">{tabSwitch}</div>
           <div className="flex items-center gap-3">
             <span aria-hidden="true" className="grid size-12 place-items-center rounded-lg bg-warning-surface font-gowun text-2xl font-bold text-ink">{grade.letter}</span>
             <div className="grid gap-0.5">
@@ -388,7 +414,7 @@ export function ResumeInlineEditor({ document, issues, analysedLabel, tabSwitch,
 
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6">
         <div className="mx-auto w-full max-w-5xl rounded-panel border border-border bg-surface px-4 py-6 shadow-panel sm:px-10 sm:py-8">
-          <h1 className="sr-only">Edit resume, {draft.candidateName}</h1>
+          <h1 className="sr-only">{draft.candidateName}</h1>
           <header className="grid gap-2 border-b border-border pb-6">
             <input aria-label="Full name" value={draft.candidateName} onChange={(event) => update({ candidateName: event.target.value })} className={cn(field, 'font-gowun text-3xl font-bold')} />
             <div className="grid gap-2 sm:grid-cols-3">

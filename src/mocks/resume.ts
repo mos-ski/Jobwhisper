@@ -195,7 +195,6 @@ export const resumeBuilderSession: ResumeBuilderSession = {
     "I've updated your professional summary to make it more impactful and results-driven, emphasizing measurable achievements and leadership qualities.",
   aiDraft:
     'Product Leader with 8 years of experience in fintech and AI platforms, skilled in product strategy, market expansion, and enhancing payment experiences. Expertise in aligning technical solutions with strategic business goals and achieving key milestones in MVP launches.',
-  zoomLabel: '85%',
 }
 
 export const resumeIssues: readonly ResumeIssue[] = [

@@ -10,7 +10,6 @@ function renderEditor(overrides: Partial<ResumeInlineEditorProps> = {}) {
     document: resumeDocument,
     issues: resumeIssues,
     analysedLabel: 'Last analysed 2 days ago',
-    tabSwitch: <nav aria-label="Editor tabs" />,
     onOpenReport: vi.fn(),
     onReanalyze: vi.fn(),
     ...overrides,
@@ -62,5 +61,16 @@ describe('ResumeInlineEditor', () => {
     const headings = screen.getAllByRole('heading', { level: 2 }).map((heading) => heading.textContent)
     expect(headings.slice(0, 3)).toEqual(['Summary', 'Skills', 'Experience'])
     expect(screen.getByRole('status')).toHaveTextContent('Skills moved to position 2 of 7.')
+  })
+
+  it('shows a pending Chat rewrite in place, and keeps it once accepted', () => {
+    const { rerender } = render(<ResumeInlineEditor document={resumeDocument} issues={[]} analysedLabel="" onOpenReport={vi.fn()} onReanalyze={vi.fn()} pendingSuggestion />)
+    const summaries = screen.getAllByRole('textbox', { name: 'Summary' })
+    expect(summaries.at(-1)).toHaveValue(resumeDocument.improvedSummary)
+    expect(summaries.at(-1)).toHaveAttribute('readonly')
+
+    rerender(<ResumeInlineEditor document={resumeDocument} issues={[]} analysedLabel="" onOpenReport={vi.fn()} onReanalyze={vi.fn()} acceptedSuggestion />)
+    expect(screen.getAllByRole('textbox', { name: 'Summary' }).at(-1)).toHaveValue(resumeDocument.improvedSummary)
+    expect(screen.getAllByRole('textbox', { name: 'Summary' }).at(-1)).not.toHaveAttribute('readonly')
   })
 })
