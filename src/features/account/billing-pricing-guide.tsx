@@ -74,9 +74,20 @@ export function BillingPricingGuideCard({ step, learnMoreHref, linkLabel, linkHr
       data-node-id="920:8504"
       className="fixed inset-x-4 bottom-4 z-tooltip rounded-[2px] border border-border bg-surface p-6 outline-none sm:absolute sm:inset-x-auto sm:bottom-auto sm:start-0 sm:top-full sm:mt-2 sm:w-[352px]"
     >
-      <h2 id={`billing-pricing-guide-title-${step}`} className="text-sm font-semibold leading-5 text-ink">
-        {content.title}
-      </h2>
+      <div className="-mt-3 flex items-center justify-between gap-3">
+        <h2 id={`billing-pricing-guide-title-${step}`} className="text-sm font-semibold leading-5 text-ink">
+          {content.title}
+        </h2>
+        {isLastStep ? null : (
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="-me-2 inline-flex min-h-11 shrink-0 items-center rounded-md px-2 text-xs font-semibold text-ink-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          >
+            Skip tour
+          </button>
+        )}
+      </div>
       <p className="mt-4 pb-5 text-sm leading-[22.75px] text-ink-muted">{content.body}</p>
 
       <div className="border-t border-border pt-[14.4px]">
@@ -98,29 +109,23 @@ export function BillingPricingGuideCard({ step, learnMoreHref, linkLabel, linkHr
             {isLastStep ? 'Done' : 'Next'}
           </button>
         </div>
-        {isLastStep ? (
+        <div className="mt-1 flex items-center justify-between gap-4">
           <a
-            href={learnMoreHref}
-            className="inline-flex min-h-11 items-center text-[11.7px] font-bold leading-[17.55px] text-ink-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            href={linkHref}
+            className="-ms-1 inline-flex min-h-11 items-center rounded-md px-1 text-sm font-semibold text-accent-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
-            Learn More
+            {linkLabel}
           </a>
-        ) : (
-          <button
-            type="button"
-            onClick={onDismiss}
-            className="inline-flex min-h-11 items-center text-[11.7px] font-bold leading-[17.55px] text-ink-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-          >
-            Skip Tutor
-          </button>
-        )}
+          {isLastStep ? (
+            <a
+              href={learnMoreHref}
+              className="inline-flex min-h-11 items-center rounded-md px-1 text-xs font-semibold text-ink-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              Learn More
+            </a>
+          ) : null}
+        </div>
       </div>
-      <a
-        href={linkHref}
-        className="mt-2 inline-flex min-h-11 w-full items-center justify-center rounded-[7.2px] border border-input text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-      >
-        {linkLabel}
-      </a>
     </div>
   )
 }
