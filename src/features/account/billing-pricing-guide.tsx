@@ -14,13 +14,18 @@ export function BillingPricingGuideCard({ linkLabel, linkHref, onDismiss }: Bill
     cardRef.current?.focus()
   }, [])
 
-  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    if (event.key === 'Escape') {
+  // Esc closes the tour wherever focus is, not only inside the card.
+  useEffect(() => {
+    function onKeyDown(event: globalThis.KeyboardEvent) {
+      if (event.key !== 'Escape') return
       event.preventDefault()
       onDismiss()
-      return
     }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [onDismiss])
 
+  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     if (event.key !== 'Tab') return
     const focusable = Array.from(cardRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? [])
     const first = focusable[0]
