@@ -1163,7 +1163,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
               </PlanCarousel>
             </div>
 
-            <div className={cn('[grid-area:1/1]', shownTab !== 'done-for-you' && 'invisible')} data-plan-tab="done-for-you">
+            <div className={cn('flex flex-col [grid-area:1/1]', shownTab !== 'done-for-you' && 'invisible')} data-plan-tab="done-for-you">
               <SuccessManagerPicker {...doneForYou} />
             </div>
             </div>

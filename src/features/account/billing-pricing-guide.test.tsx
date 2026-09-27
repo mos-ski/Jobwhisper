@@ -14,4 +14,12 @@ describe('BillingPricingGuideCard', () => {
     await userEvent.setup().click(screen.getByRole('button', { name: 'Got it' }))
     expect(onDismiss).toHaveBeenCalled()
   })
+
+  it('closes on Esc even when focus is outside the card', async () => {
+    const onDismiss = vi.fn()
+    render(<><button type="button">Elsewhere</button><BillingPricingGuideCard linkLabel="View usage details" linkHref="/v3/billing/usage" onDismiss={onDismiss} /></>)
+    screen.getByRole('button', { name: 'Elsewhere' }).focus()
+    await userEvent.setup().keyboard('{Escape}')
+    expect(onDismiss).toHaveBeenCalledTimes(1)
+  })
 })

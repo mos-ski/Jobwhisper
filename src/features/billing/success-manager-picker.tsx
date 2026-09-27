@@ -202,8 +202,8 @@ export function SuccessManagerPicker({ setupHref, profile, savedCard, directory,
   const start = (manager: SuccessManager) => setSignup({ managerId: manager.id, managerName: manager.name, pkg: packageFor(manager) })
 
   return (
-    <div>
-        <header className="pb-16 pt-12">
+    <div className="flex flex-1 flex-col">
+        <header className="flex flex-1 flex-col justify-center pb-16 pt-12">
           <h3 className="mx-auto max-w-2xl text-center font-gowun text-2xl leading-tight text-ink sm:text-3xl">
             A Success Manager Who Applies for You,
             <br />
