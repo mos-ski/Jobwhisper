@@ -86,15 +86,18 @@ describe('ResumeInlineEditor', () => {
     expect(screen.getAllByRole('textbox', { name: 'Summary' }).at(-1)).not.toHaveAttribute('readonly')
   })
 
-  it('fills an empty bullet from Suggest for me, and never offers the same one twice', async () => {
+  it('offers Suggest for me only on an empty bullet, and never the same suggestion twice', async () => {
     const user = userEvent.setup()
     renderEditor()
     const role = resumeDocument.roles[0]
     const experience = screen.getByRole('region', { name: 'Experience' })
+    expect(within(experience).queryByRole('button', { name: 'Suggest for me' })).not.toBeInTheDocument()
     await user.click(within(experience).getAllByRole('button', { name: 'Bullet point' })[0]!)
     const empty = within(experience).getByRole('textbox', { name: `Bullet ${role!.bullets.length + 1}, ${role!.company}` })
     await user.click(within(experience).getAllByRole('button', { name: 'Suggest for me' })[0]!)
     expect(empty).toHaveValue(resumeDocument.suggestedBullets![0])
+    expect(within(experience).queryByRole('button', { name: 'Suggest for me' })).not.toBeInTheDocument()
+    await user.click(within(experience).getAllByRole('button', { name: 'Bullet point' })[0]!)
     await user.click(within(experience).getAllByRole('button', { name: 'Suggest for me' })[0]!)
     expect(within(experience).getByRole('textbox', { name: `Bullet ${role!.bullets.length + 2}, ${role!.company}` })).toHaveValue(resumeDocument.suggestedBullets![1])
   })
