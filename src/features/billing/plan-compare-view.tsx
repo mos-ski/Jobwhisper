@@ -111,9 +111,37 @@ function BillingPlanCardView({ plan, annual, onProHover }: { readonly plan: Bill
   )
 }
 
+export type BillingPlanCardsProps = {
+  readonly plans: readonly BillingPlanCard[]
+  readonly onProHover?: () => void
+  /** Offer the Annual switch; without it the cards show monthly prices. Defaults to true. */
+  readonly annualToggle?: boolean
+}
+
+/** The Annual switch and the Starter / Pro / Premium cards, shared by the plan picker and the Billing page. */
+export function BillingPlanCards({ plans, onProHover, annualToggle = true }: BillingPlanCardsProps) {
+  const [annual, setAnnual] = useState(annualToggle)
+  return (
+    <div>
+      {annualToggle ? (
+        <div className="flex justify-end px-4 pt-2 sm:px-6 lg:px-8">
+          <label className="flex items-center gap-2.5">
+            <span className="text-sm font-medium text-ink">Annual</span>
+            <Switch checked={annual} onCheckedChange={setAnnual} />
+          </label>
+        </div>
+      ) : null}
+      <PlanCarousel count={plans.length}>
+        {plans.map((plan) => (
+          <BillingPlanCardView key={plan.id} plan={plan} annual={annual} onProHover={onProHover} />
+        ))}
+      </PlanCarousel>
+    </div>
+  )
+}
+
 export function PlanCompareView({ homeHref, plans, backHref }: PlanCompareViewProps) {
   const navigate = useNavigate()
-  const [annual, setAnnual] = useState(true)
   const [showProOffer, setShowProOffer] = useState(false)
   const proOfferTriggeredRef = useRef(false)
 
@@ -146,16 +174,8 @@ export function PlanCompareView({ homeHref, plans, backHref }: PlanCompareViewPr
         <article className="w-full min-w-0 bg-surface shadow-panel">
           <div className="flex min-h-[5rem] flex-wrap items-center justify-between gap-3 border-b border-border px-4 sm:px-6 lg:px-8">
             <h1 className="font-gowun text-lg font-bold leading-5 text-ink sm:text-xl">Billing &amp; Subscription</h1>
-            <div className="flex items-center gap-2.5">
-              <span className="text-sm font-medium text-ink">Annual</span>
-              <Switch checked={annual} onCheckedChange={setAnnual} />
-            </div>
           </div>
-          <PlanCarousel count={plans.length}>
-            {plans.map((plan) => (
-              <BillingPlanCardView key={plan.id} plan={plan} annual={annual} onProHover={triggerProOffer} />
-            ))}
-          </PlanCarousel>
+          <BillingPlanCards plans={plans} onProHover={triggerProOffer} />
         </article>
         <FeatureAccessMatrix />
       </section>
