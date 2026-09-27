@@ -119,10 +119,13 @@ function Name({ manager, as: Heading }: { readonly manager: SuccessManager; read
   )
 }
 
-function ManagerRow({ manager, onStart }: { readonly manager: SuccessManager; readonly onStart: () => void }) {
+// A soft wash rising from each card's foot, alternating like the plan cards.
+const ROW_WASHES = ['from-positive-surface', 'from-accent-subtle'] as const
+
+function ManagerRow({ manager, onStart, index }: { readonly manager: SuccessManager; readonly onStart: () => void; readonly index: number }) {
   const booked = manager.nextOpening !== undefined
   return (
-    <li className="grid gap-4 rounded-panel border border-border bg-surface p-5 md:grid-cols-[1fr_auto]">
+    <li className={cn('grid gap-4 rounded-panel border border-border bg-surface bg-gradient-to-t via-surface to-surface p-5 md:grid-cols-[1fr_auto]', ROW_WASHES[index % ROW_WASHES.length])}>
       <div className="grid min-w-0 gap-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
@@ -235,11 +238,11 @@ export function SuccessManagerPicker({ setupHref, profile, savedCard, directory,
 
         {directory.status === 'ready' && available.length > 0 ? (
           <>
-            <section aria-labelledby="all-managers" className="mt-12">
+            <section aria-labelledby="all-managers" className="mt-16">
               <h3 id="all-managers" className="sr-only">Success managers</h3>
               <ul className="grid gap-4">
-                {managers.map((manager) => (
-                  <ManagerRow key={manager.id} manager={manager} onStart={() => start(manager)} />
+                {managers.map((manager, index) => (
+                  <ManagerRow key={manager.id} manager={manager} index={index} onStart={() => start(manager)} />
                 ))}
               </ul>
             </section>
