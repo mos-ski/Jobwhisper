@@ -4,6 +4,7 @@ export const dashboardNavItems: readonly DashboardNavItem[] = [
   { label: 'Dashboard', href: '/v3/app', active: true },
   { label: 'My Documents', href: '/v3/resume/history' },
   { label: 'Auto-Apply', href: '/v3/auto-apply/jobs' },
+  { label: 'Done For You', href: '/v3/done-for-you' },
   { label: 'Interview Prep', href: '/v3/interview-prep/history' },
   { label: 'Interviews & Meetings', href: '/v3/interview-copilot/history' },
   { label: 'Knowledge Base', href: '/v3/documents' },
@@ -64,7 +65,7 @@ export const dashboardActions: readonly DashboardAction[] = [
     id: 'done-for-you',
     title: 'Done for you',
     description: 'A real success manager applies to matched jobs on your behalf, resume tailoring and job scouting included.',
-    href: '/v3/billing/done-for-you',
+    href: '/v3/done-for-you',
     linkStyle: 'external',
   },
 ]

@@ -189,3 +189,13 @@ export function SettingsIcon() {
     </svg>
   )
 }
+
+export function DoneForYouIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="8" cy="6.25" r="3.25" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M2.5 16.75c0-3.04 2.46-5.5 5.5-5.5 1.13 0 2.18.34 3.06.93" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="m12.5 15.25 1.75 1.75 3.5-3.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
