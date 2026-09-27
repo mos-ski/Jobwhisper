@@ -99,6 +99,7 @@ export type BillingViewProps = {
   readonly resumeBuilderCredits?: { readonly balance: number; readonly total: number }
   /** Which plan tab is open, from `?plan=`; defaults to `subscription`. Named as on the public pricing page. */
   readonly planTab?: BillingPlanTab
+  readonly onPlanTabChange?: (tab: BillingPlanTab) => void
 }
 
 export type BillingPlanTab = 'subscription' | 'pay-as-you-go' | 'done-for-you'
@@ -1007,7 +1008,7 @@ function BillingReferralPrompt({ referralsHref }: { readonly referralsHref: stri
   )
 }
 
-export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet, faqs, autoApplyCredits, resumeBuilderCredits, planTab = 'subscription' }: BillingViewProps) {
+export function BillingView({ homeHref, plans, standalonePurchases, usageRows, wallet, faqs, autoApplyCredits, resumeBuilderCredits, planTab = 'subscription', onPlanTabChange }: BillingViewProps) {
   const currentPlan = plans.find((plan) => plan.current) ?? plans[0]
   // Interview Copilot credits are a subscription benefit — only purchasable with an active plan. Resume
   // Builder and Auto Apply are standalone and always purchasable. See PRICING.md §1, §4.
@@ -1074,21 +1075,42 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                 </button>
             }
           >
-            <nav aria-label="Plans" className="-mt-2 mb-5 flex gap-6 overflow-x-auto border-b border-border">
+            <div
+              role="tablist"
+              aria-label="Plans"
+              className="-mt-2 mb-5 flex gap-6 overflow-x-auto border-b border-border"
+              onKeyDown={(event) => {
+                const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0
+                if (step === 0) return
+                event.preventDefault()
+                const index = PLAN_TABS.findIndex((tab) => tab.value === shownTab)
+                const next = PLAN_TABS[(index + step + PLAN_TABS.length) % PLAN_TABS.length]
+                if (!next) return
+                onPlanTabChange?.(next.value)
+                window.document.getElementById(`plan-tab-${next.value}`)?.focus()
+              }}
+            >
               {PLAN_TABS.map((tab) => (
-                <a
+                <button
                   key={tab.value}
-                  href={tab.value === 'subscription' ? '/v3/billing' : `/v3/billing?plan=${tab.value}`}
-                  aria-current={shownTab === tab.value ? 'page' : undefined}
+                  id={`plan-tab-${tab.value}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={shownTab === tab.value}
+                  aria-controls="plan-tabpanel"
+                  tabIndex={shownTab === tab.value ? 0 : -1}
+                  onClick={() => onPlanTabChange?.(tab.value)}
                   className={cn(
                     'inline-flex min-h-11 shrink-0 items-center border-b-2 px-1 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
                     shownTab === tab.value ? 'border-accent text-accent-text' : 'border-transparent text-ink-muted hover:text-ink',
                   )}
                 >
                   {tab.label}
-                </a>
+                </button>
               ))}
-            </nav>
+            </div>
+
+            <div id="plan-tabpanel" role="tabpanel" aria-labelledby={`plan-tab-${shownTab}`}>
 
             {shownTab === 'subscription' ? (
             <div className="grid gap-6">
@@ -1158,6 +1180,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
               </div>
             </div>
             ) : null}
+            </div>
           </TitledPanel>
 
           <TitledPanel
