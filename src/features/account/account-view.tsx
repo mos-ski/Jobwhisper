@@ -1133,8 +1133,9 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
 
             <div id="plan-tabpanel" role="tabpanel" aria-labelledby={`plan-tab-${shownTab}`}>
 
-            {shownTab === 'subscription' ? (
-            <div className="grid gap-6">
+            {/* Every tab shares one grid cell, so the panel is always as tall as the tallest and switching never moves the page. */}
+            <div className="grid">
+            <div className={cn('grid gap-6 [grid-area:1/1]', shownTab !== 'subscription' && 'invisible')} data-plan-tab="subscription">
               <div>
                 <div className="-mx-4 bg-surface sm:-mx-6 lg:-mx-8">
                   <BillingPlanCards plans={plans} annualToggle={false} />
@@ -1142,10 +1143,8 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
               </div>
 
             </div>
-            ) : null}
 
-            {shownTab === 'pay-as-you-go' ? (
-            <div className="-mx-4 sm:-mx-6 lg:-mx-8">
+            <div className={cn('-mx-4 [grid-area:1/1] sm:-mx-6 lg:-mx-8', shownTab !== 'pay-as-you-go' && 'invisible')} data-plan-tab="pay-as-you-go">
               <PlanCarousel count={CREDIT_PRODUCTS.length}>
                 {CREDIT_PRODUCTS.map((product) => (
                   <PlanCard
@@ -1163,9 +1162,11 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                 ))}
               </PlanCarousel>
             </div>
-            ) : null}
 
-            {shownTab === 'done-for-you' ? <SuccessManagerPicker {...doneForYou} /> : null}
+            <div className={cn('[grid-area:1/1]', shownTab !== 'done-for-you' && 'invisible')} data-plan-tab="done-for-you">
+              <SuccessManagerPicker {...doneForYou} />
+            </div>
+            </div>
             </div>
           </TitledPanel>
 

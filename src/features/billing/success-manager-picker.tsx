@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BadgeCheck, Play, Plus, RotateCw, Send, Star } from 'lucide-react'
+import { BadgeCheck, Check, Play, Plus, RotateCw, Star } from 'lucide-react'
 
 import type { SuccessManager, SuccessManagerDirectory } from '@/contracts/done-for-you.draft'
 import type { AutoApplyProfileSnapshot } from '@/features/auto-apply/auto-apply-view'
@@ -15,6 +15,14 @@ export type SuccessManagerPickerProps = {
   readonly onRetry?: () => void
   readonly onSignupComplete?: (lead: DfySignupLead & { readonly managerId: string }) => void
 }
+
+const FEATURES = [
+  'Resume tailored for each role',
+  'Job scouting and match review',
+  'Applications submitted for you',
+  'A Friday progress update',
+  'Full Jobwhisper access until your interviews land',
+] as const
 
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
 
@@ -192,17 +200,19 @@ export function SuccessManagerPicker({ setupHref, profile, savedCard, directory,
 
   return (
     <div>
-        <h3 className="mx-auto mt-4 max-w-2xl text-center font-gowun text-2xl leading-tight text-ink sm:text-3xl">
+        <h3 className="mx-auto mt-10 max-w-2xl text-center font-gowun text-2xl leading-tight text-ink sm:text-3xl">
           A Success Manager Who Applies for You,
           <br />
           Built to <strong className="font-bold">Land Your Next Interview</strong>
         </h3>
-        <p className="mx-auto mt-5 flex w-fit items-center gap-2.5 rounded-full border border-border bg-surface py-1.5 pe-4 ps-1.5 text-sm font-semibold text-ink shadow-control">
-          <span className="grid size-8 shrink-0 place-items-center rounded-full bg-positive-surface text-positive">
-            <Send aria-hidden="true" className="size-4" />
-          </span>
-          One dedicated success manager, applying until your interviews land
-        </p>
+        <ul aria-label="What your success manager does" className="mx-auto mt-5 flex max-w-3xl flex-wrap justify-center gap-x-6 gap-y-2">
+          {FEATURES.map((feature) => (
+            <li key={feature} className="flex items-center gap-2 text-sm font-medium text-ink">
+              <Check aria-hidden="true" className="size-4 shrink-0 text-positive" />
+              {feature}
+            </li>
+          ))}
+        </ul>
 
         {directory.status === 'loading' ? <DirectorySkeleton /> : null}
 
@@ -225,8 +235,8 @@ export function SuccessManagerPicker({ setupHref, profile, savedCard, directory,
 
         {directory.status === 'ready' && available.length > 0 ? (
           <>
-            <section aria-labelledby="all-managers" className="mt-8">
-              <h3 id="all-managers" className="mb-4 text-center font-gowun text-lg font-bold text-ink">Choose Your Success Manager</h3>
+            <section aria-labelledby="all-managers" className="mt-12">
+              <h3 id="all-managers" className="sr-only">Success managers</h3>
               <ul className="grid gap-4">
                 {managers.map((manager) => (
                   <ManagerRow key={manager.id} manager={manager} onStart={() => start(manager)} />
