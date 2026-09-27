@@ -155,27 +155,16 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
     const found = issuesFor(section, roleIndex)
     if (found.length === 0) return null
     const open = openFix === key
+    const summary = SEVERITIES.flatMap((severity) => {
+      const count = found.filter((issue) => issue.severity === severity).length
+      return count > 0 ? [`${count} ${SEVERITY_LABELS[severity].toLowerCase()}`] : []
+    }).join(', ')
     return (
-      <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-        {SEVERITIES.map((severity) => {
-          const count = found.filter((issue) => issue.severity === severity).length
-          if (count === 0) return null
-          return (
-            <span key={severity} className="inline-flex items-center gap-1.5 rounded-pill bg-surface-subtle px-2.5 py-1 text-xs font-semibold text-ink">
-              <span aria-hidden="true" className={cn('size-2 rounded-full', SEVERITY_DOTS[severity])} />
-              {count} {SEVERITY_LABELS[severity]}
-            </span>
-          )
-        })}
-        <button
-          type="button"
-          aria-expanded={open}
-          aria-controls={`fix-${key}`}
-          onClick={() => setOpenFix(open ? null : key)}
-          className="inline-flex min-h-9 items-center rounded-pill bg-positive-surface px-4 text-xs font-bold uppercase tracking-wide text-positive hover:bg-positive hover:text-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-        >
-          Fix
-        </button>
+      <div className="flex shrink-0 items-center gap-3">
+        <span className="text-sm text-ink-muted">{summary}</span>
+        <Button size="sm" variant={open ? 'secondary' : 'primary'} aria-expanded={open} aria-controls={`fix-${key}`} aria-label={`${open ? 'Close' : 'Fix'} ${summary}`} onClick={() => setOpenFix(open ? null : key)}>
+          {open ? 'Close' : 'Fix'}
+        </Button>
       </div>
     )
   }
