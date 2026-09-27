@@ -109,6 +109,19 @@ Auto Apply is the only row with a number in it. That is deliberate: it is the on
 
 The un-subscribed state isn't a column here on purpose — it isn't a plan, so it doesn't belong in a table meant to compare plans.
 
+### 1.3 New-account trial offer (added 2026-09-27)
+
+Shown once, as a centred modal on the dashboard straight after sign-up and onboarding (`ProOfferDialog`, `src/features/billing/pro-offer-widget.tsx`), and in the corner offer on the pricing and plan pages (`ProOfferWidget`, same card).
+
+| | |
+|---|---|
+| Trial | **7 days of Pro for $1.39** |
+| Anchor (struck through) | **$22.85/week**, Pro's $99/month as a weekly rate ($99 × 12 ÷ 52) |
+| Discount shown | **94% off** ($1.39 is 93.9% off $22.85) |
+| After the trial | **Pro at $99/month**, billed monthly, cancel anytime |
+
+Open: this coexists with the free week of Pro in the try-it funnel (`/v3/try/pro`, $0 today). Decide whether a visitor who came through that funnel should still see a paid $1.39 week, or skip this modal.
+
 ## 2. Finding Jobs without a plan (Auto Apply + Resume Builder)
 
 **Revised 2026-09-23.** Auto Apply and Resume Builder are now **included, unlimited, in Pro and Premium** (§1.1). Everything in this section is what they cost **to someone with no plan** — still sold standalone, still no subscription required, and still the only place the credit economy survives. A subscriber never sees a balance, a rate, or a top-up for either tool.
