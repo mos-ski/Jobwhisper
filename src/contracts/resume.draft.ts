@@ -30,6 +30,8 @@ export type ResumeDocument = {
   readonly roles: readonly ResumeRole[]
   /** Tailored rewrites of roles[0].bullets[0] and [1] — the AI suggestion targets the current role's top two highlights. */
   readonly improvedFirstRoleBullets: readonly string[]
+  /** AI-drafted bullets offered to fill an empty bullet (Suggest for me), used in order and never twice. */
+  readonly suggestedBullets?: readonly string[]
   readonly education: readonly ResumeEducation[]
   readonly skills: readonly string[]
   readonly improvedSkills: readonly string[]

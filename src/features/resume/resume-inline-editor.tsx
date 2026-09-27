@@ -133,6 +133,13 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
   const [draggingLanguage, setDraggingLanguage] = useState<number | null>(null)
   const [draggingSkill, setDraggingSkill] = useState<{ readonly groupId: string; readonly index: number } | null>(null)
 
+  useEffect(() => {
+    if (!openFix) return
+    const panel = window.document.getElementById(`fix-${openFix}`)
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    panel?.scrollIntoView?.({ behavior: reduce ? 'auto' : 'smooth', block: 'center' })
+  }, [openFix])
+
   // Added sections join the end of the order; removed ones leave it.
   useEffect(() => {
     const ids = extraSections.map((section) => section.id)
@@ -240,6 +247,9 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
     update({ languages })
     setAnnouncement(`${item.language || 'Language'} moved to position ${to + 1} of ${languages.length}.`)
   }
+
+  const usedBullets = new Set(draft.roles.flatMap((role) => role.bullets))
+  const nextSuggestion = document.suggestedBullets?.find((bullet) => !usedBullets.has(bullet))
 
   function updateEducation(index: number, patch: Partial<ResumeEducation>) {
     setDraft((current) => ({ ...current, education: current.education.map((item, i) => (i === index ? { ...item, ...patch } : item)) }))
@@ -398,13 +408,15 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
                 {role.bullets.map((bullet, bulletIndex) => (
                   <li key={bulletIndex} className="group flex items-start gap-1">
                     <span aria-hidden="true" className="mt-3 size-1.5 shrink-0 rounded-full bg-ink" />
-                    <GrowingTextarea
-                      aria-label={`Bullet ${bulletIndex + 1}, ${role.company}`}
-                      value={bullet}
-                      readOnly={pendingSuggestion && roleIndex === 0 && bulletIndex < document.improvedFirstRoleBullets.length}
-                      onChange={(event) => updateRole(roleIndex, { bullets: role.bullets.map((b, i) => (i === bulletIndex ? event.target.value : b)) })}
-                      className={cn(field, 'resize-none text-sm leading-6', pendingSuggestion && roleIndex === 0 && bulletIndex < document.improvedFirstRoleBullets.length && changed)}
-                    />
+                    <div className="min-w-0 flex-1">
+                      <GrowingTextarea
+                        aria-label={`Bullet ${bulletIndex + 1}, ${role.company}`}
+                        value={bullet}
+                        readOnly={pendingSuggestion && roleIndex === 0 && bulletIndex < document.improvedFirstRoleBullets.length}
+                        onChange={(event) => updateRole(roleIndex, { bullets: role.bullets.map((b, i) => (i === bulletIndex ? event.target.value : b)) })}
+                        className={cn(field, 'resize-none text-sm leading-6', pendingSuggestion && roleIndex === 0 && bulletIndex < document.improvedFirstRoleBullets.length && changed)}
+                      />
+                    </div>
                     <button
                       type="button"
                       aria-label={`Remove bullet ${bulletIndex + 1}, ${role.company}`}
@@ -416,14 +428,29 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
                   </li>
                 ))}
               </ul>
-              <button
-                type="button"
-                onClick={() => updateRole(roleIndex, { bullets: [...role.bullets, ''] })}
-                className={addAction}
-              >
-                <Plus aria-hidden="true" className="size-4" />
-                Bullet point
-              </button>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <button
+                  type="button"
+                  onClick={() => updateRole(roleIndex, { bullets: [...role.bullets, ''] })}
+                  className={addAction}
+                >
+                  <Plus aria-hidden="true" className="size-4" />
+                  Bullet point
+                </button>
+                {nextSuggestion ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const empty = role.bullets.findIndex((b) => !b.trim())
+                      updateRole(roleIndex, { bullets: empty < 0 ? [...role.bullets, nextSuggestion] : role.bullets.map((b, i) => (i === empty ? nextSuggestion : b)) })
+                      setAnnouncement(`Suggested bullet added to ${role.company || 'this role'}.`)
+                    }}
+                    className={addAction}
+                  >
+                    Suggest for me
+                  </button>
+                ) : null}
+              </div>
               {fixPanel(section, roleIndex)}
             </article>
           ))}
