@@ -19,7 +19,8 @@ import {
   WORK_SCHEDULE_OPTIONS,
 } from '@/contracts/auto-apply.draft'
 import type { ResumeDocument, ResumeHistoryRow } from '@/contracts/resume.draft'
-import { FairUseLimitDialog, FairUseMeter, FairUseNotice } from '@/features/billing/fair-use'
+import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
+import { FairUseMeter, FairUseNotice } from '@/features/billing/fair-use'
 import { AppShell as AppNavShell } from '@/features/dashboard/app-nav'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 import { COUNTRIES } from '@/data/countries'
@@ -1097,6 +1098,11 @@ function AppShell({
   )
 }
 
+// PRICING.md §2.1: Auto Apply is $1 per successful application, $10 floor.
+const AUTO_APPLY_APPLICATION_CENTS = 100
+const AUTO_APPLY_MINIMUM_DOLLARS = 10
+const AUTO_APPLY_PRESET_DOLLARS = [10, 25, 50]
+
 // ─── Agent View (live animation via useAgentSession) ──────────────────────────
 
 const agentStatusTone: Record<string, string> = {
@@ -1252,7 +1258,12 @@ function AgentFeed({ events }: { readonly events: FeedEvent[] }) {
 
 export function AutoApplyAgentView({ homeHref, setupHref, agentHref, jobsHref, appliedHref, fairUse, onFairUseUnlock }: AutoApplyAgentViewProps) {
   const session = useAgentSession('auto-apply')
-  const [fairUseDialogOpen, setFairUseDialogOpen] = useState(fairUse?.state === 'cooling-down')
+  // Same Add credits modal as everywhere else: amounts first, the cooldown as one line.
+  const [topUpOpen, setTopUpOpen] = useState(fairUse?.state === 'cooling-down' && fairUse.policy.topUpUnlocks)
+  const topUpNote =
+    fairUse?.state === 'cooling-down' && fairUse.cooldownRemainingLabel
+      ? `Free again in ${fairUse.cooldownRemainingLabel}, or top up to carry on now.`
+      : undefined
 
   return (
     <AppShell homeHref={homeHref} title="Agents" active="agent" setupHref={setupHref} agentHref={agentHref} jobsHref={jobsHref} appliedHref={appliedHref}>
@@ -1265,7 +1276,7 @@ export function AutoApplyAgentView({ homeHref, setupHref, agentHref, jobsHref, a
               <FairUseNotice
                 snapshot={fairUse}
                 featureName="Auto Apply"
-                onAction={() => setFairUseDialogOpen(true)}
+                onAction={() => setTopUpOpen(true)}
                 className="mt-4 sm:hidden"
               />
             ) : null}
@@ -1279,15 +1290,20 @@ export function AutoApplyAgentView({ homeHref, setupHref, agentHref, jobsHref, a
           <AgentFeed events={session.events} />
         </div>
       </div>
-      {fairUse ? (
-        <FairUseLimitDialog
-          open={fairUseDialogOpen}
-          onOpenChange={setFairUseDialogOpen}
-          snapshot={fairUse}
-          featureName="Auto Apply"
-          onUnlock={onFairUseUnlock}
-        />
-      ) : null}
+      <AddCreditsDialog
+        open={topUpOpen}
+        onOpenChange={setTopUpOpen}
+        title="Add Auto Apply credits"
+        description="Auto Apply"
+        centsPerCredit={AUTO_APPLY_APPLICATION_CENTS}
+        unitNoun="application"
+        minimumDollars={AUTO_APPLY_MINIMUM_DOLLARS}
+        presetDollars={AUTO_APPLY_PRESET_DOLLARS}
+        currentBalanceCredits={0}
+        autoReloadHint="Buy more automatically if a run reaches its cap."
+        note={topUpNote}
+        onPurchase={onFairUseUnlock ?? (() => {})}
+      />
     </AppShell>
   )
 }

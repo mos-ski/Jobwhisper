@@ -7,7 +7,7 @@ export type AddCreditsDialogProps = {
   readonly open: boolean
   readonly onOpenChange: (open: boolean) => void
   readonly title: string
-  /** Feature name only, e.g. "Interview Copilot" — the dialog builds the full "X credits are valid 12 months" line around it. */
+  /** Feature name only, e.g. "Interview Copilot" — the dialog builds the full "X minutes are valid 12 months" line around it. */
   readonly description: string
   /** e.g. 10 for $0.10/credit, 100 for $1/credit — see PRICING.md §3. */
   readonly centsPerCredit: number
@@ -22,6 +22,12 @@ export type AddCreditsDialogProps = {
   readonly presetDollars: readonly number[]
   readonly currentBalanceCredits: number
   readonly autoReloadHint: string
+  /**
+   * One line above the amounts, for the case where something is already waiting on this
+   * purchase — a fair-use cooldown says when it lifts for free, so the reader can choose
+   * between paying and waiting without a dialog of its own.
+   */
+  readonly note?: string
   readonly onPurchase: (credits: number) => void
 }
 
@@ -48,6 +54,7 @@ export function AddCreditsDialog({
   presetDollars,
   currentBalanceCredits,
   autoReloadHint,
+  note,
   onPurchase,
 }: AddCreditsDialogProps) {
   const [selectedDollars, setSelectedDollars] = useState<number | null>(null)
@@ -116,11 +123,13 @@ export function AddCreditsDialog({
           <>
             <DialogTitle className="font-gowun">{title}</DialogTitle>
             <DialogDescription>
-              {description} credits are valid 12 months.{' '}
+              {description} {unitNoun}s are valid 12 months.{' '}
               <a href="/v3/billing/usage" className="font-semibold text-accent-text underline underline-offset-4 hover:text-accent">
                 View rate card
               </a>
             </DialogDescription>
+
+            {note ? <p className="mt-3 text-sm font-medium leading-6 text-ink">{note}</p> : null}
 
             <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
               {presetDollars.map((dollars) => {

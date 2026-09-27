@@ -79,9 +79,12 @@ describe('PricingPage', () => {
 
     await user.click(screen.getByRole('switch', { name: 'Toggle annual billing' }))
 
-    // The figures tween between the two rates, so both have to settle.
-    await waitFor(() => expect(within(pro()).getByText('$99')).toBeInTheDocument())
-    await waitFor(() => expect(within(premium()).getByText('$497')).toBeInTheDocument())
+    // The figures tween between the two rates over ~450ms, so both have to settle. waitFor's
+    // 1s default is not enough headroom for that on a loaded machine, which made this the one
+    // test in the suite that failed at random.
+    const settle = { timeout: 5000 }
+    await waitFor(() => expect(within(pro()).getByText('$99')).toBeInTheDocument(), settle)
+    await waitFor(() => expect(within(premium()).getByText('$497')).toBeInTheDocument(), settle)
     expect(within(starter()).getByText('$47')).toBeInTheDocument()
     // The note is the answer to "why didn't this one change?", so it goes when nothing asked.
     expect(within(starter()).queryByText('Annual billing does not apply to weekly plans')).not.toBeInTheDocument()

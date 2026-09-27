@@ -3,16 +3,14 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
 import {
-  autoApplyFairUseSpent,
   interviewFairUseNearing,
   interviewFairUseRunning,
   interviewFairUseSpent,
-  interviewFairUseSpentNoUnlock,
   resumeFairUseNearing,
   resumeFairUseSpent,
 } from '@/mocks/fair-use'
 
-import { FairUseLimitDialog, FairUseMeter, FairUseNotice, formatFairUseAmount } from './fair-use'
+import { FairUseMeter, FairUseNotice, formatFairUseAmount } from './fair-use'
 
 describe('formatFairUseAmount', () => {
   it('reads minutes as time and everything else as a count', () => {
@@ -66,52 +64,5 @@ describe('FairUseNotice', () => {
 
     expect(screen.getByRole('status')).toHaveTextContent('Resume Builder is resting')
     expect(screen.getByRole('status')).toHaveTextContent('Back at 4:45 PM, in 2h 12m.')
-  })
-})
-
-describe('FairUseLimitDialog', () => {
-  it('offers the wait and the way past it, and prices the way past', async () => {
-    const user = userEvent.setup()
-    const onUnlock = vi.fn()
-    render(
-      <FairUseLimitDialog
-        open
-        onOpenChange={() => {}}
-        snapshot={interviewFairUseSpent}
-        featureName="Interview Copilot"
-        onUnlock={onUnlock}
-      />,
-    )
-
-    expect(screen.getByRole('heading', { name: 'Your 2h stretch is up' })).toBeInTheDocument()
-    expect(screen.getByText(/100 more minutes for \$10.00 starts a fresh stretch/)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Wait until 6:20 PM' })).toBeInTheDocument()
-
-    await user.click(screen.getByRole('button', { name: 'Add $10.00 and keep going' }))
-    expect(onUnlock).toHaveBeenCalledTimes(1)
-  })
-
-  it('calls a run a run: no talk of calls or transcripts outside an interview', () => {
-    render(
-      <FairUseLimitDialog open onOpenChange={() => {}} snapshot={autoApplyFairUseSpent} featureName="Auto Apply" />,
-    )
-
-    expect(screen.getByRole('heading', { name: 'Your 50 applications run is up' })).toBeInTheDocument()
-    expect(screen.getByText(/Every application already sent keeps its place/)).toBeInTheDocument()
-    expect(screen.queryByText(/transcript/)).not.toBeInTheDocument()
-  })
-
-  it('sells nothing when the policy has no way past the cooldown', () => {
-    render(
-      <FairUseLimitDialog
-        open
-        onOpenChange={() => {}}
-        snapshot={interviewFairUseSpentNoUnlock}
-        featureName="Interview Copilot"
-      />,
-    )
-
-    expect(screen.queryByRole('button', { name: /keep going/i })).not.toBeInTheDocument()
-    expect(screen.getByText(/cannot be bought past/)).toBeInTheDocument()
   })
 })

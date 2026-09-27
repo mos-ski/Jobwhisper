@@ -24,7 +24,7 @@ import type {
 } from '@/contracts/copilot.draft'
 import type { FairUseSnapshot } from '@/contracts/fair-use.draft'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
-import { FairUseLimitDialog, formatFairUseAmount } from '@/features/billing/fair-use'
+import { formatFairUseAmount } from '@/features/billing/fair-use'
 import { centsToCredits, creditsToCents } from '@/lib/credits'
 import {
   AiSuggestionAction,
@@ -127,7 +127,6 @@ export type CopilotLiveViewProps = {
    * plan with no stretch cap, which renders exactly as it did before (PRICING.md §1.2).
    */
   readonly fairUse?: FairUseSnapshot
-  readonly onFairUseUnlock?: () => void
   /**
    * Pins the balance so the low and out-of-balance notices can be seen without waiting for a
    * live session to drain into them. Unset, the balance runs down as it always did.
@@ -1666,7 +1665,7 @@ const TOPUP_CENTS_PER_CREDIT = 40
 // of $0.40 — $25 would be 62.5 credits, so presets stick to $10/$20/$50.
 const TOPUP_PRESET_DOLLARS = [10, 20, 50]
 
-export function CopilotLiveView({ completeHref, session, isLoading = false, transcriptBank = [], codingBank = [], demoMode = false, hasActivePlan = true, initialAutoAnswer = false, fairUse, onFairUseUnlock, balanceState }: CopilotLiveViewProps) {
+export function CopilotLiveView({ completeHref, session, isLoading = false, transcriptBank = [], codingBank = [], demoMode = false, hasActivePlan = true, initialAutoAnswer = false, fairUse, balanceState }: CopilotLiveViewProps) {
   const [assistantMessages, setAssistantMessages] = useState<readonly AiAssistantMessage[]>([])
   const [draft, setDraft] = useState('')
   const assistantScrollRef = useRef<HTMLDivElement>(null)
@@ -1690,10 +1689,16 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
   )
   const [sessionPaused, setSessionPaused] = useState(balanceState === 'empty')
   const [noticeDismissed, setNoticeDismissed] = useState(false)
-  const [topUpOpen, setTopUpOpen] = useState(false)
+  const [topUpOpen, setTopUpOpen] = useState(fairUse?.state === 'cooling-down' && fairUse.policy.topUpUnlocks)
   // The wall opens itself once. Dismissing it leaves the banner, so the session never looks
   // live again while the feature is resting.
-  const [fairUseDialogOpen, setFairUseDialogOpen] = useState(fairUse?.state === 'cooling-down')
+  // Hitting the cooldown opens the Add credits modal the low-balance notice already opens:
+  // one top-up surface, and it leads with the amounts instead of explaining itself first.
+  const [topUpNote] = useState(() =>
+    fairUse && fairUse.state === 'cooling-down' && fairUse.cooldownRemainingLabel
+      ? `Free again in ${fairUse.cooldownRemainingLabel}, or top up to carry on now.`
+      : undefined,
+  )
   const fairUseSpent = fairUse?.state === 'cooling-down'
   const fairUseNearing = fairUse?.state === 'nearing-limit'
 
@@ -1790,7 +1795,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
                 ? `Copilot is back in ${fairUse.cooldownRemainingLabel ?? `${fairUse.policy.cooldownHours}h`}.`
                 : `${formatFairUseAmount(Math.max(0, fairUse.policy.stretchLimit - fairUse.used), fairUse.policy.unit)} left in this stretch.`
             }
-            action={fairUse.policy.topUpUnlocks ? { label: 'Keep going now', onClick: () => setFairUseDialogOpen(true) } : undefined}
+            action={fairUse.policy.topUpUnlocks ? { label: 'Keep going now', onClick: () => setTopUpOpen(true) } : undefined}
           />
         ) : lowBalance && !sessionPaused && !noticeDismissed ? (
           <NoticeCard
@@ -1909,17 +1914,9 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
           presetDollars={TOPUP_PRESET_DOLLARS}
           currentBalanceCredits={Math.ceil(centsToCredits(balanceCents))}
           autoReloadHint="Buy more automatically if you run out mid-session."
+          note={topUpNote}
           onPurchase={handleAddFunds}
         />
-        {fairUse ? (
-          <FairUseLimitDialog
-            open={fairUseDialogOpen}
-            onOpenChange={setFairUseDialogOpen}
-            snapshot={fairUse}
-            featureName="Interview Copilot"
-            onUnlock={onFairUseUnlock}
-          />
-        ) : null}
       </main>
     )
   }
@@ -1973,7 +1970,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
         <NoticeBar
           tone="neutral"
           className={desktopNoticePosition}
-          action={fairUse.policy.topUpUnlocks ? { label: 'Keep going', onClick: () => setFairUseDialogOpen(true) } : undefined}
+          action={fairUse.policy.topUpUnlocks ? { label: 'Keep going', onClick: () => setTopUpOpen(true) } : undefined}
         >
           {fairUseSpent
             ? `Stretch up. Copilot is back${fairUse.resumesAtLabel ? ` at ${fairUse.resumesAtLabel}` : ''}`
@@ -2066,17 +2063,9 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
         presetDollars={TOPUP_PRESET_DOLLARS}
         currentBalanceCredits={Math.ceil(centsToCredits(balanceCents))}
         autoReloadHint="Buy more automatically if you run out mid-session."
+        note={topUpNote}
         onPurchase={handleAddFunds}
       />
-      {fairUse ? (
-        <FairUseLimitDialog
-          open={fairUseDialogOpen}
-          onOpenChange={setFairUseDialogOpen}
-          snapshot={fairUse}
-          featureName="Interview Copilot"
-          onUnlock={onFairUseUnlock}
-        />
-      ) : null}
     </main>
   )
 }

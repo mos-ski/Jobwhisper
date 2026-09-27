@@ -1,7 +1,7 @@
 import { Clock, TriangleAlert } from 'lucide-react'
 
 import type { FairUseFeature, FairUseSnapshot, FairUseUnit } from '@/contracts/fair-use.draft'
-import { Button, cn, Dialog, DialogDescription, DialogPopup, DialogTitle, formatUsd, NoticeCard, ProgressBar } from '@/ui'
+import { cn, NoticeCard, ProgressBar } from '@/ui'
 
 /**
  * Minutes read as time, everything else reads as a count. A 135-minute stretch shown as
@@ -23,22 +23,10 @@ export function formatFairUseAmount(value: number, unit: FairUseUnit): string {
  * sitting has no call to still be on and no transcript to keep, so it cannot borrow the
  * interview's words.
  */
-const featureCopy: Readonly<Record<FairUseFeature, {
-  readonly noun: string
-  readonly kept: string
-}>> = {
-  interview: {
-    noun: 'stretch',
-    kept: 'Nothing is lost. Your notes, transcript and recording stay where they are.',
-  },
-  'resume-builder': {
-    noun: 'sitting',
-    kept: 'Nothing is lost. Your resume and every change you accepted stay as they are.',
-  },
-  'auto-apply': {
-    noun: 'run',
-    kept: 'Nothing is lost. Every application already sent keeps its place and its status.',
-  },
+const featureCopy: Readonly<Record<FairUseFeature, { readonly noun: string }>> = {
+  interview: { noun: 'stretch' },
+  'resume-builder': { noun: 'sitting' },
+  'auto-apply': { noun: 'run' },
 }
 
 export type FairUseMeterProps = {
@@ -140,61 +128,3 @@ export function FairUseNotice({ snapshot, featureName, onAction, className }: Fa
   )
 }
 
-export type FairUseLimitDialogProps = {
-  readonly open: boolean
-  readonly onOpenChange: (open: boolean) => void
-  readonly snapshot: FairUseSnapshot
-  /** What just stopped, in the product's words, e.g. "Interview Copilot". */
-  readonly featureName: string
-  /** Called when the person buys past the cooldown. Absent offer means no button is shown. */
-  readonly onUnlock?: () => void
-}
-
-/**
- * The wall itself, and the one place the cooldown is sold past. It is deliberately not
- * dismissible into nothing: the close action says what waiting means, so the choice reads as
- * wait or pay rather than as an error someone has to get around.
- */
-export function FairUseLimitDialog({ open, onOpenChange, snapshot, featureName, onUnlock }: FairUseLimitDialogProps) {
-  const { policy, unlockOffer } = snapshot
-  const canUnlock = policy.topUpUnlocks && unlockOffer !== undefined
-  const copy = featureCopy[policy.feature]
-  const backIn = snapshot.cooldownRemainingLabel ?? `${policy.cooldownHours} hours`
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogPopup data-slot="fair-use-limit-dialog" className="max-w-md">
-        <DialogTitle className="font-gowun">
-          Your {formatFairUseAmount(policy.stretchLimit, policy.unit)} {copy.noun} is up
-        </DialogTitle>
-        {/* One line, then the choice. The two bordered panels this replaced said in six lines
-            what these two say in one: how long the wait is, and what skipping it costs. */}
-        <DialogDescription>
-          {featureName} is free again in {backIn}
-          {snapshot.resumesAtLabel ? `, at ${snapshot.resumesAtLabel}` : ''}. {copy.kept}
-        </DialogDescription>
-
-        {canUnlock ? (
-          <p className="mt-4 text-sm leading-6 text-ink">
-            {unlockOffer.label} for {formatUsd(unlockOffer.priceCents)} starts a fresh {copy.noun} now.
-          </p>
-        ) : (
-          <p className="mt-4 text-sm leading-6 text-ink-muted">
-            This one cannot be bought past — the cooldown is what keeps the plan unlimited for everyone on it.
-          </p>
-        )}
-
-        <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            {snapshot.resumesAtLabel ? `Wait until ${snapshot.resumesAtLabel}` : 'Wait it out'}
-          </Button>
-          {canUnlock ? (
-            <Button variant="primary" onClick={onUnlock}>
-              Add {formatUsd(unlockOffer.priceCents)} and keep going
-            </Button>
-          ) : null}
-        </div>
-      </DialogPopup>
-    </Dialog>
-  )
-}

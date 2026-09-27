@@ -654,8 +654,10 @@ export function SupportChatWidget({
     <aside
       role="dialog"
       aria-label="Support chat"
-      className="fixed bottom-4 end-4 z-sticky flex w-[min(22rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-panel border border-border bg-canvas shadow-xl animate-ease-in-bottom motion-reduce:animate-none sm:w-[22rem]"
-      style={{ height: 'min(36rem, calc(100vh - 2rem))' }}
+      // A phone gets a sheet docked to the bottom edge, full width, rounded only at the top.
+      // The floating card it used to be left a 16px gutter of page showing all the way round,
+      // which on a 360px screen reads as a panel that failed to open properly.
+      className="fixed inset-x-0 bottom-0 z-sticky flex h-[min(85dvh,42rem)] w-full flex-col overflow-hidden rounded-t-panel border border-b-0 border-border bg-canvas pb-[env(safe-area-inset-bottom)] shadow-xl animate-ease-in-bottom motion-reduce:animate-none sm:inset-x-auto sm:bottom-4 sm:end-4 sm:h-[min(36rem,calc(100vh-2rem))] sm:w-[22rem] sm:rounded-panel sm:border-b sm:pb-0"
     >
       {chatState === 'menu' && (
         <MenuPanel

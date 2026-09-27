@@ -5,7 +5,8 @@ import type { ResumeBuilderSession, ResumeBuilderTab, ResumeChatState, ResumeDoc
 import type { FairUseSnapshot } from '@/contracts/fair-use.draft'
 import { AiSuggestionAction, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, FormField, FormPanel, FormPanelFooter, FormTextArea, JobwhisperAiIcon, ListPickerDialog, Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger, ShellBar, SourcePicker, TipModal, TipModalTrigger, UploadedFileDialog } from '@/ui'
 import { AppShell } from '@/features/dashboard/app-nav'
-import { FairUseLimitDialog, FairUseMeter, FairUseNotice } from '@/features/billing/fair-use'
+import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
+import { FairUseMeter, FairUseNotice } from '@/features/billing/fair-use'
 import { InterviewPrepFeatureWidget } from '@/features/interview/interview-prep-feature-widget'
 import { useTypewriter } from '@/hooks/useTypewriter'
 import { ResumeInlineEditor, resumeSectionAnchor } from './resume-inline-editor'
@@ -1135,6 +1136,11 @@ function AtsScoreDrawer({
   )
 }
 
+// PRICING.md §2.1: Resume Builder is $0.10 a prompt with a $5 floor.
+const RESUME_PROMPT_CENTS = 10
+const RESUME_PROMPT_MINIMUM_DOLLARS = 5
+const RESUME_PROMPT_PRESET_DOLLARS = [5, 10, 25]
+
 const THINKING_LABELS = ['Thinking…', 'Reading your resume…', 'Fetching from your Knowledge Base…', 'Pulling the job description…']
 
 function useIsMobileViewport() {
@@ -1187,7 +1193,13 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
   // On a phone the list and the editor take turns on the one screen: null is the list.
   const [phoneSection, setPhoneSection] = useState<string | null>(null)
   const [showInterviewPrepWidget, setShowInterviewPrepWidget] = useState(true)
-  const [fairUseDialogOpen, setFairUseDialogOpen] = useState(fairUse?.state === 'cooling-down')
+  // Reaching the cap opens the same Add credits modal the rest of the product uses: the
+  // amounts first, and the cooldown as one line above them rather than a dialog of its own.
+  const [topUpOpen, setTopUpOpen] = useState(fairUse?.state === 'cooling-down' && fairUse.policy.topUpUnlocks)
+  const topUpNote =
+    fairUse?.state === 'cooling-down' && fairUse.cooldownRemainingLabel
+      ? `Free again in ${fairUse.cooldownRemainingLabel}, or top up to carry on now.`
+      : undefined
   const isMobileViewport = useIsMobileViewport()
 
   // Adding or restoring a section lands the canvas on it, the same way the panel's links do.
@@ -1296,7 +1308,7 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
             onAccept={handleAccept}
             onReject={handleReject}
             fairUse={fairUse}
-            onFairUseAction={() => setFairUseDialogOpen(true)}
+            onFairUseAction={() => setTopUpOpen(true)}
           />
         ) : (
           <SectionNav
@@ -1421,15 +1433,20 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
           body="Ask for more rewrites, accept the changes, or keep editing, your resume updates in real time."
         />
       ) : null}
-      {fairUse ? (
-        <FairUseLimitDialog
-          open={fairUseDialogOpen}
-          onOpenChange={setFairUseDialogOpen}
-          snapshot={fairUse}
-          featureName="Resume Builder"
-          onUnlock={onFairUseUnlock}
-        />
-      ) : null}
+      <AddCreditsDialog
+        open={topUpOpen}
+        onOpenChange={setTopUpOpen}
+        title="Add Resume Builder prompts"
+        description="Resume Builder"
+        centsPerCredit={RESUME_PROMPT_CENTS}
+        unitNoun="prompt"
+        minimumDollars={RESUME_PROMPT_MINIMUM_DOLLARS}
+        presetDollars={RESUME_PROMPT_PRESET_DOLLARS}
+        currentBalanceCredits={0}
+        autoReloadHint="Buy more automatically if you run out mid-sitting."
+        note={topUpNote}
+        onPurchase={onFairUseUnlock ?? (() => {})}
+      />
     </Workspace>
   )
 }
