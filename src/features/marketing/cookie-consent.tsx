@@ -14,6 +14,9 @@ export type CookieConsentProps = {
   readonly onSave: (preferences: ConsentPreferences) => void
 }
 
+// Black, like the landing page's own buttons, rather than the app's blue accent.
+const black = 'bg-surface-inverse text-surface hover:bg-ink-muted'
+
 const CATEGORIES = [
   { key: 'analytics', title: 'Analytics', body: 'Counts visits and the steps people take, so we can see which pages help.' },
   { key: 'marketing', title: 'Marketing', body: 'Tells us which ads brought you here, so we spend less on the ones that do not.' },
@@ -62,7 +65,7 @@ export function CookieConsent({ preferences, startWithChoices = false, privacyHr
             </div>
           ))}
           <div className="grid gap-2 sm:grid-cols-2">
-            <Button size="lg" onClick={() => onSave(draft)}>Save choices</Button>
+            <Button size="lg" className={black} onClick={() => onSave(draft)}>Save choices</Button>
             <Button size="lg" variant="secondary" onClick={onAcceptAll}>Accept all</Button>
           </div>
         </div>
@@ -70,8 +73,8 @@ export function CookieConsent({ preferences, startWithChoices = false, privacyHr
         // Accept and reject sit side by side at the same size: refusing has to be as easy as agreeing.
         <div className="mt-5 grid gap-2">
           <div className="grid grid-cols-2 gap-2">
-            <Button size="lg" onClick={onAcceptAll}>Accept all</Button>
-            <Button size="lg" onClick={onRejectAll}>Reject all</Button>
+            <Button size="lg" className={black} onClick={onAcceptAll}>Accept all</Button>
+            <Button size="lg" className={black} onClick={onRejectAll}>Reject all</Button>
           </div>
           <Button size="lg" variant="ghost" onClick={() => setChoosing(true)}>Choose which cookies</Button>
         </div>
