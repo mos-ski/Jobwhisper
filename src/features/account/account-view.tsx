@@ -1062,7 +1062,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   </a>
                 </div>
                 {pricingGuideOpen && pricingGuideStep === 0 ? (
-                  <BillingPricingGuideCard step={0} learnMoreHref="/v3/billing/done-for-you" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
+                  <BillingPricingGuideCard step={0} learnMoreHref="/v3/billing/done-for-you" viewPlanHref="/v3/billing/plans" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
                 ) : null}
               </div>
 
@@ -1093,7 +1093,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   </a>
                 </div>
                 {pricingGuideOpen && pricingGuideStep === 1 ? (
-                  <BillingPricingGuideCard step={1} learnMoreHref="/v3/billing/done-for-you" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
+                  <BillingPricingGuideCard step={1} learnMoreHref="/v3/billing/done-for-you" viewPlanHref="/v3/billing/credits" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
                 ) : null}
               </div>
 
@@ -1119,7 +1119,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   </a>
                 </div>
                 {pricingGuideOpen && pricingGuideStep === 2 ? (
-                  <BillingPricingGuideCard step={2} learnMoreHref="/v3/billing/done-for-you" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
+                  <BillingPricingGuideCard step={2} learnMoreHref="/v3/billing/done-for-you" viewPlanHref="/v3/billing/done-for-you" onNext={showNextPricingGuideStep} onDismiss={closePricingGuide} />
                 ) : null}
               </div>
             </div>

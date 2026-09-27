@@ -11,7 +11,7 @@
    Failure branch: Complete stays disabled until the required answers are in.
 
 3. Entry condition: the dashboard opens with `welcome=1`.
-   Exit condition: the "Special One-time Trial" Pro offer ($1.39 for 7 days, then $99/month) shows as a centred modal (a bottom sheet on phones). Try 1 week for $1.39 opens `/v3/billing?plan=pro&offer=welcome-60`; closing or Esc removes `welcome` from the URL so a refresh does not show it again.
+   Exit condition: the "Special One-time Trial" Pro offer ($1.39 for 7 days, then $99/month) shows as a centred modal (a bottom sheet on phones). Try 1 week for $1.39 opens `/v3/billing?plan=pro&offer=welcome-60`; closing or Esc swaps it for a top banner carrying the same deal and the same countdown (`?offer=banner`, which keeps the banner through a refresh); its Upgrade now goes to the same billing link.
    Failure branch: none in this slice.
 
 4. Entry condition: a returning user signs in at `/v3/auth/sign-in`.
