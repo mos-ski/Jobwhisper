@@ -49,6 +49,8 @@ const EXTRA_PLACEHOLDERS: Record<ResumeExtraSectionKind, { readonly title: strin
 }
 
 // Blue text actions for adding a row, so they read as something to press.
+// Accept / Fix for me: the section tints briefly and its text wipes in, so the eye lands on what changed.
+const fixedFlash = 'rounded-lg motion-safe:animate-fix-pulse motion-safe:[&_li]:animate-text-reveal motion-safe:[&_textarea]:animate-text-reveal'
 const addAction = 'inline-flex min-h-10 items-center gap-1.5 justify-self-start rounded-lg px-3 text-sm font-semibold text-accent-text transition-colors duration-normal ease-default hover:bg-accent-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus motion-reduce:transition-none'
 const addItemAction = 'inline-flex min-h-10 items-center gap-1.5 justify-self-start rounded-lg border border-input bg-surface px-4 text-sm font-semibold text-ink transition-colors duration-normal ease-default hover:border-ink-muted hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus motion-reduce:transition-none'
 const removeAction = 'grid size-9 shrink-0 place-items-center rounded-md text-ink-muted hover:bg-surface-subtle hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus'
@@ -124,6 +126,7 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
   const [extraEntries, setExtraEntries] = useState<Readonly<Record<string, readonly ResumeExtraEntry[]>>>({})
   const [resolved, setResolved] = useState<ReadonlySet<string>>(new Set())
   const [openFix, setOpenFix] = useState<string | null>(null)
+  const [flash, setFlash] = useState<string | null>(null)
   const [dragging, setDragging] = useState<string | null>(null)
   const [announcement, setAnnouncement] = useState('')
   const [phone, setPhone] = useState('')
@@ -139,6 +142,15 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     panel?.scrollIntoView?.({ behavior: reduce ? 'auto' : 'smooth', block: 'center' })
   }, [openFix])
+
+  useEffect(() => {
+    if (!flash) return
+    const target = window.document.querySelector(`[data-fix-target="${flash}"]`)
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    target?.scrollIntoView?.({ behavior: reduce ? 'auto' : 'smooth', block: 'center' })
+    const timer = window.setTimeout(() => setFlash(null), 1500)
+    return () => window.clearTimeout(timer)
+  }, [flash])
 
   // Added sections join the end of the order; removed ones leave it.
   useEffect(() => {
@@ -274,6 +286,7 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
   function resolve(key: string) {
     setResolved((current) => new Set(current).add(key))
     setOpenFix(null)
+    setFlash(key)
   }
 
   function issuesFor(section: BodySection, roleIndex?: number) {
@@ -385,7 +398,7 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
       return (
         <div className="grid gap-6">
           {shown.roles.map((role, roleIndex) => (
-            <article key={roleIndex} className="grid gap-1 border-b border-border pb-5 last:border-b-0 last:pb-0">
+            <article key={roleIndex} data-fix-target={`experience:${roleIndex}`} className={cn('grid gap-1 border-b border-border pb-5 last:border-b-0 last:pb-0', flash === `experience:${roleIndex}` && fixedFlash)}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="grid min-w-0 flex-1 gap-1">
                   <div className="flex flex-wrap items-center gap-x-1">
@@ -437,7 +450,7 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
                   <Plus aria-hidden="true" className="size-4" />
                   Bullet point
                 </button>
-                {nextSuggestion ? (
+                {nextSuggestion && role.bullets.some((b) => !b.trim()) ? (
                   <button
                     type="button"
                     onClick={() => {
@@ -752,7 +765,8 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
                 onDrop={(event) => { event.preventDefault(); if (dragging) move(dragging, order.indexOf(key)); setDragging(null) }}
                 onDragEnd={() => setDragging(null)}
                 onFocus={() => onActiveSectionChange?.(key)}
-                className={cn('scroll-mt-4 border-b border-border py-5 last:border-b-0', dragging === key && 'opacity-60')}
+                data-fix-target={key}
+                className={cn('scroll-mt-4 border-b border-border py-5 last:border-b-0', dragging === key && 'opacity-60', flash === key && fixedFlash)}
               >
                 <div className={cn('flex flex-wrap items-center justify-between gap-3', !isCollapsed && 'mb-3')}>
                   <div className="flex min-w-0 items-center gap-1">

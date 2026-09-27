@@ -154,12 +154,21 @@ const config: Config = {
           '0%': { transform: 'translateX(0%)' },
           '100%': { transform: 'translateX(-50%)' },
         },
+        'fix-pulse': {
+          '0%, 35%': { backgroundColor: 'var(--lf-accent-subtle)' },
+        },
+        'text-reveal': {
+          from: { clipPath: 'inset(0 100% 0 0)', opacity: '0.3' },
+          to: { clipPath: 'inset(0 0 0 0)', opacity: '1' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 200ms ease-out',
         'accordion-up': 'accordion-up 200ms ease-out',
         indeterminate: 'indeterminate 1.5s ease-in-out infinite',
         marquee: 'marquee 18s linear infinite',
+        'fix-pulse': 'fix-pulse 1.4s ease-out',
+        'text-reveal': 'text-reveal 600ms ease-out',
       },
       transitionDuration: {
         fast: 'var(--lf-duration-fast)',
