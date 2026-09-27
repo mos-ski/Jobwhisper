@@ -365,7 +365,7 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
               <Button size="sm" variant="secondary" onClick={() => setOpenFix(null)}>Reject</Button>
             </>
           ) : (
-            <Button size="sm" variant="secondary" onClick={() => resolve(key)}>Mark as fixed</Button>
+            <Button size="sm" onClick={() => resolve(key)}>Fix for me</Button>
           )}
         </div>
       </div>
