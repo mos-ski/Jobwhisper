@@ -393,7 +393,8 @@ export function LandingPage() {
 
   // The sections are wrapped so they can carry the opaque sheet that covers the pinned
   // footer — on the page element itself the background paints under the footer instead.
-  return <main className="figma-landing-page"><div className="landing-content"><BrandAnnouncement /><Hero heroRef={heroRef} /><Demo /><CopilotShowcase /><ProductFacts /><Journey /><TryItNow /><Faq /><Closing /></div><MarketingFooter onCookieSettings={() => setSettingsOpened((count) => count + 1)} />{showSocialProof && !showConsent ? <SocialProofSignup /> : null}{showConsent ? (
+  // The cookie banner sits outside <main>: it is not page content, and the landing's h2 rules would restyle it.
+  return <><main className="figma-landing-page"><div className="landing-content"><BrandAnnouncement /><Hero heroRef={heroRef} /><Demo /><CopilotShowcase /><ProductFacts /><Journey /><TryItNow /><Faq /><Closing /></div><MarketingFooter onCookieSettings={() => setSettingsOpened((count) => count + 1)} />{showSocialProof && !showConsent ? <SocialProofSignup /> : null}</main>{showConsent ? (
     <CookieConsent
       key={settingsOpened}
       preferences={consent.status === 'decided' ? consent.preferences : NO_OPTIONAL_COOKIES}
@@ -403,5 +404,5 @@ export function LandingPage() {
       onRejectAll={() => { decideConsent(NO_OPTIONAL_COOKIES); setSettingsOpened(0) }}
       onSave={(preferences) => { decideConsent(preferences); setSettingsOpened(0) }}
     />
-  ) : null}</main>
+  ) : null}</>
 }
