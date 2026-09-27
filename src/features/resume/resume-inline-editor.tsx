@@ -36,7 +36,7 @@ const SEVERITY_LABELS: Record<ResumeIssueSeverity, string> = { urgent: 'Urgent',
 const SEVERITY_DOTS: Record<ResumeIssueSeverity, string> = { urgent: 'bg-danger', critical: 'bg-warning', optional: 'bg-info' }
 
 // Inputs that read as the resume itself until you point at or focus them.
-const field = 'w-full rounded-md border border-transparent bg-transparent px-2 py-1 text-ink outline-none placeholder:text-ink-muted hover:bg-surface-subtle focus:border-focus focus:bg-surface focus:ring-2 focus:ring-focus'
+const field = 'w-full rounded-lg border border-transparent bg-transparent px-2.5 py-1.5 font-medium text-ink outline-none transition-colors duration-normal ease-default placeholder:font-normal placeholder:text-ink-muted hover:border-accent-muted hover:bg-accent-subtle focus:border-focus focus:bg-surface focus:ring-2 focus:ring-focus motion-reduce:transition-none'
 
 /** A textarea as tall as its text, at any width, so no part of a resume line hides behind a scrollbar. */
 function GrowingTextarea({ value, className, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement> & { readonly value: string }) {
