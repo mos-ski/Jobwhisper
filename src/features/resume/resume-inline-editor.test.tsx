@@ -19,7 +19,7 @@ describe('ResumeInlineEditor', () => {
   it("shows each section's issues on its Fix button, with no score strip", () => {
     renderEditor()
     expect(screen.queryByText('Urgent fix')).not.toBeInTheDocument()
-    expect(within(screen.getByRole('region', { name: 'Summary' })).getByRole('button', { name: 'Fix 1 critical' })).toHaveAttribute('data-variant', 'primary')
+    expect(within(screen.getByRole('region', { name: 'Summary' })).getByRole('button', { name: 'Fix 1 critical' })).toHaveTextContent('Fix')
     expect(within(screen.getByRole('region', { name: 'Skills' })).getByRole('button', { name: 'Fix 1 urgent' })).toBeInTheDocument()
   })
 
@@ -36,13 +36,35 @@ describe('ResumeInlineEditor', () => {
     expect(summary.queryByRole('button', { name: /^(Fix|Close)/ })).not.toBeInTheDocument()
   })
 
-  it('adds and removes skills as chips', async () => {
+  it('adds, removes and reorders skills within a group', async () => {
     const user = userEvent.setup()
     renderEditor()
-    await user.type(screen.getByRole('textbox', { name: 'Add skill' }), 'Amplitude{Enter}')
-    expect(within(screen.getByRole('list', { name: 'Skills' })).getByText('Amplitude')).toBeInTheDocument()
+    await user.type(screen.getByRole('textbox', { name: 'Add skill to Core skills' }), 'Amplitude{Enter}')
+    const group = () => within(screen.getByRole('list', { name: 'Core skills' }))
+    expect(group().getByText('Amplitude')).toBeInTheDocument()
+
+    const first = resumeDocument.skills[0] ?? ''
+    fireEvent.keyDown(screen.getByRole('button', { name: `Move ${first}. Use the arrow keys.` }), { key: 'ArrowRight' })
+    expect(screen.getByRole('status')).toHaveTextContent(`${first} moved to position 2`)
+
     await user.click(screen.getByRole('button', { name: 'Remove Amplitude' }))
-    expect(within(screen.getByRole('list', { name: 'Skills' })).queryByText('Amplitude')).not.toBeInTheDocument()
+    expect(group().queryByText('Amplitude')).not.toBeInTheDocument()
+  })
+
+  it('collapses a section and adds items to the standard ones', async () => {
+    const user = userEvent.setup()
+    renderEditor()
+    const toggle = screen.getByRole('button', { name: 'Projects' })
+    expect(toggle).toHaveAttribute('aria-expanded', 'true')
+    await user.click(toggle)
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    expect(document.getElementById('resume-body-projects')).not.toBeVisible()
+
+    const before = screen.getAllByRole('textbox', { name: /^Company, role/ }).length
+    await user.click(screen.getByRole('button', { name: 'Add experience' }))
+    expect(screen.getAllByRole('textbox', { name: /^Company, role/ })).toHaveLength(before + 1)
+    expect(screen.getByRole('button', { name: 'Add education' })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Add language' })).toBeInTheDocument()
   })
 
   it('reorders sections from the keyboard', () => {

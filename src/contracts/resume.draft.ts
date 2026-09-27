@@ -33,6 +33,8 @@ export type ResumeDocument = {
   readonly education: readonly ResumeEducation[]
   readonly skills: readonly string[]
   readonly improvedSkills: readonly string[]
+  /** Grouped skills; when absent, `skills` shows as one group. */
+  readonly skillGroups?: readonly ResumeSkillGroup[]
   readonly certifications: readonly ResumeCertification[]
   readonly projects: readonly ResumeProject[]
   readonly languages: readonly ResumeLanguage[]
@@ -60,7 +62,21 @@ export type ResumeRole = {
 export type ResumeEducation = {
   readonly school: string
   readonly degree: string
+  /** Year finished, or expected. */
   readonly year: string
+  readonly startYear?: string
+  readonly gpa?: string
+  readonly location?: string
+  readonly achievements?: string
+  readonly coursework?: string
+  readonly bullets?: readonly string[]
+}
+
+/** Skills under a heading, e.g. "Tools & Platforms", in the order the person set. */
+export type ResumeSkillGroup = {
+  readonly id: string
+  readonly title: string
+  readonly skills: readonly string[]
 }
 
 export type ResumeCertification = {
@@ -102,4 +118,22 @@ export type ResumeIssue = {
   readonly roleIndex?: number
   readonly severity: ResumeIssueSeverity
   readonly detail: string
+}
+
+/** Sections a person can add beyond the standard ones; `custom` takes a title of their own. */
+export type ResumeExtraSectionKind = 'awards' | 'volunteering' | 'publications' | 'courses' | 'interests' | 'references' | 'custom'
+
+export type ResumeExtraSection = {
+  readonly id: string
+  readonly kind: ResumeExtraSectionKind
+  readonly title: string
+}
+
+/** One item in an added section, e.g. an award: title, who gave it, when, and a line on why. */
+export type ResumeExtraEntry = {
+  readonly id: string
+  readonly title: string
+  readonly subtitle: string
+  readonly date: string
+  readonly description: string
 }

@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, ChevronRight, Download, FileText, HelpCircle, Minus, Plus, Target, X } from 'lucide-react'
 
-import type { ResumeBuilderSession, ResumeBuilderTab, ResumeChatState, ResumeDocument, ResumeHistoryRow, ResumeIssue, ResumeSectionId } from '@/contracts/resume.draft'
+import type { ResumeBuilderSession, ResumeBuilderTab, ResumeChatState, ResumeDocument, ResumeExtraSection, ResumeExtraSectionKind, ResumeHistoryRow, ResumeIssue, ResumeSectionId } from '@/contracts/resume.draft'
 import type { FairUseSnapshot } from '@/contracts/fair-use.draft'
-import { AiSuggestionAction, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, FormField, FormPanel, FormPanelFooter, FormTextArea, JobwhisperAiIcon, ListPickerDialog, ShellBar, SourcePicker, TipModal, TipModalTrigger, UploadedFileDialog } from '@/ui'
+import { AiSuggestionAction, cn, DataTable, Dialog, DialogClose, DialogPopup, DialogTitle, FormField, FormPanel, FormPanelFooter, FormTextArea, JobwhisperAiIcon, ListPickerDialog, Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger, ShellBar, SourcePicker, TipModal, TipModalTrigger, UploadedFileDialog } from '@/ui'
 import { AppShell } from '@/features/dashboard/app-nav'
 import { FairUseLimitDialog, FairUseMeter } from '@/features/billing/fair-use'
 import { InterviewPrepFeatureWidget } from '@/features/interview/interview-prep-feature-widget'
@@ -605,9 +605,33 @@ function ChatSidebar({
   )
 }
 
-/** The Edit tab's panel: one link per section, jumping to it on the canvas. */
-function SectionNav() {
-  const sections = Object.entries(sectionLabels) as ReadonlyArray<[ResumeSectionId, string]>
+const EXTRA_SECTION_OPTIONS: readonly (readonly [ResumeExtraSectionKind, string])[] = [
+  ['awards', 'Awards'],
+  ['volunteering', 'Volunteering'],
+  ['publications', 'Publications'],
+  ['courses', 'Courses'],
+  ['interests', 'Interests'],
+  ['references', 'References'],
+  ['custom', 'Custom section'],
+]
+
+type SectionNavProps = {
+  readonly hiddenSections: readonly ResumeSectionId[]
+  readonly extraSections: readonly ResumeExtraSection[]
+  readonly onRestore: (id: ResumeSectionId) => void
+  readonly onAdd: (kind: ResumeExtraSectionKind) => void
+  /** The section being edited on the canvas, marked in the list. */
+  readonly activeSection: string | null
+}
+
+/** The Edit tab's panel: one link per section, jumping to it on the canvas, and Add Section. */
+function SectionNav({ hiddenSections, extraSections, onRestore, onAdd, activeSection }: SectionNavProps) {
+  const sections = (Object.entries(sectionLabels) as ReadonlyArray<[ResumeSectionId, string]>).filter(([id]) => !hiddenSections.includes(id))
+  const addable = EXTRA_SECTION_OPTIONS.filter(([kind]) => kind === 'custom' || !extraSections.some((section) => section.kind === kind))
+  const link = (id: string) => cn(
+    'flex min-h-12 w-full items-center justify-between rounded-lg px-3 text-sm font-medium hover:text-accent-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+    id === activeSection ? 'bg-accent-subtle font-semibold text-accent-text' : 'text-ink',
+  )
 
   return (
     <aside className="flex w-full flex-1 flex-col overflow-hidden border-e border-border bg-surface lg:h-full lg:w-[21.25rem] lg:flex-none">
@@ -617,23 +641,39 @@ function SectionNav() {
       <nav aria-label="Resume sections" className="flex-1 overflow-auto px-3 py-1">
         <ul>
           {sections.map(([id, label]) => (
-            <li key={id} className="border-b border-border">
-              <a
-                href={`#${resumeSectionAnchor(id)}`}
-                className="flex min-h-12 w-full items-center justify-between text-sm font-medium text-ink hover:text-accent-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-              >
+            <li key={id} className="py-0.5">
+              <a href={`#${resumeSectionAnchor(id)}`} aria-current={id === activeSection ? 'location' : undefined} className={link(id)}>
                 {label}
                 <ChevronRight aria-hidden="true" className="size-4 text-ink-muted rtl:rotate-180" />
+              </a>
+            </li>
+          ))}
+          {extraSections.map((section) => (
+            <li key={section.id} className="py-0.5">
+              <a href={`#${resumeSectionAnchor(section.id)}`} aria-current={section.id === activeSection ? 'location' : undefined} className={link(section.id)}>
+                <span className="truncate">{section.title || 'Untitled section'}</span>
+                <ChevronRight aria-hidden="true" className="size-4 shrink-0 text-ink-muted rtl:rotate-180" />
               </a>
             </li>
           ))}
         </ul>
       </nav>
       <div className="border-t border-border p-3">
-        <button type="button" className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-lg border border-dashed border-input text-sm font-medium text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-          <Plus aria-hidden="true" className="size-4" />
-          Add Section
-        </button>
+        <Menu>
+          <MenuTrigger className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-lg border border-dashed border-input text-sm font-medium text-ink hover:border-ink-muted hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+            <Plus aria-hidden="true" className="size-4" />
+            Add Section
+          </MenuTrigger>
+          <MenuContent side="top" align="start" className="w-64">
+            {hiddenSections.map((id) => (
+              <MenuItem key={id} onClick={() => onRestore(id)}>{sectionLabels[id]}</MenuItem>
+            ))}
+            {hiddenSections.length > 0 ? <MenuSeparator /> : null}
+            {addable.map(([kind, label]) => (
+              <MenuItem key={kind} onClick={() => onAdd(kind)}>{label}</MenuItem>
+            ))}
+          </MenuContent>
+        </Menu>
       </div>
     </aside>
   )
@@ -1115,9 +1155,34 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
     return Number.isFinite(parsed) ? parsed / 100 : 0.85
   })
   const [previewOpen, setPreviewOpen] = useState(false)
+  const [extraSections, setExtraSections] = useState<readonly ResumeExtraSection[]>([])
+  const [hiddenSections, setHiddenSections] = useState<readonly ResumeSectionId[]>([])
+  const [activeSection, setActiveSection] = useState<string | null>(null)
   const [showInterviewPrepWidget, setShowInterviewPrepWidget] = useState(true)
   const [fairUseDialogOpen, setFairUseDialogOpen] = useState(fairUse?.state === 'cooling-down')
   const isMobileViewport = useIsMobileViewport()
+
+  // Adding or restoring a section lands the canvas on it, the same way the panel's links do.
+  function jumpTo(id: string) {
+    window.requestAnimationFrame(() => { window.location.hash = resumeSectionAnchor(id) })
+  }
+
+  function addSection(kind: ResumeExtraSectionKind) {
+    const id = `extra-${kind}-${Math.random().toString(36).slice(2, 8)}`
+    const title = kind === 'custom' ? '' : EXTRA_SECTION_OPTIONS.find(([option]) => option === kind)?.[1] ?? ''
+    setExtraSections((current) => [...current, { id, kind, title }])
+    jumpTo(id)
+  }
+
+  function restoreSection(id: ResumeSectionId) {
+    setHiddenSections((current) => current.filter((item) => item !== id))
+    jumpTo(id)
+  }
+
+  function removeSection(id: string) {
+    if (id in sectionLabels) setHiddenSections((current) => [...current, id as ResumeSectionId])
+    else setExtraSections((current) => current.filter((section) => section.id !== id))
+  }
 
   function revealSuggestion() {
     setPendingSuggestion(true)
@@ -1198,7 +1263,7 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
             fairUse={fairUse}
           />
         ) : (
-          <SectionNav />
+          <SectionNav hiddenSections={hiddenSections} extraSections={extraSections} onRestore={restoreSection} onAdd={addSection} activeSection={activeSection} />
         )}
         <ResumePreviewTray
           onOpen={() => setPreviewOpen(true)}
@@ -1237,6 +1302,11 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
         // Manual editing gets the resume itself to edit; Chat keeps the preview.
         <div className="relative hidden min-w-0 flex-1 flex-col lg:flex">
           <ResumeInlineEditor
+            extraSections={extraSections}
+            hiddenSections={hiddenSections}
+            onRenameSection={(id, title) => setExtraSections((current) => current.map((section) => (section.id === id ? { ...section, title } : section)))}
+            onRemoveSection={removeSection}
+            onActiveSectionChange={setActiveSection}
             document={document}
             issues={issues}
             pendingSuggestion={pendingSuggestion}
