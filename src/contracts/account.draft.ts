@@ -41,6 +41,8 @@ export type BillingStandalonePurchase = {
   readonly rateLabel: string
   /** e.g. 10 for $0.10/credit, 100 for $1/credit. */
   readonly centsPerCredit: number
+  /** What one credit buys, singular: "prompt", "application". One credit is one unit. */
+  readonly unitNoun: string
   readonly minimumDollars: number
   readonly presetDollars: readonly number[]
   readonly description: string

@@ -1119,6 +1119,7 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
           title="Add Interview Prep credits"
           description="Interview Prep"
           centsPerCredit={TOPUP_CENTS_PER_CREDIT}
+          unitNoun="minute"
           minimumDollars={TOPUP_MINIMUM_DOLLARS}
           presetDollars={TOPUP_PRESET_DOLLARS}
           currentBalanceCredits={Math.ceil(centsToCredits(balanceCents))}
@@ -1248,6 +1249,7 @@ export function InterviewSessionView({ voiceHref, completeHref, session, isLoadi
         title="Add Interview Prep credits"
         description="Interview Prep"
         centsPerCredit={TOPUP_CENTS_PER_CREDIT}
+          unitNoun="minute"
         minimumDollars={TOPUP_MINIMUM_DOLLARS}
         presetDollars={TOPUP_PRESET_DOLLARS}
         currentBalanceCredits={Math.ceil(centsToCredits(balanceCents))}

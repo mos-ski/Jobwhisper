@@ -1,4 +1,4 @@
-import { Clock, TriangleAlert, Zap } from 'lucide-react'
+import { Clock, TriangleAlert } from 'lucide-react'
 
 import type { FairUseFeature, FairUseSnapshot, FairUseUnit } from '@/contracts/fair-use.draft'
 import { Button, cn, Dialog, DialogDescription, DialogPopup, DialogTitle, formatUsd, NoticeCard, ProgressBar } from '@/ui'
@@ -25,22 +25,18 @@ export function formatFairUseAmount(value: number, unit: FairUseUnit): string {
  */
 const featureCopy: Readonly<Record<FairUseFeature, {
   readonly noun: string
-  readonly unlockTitle: string
   readonly kept: string
 }>> = {
   interview: {
     noun: 'stretch',
-    unlockTitle: 'Still on the call? Carry on now',
     kept: 'Nothing is lost. Your notes, transcript and recording stay where they are.',
   },
   'resume-builder': {
     noun: 'sitting',
-    unlockTitle: 'Need to finish this resume? Carry on now',
     kept: 'Nothing is lost. Your resume and every change you accepted stay as they are.',
   },
   'auto-apply': {
     noun: 'run',
-    unlockTitle: 'Need the next batch sooner? Start it now',
     kept: 'Nothing is lost. Every application already sent keeps its place and its status.',
   },
 }
@@ -163,47 +159,30 @@ export function FairUseLimitDialog({ open, onOpenChange, snapshot, featureName, 
   const { policy, unlockOffer } = snapshot
   const canUnlock = policy.topUpUnlocks && unlockOffer !== undefined
   const copy = featureCopy[policy.feature]
+  const backIn = snapshot.cooldownRemainingLabel ?? `${policy.cooldownHours} hours`
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup data-slot="fair-use-limit-dialog" className="max-w-md">
-        <DialogTitle>
+        <DialogTitle className="font-gowun">
           Your {formatFairUseAmount(policy.stretchLimit, policy.unit)} {copy.noun} is up
         </DialogTitle>
+        {/* One line, then the choice. The two bordered panels this replaced said in six lines
+            what these two say in one: how long the wait is, and what skipping it costs. */}
         <DialogDescription>
-          {featureName} is unlimited on your plan, but one uninterrupted {copy.noun} runs to{' '}
-          {formatFairUseAmount(policy.stretchLimit, policy.unit)}. It opens again
-          {snapshot.resumesAtLabel ? ` at ${snapshot.resumesAtLabel}` : ''}
-          {snapshot.cooldownRemainingLabel ? `, in ${snapshot.cooldownRemainingLabel}` : ''}.
+          {featureName} is free again in {backIn}
+          {snapshot.resumesAtLabel ? `, at ${snapshot.resumesAtLabel}` : ''}. {copy.kept}
         </DialogDescription>
 
-        <div className="mt-4 grid gap-3">
-          <div className="flex items-start gap-3 rounded-soft border border-border bg-surface-subtle p-3">
-            <Clock aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-ink-muted" />
-            <div>
-              <p className="text-sm font-medium text-ink">
-                Free again in {snapshot.cooldownRemainingLabel ?? `${policy.cooldownHours} hours`}
-              </p>
-              <p className="mt-1 text-xs leading-5 text-ink-muted">{copy.kept}</p>
-            </div>
-          </div>
-
-          {canUnlock ? (
-            <div className="flex items-start gap-3 rounded-soft border border-accent bg-accent-subtle p-3">
-              <Zap aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-accent-text" />
-              <div>
-                <p className="text-sm font-medium text-accent-text">{copy.unlockTitle}</p>
-                <p className="mt-1 text-xs leading-5 text-accent-text">
-                  {unlockOffer.label} for {formatUsd(unlockOffer.priceCents)} starts a fresh {copy.noun} immediately.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <p className="text-xs leading-5 text-ink-muted">
-              This one cannot be bought past — the cooldown is what keeps the plan unlimited for everyone on it.
-            </p>
-          )}
-        </div>
+        {canUnlock ? (
+          <p className="mt-4 text-sm leading-6 text-ink">
+            {unlockOffer.label} for {formatUsd(unlockOffer.priceCents)} starts a fresh {copy.noun} now.
+          </p>
+        ) : (
+          <p className="mt-4 text-sm leading-6 text-ink-muted">
+            This one cannot be bought past — the cooldown is what keeps the plan unlimited for everyone on it.
+          </p>
+        )}
 
         <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button variant="ghost" onClick={() => onOpenChange(false)}>

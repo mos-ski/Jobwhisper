@@ -878,6 +878,8 @@ type CreditBalanceCardProps = {
   /** Total ever purchased — the denominator for "N% left". Grows alongside balanceCredits on each purchase, so a fresh balance always reads 100% left. */
   readonly totalCredits: number
   readonly centsPerCredit: number
+  /** What one credit buys here, singular: "minute", "prompt", "application". */
+  readonly unitNoun: string
   readonly minimumDollars: number
   readonly presetDollars: readonly number[]
   readonly onPurchase: (credits: number) => void
@@ -895,7 +897,7 @@ type CreditBalanceCardProps = {
   readonly limitResetLabel?: string
 }
 
-function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, centsPerCredit, minimumDollars, presetDollars, onPurchase, reloadHint, requiresActivePlan, hasActivePlan, guide, planName, extraHint, limitResetLabel }: CreditBalanceCardProps) {
+function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, centsPerCredit, unitNoun, minimumDollars, presetDollars, onPurchase, reloadHint, requiresActivePlan, hasActivePlan, guide, planName, extraHint, limitResetLabel }: CreditBalanceCardProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
   // Nothing bought yet is an empty bar, not a full one.
   const percentLeft = totalCredits > 0 ? Math.max(0, Math.min(100, Math.round((balanceCredits / totalCredits) * 100))) : 0
@@ -964,6 +966,7 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
         title="Add credits"
         description={featureName}
         centsPerCredit={centsPerCredit}
+        unitNoun={unitNoun}
         minimumDollars={minimumDollars}
         presetDollars={presetDollars}
         currentBalanceCredits={balanceCredits}
@@ -1229,6 +1232,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                 balanceCredits={copilotBalanceCredits}
                 totalCredits={copilotTotalCredits}
                 centsPerCredit={TOPUP_CENTS_PER_CREDIT}
+                unitNoun="minute"
                 minimumDollars={TOPUP_MINIMUM_DOLLARS}
                 presetDollars={TOPUP_PRESET_DOLLARS}
                 reloadHint="Buy more automatically if you run out mid-session."
@@ -1251,6 +1255,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   balanceCredits={autoApplyBalance}
                   totalCredits={autoApplyTotalCredits}
                   centsPerCredit={autoApplyPurchase.centsPerCredit}
+                  unitNoun="application"
                   minimumDollars={autoApplyPurchase.minimumDollars}
                   presetDollars={autoApplyPurchase.presetDollars}
                   reloadHint="Buy more automatically when your balance runs low."
@@ -1269,6 +1274,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   balanceCredits={resumeBuilderBalance}
                   totalCredits={resumeBuilderTotalCredits}
                   centsPerCredit={resumeBuilderPurchase.centsPerCredit}
+                  unitNoun="prompt"
                   minimumDollars={resumeBuilderPurchase.minimumDollars}
                   presetDollars={resumeBuilderPurchase.presetDollars}
                   reloadHint="Buy more automatically when your balance runs low."

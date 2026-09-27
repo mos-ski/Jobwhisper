@@ -95,6 +95,7 @@ function PurchaseCard({ purchase, index }: { readonly purchase: BillingStandalon
         title="Add credits"
         description={purchase.name}
         centsPerCredit={purchase.centsPerCredit}
+        unitNoun={purchase.unitNoun}
         minimumDollars={purchase.minimumDollars}
         presetDollars={purchase.presetDollars}
         currentBalanceCredits={balance}

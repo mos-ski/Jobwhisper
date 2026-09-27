@@ -11,6 +11,13 @@ export type AddCreditsDialogProps = {
   readonly description: string
   /** e.g. 10 for $0.10/credit, 100 for $1/credit — see PRICING.md §3. */
   readonly centsPerCredit: number
+  /**
+   * What one credit buys, singular: "minute", "prompt", "application". One credit is one unit
+   * (PRICING.md §2.1), so the preset shows the unit rather than the credit count — "100
+   * minutes" answers the only question anyone has in front of this dialog, and "100 credits"
+   * does not.
+   */
+  readonly unitNoun: string
   readonly minimumDollars: number
   readonly presetDollars: readonly number[]
   readonly currentBalanceCredits: number
@@ -20,6 +27,10 @@ export type AddCreditsDialogProps = {
 
 function creditsForDollars(dollars: number, centsPerCredit: number): number {
   return Math.round((dollars * 100) / centsPerCredit)
+}
+
+function unitsLabel(count: number, noun: string): string {
+  return `${count.toLocaleString('en-US')} ${count === 1 ? noun : `${noun}s`}`
 }
 
 function isWholeCreditAmount(dollars: number, centsPerCredit: number): boolean {
@@ -32,6 +43,7 @@ export function AddCreditsDialog({
   title,
   description,
   centsPerCredit,
+  unitNoun,
   minimumDollars,
   presetDollars,
   currentBalanceCredits,
@@ -129,7 +141,7 @@ export function AddCreditsDialog({
                     )}
                   >
                     <span className="text-lg font-bold text-ink">${dollars}</span>
-                    <span className="text-xs text-ink-muted">{creditsForDollars(dollars, centsPerCredit)} credits</span>
+                    <span className="text-xs text-ink-muted">{unitsLabel(creditsForDollars(dollars, centsPerCredit), unitNoun)}</span>
                   </button>
                 )
               })}
@@ -170,7 +182,7 @@ export function AddCreditsDialog({
                   <p className="mt-2 text-sm font-medium text-danger">{activeError}</p>
                 ) : wholeCredits && meetsMinimum ? (
                   <p className="mt-2 text-sm text-ink-muted">
-                    ${activeDollars} &rarr; <span className="font-semibold text-ink">{creditsForDollars(activeDollars!, centsPerCredit)} credits</span>
+                    ${activeDollars} &rarr; <span className="font-semibold text-ink">{unitsLabel(creditsForDollars(activeDollars!, centsPerCredit), unitNoun)}</span>
                   </p>
                 ) : null}
               </div>
