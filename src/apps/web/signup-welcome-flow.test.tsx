@@ -39,12 +39,24 @@ describe('After sign-up', () => {
     expect(await screen.findByRole('dialog', { name: 'Special One-time Trial' })).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Close Pro plan offer' }))
-    expect(screen.getByTestId('where')).toHaveTextContent(/^\/v3\/app$/)
+    expect(screen.getByTestId('where')).toHaveTextContent(/^\/v3\/app\?offer=banner$/)
+  })
+
+  it('keeps the deal as a top banner after the offer is closed', async () => {
+    const user = userEvent.setup()
+    renderAt('/v3/app?welcome=1')
+    await user.click(await screen.findByRole('button', { name: 'Close Pro plan offer' }))
+
+    const banner = screen.getByRole('region', { name: 'Pro trial offer' })
+    expect(banner).toHaveTextContent('Try Pro for 7 days for $1.39, 94% off')
+    await user.click(screen.getByRole('button', { name: 'Upgrade now' }))
+    expect(screen.getByTestId('where')).toHaveTextContent('/v3/billing?plan=pro&offer=welcome-60')
   })
 
   it('shows no offer on an ordinary dashboard visit', () => {
     renderAt('/v3/app')
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: 'Pro trial offer' })).not.toBeInTheDocument()
   })
 
   it('claims the offer into billing', async () => {

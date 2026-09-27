@@ -37,6 +37,8 @@ export type DashboardViewProps = {
   readonly isLoading?: boolean
   readonly activeDropdown?: 'help' | 'credits' | 'profile'
   readonly creditNotice?: 'low' | 'empty'
+  /** A bar across the very top of the page, e.g. a time-limited offer. */
+  readonly announcement?: ReactNode
 }
 
 const navIconByLabel: Record<string, ReactNode> = {
@@ -603,6 +605,7 @@ export function DashboardView({
   isLoading = false,
   activeDropdown,
   creditNotice,
+  announcement,
 }: DashboardViewProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [upgradeAction, setUpgradeAction] = useState<DashboardAction | null>(null)
@@ -614,6 +617,7 @@ export function DashboardView({
 
   return (
     <main className="min-h-screen bg-canvas text-ink">
+      {announcement}
       <DashboardHeader
         user={user}
         navItems={navItems}
