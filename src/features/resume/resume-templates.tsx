@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Check, X } from 'lucide-react'
 
 import type { ResumeDocument } from '@/contracts/resume.draft'
 import { cn } from '@/ui'
@@ -45,6 +46,50 @@ export type ClassicResumeProps = {
   readonly isTypingSummary?: boolean
   /** Dashed page-break guides for the editor; off where the page is shown as a sample. Defaults to true. */
   readonly showPageBreaks?: boolean
+  /** Per-change verdicts on a rewrite; a change with none follows `showImproved`. */
+  readonly decisions?: Readonly<Partial<Record<ResumeChangeKey, ResumeChangeDecision>>>
+  /** Set while a rewrite is under review: each highlighted change gets its own accept and reject. */
+  readonly onDecide?: (key: ResumeChangeKey, decision: ResumeChangeDecision) => void
+}
+
+/** The parts of a resume a Chat rewrite can change, each decided on its own. */
+export type ResumeChangeKey = 'summary' | 'bullet-0' | 'bullet-1' | 'skills'
+export type ResumeChangeDecision = 'accepted' | 'rejected'
+
+export function resumeChangeKeys(document: ResumeDocument): readonly ResumeChangeKey[] {
+  const bullets = (['bullet-0', 'bullet-1'] as const).slice(0, Math.min(2, document.improvedFirstRoleBullets.length))
+  return ['summary', ...bullets, 'skills']
+}
+
+const CHANGE_LABELS: Record<ResumeChangeKey, string> = {
+  summary: 'the summary',
+  'bullet-0': 'the first bullet',
+  'bullet-1': 'the second bullet',
+  skills: 'the skills',
+}
+
+/** The small accept and reject pair at the end of a changed line. */
+function ChangeActions({ changeKey, onDecide }: { readonly changeKey: ResumeChangeKey; readonly onDecide: (key: ResumeChangeKey, decision: ResumeChangeDecision) => void }) {
+  return (
+    <span className="ms-1 inline-flex translate-y-0.5 gap-0.5 align-baseline not-italic">
+      <button
+        type="button"
+        onClick={() => onDecide(changeKey, 'accepted')}
+        aria-label={`Accept the change to ${CHANGE_LABELS[changeKey]}`}
+        className="relative grid size-3.5 place-items-center rounded-sm bg-positive text-surface after:absolute after:-inset-1.5 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+      >
+        <Check aria-hidden="true" className="size-2.5" strokeWidth={3} />
+      </button>
+      <button
+        type="button"
+        onClick={() => onDecide(changeKey, 'rejected')}
+        aria-label={`Reject the change to ${CHANGE_LABELS[changeKey]}`}
+        className="relative grid size-3.5 place-items-center rounded-sm bg-danger text-surface after:absolute after:-inset-1.5 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+      >
+        <X aria-hidden="true" className="size-2.5" strokeWidth={3} />
+      </button>
+    </span>
+  )
 }
 
 export function ClassicResume({
@@ -54,7 +99,11 @@ export function ClassicResume({
   typedSummary,
   isTypingSummary,
   showPageBreaks = true,
+  decisions,
+  onDecide,
 }: ClassicResumeProps) {
+  const uses = (key: ResumeChangeKey) => (decisions?.[key] ? decisions[key] === 'accepted' : showImproved)
+  const reviewing = (key: ResumeChangeKey) => highlightChanges && !decisions?.[key]
   return (
     <ResumePaper showPageBreaks={showPageBreaks}>
       <header className="border-b border-paper-ink pb-4 text-center">
@@ -68,24 +117,26 @@ export function ClassicResume({
         <p
           className={cn(
             'mt-2 rounded-sm text-xs italic leading-5 transition-shadow duration-normal ease-default',
-            highlightChanges ? 'bg-accent-subtle text-accent-text' : 'text-paper-ink',
+            reviewing('summary') ? 'bg-accent-subtle text-accent-text' : 'text-paper-ink',
             isTypingSummary && 'shadow-[0_0_0_3px_var(--lf-accent-subtle)]',
           )}
         >
-          {typedSummary !== null && typedSummary !== undefined ? typedSummary : showImproved ? document.improvedSummary : document.summary}
+          {typedSummary !== null && typedSummary !== undefined ? typedSummary : uses('summary') ? document.improvedSummary : document.summary}
           {isTypingSummary ? (
             <span aria-hidden="true" className="ms-0.5 inline-block h-3 w-px animate-pulse bg-accent-text align-middle motion-reduce:animate-none" />
           ) : null}
+          {onDecide && reviewing('summary') && !isTypingSummary ? <ChangeActions changeKey="summary" onDecide={onDecide} /> : null}
         </p>
       </section>
       <section className="mt-5">
         <h2 className="border-b border-paper-ink pb-1 text-sm font-bold uppercase tracking-wide">Experience</h2>
         <div className="grid gap-5 pt-3">
           {document.roles.map((role, roleIndex) => {
-            const bullets =
-              showImproved && roleIndex === 0
-                ? role.bullets.map((bullet, index) => (index < 2 ? document.improvedFirstRoleBullets[index] ?? bullet : bullet))
-                : role.bullets
+            const bulletKey = (index: number): ResumeChangeKey | null => (roleIndex === 0 && index < 2 && document.improvedFirstRoleBullets[index] ? (`bullet-${index}` as ResumeChangeKey) : null)
+            const bullets = role.bullets.map((bullet, index) => {
+              const key = bulletKey(index)
+              return key && uses(key) ? document.improvedFirstRoleBullets[index] ?? bullet : bullet
+            })
             return (
               <article key={`${role.company}-${role.period}`}>
                 <div className="flex items-start justify-between gap-4 text-xs">
@@ -97,11 +148,16 @@ export function ClassicResume({
                   <p className="shrink-0 text-end text-paper-muted">{role.period}</p>
                 </div>
                 <ul className="mt-2 list-disc space-y-1.5 ps-5 text-xs leading-5">
-                  {bullets.map((bullet, index) => (
-                    <li key={bullet} className={cn(highlightChanges && roleIndex === 0 && index < 2 ? 'bg-accent-subtle text-accent-text' : '')}>
-                      {bullet}
-                    </li>
-                  ))}
+                  {bullets.map((bullet, index) => {
+                    const key = bulletKey(index)
+                    const pending = key !== null && reviewing(key)
+                    return (
+                      <li key={bullet} className={cn(pending && 'bg-accent-subtle text-accent-text marker:text-accent-text')}>
+                        {bullet}
+                        {pending && key && onDecide ? <ChangeActions changeKey={key} onDecide={onDecide} /> : null}
+                      </li>
+                    )
+                  })}
                 </ul>
               </article>
             )
@@ -111,12 +167,18 @@ export function ClassicResume({
       <section className="mt-5">
         <h2 className="border-b border-paper-ink pb-1 text-sm font-bold uppercase tracking-wide">Skills</h2>
         <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1 text-xs">
-          {(showImproved ? document.improvedSkills : document.skills).slice(0, showImproved ? 22 : 14).map((skill) => (
-            <span key={skill} className={cn(highlightChanges && !document.skills.includes(skill) ? 'bg-accent-subtle font-semibold text-accent-text' : undefined)}>
+          {(uses('skills') ? document.improvedSkills : document.skills).slice(0, uses('skills') ? 22 : 14).map((skill) => (
+            <span key={skill} className={cn(reviewing('skills') && !document.skills.includes(skill) ? 'bg-accent-subtle font-semibold text-accent-text' : undefined)}>
               {skill}
             </span>
           ))}
         </div>
+        {onDecide && reviewing('skills') ? (
+          <p className="mt-1.5 text-xs text-accent-text">
+            New skills highlighted
+            <ChangeActions changeKey="skills" onDecide={onDecide} />
+          </p>
+        ) : null}
       </section>
       <section className="mt-5">
         <h2 className="border-b border-paper-ink pb-1 text-sm font-bold uppercase tracking-wide">Certifications</h2>

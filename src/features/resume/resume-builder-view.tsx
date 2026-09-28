@@ -11,7 +11,7 @@ import { InterviewPrepFeatureWidget } from '@/features/interview/interview-prep-
 import { useTypewriter } from '@/hooks/useTypewriter'
 import { ResumeInlineEditor, resumeSectionAnchor } from './resume-inline-editor'
 import { ResumeCompare } from './resume-compare'
-import { ClassicResume } from './resume-templates'
+import { ClassicResume, resumeChangeKeys, type ResumeChangeDecision, type ResumeChangeKey } from './resume-templates'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 
 export type ResumeUploadViewProps = {
@@ -1195,6 +1195,8 @@ function ResumeCompareDialog({ open, onOpenChange, before, after, hasChanges }: 
   )
 }
 
+const RESUME_CHANGE_KEYS_ALL: readonly ResumeChangeKey[] = ['summary', 'bullet-0', 'bullet-1', 'skills']
+
 export function ResumeEditorView({ homeHref, document, session, issues, tab, chatState, jd, fairUse, onFairUseUnlock }: ResumeEditorViewProps) {
   const hasJd = Boolean(jd && jd.trim())
   const [messages, setMessages] = useState<readonly ChatMessage[]>(() => {
@@ -1219,6 +1221,8 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
   const [hasAcceptedChanges, setHasAcceptedChanges] = useState(false)
   const [atsOpen, setAtsOpen] = useState(false)
   const [compareOpen, setCompareOpen] = useState(false)
+  // Each part of a Chat rewrite is accepted or rejected on its own, from the ticks beside it.
+  const [changeDecisions, setChangeDecisions] = useState<Readonly<Partial<Record<ResumeChangeKey, ResumeChangeDecision>>>>({})
   // The resume as edited on the Edit tab; null until the editor has reported it.
   const [editedDocument, setEditedDocument] = useState<ResumeDocument | null>(null)
   const [showPostAcceptTip, setShowPostAcceptTip] = useState(false)
@@ -1278,6 +1282,7 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
   }
 
   function revealSuggestion() {
+    setChangeDecisions({})
     setPendingSuggestion(true)
     typeSummary(document.improvedSummary, setTypedSummary, { durationMs: 1000 })
     if (isMobileViewport) setPreviewOpen(true)
@@ -1303,7 +1308,24 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
     }, 4000)
   }
 
+  function settleReview() {
+    setPendingSuggestion(false)
+    setTypedSummary(null)
+    setPreviewOpen(false)
+    setShowPostAcceptTip(true)
+  }
+
+  function decideChange(key: ResumeChangeKey, decision: ResumeChangeDecision) {
+    const next = { ...changeDecisions, [key]: decision }
+    setChangeDecisions(next)
+    const keys = resumeChangeKeys(document)
+    if (!keys.every((item) => next[item])) return
+    if (keys.some((item) => next[item] === 'accepted')) setHasAcceptedChanges(true)
+    settleReview()
+  }
+
   function handleAccept() {
+    setChangeDecisions(Object.fromEntries(resumeChangeKeys(document).map((key) => [key, changeDecisions[key] ?? 'accepted'])))
     setHasAcceptedChanges(true)
     setPendingSuggestion(false)
     setTypedSummary(null)
@@ -1312,6 +1334,9 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
   }
 
   function handleReject() {
+    const next = Object.fromEntries(resumeChangeKeys(document).map((key) => [key, changeDecisions[key] ?? 'rejected'])) as Partial<Record<ResumeChangeKey, ResumeChangeDecision>>
+    setChangeDecisions(next)
+    if (Object.values(next).includes('accepted')) setHasAcceptedChanges(true)
     setPendingSuggestion(false)
     setTypedSummary(null)
     setPreviewOpen(false)
@@ -1347,7 +1372,7 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
         after={
           editedDocument
             ? <ClassicResume document={editedDocument} showImproved={false} highlightChanges={false} showPageBreaks={false} />
-            : <ClassicResume document={document} showImproved={hasAcceptedChanges} highlightChanges={hasAcceptedChanges} showPageBreaks={false} />
+            : <ClassicResume document={document} showImproved={hasAcceptedChanges} highlightChanges={false} decisions={changeDecisions} showPageBreaks={false} />
         }
         hasChanges={hasAcceptedChanges || (editedDocument !== null && JSON.stringify(editedDocument) !== JSON.stringify(document))}
       />
@@ -1388,6 +1413,8 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
                 highlightChanges={pendingSuggestion}
                 typedSummary={typedSummary}
                 isTypingSummary={isTypingSummary}
+                decisions={changeDecisions}
+                onDecide={pendingSuggestion ? decideChange : undefined}
               />
             </div>
             {pendingSuggestion ? (
@@ -1430,6 +1457,7 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
             issues={issues}
             pendingSuggestion={pendingSuggestion}
             acceptedSuggestion={hasAcceptedChanges}
+            rejectedChanges={RESUME_CHANGE_KEYS_ALL.filter((key) => changeDecisions[key] === 'rejected')}
             typedSummary={typedSummary}
             onDraftChange={setEditedDocument}
           />

@@ -28,6 +28,8 @@ export type ResumeInlineEditorProps = {
   readonly onRemoveSection?: (id: string) => void
   /** Reports the section holding focus, so the Edit panel can mark it. */
   readonly onActiveSectionChange?: (id: string) => void
+  /** Parts of Chat's rewrite the person rejected; accepting folds in everything else. */
+  readonly rejectedChanges?: readonly string[]
   /** Reports the resume as edited so far, skills flattened from their groups, for the before/after compare. */
   readonly onDraftChange?: (draft: ResumeDocument) => void
 }
@@ -65,6 +67,7 @@ const removeAction = 'grid size-9 shrink-0 place-items-center rounded-md text-in
 
 // Shared empty defaults: a fresh [] per render would re-run the effects that depend on these.
 const NO_EXTRA_SECTIONS: readonly ResumeExtraSection[] = []
+const NO_REJECTED_CHANGES: readonly string[] = []
 const NO_HIDDEN_SECTIONS: readonly ResumeSectionId[] = []
 
 function blankEntry(): ResumeExtraEntry {
@@ -127,7 +130,7 @@ function issueKey(section: BodySection, roleIndex?: number): string {
   return roleIndex === undefined ? section : `${section}:${roleIndex}`
 }
 
-export function ResumeInlineEditor({ document, issues, pendingSuggestion = false, acceptedSuggestion = false, typedSummary, extraSections = NO_EXTRA_SECTIONS, hiddenSections = NO_HIDDEN_SECTIONS, onlySection = null, onRenameSection, onRemoveSection, onActiveSectionChange, onDraftChange }: ResumeInlineEditorProps) {
+export function ResumeInlineEditor({ document, issues, pendingSuggestion = false, acceptedSuggestion = false, typedSummary, extraSections = NO_EXTRA_SECTIONS, hiddenSections = NO_HIDDEN_SECTIONS, onlySection = null, onRenameSection, onRemoveSection, onActiveSectionChange, onDraftChange, rejectedChanges = NO_REJECTED_CHANGES }: ResumeInlineEditorProps) {
   const [draft, setDraft] = useState<ResumeDocument>(document)
   const [order, setOrder] = useState<readonly string[]>(DEFAULT_ORDER)
   const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set())
@@ -191,13 +194,14 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
   // Accepting Chat's rewrite writes it into the resume once, like accepting a Fix does.
   useEffect(() => {
     if (!acceptedSuggestion) return
+    const keeps = (key: string) => !rejectedChanges.includes(key)
     setDraft((current) => ({
       ...current,
-      summary: document.improvedSummary,
-      skills: document.improvedSkills,
-      roles: current.roles.map((role, index) => (index === 0 ? { ...role, bullets: [...document.improvedFirstRoleBullets, ...role.bullets.slice(document.improvedFirstRoleBullets.length)] } : role)),
+      summary: keeps('summary') ? document.improvedSummary : current.summary,
+      skills: keeps('skills') ? document.improvedSkills : current.skills,
+      roles: current.roles.map((role, index) => (index === 0 ? { ...role, bullets: role.bullets.map((bullet, i) => (i < document.improvedFirstRoleBullets.length && keeps(`bullet-${i}`) ? document.improvedFirstRoleBullets[i] ?? bullet : bullet)) } : role)),
     }))
-    setSkillGroups((current) => current.map((group, index) => (index === 0 ? { ...group, skills: document.improvedSkills } : group)))
+    if (keeps('skills')) setSkillGroups((current) => current.map((group, index) => (index === 0 ? { ...group, skills: document.improvedSkills } : group)))
   }, [acceptedSuggestion])
 
   // While Chat's rewrite waits, the resume shows it in place, highlighted and read-only.
