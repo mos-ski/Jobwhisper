@@ -94,7 +94,7 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
           </span>
           <span className="truncate font-semibold">{title}</span>
         </div>
-        <span role="status" aria-label={CONNECTION[connection].label} className={cn(pill, 'px-3 sm:px-4')}>
+        <span role="status" aria-label={CONNECTION[connection].label} className={cn(pill, 'hidden px-3 sm:inline-flex sm:px-4')}>
           <span aria-hidden="true" className={cn('size-2 shrink-0 rounded-full', CONNECTION[connection].dot)} />
           <span aria-hidden="true" className="hidden sm:inline">{CONNECTION[connection].label}</span>
         </span>
@@ -105,6 +105,10 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
         <Dialog open={controlsOpen} onOpenChange={setControlsOpen}>
           <DialogPopup className="sm:hidden">
             <DialogTitle className="text-base font-semibold">Session controls</DialogTitle>
+            <p className="mt-2 flex items-center gap-2 text-sm text-ink-muted">
+              <span aria-hidden="true" className={cn('size-2 rounded-full', CONNECTION[connection].dot)} />
+              {CONNECTION[connection].label}
+            </p>
             <p className="mt-5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Answer length</p>
             <div role="radiogroup" aria-label="Answer length" className="mt-2 grid grid-cols-3 gap-1 rounded-xl bg-surface-subtle p-1">
               {LENGTHS.map((option) => (
@@ -143,6 +147,16 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
                 </li>
               ))}
             </ul>
+            <button
+              type="button"
+              onClick={() => {
+                setControlsOpen(false)
+                onEnd()
+              }}
+              className="mt-4 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-danger text-base font-semibold text-on-danger hover:bg-danger-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              End Session
+            </button>
             <DialogClose aria-label="Close session controls" />
           </DialogPopup>
         </Dialog>
@@ -185,8 +199,8 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
             <Settings aria-hidden="true" className="size-4" />
           </button>
         </div>
-        <button type="button" onClick={onEnd} className="inline-flex min-h-10 shrink-0 items-center rounded-full bg-danger px-4 text-sm font-semibold text-on-danger hover:bg-danger-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:px-5">
-          End<span className="hidden sm:inline">&nbsp;Session</span>
+        <button type="button" onClick={onEnd} className="hidden min-h-10 shrink-0 items-center rounded-full bg-danger px-5 text-sm font-semibold text-on-danger hover:bg-danger-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:inline-flex">
+          End Session
         </button>
       </div>
 
@@ -196,7 +210,7 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
         <span className="ms-auto font-semibold tabular-nums text-ink sm:hidden">{elapsedLabel}</span>
       </p>
       {notice}
-      <div role="tablist" aria-label="Session panes" className="flex gap-6 border-b border-border px-1 md:hidden">
+      <div role="tablist" aria-label="Session panes" className="grid grid-cols-2 border-b border-border md:hidden">
         {(['interview', 'chat'] as const).map((pane) => (
           <button
             key={pane}
@@ -204,7 +218,7 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
             role="tab"
             aria-selected={phonePane === pane}
             onClick={() => setPhonePane(pane)}
-            className={cn('-mb-px inline-flex min-h-11 items-center border-b-2 px-1 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus', phonePane === pane ? 'border-accent text-accent-text' : 'border-transparent text-ink-muted')}
+            className={cn('-mb-px inline-flex min-h-11 items-center justify-center border-b-2 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus', phonePane === pane ? 'border-accent text-accent-text' : 'border-transparent text-ink-muted')}
           >
             {pane === 'interview' ? 'Interview' : 'AI chat'}
           </button>
