@@ -158,18 +158,20 @@ export function ProOfferBanner({ onClaim, endsAt }: ProOfferBannerProps) {
       role="region"
       aria-label="Pro trial offer"
       data-slot="pro-offer-banner"
-      className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 bg-surface-inverse px-4 py-2.5 text-center text-sm text-surface"
+      className="flex items-center justify-center gap-3 bg-surface-inverse px-4 py-1 text-sm text-surface"
     >
-      <p>
-        <span className="font-semibold">Your special offer ends soon.</span> Try Pro for 7 days for $4.57, 80% off.
+      <p className="min-w-0 truncate">
+        <span className="hidden font-semibold sm:inline">Your special offer ends soon. </span>
+        <span className="sm:hidden">Pro for 7 days, <span className="font-semibold">$4.57</span></span>
+        <span className="hidden sm:inline">Try Pro for 7 days for $4.57, 80% off.</span>
       </p>
       <button
         type="button"
         onClick={onClaim}
-        className="inline-flex min-h-11 items-center gap-2 rounded-full bg-surface px-4 text-sm font-semibold text-ink hover:bg-accent-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-inverse"
+        className="inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-surface px-3 text-sm font-semibold text-ink hover:bg-accent-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-inverse sm:px-4"
       >
-        <span aria-hidden="true" className="tabular-nums text-ink-muted">Ends in {remaining}</span>
-        <span aria-hidden="true" className="text-ink-muted">|</span>
+        <span aria-hidden="true" className="tabular-nums text-ink-muted"><span className="hidden sm:inline">Ends in </span>{remaining}</span>
+        <span aria-hidden="true" className="hidden text-ink-muted sm:inline">|</span>
         Upgrade now
       </button>
     </aside>
