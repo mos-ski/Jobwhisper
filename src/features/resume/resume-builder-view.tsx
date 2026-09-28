@@ -1185,7 +1185,7 @@ function ResumeCompareDialog({ open, onOpenChange, before, after, hasChanges }: 
         <p className="mt-1 pe-10 text-sm text-ink-muted">
           {hasChanges ? 'Drag across the page to see what you have changed so far.' : 'No changes yet. Accept a suggestion or edit a section, then drag across the page to compare.'}
         </p>
-        <div className="mt-4 max-h-[70vh] overflow-y-auto rounded-xl bg-surface-subtle p-2 sm:p-4">
+        <div className="mt-4 max-h-[70vh] overflow-y-auto bg-surface-subtle p-2 sm:p-4">
           <ResumeCompare before={before} after={after} beforeLabel="Your original" afterLabel="Now" sliderLabel="Show your edited resume" />
         </div>
         <p className="mt-3 text-center text-xs text-ink-muted">Focus the page and use the arrow keys to move the divider.</p>
@@ -1371,8 +1371,8 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
         before={<ClassicResume document={document} showImproved={false} highlightChanges={false} showPageBreaks={false} />}
         after={
           editedDocument
-            ? <ClassicResume document={editedDocument} showImproved={false} highlightChanges={false} showPageBreaks={false} />
-            : <ClassicResume document={document} showImproved={hasAcceptedChanges} highlightChanges={false} decisions={changeDecisions} showPageBreaks={false} />
+            ? <ClassicResume document={editedDocument} showImproved={false} highlightChanges={false} changedFrom={document} showPageBreaks={false} />
+            : <ClassicResume document={document} showImproved={hasAcceptedChanges} highlightChanges={false} decisions={changeDecisions} changedFrom={document} showPageBreaks={false} />
         }
         hasChanges={hasAcceptedChanges || (editedDocument !== null && JSON.stringify(editedDocument) !== JSON.stringify(document))}
       />
