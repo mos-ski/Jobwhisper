@@ -168,9 +168,9 @@ export function ProOfferBanner({ onClaim, endsAt }: ProOfferBannerProps) {
       <button
         type="button"
         onClick={onClaim}
-        className="inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-1 text-sm font-semibold text-surface underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:bg-surface sm:px-4 sm:text-ink sm:hover:bg-accent-subtle sm:hover:no-underline sm:focus-visible:ring-offset-2 sm:focus-visible:ring-offset-surface-inverse"
+        className="inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-surface px-3 text-sm font-semibold text-ink hover:bg-accent-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-inverse sm:px-4"
       >
-        <span aria-hidden="true" className="tabular-nums opacity-70 sm:text-ink-muted sm:opacity-100"><span className="hidden sm:inline">Ends in </span>{remaining}</span>
+        <span aria-hidden="true" className="tabular-nums text-ink-muted"><span className="hidden sm:inline">Ends in </span>{remaining}</span>
         <span aria-hidden="true" className="hidden text-ink-muted sm:inline">|</span>
         Upgrade now
       </button>
