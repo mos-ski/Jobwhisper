@@ -27,7 +27,8 @@ function useCountdown(endsAt: number | undefined): string {
   return `${minutes}:${seconds}`
 }
 
-type ProOfferCardProps = ProOfferWidgetProps & {
+type ProOfferCardProps = Omit<ProOfferWidgetProps, 'onDismiss'> & {
+  readonly onDismiss?: () => void
   readonly titleId?: string
 }
 
@@ -39,14 +40,14 @@ function ProOfferCard({ onDismiss, onClaim, titleId, endsAt }: ProOfferCardProps
       <div className="relative h-52 overflow-hidden bg-accent px-6 pt-7 text-on-accent">
         <img src="/v3-assets/figma/dfy-widget-background.svg" alt="" className="pointer-events-none absolute inset-0 size-full object-cover" />
         <img src="/v3-assets/figma/dfy-widget-wordmark.svg" alt="Jobwhisper" className="absolute inset-x-0 top-7 mx-auto h-6 w-auto" />
-        <button
+        {onDismiss ? <button
           type="button"
           onClick={onDismiss}
           aria-label="Close Pro plan offer"
           className="absolute end-2 top-2 grid size-11 place-items-center rounded-soft text-on-accent transition-colors hover:bg-on-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
         >
           <span aria-hidden="true" className="text-2xl leading-none">×</span>
-        </button>
+        </button> : null}
         <div className="absolute inset-x-0 top-20 text-center font-gowun leading-tight">
           <h2 id={titleId} className="text-4xl font-normal tracking-[-0.2rem]">Special One-time Trial</h2>
           <p className="mt-2 text-xl tracking-[-0.06rem]">Land 3x more interviews with Pro now</p>
@@ -71,6 +72,20 @@ function ProOfferCard({ onDismiss, onClaim, titleId, endsAt }: ProOfferCardProps
         <p className="mt-3 text-center text-xs leading-5 text-ink-muted">Then Pro at $99/month, billed monthly. Cancel anytime.</p>
       </div>
     </>
+  )
+}
+
+export type ProOfferPanelProps = {
+  readonly onClaim: () => void
+  readonly endsAt?: number
+}
+
+/** The same offer card, sitting in the flow of a page rather than pinned to a corner. */
+export function ProOfferPanel({ onClaim, endsAt }: ProOfferPanelProps) {
+  return (
+    <section aria-label="Pro plan offer" className="mx-auto w-full max-w-md overflow-hidden rounded-panel border border-border bg-surface shadow-panel">
+      <ProOfferCard onClaim={onClaim} endsAt={endsAt} />
+    </section>
   )
 }
 

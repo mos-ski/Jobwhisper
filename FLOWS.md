@@ -189,7 +189,7 @@
    Exit condition: preferences and payment confirmed; the package becomes active.
    Failure branch: payment declined keeps the dialog open with the card error.
 
-## Try-It Funnel: Pro Week (Landing -> Quiz -> Free Week -> Account -> Card -> Started)
+## Try-It Funnel: Pro Week (Landing -> Quiz -> Week of Pro Offer -> Account -> Card -> Started)
 
 1. Entry condition: a visitor pastes a job description and attaches a resume in the landing page's "Try it" card.
    Exit condition: they choose Set me up and `/v3/try/pro` opens with the resume name carried over.
@@ -200,19 +200,19 @@
    Failure branch: Continue stays disabled until the question is answered; offline, the answers are kept and Continue waits for the connection. Back on the first question returns to the landing page.
 
 
-3. Entry condition: the reward step shows a free week of Pro, what Pro includes, the answer recap, and "$0 today, then $99 a month after 7 days unless you cancel".
-   Exit condition: Claim my free week, which opens the account step for anonymous visitors and the card step for signed-in ones. Not now leaves the funnel.
+3. Entry condition: the reward step shows the answer recap and the Pro offer widget: "Try Pro for 7 days, 94% off, just $1.39", then Pro at $99 a month.
+   Exit condition: Try 1 week for $1.39, which opens the account step for anonymous visitors and the card step for signed-in ones. Not now leaves the funnel.
    Failure branch: none.
 
 4. Entry condition: an anonymous visitor reaches the account step.
    Exit condition: they continue with Google or a valid email.
    Failure branch: an invalid email shows a field error describing the fix.
 
-5. Entry condition: the card step opens with the full terms above the form: $0 today, free for 7 days until the first charge date, then Pro at $99 a month until cancelled, and a reminder email 2 days before.
+5. Entry condition: the card step opens with the full terms above the form: $1.39 today for 7 days of Pro until the first charge date, then Pro at $99 a month until cancelled, and a reminder email 2 days before.
    Exit condition: a complete card starts the week and the started step shows.
    Failure branch: a declined card shows the bank's reason with the form ready for another card; offline disables submit.
 
-6. Entry condition: the free week has started.
+6. Entry condition: the week of Pro has started.
    Exit condition: Start with your setup opens `/v3/app`.
    Failure branch: none.
 

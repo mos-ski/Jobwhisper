@@ -14,6 +14,8 @@ export type SuccessManagerPickerProps = {
   readonly directory: SuccessManagerDirectory
   readonly onRetry?: () => void
   readonly onSignupComplete?: (lead: DfySignupLead & { readonly managerId: string }) => void
+  /** Set on a public page: Start with hands off (e.g. to sign-up) instead of opening the signed-in signup dialog. */
+  readonly onStart?: (manager: SuccessManager) => void
 }
 
 const FEATURES = [
@@ -195,11 +197,11 @@ function DirectorySkeleton() {
   )
 }
 
-export function SuccessManagerPicker({ setupHref, profile, savedCard, directory, onRetry, onSignupComplete }: SuccessManagerPickerProps) {
+export function SuccessManagerPicker({ setupHref, profile, savedCard, directory, onRetry, onSignupComplete, onStart }: SuccessManagerPickerProps) {
   const [signup, setSignup] = useState<{ readonly pkg: DfySignupPackage; readonly managerId: string; readonly managerName: string } | null>(null)
   const managers = directory.status === 'ready' ? directory.managers : []
   const available = managers.filter((manager) => manager.nextOpening === undefined)
-  const start = (manager: SuccessManager) => setSignup({ managerId: manager.id, managerName: manager.name, pkg: packageFor(manager) })
+  const start = (manager: SuccessManager) => (onStart ? onStart(manager) : setSignup({ managerId: manager.id, managerName: manager.name, pkg: packageFor(manager) }))
 
   return (
     <div className="flex flex-1 flex-col">

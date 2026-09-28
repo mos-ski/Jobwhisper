@@ -15,6 +15,7 @@ const offer: FunnelTrialOffer = {
   trialDays: 7,
   includes: ['Unlimited Interview Copilot and practice', 'Resume Builder, unlimited'],
   monthlyUsd: 99,
+  introUsd: 1.39,
   reminderDaysBefore: 2,
   firstChargeOn: '2026-10-02',
 }
@@ -68,17 +69,16 @@ describe('FunnelTrialView', () => {
     expect(screen.getByRole('button', { name: 'Finish' })).toBeDisabled()
   })
 
-  it('reveals the free week with the terms before any card is asked for', async () => {
+  it('offers Pro for one week in the offer widget before any card is asked for', async () => {
     const user = userEvent.setup()
     const props = renderView({ step: 'reward', answers: { goal: 'Tailor it to this job', title: 'Product Designer' }, resumeName: 'darnell-smith-resume.pdf' })
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('You’ve unlocked a free week of Pro')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('You’ve unlocked Pro for one week')
     expect(screen.getByText('Product Designer')).toBeInTheDocument()
     expect(screen.getByText('darnell-smith-resume.pdf')).toBeInTheDocument()
-    expect(screen.getByText('Resume Builder, unlimited')).toBeInTheDocument()
-    expect(screen.getByText(/\$0 today.*\$99 a month after 7 days/)).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Pro plan offer' })).toHaveTextContent('Then Pro at $99/month')
 
-    await user.click(screen.getByRole('button', { name: 'Claim my free week' }))
+    await user.click(screen.getByRole('button', { name: 'Try 1 week for $1.39' }))
     expect(props.onClaim).toHaveBeenCalled()
   })
 
@@ -100,12 +100,12 @@ describe('FunnelTrialView', () => {
     const user = userEvent.setup()
     const props = renderView({ step: 'card', session: { status: 'authenticated', user: { id: 'u1', email: 'd@example.com', name: 'Darnell Smith', role: 'candidate', permissions: [] } } })
 
-    expect(screen.getByText('$0 today')).toBeInTheDocument()
-    expect(screen.getByText(/Free for 7 days, until 2 October 2026/)).toBeInTheDocument()
+    expect(screen.getByText('$1.39')).toBeInTheDocument()
+    expect(screen.getByText(/Pro for 7 days for \$1.39, until 2 October 2026/)).toBeInTheDocument()
     expect(screen.getByText(/Pro at \$99 a month, until you cancel/)).toBeInTheDocument()
     expect(screen.getByText(/email you 2 days before/)).toBeInTheDocument()
 
-    const submit = screen.getByRole('button', { name: 'Start my free week' })
+    const submit = screen.getByRole('button', { name: 'Start my week for $1.39' })
     expect(submit).toBeDisabled()
 
     await user.type(screen.getByLabelText('Name on card'), 'Darnell Smith')
@@ -125,8 +125,8 @@ describe('FunnelTrialView', () => {
     const user = userEvent.setup()
     const props = renderView({ step: 'done' })
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Your free week of Pro has started')
-    expect(screen.getByText('Free until 2 October 2026')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Your week of Pro has started')
+    expect(screen.getByText('Pro until 2 October 2026')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Start with your setup' }))
     expect(props.onStart).toHaveBeenCalled()
   })
