@@ -1,15 +1,31 @@
+import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
-import { DesktopSettingsDialog, type DesktopSettingsSection } from '@/features/desktop/desktop-settings-dialog'
+import { DesktopSettingsDialog, type DesktopSettingsSection, type DesktopTheme } from '@/features/desktop/desktop-settings-dialog'
 import { DesktopWhatsNewDialog } from '@/features/desktop/desktop-whats-new-dialog'
 import { desktopCredits, desktopRecentSessions, desktopReleaseNote, desktopUser } from '@/mocks/desktop'
 
 const SECTIONS: readonly DesktopSettingsSection[] = ['general', 'interview', 'coding', 'meeting', 'billing', 'usage', 'window', 'account', 'connectors']
 
+const THEME_STORAGE_KEY = 'jobwhisper-theme'
+
+function readStoredTheme(): DesktopTheme {
+  if (typeof window === 'undefined') return 'system'
+  const stored = window.localStorage.getItem(THEME_STORAGE_KEY)
+  return stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system'
+}
+
+// `system` drops the attribute so the CSS media query follows the OS live; light/dark pin it.
+function applyTheme(theme: DesktopTheme) {
+  if (theme === 'system') document.documentElement.removeAttribute('data-theme')
+  else document.documentElement.dataset.theme = theme
+}
+
 /** Settings (`?settings=<section>`) and What's new (`?whatsnew=1`), openable from any window screen. */
 export function DesktopOverlays() {
   const [params, setParams] = useSearchParams()
   const navigate = useNavigate()
+  const [theme, setTheme] = useState<DesktopTheme>(readStoredTheme)
   const raw = params.get('settings')
   const section = SECTIONS.find((item) => item === raw)
   const set = (key: string, value: string | null) => {
@@ -20,6 +36,11 @@ export function DesktopOverlays() {
   }
   const liveKind = window.location.pathname.endsWith('/session') ? (params.get('kind') === 'coding' ? 'coding' : params.get('kind') === 'meeting' ? 'meeting' : 'interview') : undefined
 
+  useEffect(() => {
+    applyTheme(theme)
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme)
+  }, [theme])
+
   return (
     <>
       <DesktopSettingsDialog
@@ -28,6 +49,8 @@ export function DesktopOverlays() {
         section={section ?? 'general'}
         onSectionChange={(next) => set('settings', next)}
         liveKind={liveKind}
+        theme={theme}
+        onThemeChange={setTheme}
         user={desktopUser}
         credits={desktopCredits}
         planLabel="Free"

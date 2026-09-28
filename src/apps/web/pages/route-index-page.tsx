@@ -409,31 +409,15 @@ const appRoutes = [
 ] as const
 
 const desktopRoutes = [
-  {
-    href: '/desktop',
-    label: 'Desktop sign in',
-    description: 'Movable/resizable macOS-style window shell with sign-in.',
-  },
-  {
-    href: '/desktop/permissions',
-    label: 'Desktop permissions',
-    description: 'Screen and microphone permission steps.',
-  },
-  {
-    href: '/desktop/configure',
-    label: 'Desktop configure',
-    description: 'Interview configure step inside the desktop shell.',
-  },
-  {
-    href: '/desktop/session',
-    label: 'Desktop live session',
-    description: 'Live session with the real spacebar-driven interview simulation.',
-  },
-  {
-    href: '/desktop/complete',
-    label: 'Desktop complete',
-    description: 'Desktop session completion screen.',
-  },
+  { href: '/desktop', label: 'Desktop sign in', description: 'Movable, resizable window with the sign-in screen.' },
+  { href: '/desktop/permissions', label: 'Desktop permissions', description: 'Screen and microphone permission steps.' },
+  { href: '/desktop/home', label: 'Desktop home', description: 'Launch cards, recent sessions and credits. States: ?state=loading, error, empty.' },
+  { href: '/desktop/configure?kind=interview', label: 'Desktop configure', description: 'Two steps: role, resume preview, Knowledge Base and context; then response type, model and behaviour (&step=2). kind=coding or meeting.' },
+  { href: '/desktop/session?kind=interview', label: 'Desktop live session', description: 'Pill toolbar, transcript with answer cards, AI chat and session credits. ?state=empty, &connection=fair or unstable.' },
+  { href: '/desktop/overlay', label: 'Desktop overlay', description: 'Compact bar over the call with the latest answer.' },
+  { href: '/desktop/home?settings=general', label: 'Desktop settings', description: 'Nine sections: general, interview, coding, meeting, billing, usage, window, account, connectors.' },
+  { href: '/desktop/home?whatsnew=1', label: "Desktop what's new", description: 'Release notes dialog.' },
+  { href: '/desktop/complete?kind=interview', label: 'Desktop complete', description: 'Blue completion screen with session feedback.' },
 ] as const
 
 const adminRoutes = [

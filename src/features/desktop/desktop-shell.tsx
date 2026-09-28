@@ -93,7 +93,7 @@ export function DesktopShell({ children, header, chrome = 'standard' }: DesktopS
   }
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-surface-inverse">
+    <div className="fixed inset-0 overflow-hidden bg-desktop-backdrop">
       <div aria-hidden="true" className="pointer-events-none absolute -left-40 -top-40 size-[560px] rounded-full bg-accent opacity-40 blur-3xl" />
       <div aria-hidden="true" className="pointer-events-none absolute -bottom-48 -right-32 size-[620px] rounded-full bg-accent-muted opacity-30 blur-3xl" />
       <motion.div
@@ -101,7 +101,7 @@ export function DesktopShell({ children, header, chrome = 'standard' }: DesktopS
         initial={{ opacity: 0, scale: 0.96, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        className={cn('absolute flex flex-col overflow-hidden rounded-xl shadow-2xl', chrome === 'accent' ? 'bg-accent text-on-accent' : 'bg-canvas text-ink')}
+        className={cn('absolute flex flex-col overflow-hidden rounded-xl shadow-2xl', chrome === 'accent' ? 'bg-accent text-on-accent' : 'bg-canvas text-ink ring-1 ring-border')}
         style={{ left: frame.x, top: frame.y, width: frame.width, height: frame.height }}
       >
         {chrome === 'bare' ? (

@@ -309,7 +309,7 @@ describe('v3 web auth flow', () => {
       {
         route: '/v3/interview-copilot/session',
         heading: 'Interview for UI/UX Designer',
-        text: 'Live Response',
+        text: 'Ask anything about the conversation so far.',
       },
       {
         route: '/v3/interview-copilot/complete',
