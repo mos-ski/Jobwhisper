@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import { ChevronDown, Zap } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 
 import { cn } from '@/ui'
 
@@ -13,6 +13,15 @@ const money = { format: (value: number) => (Number.isInteger(value) ? wholeDolla
 function packLabel(product: CreditProduct, dollars: number): string {
   const units = Math.round(dollars / product.rate)
   return `${units.toLocaleString('en-US')} ${units === 1 ? product.unitNoun.one : product.unitNoun.many}`
+}
+
+/** Figma 1206:4291's filled bolt, softer-cornered than lucide's Zap. */
+function LightningIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 18 18" className="size-[1.125rem] shrink-0 fill-current text-ink-muted">
+      <path d="M14.24 8.45a.46.46 0 0 0-.3-.32l-3.44-.5.87-4.84a.46.46 0 0 0-.24-.49.5.5 0 0 0-.57.09L3.88 9.14a.44.44 0 0 0-.12.41c.02.07.06.14.1.2.06.05.12.1.2.12l3.44.5-.87 4.84c-.02.1 0 .2.04.28.04.09.11.16.2.2a.5.5 0 0 0 .57-.08l6.68-6.75a.44.44 0 0 0 .12-.41Z" />
+    </svg>
+  )
 }
 
 export type CreditPackPickerProps = {
@@ -34,12 +43,12 @@ export function CreditPackPicker({ product, value, onChange }: CreditPackPickerP
         aria-expanded={open}
         aria-controls={listId}
         onClick={() => setOpen((current) => !current)}
-        className="flex min-h-11 w-full items-center gap-2 rounded-lg border border-border bg-surface-subtle px-3 text-start text-sm font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+        className="flex min-h-11 w-full items-center gap-2 rounded-lg border border-border bg-surface-subtle px-2.5 text-start text-xs font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
       >
-        <Zap aria-hidden="true" className="size-4 shrink-0 fill-current text-ink-muted" />
+        <LightningIcon />
         <span className="min-w-0 flex-1 truncate">{packLabel(product, value)}</span>
         <span className="sr-only">, change pack</span>
-        <ChevronDown aria-hidden="true" className={cn('size-4 shrink-0 transition-transform motion-reduce:transition-none', open && 'rotate-180')} />
+        <ChevronDown aria-hidden="true" className={cn('size-3.5 shrink-0 transition-transform motion-reduce:transition-none', open && 'rotate-180')} />
       </button>
       {open ? (
         <fieldset id={listId} className="overflow-hidden rounded-lg border border-border bg-surface">
