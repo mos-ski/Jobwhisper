@@ -565,7 +565,7 @@ function ChatSidebar({
   }, [messages, isTyping])
 
   return (
-    <aside className="flex w-full flex-1 flex-col overflow-hidden border-e border-border bg-surface lg:h-full lg:w-[21.25rem] lg:flex-none">
+    <aside className="flex w-full flex-1 flex-col overflow-hidden border-x border-border bg-surface lg:h-full lg:w-[21.25rem] lg:flex-none">
       <div className="border-b border-border p-3">
         <TabRail tab="chat" />
       </div>
@@ -674,7 +674,7 @@ function SectionNav({ hiddenSections, extraSections, onRestore, onAdd, activeSec
   return (
     <aside
       className={cn(
-        'w-full flex-1 flex-col overflow-hidden border-e border-border bg-surface lg:flex lg:h-full lg:w-[21.25rem] lg:flex-none',
+        'w-full flex-1 flex-col overflow-hidden border-x border-border bg-surface lg:flex lg:h-full lg:w-[21.25rem] lg:flex-none',
         hiddenOnMobile ? 'hidden' : 'flex',
       )}
     >
