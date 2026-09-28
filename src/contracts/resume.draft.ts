@@ -30,6 +30,11 @@ export type ResumeDocument = {
   readonly roles: readonly ResumeRole[]
   /** Tailored rewrites of roles[0].bullets[0] and [1] — the AI suggestion targets the current role's top two highlights. */
   readonly improvedFirstRoleBullets: readonly string[]
+  /**
+   * A fuller Chat rewrite: per role, per bullet, the new wording or null to leave it. When set it
+   * replaces improvedFirstRoleBullets as what the rewrite changes, so it can reach every role.
+   */
+  readonly improvedBullets?: readonly (readonly (string | null)[])[]
   /** AI-drafted bullets offered to fill an empty bullet (Suggest for me), used in order and never twice. */
   readonly suggestedBullets?: readonly string[]
   readonly education: readonly ResumeEducation[]

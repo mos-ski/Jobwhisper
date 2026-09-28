@@ -213,3 +213,5 @@ The Edit canvas adds `ResumeExtraSectionKind`, `ResumeExtraSection` and `ResumeE
 
 `src/contracts/done-for-you.draft.ts` adds `SuccessManager` (profile, `photoUrl`, rating, clients placed, companies, specialties, bio, review, `price`, optional `listPrice` (shown struck through with the saving), `introVideoUrl` and `interviewsGuaranteed` per manager, `nextOpening` when booked), `SuccessManagerDirectory` (loading / error / ready). Pricing is per manager ($497 for 5 interviews or $1,997 for 20);
 
+
+`ResumeDocument.improvedBullets` (optional) carries a Chat rewrite across every role: per role, per bullet, the new wording or `null` to leave it. When present it replaces `improvedFirstRoleBullets` as what the rewrite changes, and each changed bullet is accepted or rejected on its own (keys `bullet-<role>-<index>`, plus `summary` and `skills`). Production's rewrite endpoint should return this shape so partial acceptance maps one-to-one.

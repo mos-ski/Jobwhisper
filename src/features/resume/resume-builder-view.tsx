@@ -11,7 +11,7 @@ import { InterviewPrepFeatureWidget } from '@/features/interview/interview-prep-
 import { useTypewriter } from '@/hooks/useTypewriter'
 import { ResumeInlineEditor, resumeSectionAnchor } from './resume-inline-editor'
 import { ResumeCompare } from './resume-compare'
-import { ClassicResume, resumeChangeKeys, type ResumeChangeDecision, type ResumeChangeKey } from './resume-templates'
+import { ClassicResume, resumeChangeKeys, type ResumeChangeDecision, type ResumeChangeDecisions, type ResumeChangeKey } from './resume-templates'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 
 export type ResumeUploadViewProps = {
@@ -1197,8 +1197,6 @@ function ResumeCompareDialog({ open, onOpenChange, before, after, hasChanges }: 
   )
 }
 
-const RESUME_CHANGE_KEYS_ALL: readonly ResumeChangeKey[] = ['summary', 'bullet-0', 'bullet-1', 'skills']
-
 export function ResumeEditorView({ homeHref, document, session, issues, tab, chatState, jd, fairUse, onFairUseUnlock, simulatedAdjustment }: ResumeEditorViewProps) {
   const hasJd = Boolean(jd && jd.trim())
   const [messages, setMessages] = useState<readonly ChatMessage[]>(() => {
@@ -1224,7 +1222,7 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
   const [atsOpen, setAtsOpen] = useState(false)
   const [compareOpen, setCompareOpen] = useState(false)
   // Each part of a Chat rewrite is accepted or rejected on its own, from the ticks beside it.
-  const [changeDecisions, setChangeDecisions] = useState<Readonly<Partial<Record<ResumeChangeKey, ResumeChangeDecision>>>>({})
+  const [changeDecisions, setChangeDecisions] = useState<ResumeChangeDecisions>({})
   // The resume as edited on the Edit tab; null until the editor has reported it.
   const [editedDocument, setEditedDocument] = useState<ResumeDocument | null>(null)
   const editedChanged = editedDocument !== null && JSON.stringify(editedDocument) !== JSON.stringify(document)
@@ -1337,7 +1335,7 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
   }
 
   function handleReject() {
-    const next = Object.fromEntries(resumeChangeKeys(document).map((key) => [key, changeDecisions[key] ?? 'rejected'])) as Partial<Record<ResumeChangeKey, ResumeChangeDecision>>
+    const next = Object.fromEntries(resumeChangeKeys(document).map((key) => [key, changeDecisions[key] ?? 'rejected'])) as ResumeChangeDecisions
     setChangeDecisions(next)
     if (Object.values(next).includes('accepted')) setHasAcceptedChanges(true)
     setPendingSuggestion(false)
@@ -1462,7 +1460,7 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
             issues={issues}
             pendingSuggestion={pendingSuggestion}
             acceptedSuggestion={hasAcceptedChanges}
-            rejectedChanges={RESUME_CHANGE_KEYS_ALL.filter((key) => changeDecisions[key] === 'rejected')}
+            rejectedChanges={resumeChangeKeys(document).filter((key) => changeDecisions[key] === 'rejected')}
             typedSummary={typedSummary}
             onDraftChange={setEditedDocument}
           />

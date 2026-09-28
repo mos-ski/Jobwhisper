@@ -47,7 +47,7 @@ export type ClassicResumeProps = {
   /** Dashed page-break guides for the editor; off where the page is shown as a sample. Defaults to true. */
   readonly showPageBreaks?: boolean
   /** Per-change verdicts on a rewrite; a change with none follows `showImproved`. */
-  readonly decisions?: Readonly<Partial<Record<ResumeChangeKey, ResumeChangeDecision>>>
+  readonly decisions?: ResumeChangeDecisions
   /** Set while a rewrite is under review: each highlighted change gets its own accept and reject. */
   readonly onDecide?: (key: ResumeChangeKey, decision: ResumeChangeDecision) => void
   /** Highlights, in blue, every summary, bullet and skill that differs from this earlier version. */
@@ -55,29 +55,43 @@ export type ClassicResumeProps = {
 }
 
 /** The parts of a resume a Chat rewrite can change, each decided on its own. */
-export type ResumeChangeKey = 'summary' | 'bullet-0' | 'bullet-1' | 'skills'
+export type ResumeChangeKey = 'summary' | 'skills' | `bullet-${number}-${number}`
 export type ResumeChangeDecision = 'accepted' | 'rejected'
+/** Verdicts so far, keyed by ResumeChangeKey; a key with none is still under review. */
+export type ResumeChangeDecisions = Readonly<Record<string, ResumeChangeDecision | undefined>>
+
+/** The rewrite's wording for one bullet, if it changes that bullet at all. */
+export function improvedBullet(document: ResumeDocument, roleIndex: number, index: number): string | undefined {
+  if (document.improvedBullets) return document.improvedBullets[roleIndex]?.[index] ?? undefined
+  return roleIndex === 0 && index < 2 ? document.improvedFirstRoleBullets[index] : undefined
+}
+
+export function bulletChangeKey(roleIndex: number, index: number): ResumeChangeKey {
+  return `bullet-${roleIndex}-${index}`
+}
 
 export function resumeChangeKeys(document: ResumeDocument): readonly ResumeChangeKey[] {
-  const bullets = (['bullet-0', 'bullet-1'] as const).slice(0, Math.min(2, document.improvedFirstRoleBullets.length))
+  const bullets = document.roles.flatMap((role, roleIndex) =>
+    role.bullets.flatMap((_, index) => (improvedBullet(document, roleIndex, index) ? [bulletChangeKey(roleIndex, index)] : [])),
+  )
   return ['summary', ...bullets, 'skills']
 }
 
-const CHANGE_LABELS: Record<ResumeChangeKey, string> = {
-  summary: 'the summary',
-  'bullet-0': 'the first bullet',
-  'bullet-1': 'the second bullet',
-  skills: 'the skills',
+function changeLabel(key: ResumeChangeKey, document: ResumeDocument): string {
+  if (key === 'summary') return 'the summary'
+  if (key === 'skills') return 'the skills'
+  const [, role, index] = key.split('-')
+  return `bullet ${Number(index) + 1} at ${document.roles[Number(role)]?.company ?? 'this role'}`
 }
 
 /** The small accept and reject pair at the end of a changed line. */
-function ChangeActions({ changeKey, onDecide }: { readonly changeKey: ResumeChangeKey; readonly onDecide: (key: ResumeChangeKey, decision: ResumeChangeDecision) => void }) {
+function ChangeActions({ changeKey, label, onDecide }: { readonly changeKey: ResumeChangeKey; readonly label: string; readonly onDecide: (key: ResumeChangeKey, decision: ResumeChangeDecision) => void }) {
   return (
     <span className="ms-1 inline-flex translate-y-0.5 gap-0.5 align-baseline not-italic">
       <button
         type="button"
         onClick={() => onDecide(changeKey, 'accepted')}
-        aria-label={`Accept the change to ${CHANGE_LABELS[changeKey]}`}
+        aria-label={`Accept the change to ${label}`}
         className="relative grid size-3.5 place-items-center rounded-sm bg-positive text-surface after:absolute after:-inset-1.5 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
       >
         <Check aria-hidden="true" className="size-2.5" strokeWidth={3} />
@@ -85,7 +99,7 @@ function ChangeActions({ changeKey, onDecide }: { readonly changeKey: ResumeChan
       <button
         type="button"
         onClick={() => onDecide(changeKey, 'rejected')}
-        aria-label={`Reject the change to ${CHANGE_LABELS[changeKey]}`}
+        aria-label={`Reject the change to ${label}`}
         className="relative grid size-3.5 place-items-center rounded-sm bg-danger text-surface after:absolute after:-inset-1.5 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
       >
         <X aria-hidden="true" className="size-2.5" strokeWidth={3} />
@@ -129,17 +143,17 @@ export function ClassicResume({
           {isTypingSummary ? (
             <span aria-hidden="true" className="ms-0.5 inline-block h-3 w-px animate-pulse bg-accent-text align-middle motion-reduce:animate-none" />
           ) : null}
-          {onDecide && reviewing('summary') && !isTypingSummary ? <ChangeActions changeKey="summary" onDecide={onDecide} /> : null}
+          {onDecide && reviewing('summary') && !isTypingSummary ? <ChangeActions changeKey="summary" label="the summary" onDecide={onDecide} /> : null}
         </p>
       </section>
       <section className="mt-5">
         <h2 className="border-b border-paper-ink pb-1 text-sm font-bold uppercase tracking-wide">Experience</h2>
         <div className="grid gap-5 pt-3">
           {document.roles.map((role, roleIndex) => {
-            const bulletKey = (index: number): ResumeChangeKey | null => (roleIndex === 0 && index < 2 && document.improvedFirstRoleBullets[index] ? (`bullet-${index}` as ResumeChangeKey) : null)
+            const bulletKey = (index: number): ResumeChangeKey | null => (improvedBullet(document, roleIndex, index) ? bulletChangeKey(roleIndex, index) : null)
             const bullets = role.bullets.map((bullet, index) => {
               const key = bulletKey(index)
-              return key && uses(key) ? document.improvedFirstRoleBullets[index] ?? bullet : bullet
+              return key && uses(key) ? improvedBullet(document, roleIndex, index) ?? bullet : bullet
             })
             return (
               <article key={`${role.company}-${role.period}`}>
@@ -158,7 +172,7 @@ export function ClassicResume({
                     return (
                       <li key={bullet} className={cn((pending || (changedFrom && changedFrom.roles[roleIndex]?.bullets[index] !== bullet)) && `${changed} marker:text-accent-text`)}>
                         {bullet}
-                        {pending && key && onDecide ? <ChangeActions changeKey={key} onDecide={onDecide} /> : null}
+                        {pending && key && onDecide ? <ChangeActions changeKey={key} label={changeLabel(key, document)} onDecide={onDecide} /> : null}
                       </li>
                     )
                   })}
@@ -180,7 +194,7 @@ export function ClassicResume({
         {onDecide && reviewing('skills') ? (
           <p className="mt-1.5 text-xs text-accent-text">
             New skills highlighted
-            <ChangeActions changeKey="skills" onDecide={onDecide} />
+            <ChangeActions changeKey="skills" label="the skills" onDecide={onDecide} />
           </p>
         ) : null}
       </section>
