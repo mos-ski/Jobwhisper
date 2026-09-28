@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react'
-import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, ChevronRight, ArrowLeftRight, Download, FileText, HelpCircle, Minus, Plus, Target, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, ChevronRight, MoveHorizontal, Download, FileText, HelpCircle, Minus, Plus, Target, X } from 'lucide-react'
 
 import type { ResumeBuilderSession, ResumeBuilderTab, ResumeChatState, ResumeDocument, ResumeExtraSection, ResumeExtraSectionKind, ResumeHistoryRow, ResumeIssue, ResumeSectionId } from '@/contracts/resume.draft'
 import type { FairUseSnapshot } from '@/contracts/fair-use.draft'
@@ -112,7 +112,7 @@ function BuilderHeader({
           title="Compare with your original"
           className="inline-flex size-9 items-center justify-center rounded-lg border border-border bg-surface text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
         >
-          <ArrowLeftRight aria-hidden="true" className="size-4" />
+          <MoveHorizontal aria-hidden="true" className="size-4" />
         </button>
       ) : null}
       {onAtsClick ? (
@@ -747,19 +747,6 @@ function ZoomControls({ zoom, onChange }: { readonly zoom: number; readonly onCh
   )
 }
 
-
-function InlineChangeControls({ onAccept, onReject }: { readonly onAccept: () => void; readonly onReject: () => void }) {
-  return (
-    <div id="walkthrough-diff-actions" className="absolute end-40 top-36 hidden gap-2 lg:flex">
-      <button type="button" onClick={onReject} aria-label="Decline change" className="grid size-8 place-items-center rounded-soft border border-border bg-surface text-ink-muted shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-        <X aria-hidden="true" className="size-4" />
-      </button>
-      <button type="button" onClick={onAccept} aria-label="Accept change" className="grid size-8 place-items-center rounded-soft bg-accent text-on-accent shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-        <Check aria-hidden="true" className="size-4" />
-      </button>
-    </div>
-  )
-}
 
 type SuggestionChange = {
   readonly id: string
@@ -1420,9 +1407,6 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
                 onDecide={pendingSuggestion ? decideChange : undefined}
               />
             </div>
-            {pendingSuggestion ? (
-              <InlineChangeControls onAccept={handleAccept} onReject={handleReject} />
-            ) : null}
             {showPostAcceptTip ? (
               <WalkthroughTooltip
                 targetId="walkthrough-chat-input"
@@ -1464,9 +1448,6 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
             typedSummary={typedSummary}
             onDraftChange={setEditedDocument}
           />
-          {pendingSuggestion ? (
-            <InlineChangeControls onAccept={handleAccept} onReject={handleReject} />
-          ) : null}
           {showPostAcceptTip ? (
             <WalkthroughTooltip
               targetId="walkthrough-chat-input"
