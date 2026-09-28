@@ -112,8 +112,17 @@ function NavSheet({ onClose }: { readonly onClose: () => void }) {
 
 // Plain anchors rather than navigate() calls: the nav then needs no Router context, so it
 // renders in any page's tests, and the links can be middle-clicked or opened in a new tab.
-export function MarketingNav() {
+export type MarketingNavProps = {
+  /** Logo only, for funnel pages where every other link is a way out. */
+  readonly minimal?: boolean
+}
+
+export function MarketingNav({ minimal = false }: MarketingNavProps) {
   const [menuOpen, setMenuOpen] = useState(false)
+
+  if (minimal) {
+    return <nav className="landing-nav" data-minimal="" aria-label="Main navigation"><a className="landing-nav-home" href="/" aria-label="Jobwhisper home"><img src="/landing-logo.svg" alt="" className="landing-nav-logo" /></a></nav>
+  }
 
   return <>
     <nav className="landing-nav" aria-label="Main navigation"><a className="landing-nav-home" href="/" aria-label="Jobwhisper home"><img src="/landing-logo.svg" alt="" className="landing-nav-logo" /></a><div className="landing-nav-links"><FeaturesMenu /><a href="/pricing">Pricing</a><a href={FAQ_HREF}>FAQ</a></div><div className="landing-nav-actions"><DownloadMenu compact /><a className="landing-nav-auth" href="/v3/auth/sign-in">Log in</a><button type="button" className="landing-nav-menu" aria-label="Open menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}><MenuIcon aria-hidden="true" /></button></div></nav>

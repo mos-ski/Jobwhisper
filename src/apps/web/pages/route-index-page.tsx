@@ -23,6 +23,11 @@ const marketingRoutes = [
 
 const tryFunnelRoutes = [
   {
+    href: '/resume-week',
+    label: 'Resume week landing',
+    description: 'Paid-traffic landing: the job-and-resume field in the hero, demo video after it, logo-only nav, no footer, banner or cookie prompt. Set me up opens the week-of-Pro quiz.',
+  },
+  {
     href: '/v3/try/pro',
     label: 'A week of Pro',
     description: 'The landing-page quiz, ending in the Pro offer widget: one week of Pro for $4.57, then $99 a month.',

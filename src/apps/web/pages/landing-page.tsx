@@ -55,9 +55,9 @@ function SocialProofSignup() {
   </aside>
 }
 
-function Hero({ heroRef }: { readonly heroRef: RefObject<HTMLElement | null> }) {
+function Hero({ heroRef, withSetup }: { readonly heroRef: RefObject<HTMLElement | null>; readonly withSetup: boolean }) {
   const navigate = useNavigate()
-  return <section className="landing-hero" ref={heroRef}><MarketingNav /><div className="landing-hero-copy"><h1>Pass Your <span>Next Interview.</span><br />Land the Job. Or Don’t Pay!</h1><p>Jobwhisper Copilot listens to every interview question and instantly gives you a tailored answer using your resume and the job description, so you always know what to say. No guessing. No delay. No memorizing scripts. No freezing under pressure.</p><div className="landing-hero-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Ace my next interview <ArrowUpRight aria-hidden="true" /></button></div><div className="landing-hero-notes"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span></div></div></section>
+  return <section className="landing-hero" ref={heroRef}><MarketingNav minimal={withSetup} /><div className="landing-hero-copy"><h1>Pass Your <span>Next Interview.</span><br />Land the Job. Or Don’t Pay!</h1><p>Jobwhisper Copilot listens to every interview question and instantly gives you a tailored answer using your resume and the job description, so you always know what to say. No guessing. No delay. No memorizing scripts. No freezing under pressure.</p>{withSetup ? <div className="landing-hero-setup"><TrySetupCard id="landing-hero-job" /></div> : <div className="landing-hero-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Ace my next interview <ArrowUpRight aria-hidden="true" /></button></div>}<div className="landing-hero-notes"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span></div></div></section>
 }
 
 function Demo() {
@@ -305,11 +305,37 @@ function CopilotShowcase() {
   return <section className="landing-copilot"><div className="landing-section-intro"><h2>Your copilot.<br />Always within reach.</h2><ScrollRevealText segments={COPILOT_COPY} className="landing-reveal" /></div><div className="landing-copilot-scroller" ref={runwayRef} style={{ '--steps': COPILOT_TABS.length } as CSSProperties}><div className="landing-copilot-pinned"><div className="landing-copilot-tabs" role="tablist" aria-label="Copilot use cases">{COPILOT_TABS.map((tab, index) => <button key={tab} role="tab" aria-selected={activeTab === tab} aria-controls="copilot-preview" onClick={() => setActive(index)}>{tab}</button>)}</div><div className="landing-copilot-image" data-copilot-tab={activeTab.toLowerCase()} id="copilot-preview" role="tabpanel">{COPILOT_TABS.map((tab, index) => <img key={tab} src={COPILOT_IMAGES[tab]} alt={index === active ? `Jobwhisper ${tab.toLowerCase()} copilot desktop preview` : ''} aria-hidden={index === active ? undefined : true} loading={index === 0 ? 'eager' : 'lazy'} data-current={index === active} data-side={index === active ? undefined : index < active ? 'before' : 'after'} />)}</div><div className="landing-copilot-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Try Interview Copilot <ArrowUpRight aria-hidden="true" /></button></div></div></div></section>
 }
 
+const JOB_PROMPT = 'Paste a job description'
+const LETTER_MS = 70
+// How many letter-ticks the finished prompt stays up before it clears and types again.
+const HOLD_TICKS = 30
+
 /**
- * The way in: paste a job and add a resume. The questions about them are asked full screen
- * at /v3/try/pro, which ends at a week of Pro for $4.57.
+ * Types the placeholder in a letter at a time, holds it, then starts again, so an empty field
+ * reads as the next thing to do. Reduced motion gets the whole prompt at once.
  */
-function TryItNow() {
+function useLetterReveal(active: boolean): string {
+  const [shown, setShown] = useState<number>(JOB_PROMPT.length)
+
+  useEffect(() => {
+    if (!active || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setShown(JOB_PROMPT.length)
+      return
+    }
+    let tick = 0
+    setShown(0)
+    const timer = window.setInterval(() => {
+      tick = (tick + 1) % (JOB_PROMPT.length + HOLD_TICKS)
+      setShown(Math.min(tick, JOB_PROMPT.length))
+    }, LETTER_MS)
+    return () => window.clearInterval(timer)
+  }, [active])
+
+  return JOB_PROMPT.slice(0, shown)
+}
+
+/** The job-and-resume field that starts the week-of-Pro funnel at /v3/try/pro. */
+function TrySetupCard({ id }: { readonly id: string }) {
   const navigate = useNavigate()
   const [jobText, setJobText] = useState('')
   const [resume, setResume] = useState<File | null>(null)
@@ -317,17 +343,15 @@ function TryItNow() {
   // Nothing opens until there is a posting and a resume to work from: the questions that
   // follow are about those two things, so asking them first would be asking about nothing.
   const ready = jobText.trim().length > 0 && resume !== null
+  const [focused, setFocused] = useState(false)
+  const placeholder = useLetterReveal(jobText.length === 0 && !focused)
 
   function takeFile(file: File | undefined) {
     if (file) setResume(file)
     setDragging(false)
   }
 
-  return <section className="landing-try" aria-labelledby="landing-try-title">
-    <p className="lf-eyebrow">Getting started</p>
-    <h2 id="landing-try-title">Try it on a job you actually want.</h2>
-    <p className="landing-try-lede">Paste the description, add your resume, and tell us what landing it looks like. Your setup will be waiting.</p>
-
+  return <>
     <div
       className="landing-try-card"
       data-dragging={dragging ? '' : undefined}
@@ -335,8 +359,8 @@ function TryItNow() {
       onDragLeave={() => setDragging(false)}
       onDrop={(event) => { event.preventDefault(); takeFile(event.dataTransfer.files?.[0]) }}
     >
-      <label className="sr-only" htmlFor="landing-try-job">Paste a job description</label>
-      <textarea id="landing-try-job" placeholder="Paste a job description" rows={3} value={jobText} onChange={(event) => setJobText(event.target.value)} />
+      <label className="sr-only" htmlFor={id}>Paste a job description</label>
+      <textarea id={id} placeholder={placeholder} rows={3} value={jobText} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} onChange={(event) => setJobText(event.target.value)} />
       <div className="landing-try-card-foot">
         <label className="landing-try-attach">
           <Paperclip aria-hidden="true" />
@@ -357,6 +381,19 @@ function TryItNow() {
             ? 'Paste a job description to continue.'
             : 'Paste a job description and attach your resume to continue.'}
     </p>
+  </>
+}
+
+/**
+ * The way in: paste a job and add a resume. The questions about them are asked full screen
+ * at /v3/try/pro, which ends at a week of Pro for $4.57.
+ */
+function TryItNow() {
+  return <section className="landing-try" aria-labelledby="landing-try-title">
+    <p className="lf-eyebrow">Getting started</p>
+    <h2 id="landing-try-title">Try it on a job you actually want.</h2>
+    <p className="landing-try-lede">Paste the description, add your resume, and tell us what landing it looks like. Your setup will be waiting.</p>
+    <TrySetupCard id="landing-try-job" />
   </section>
 }
 
@@ -364,19 +401,27 @@ function Faq() {
   return <section className="landing-faq" id="faq"><h2>Frequently asked questions</h2><Accordion className="landing-faq-list">{FAQS.map(([question, answer], index) => <AccordionItem key={question} value={String(index)}><AccordionHeader><AccordionTrigger>{question}</AccordionTrigger></AccordionHeader><AccordionPanel>{answer}</AccordionPanel></AccordionItem>)}</Accordion></section>
 }
 
-function Closing() {
+function Closing({ withPricing }: { readonly withPricing: boolean }) {
   const navigate = useNavigate()
-  return <section className="landing-closing"><h2>Ready when you are.<br />Let’s get you hired.</h2><ScrollRevealText segments={CLOSING_COPY} className="landing-reveal" /><div className="landing-closing-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Get started free <ArrowUpRight aria-hidden="true" /></button><button className="landing-secondary-button" onClick={() => navigate('/pricing')}>See pricing</button></div><div className="landing-hero-notes landing-closing-note"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span><b aria-hidden="true">·</b><span>Plans from $47/week</span></div></section>
+  return <section className="landing-closing"><h2>Ready when you are.<br />Let’s get you hired.</h2><ScrollRevealText segments={CLOSING_COPY} className="landing-reveal" /><div className="landing-closing-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Get started free <ArrowUpRight aria-hidden="true" /></button>{withPricing ? <button className="landing-secondary-button" onClick={() => navigate('/pricing')}>See pricing</button> : null}</div><div className="landing-hero-notes landing-closing-note"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span><b aria-hidden="true">·</b><span>Plans from $47/week</span></div></section>
 }
 
-export function LandingPage() {
+export type LandingVariant = 'site' | 'resume-week'
+
+/**
+ * `site` is the homepage. `resume-week` is the paid-traffic funnel: the job-and-resume field
+ * sits in the hero with the demo straight after it, and there is no footer to leak clicks
+ * out of the funnel.
+ */
+export function LandingPage({ variant = 'site' }: { readonly variant?: LandingVariant }) {
+  const funnel = variant === 'resume-week'
   const { hash } = useLocation()
   const heroRef = useRef<HTMLElement>(null)
   const [showSocialProof, setShowSocialProof] = useState(false)
   const [consent, decideConsent] = useCookieConsent()
   // Counts reopenings from the footer, so each one remounts the banner on its toggles.
   const [settingsOpened, setSettingsOpened] = useState(0)
-  const showConsent = consent.status === 'undecided' || settingsOpened > 0
+  const showConsent = !funnel && (consent.status === 'undecided' || settingsOpened > 0)
 
   useEffect(() => {
     if (!hash) window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
@@ -394,7 +439,7 @@ export function LandingPage() {
   // The sections are wrapped so they can carry the opaque sheet that covers the pinned
   // footer — on the page element itself the background paints under the footer instead.
   // The cookie banner sits outside <main>: it is not page content, and the landing's h2 rules would restyle it.
-  return <><main className="figma-landing-page"><div className="landing-content"><BrandAnnouncement /><Hero heroRef={heroRef} /><Demo /><CopilotShowcase /><ProductFacts /><Journey /><TryItNow /><Faq /><Closing /></div><MarketingFooter onCookieSettings={() => setSettingsOpened((count) => count + 1)} />{showSocialProof && !showConsent ? <SocialProofSignup /> : null}</main>{showConsent ? (
+  return <><main className="figma-landing-page" data-variant={variant}><div className="landing-content">{funnel ? null : <BrandAnnouncement />}<Hero heroRef={heroRef} withSetup={funnel} /><Demo /><CopilotShowcase /><ProductFacts /><Journey />{funnel ? null : <TryItNow />}<Faq /><Closing withPricing={!funnel} /></div>{funnel ? null : <MarketingFooter onCookieSettings={() => setSettingsOpened((count) => count + 1)} />}{showSocialProof && !showConsent ? <SocialProofSignup /> : null}</main>{showConsent ? (
     <CookieConsent
       key={settingsOpened}
       preferences={consent.status === 'decided' ? consent.preferences : NO_OPTIONAL_COOKIES}
