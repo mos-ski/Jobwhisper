@@ -87,7 +87,7 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
             <ArrowLeft aria-hidden="true" className="size-4 rtl:rotate-180" />
           </button>
         ) : null}
-        <div className={cn(pill, 'min-w-0 flex-1 ps-2 sm:flex-none')}>
+        <div className={cn(pill, 'min-w-0 shrink ps-2')}>
           <GripVertical aria-hidden="true" className="hidden size-4 shrink-0 text-ink-muted sm:block" />
           <span aria-hidden="true" className="flex items-end gap-0.5">
             {[2, 3, 4].map((height) => <span key={height} className="w-1 rounded-sm bg-positive" style={{ height: height * 3 }} />)}
@@ -99,7 +99,7 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
           <span aria-hidden="true" className="hidden sm:inline">{CONNECTION[connection].label}</span>
         </span>
         {/* On a phone the controls fold into one menu; the timer moves to the status line. */}
-        <button type="button" aria-label="Session controls" onClick={() => setControlsOpen(true)} className={cn(iconButton, 'sm:hidden')}>
+        <button type="button" aria-label="Session controls" onClick={() => setControlsOpen(true)} className={cn(iconButton, 'ms-auto sm:hidden')}>
           <MoreHorizontal aria-hidden="true" className="size-4" />
         </button>
         <Dialog open={controlsOpen} onOpenChange={setControlsOpen}>
