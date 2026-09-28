@@ -1,86 +1,121 @@
-import { motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
+import { ArrowRight, ArrowUpRight, RotateCw, X } from 'lucide-react'
 
-import { cn } from '@/ui'
+import type { DesktopCredits, DesktopSessionKind, DesktopSessionSummary } from '@/contracts/desktop.draft'
+import { Button, Skeleton, cn } from '@/ui'
 
-type DesktopHomeCard = {
-  readonly id: string
-  readonly title: string
-  readonly description: string
-  readonly icon: string
-  readonly badge?: string
-  readonly suffix?: '→' | '↗'
-  readonly href?: string
+export type DesktopHomeViewProps = {
+  readonly firstName: string
+  readonly calendarPrompt: boolean
+  readonly onConnectCalendar: () => void
+  readonly onDismissCalendar: () => void
+  readonly onLaunch: (kind: DesktopSessionKind) => void
+  readonly sessions: { readonly status: 'loading' } | { readonly status: 'error' } | { readonly status: 'ready'; readonly items: readonly DesktopSessionSummary[] }
+  readonly credits?: DesktopCredits
+  readonly onOpenSession: (id: string) => void
+  readonly onViewAllSessions: () => void
+  readonly onManageCredits: () => void
+  readonly onRetry?: () => void
 }
 
-const DESKTOP_HOME_CARDS: readonly DesktopHomeCard[] = [
-  {
-    id: 'copilot',
-    title: 'Start Interview Copilot',
-    description: 'From resume reviews to job matches and strategy tips, Copilot gives you smart insights at every step.',
-    icon: '/v3-assets/figma/action-icon-copilot.svg',
-    suffix: '→',
-    href: '/desktop/configure',
-  },
-  {
-    id: 'coding',
-    title: 'Coding Interview',
-    description: 'Live AI assistance for coding interviews — real-time hints as you work through the problem.',
-    icon: '/v3-assets/figma/action-icon-coding.svg',
-  },
-  {
-    id: 'meeting',
-    title: 'Meeting Copilot',
-    description: 'Live AI assistance during meetings — real-time notes and talking points as the conversation happens.',
-    icon: '/v3-assets/figma/action-icon-meeting.svg',
-  },
+const LAUNCHERS: readonly { readonly kind: DesktopSessionKind; readonly title: string; readonly detail: string; readonly icon: string }[] = [
+  { kind: 'interview', title: 'Interview Copilot', detail: 'Live AI assistance during interviews. Real-time suggestions as the conversation happens.', icon: '/v3-assets/figma/action-icon-copilot.svg' },
+  { kind: 'coding', title: 'Coding Copilot', detail: 'Live AI assistance for coding interviews. Real-time hints as you work through the problem.', icon: '/v3-assets/figma/action-icon-coding.svg' },
+  { kind: 'meeting', title: 'Meeting Copilot', detail: 'Live AI assistance during meetings. Real-time notes and talking points as the conversation happens.', icon: '/v3-assets/figma/action-icon-meeting.svg' },
 ]
 
-export function DesktopHomeView() {
-  const navigate = useNavigate()
+const KIND_LABELS: Record<DesktopSessionKind, string> = { interview: 'Interview', coding: 'Coding', meeting: 'Meeting' }
+const when = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })
 
+export function DesktopHomeView({ firstName, calendarPrompt, onConnectCalendar, onDismissCalendar, onLaunch, sessions, credits, onOpenSession, onViewAllSessions, onManageCredits, onRetry }: DesktopHomeViewProps) {
   return (
-    <div className="flex h-full min-h-[520px] justify-center overflow-y-auto bg-live-workspace px-6 py-20">
-      <div className="w-full max-w-[769px]">
-        <p className="text-2xl font-semibold leading-tight text-white">Welcome, what would you like to do today?</p>
+    <div className="mx-auto w-full max-w-4xl px-6 pb-12 pt-6">
+      <h1 className="font-gowun text-3xl text-ink">Welcome {firstName}, what would you like to do today?</h1>
+      {calendarPrompt ? (
+        <p className="mt-4 flex flex-wrap items-center gap-x-2 text-sm text-ink-muted">
+          See your upcoming meetings here.
+          <button type="button" onClick={onConnectCalendar} className="min-h-9 rounded-md font-semibold text-accent-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+            Connect Google Calendar
+          </button>
+          <button type="button" aria-label="Dismiss the calendar prompt" onClick={onDismissCalendar} className="grid size-9 place-items-center rounded-md hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+            <X aria-hidden="true" className="size-4" />
+          </button>
+        </p>
+      ) : null}
 
-        <div className="mt-[29px] flex flex-wrap gap-[9px]">
-          {DESKTOP_HOME_CARDS.map((card, index) => {
-            const clickable = Boolean(card.href)
+      <ul className="mt-6 grid gap-4 sm:grid-cols-3">
+        {LAUNCHERS.map((launcher) => (
+          <li key={launcher.kind}>
+            <button
+              type="button"
+              onClick={() => onLaunch(launcher.kind)}
+              className="grid h-full w-full content-start gap-3 rounded-panel border border-border bg-surface p-5 text-start transition-shadow hover:shadow-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              <img src={launcher.icon} alt="" className="h-14 w-14" />
+              <span className="flex items-center gap-2 font-gowun text-base text-ink">
+                {launcher.title}
+                <ArrowRight aria-hidden="true" className="size-4" />
+              </span>
+              <span className="text-sm leading-6 text-ink-muted">{launcher.detail}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
 
-            return (
-              <motion.button
-                key={card.id}
-                type="button"
-                disabled={!clickable}
-                onClick={clickable ? () => navigate(card.href!) : undefined}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.25, delay: index * 0.06, ease: [0.4, 0, 0.2, 1] }}
-                whileHover={clickable ? { y: -2 } : undefined}
-                whileTap={clickable ? { scale: 0.98 } : undefined}
-                className={cn(
-                  'flex w-[250px] flex-col items-start gap-3 rounded-[9px] border-[0.75px] border-[#eaecf0] bg-white px-[18px] py-3 text-left transition-colors',
-                  clickable ? 'cursor-pointer hover:bg-[#f8fafc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus' : 'cursor-default',
-                )}
-              >
-                <img src={card.icon} alt="" className="h-[57.6px] w-[56.5px] shrink-0" />
-                <div className="grid gap-1.5">
-                  <span className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-sm font-medium tracking-[-0.28px] text-[#32363a]">
-                      {card.title}
-                      {card.suffix ? <span className="ms-1">{card.suffix}</span> : null}
+      <div className="mt-8 grid gap-4 sm:grid-cols-[2fr_1fr]">
+        <section aria-labelledby="desktop-recent" className="rounded-panel border border-border bg-surface p-5">
+          <div className="flex items-center justify-between gap-3">
+            <h2 id="desktop-recent" className="font-gowun text-base text-ink">Recent sessions</h2>
+            <button type="button" onClick={onViewAllSessions} className="min-h-9 rounded-md text-sm font-semibold text-accent-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">View all</button>
+          </div>
+          {sessions.status === 'loading' ? (
+            <div aria-busy="true" aria-label="Loading sessions" className="mt-3 grid gap-3">{[0, 1, 2, 3].map((item) => <Skeleton key={item} className="h-12" />)}</div>
+          ) : sessions.status === 'error' ? (
+            <div role="alert" className="mt-4 grid justify-items-start gap-2 text-sm text-ink-muted">
+              We couldn&rsquo;t load your sessions.
+              <Button variant="secondary" size="sm" onClick={onRetry} leadingIcon={<RotateCw aria-hidden="true" className="size-4" />}>Try again</Button>
+            </div>
+          ) : sessions.items.length === 0 ? (
+            <p className="mt-4 text-sm text-ink-muted">No sessions yet. Start one above and it will appear here.</p>
+          ) : (
+            <ul className="mt-2 divide-y divide-border">
+              {sessions.items.map((session) => (
+                <li key={session.id}>
+                  <button type="button" onClick={() => onOpenSession(session.id)} className="flex min-h-16 w-full items-center justify-between gap-3 py-2 text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-semibold text-ink">{session.title}</span>
+                      <span className="block truncate text-sm text-ink-muted">
+                        {[KIND_LABELS[session.kind], session.company, when.format(new Date(session.startedAt))].filter(Boolean).join(' · ')}
+                      </span>
                     </span>
-                    {card.badge ? (
-                      <span className="rounded-pill bg-[#eceef2] px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[#475467]">{card.badge}</span>
-                    ) : null}
-                  </span>
-                  <p className="text-xs font-normal leading-[18px] tracking-[-0.24px] text-[rgba(26,26,26,0.7)]">{card.description}</p>
-                </div>
-              </motion.button>
-            )
-          })}
-        </div>
+                    <span className="flex shrink-0 items-center gap-3 text-sm text-ink-muted">
+                      {session.durationMinutes} min
+                      <ArrowUpRight aria-hidden="true" className="size-4 text-ink" />
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section aria-labelledby="desktop-credits" className="rounded-panel border border-border bg-surface p-5">
+          <div className="flex items-center justify-between gap-3">
+            <h2 id="desktop-credits" className="font-gowun text-base text-ink">Credits</h2>
+            <button type="button" onClick={onManageCredits} className="min-h-9 rounded-md text-sm font-semibold text-accent-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Manage</button>
+          </div>
+          {credits ? (
+            <>
+              <p className="mt-3 text-3xl font-bold text-ink">{credits.balance.toLocaleString('en-US')} credits</p>
+              <p className="text-sm text-ink-muted">left to spend</p>
+              <div role="progressbar" aria-label="Credits used this period" aria-valuemin={0} aria-valuemax={credits.periodAllowance} aria-valuenow={credits.usedThisPeriod} className="mt-4 h-1.5 overflow-hidden rounded-full bg-surface-subtle">
+                <div className={cn('h-full rounded-full', credits.usedThisPeriod / credits.periodAllowance > 0.9 ? 'bg-danger' : 'bg-accent')} style={{ width: `${Math.min(100, (credits.usedThisPeriod / credits.periodAllowance) * 100)}%` }} />
+              </div>
+              <p className="mt-2 text-sm text-ink-muted">{credits.usedThisPeriod.toLocaleString('en-US')} of {credits.periodAllowance.toLocaleString('en-US')} credits this period</p>
+            </>
+          ) : (
+            <Skeleton className="mt-3 h-20" />
+          )}
+        </section>
       </div>
     </div>
   )

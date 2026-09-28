@@ -41,9 +41,13 @@ function initialFrame(): WindowFrame {
 
 export type DesktopShellProps = {
   readonly children: ReactNode
+  /** Right side of the title bar: stealth, notifications, account. */
+  readonly header?: ReactNode
+  /** `bare` hands the whole window to the screen (the live session draws its own toolbar); `accent` is the blue completion screen. */
+  readonly chrome?: 'standard' | 'bare' | 'accent'
 }
 
-export function DesktopShell({ children }: DesktopShellProps) {
+export function DesktopShell({ children, header, chrome = 'standard' }: DesktopShellProps) {
   const [frame, setFrame] = useState<WindowFrame>(initialFrame)
   const [frameEl, setFrameEl] = useState<HTMLDivElement | null>(null)
   const dragState = useRef<{ readonly startX: number; readonly startY: number; readonly originX: number; readonly originY: number } | null>(null)
@@ -89,27 +93,32 @@ export function DesktopShell({ children }: DesktopShellProps) {
   }
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-canvas">
-      <div aria-hidden="true" className="pointer-events-none absolute -left-40 -top-40 size-[560px] rounded-full bg-accent-subtle blur-3xl" />
-      <div aria-hidden="true" className="pointer-events-none absolute -bottom-48 -right-32 size-[620px] rounded-full bg-accent-muted blur-3xl" />
+    <div className="fixed inset-0 overflow-hidden bg-surface-inverse">
+      <div aria-hidden="true" className="pointer-events-none absolute -left-40 -top-40 size-[560px] rounded-full bg-accent opacity-40 blur-3xl" />
+      <div aria-hidden="true" className="pointer-events-none absolute -bottom-48 -right-32 size-[620px] rounded-full bg-accent-muted opacity-30 blur-3xl" />
       <motion.div
         ref={setFrameEl}
         initial={{ opacity: 0, scale: 0.96, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute flex flex-col overflow-hidden rounded-xl shadow-2xl ring-1 ring-black/5"
+        className={cn('absolute flex flex-col overflow-hidden rounded-xl shadow-2xl', chrome === 'accent' ? 'bg-accent text-on-accent' : 'bg-canvas text-ink')}
         style={{ left: frame.x, top: frame.y, width: frame.width, height: frame.height }}
       >
-        <div
-          onPointerDown={handleTitleBarPointerDown}
-          className="flex h-[68px] shrink-0 cursor-grab items-center bg-[#141d2e] px-[27px] select-none active:cursor-grabbing"
-        >
-          <div className="flex items-center gap-[7px]">
-            <span className="size-3.5 rounded-full bg-[#ff5f57]" />
-            <span className="size-3.5 rounded-full bg-[#febc2e]" />
-            <span className="size-3.5 rounded-full bg-[#28c840]" />
+        {chrome === 'bare' ? (
+          <div onPointerDown={handleTitleBarPointerDown} aria-hidden="true" className="absolute inset-x-0 top-0 z-20 h-2 cursor-grab active:cursor-grabbing" />
+        ) : (
+          <div
+            onPointerDown={handleTitleBarPointerDown}
+            className="flex h-14 shrink-0 cursor-grab select-none items-center justify-between gap-4 px-5 active:cursor-grabbing"
+          >
+            <div aria-hidden="true" className="flex items-center gap-2">
+              <span className={cn('size-3 rounded-full', chrome === 'accent' ? 'bg-accent-hover' : 'bg-danger')} />
+              <span className={cn('size-3 rounded-full', chrome === 'accent' ? 'bg-accent-hover' : 'bg-warning')} />
+              <span className={cn('size-3 rounded-full', chrome === 'accent' ? 'bg-accent-hover' : 'bg-positive')} />
+            </div>
+            {header ? <div onPointerDown={(event) => event.stopPropagation()} className="flex items-center">{header}</div> : null}
           </div>
-        </div>
+        )}
         <DesktopFrameContext.Provider value={frameEl}>
           <div className="min-h-0 flex-1 overflow-auto">{children}</div>
         </DesktopFrameContext.Provider>
@@ -117,7 +126,7 @@ export function DesktopShell({ children }: DesktopShellProps) {
           onPointerDown={handleResizePointerDown}
           role="presentation"
           aria-hidden="true"
-          className={cn('absolute bottom-0 right-0 z-10 grid size-5 cursor-nwse-resize place-items-center text-white/40')}
+          className="absolute bottom-0 right-0 z-10 grid size-5 cursor-nwse-resize place-items-center text-ink-muted"
         >
           <GripHorizontal aria-hidden="true" className="size-3.5 rotate-45" />
         </div>
