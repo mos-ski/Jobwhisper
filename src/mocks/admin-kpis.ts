@@ -84,7 +84,7 @@ const CARD_SPECS: readonly CardSpec[] = [
         shortLabel: 'Starter',
         kind: 'stock',
         unitNoun: 'subscriber',
-        priceLabel: '$47/mo',
+        priceLabel: '$47/wk',
         unitPriceCents: 4_700,
         planUnits: 90,
         actualUnits: { '7d': 96, '30d': 96, '90d': 88, '12m': 71 },

@@ -366,7 +366,7 @@ function Faq() {
 
 function Closing() {
   const navigate = useNavigate()
-  return <section className="landing-closing"><h2>Ready when you are.<br />Let’s get you hired.</h2><ScrollRevealText segments={CLOSING_COPY} className="landing-reveal" /><div className="landing-closing-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Get started free <ArrowUpRight aria-hidden="true" /></button><button className="landing-secondary-button" onClick={() => navigate('/pricing')}>See pricing</button></div><div className="landing-hero-notes landing-closing-note"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span><b aria-hidden="true">·</b><span>Plans from $47/month</span></div></section>
+  return <section className="landing-closing"><h2>Ready when you are.<br />Let’s get you hired.</h2><ScrollRevealText segments={CLOSING_COPY} className="landing-reveal" /><div className="landing-closing-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Get started free <ArrowUpRight aria-hidden="true" /></button><button className="landing-secondary-button" onClick={() => navigate('/pricing')}>See pricing</button></div><div className="landing-hero-notes landing-closing-note"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span><b aria-hidden="true">·</b><span>Plans from $47/week</span></div></section>
 }
 
 export function LandingPage() {

@@ -45,7 +45,7 @@ export const troubleshootingArticles: readonly HelpArticle[] = [
     slug: 'common-issues',
     title: 'Common issues and fixes',
     description: 'The problems people actually report, in the order they are worth checking.',
-    lastUpdated: '2026-09-22',
+    lastUpdated: '2026-09-28',
     content: [
       { type: 'paragraph', text: 'Grouped by where the problem shows up, with the likeliest cause first in each list.' },
 
@@ -94,10 +94,10 @@ export const troubleshootingArticles: readonly HelpArticle[] = [
 
       { type: 'heading', text: 'Credits look wrong', level: 2 },
       { type: 'list', items: [
-        'Check which balance you are reading. Interview minutes and job-search credits are separate and shown separately.',
-        'Job-search credits expire 30 days after purchase.',
-        'Interview credits refresh on your billing date, not on the first of the month.',
-        'Practice sessions spend the same credits as live interviews, which surprises people mid-month.',
+        'On a plan, there is no credit balance. If a feature says it is resting, you reached the cap on one unbroken stretch, and it opens again after a few hours.',
+        'Without a plan, check which balance you are reading. Interview minutes, Resume Builder prompts and Auto Apply credits are separate and shown separately.',
+        'Prepaid credits expire 30 days after purchase.',
+        'Practice sessions spend the same interview credits as live interviews, which surprises people.',
       ]},
 
       { type: 'callout', variant: 'warning', text: 'If an interview is imminent and audio is not working, use Copilot on the web in a browser tab rather than debugging the desktop app. It is the fastest route to something functioning, and you can sort the desktop setup out afterwards.' },

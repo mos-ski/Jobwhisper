@@ -1226,7 +1226,7 @@ function PricingTab({
         <SectionPanel
           id="credit-economics-heading"
           title="Credit economics"
-          description="One credit is one minute of Copilot. The rate below sets what that minute is worth; the top-up price is what a subscriber pays to buy more mid-cycle."
+          description="One credit is one minute of Copilot, for people without a plan. The rate below sets what that minute is worth; the top-up price is what someone pays to buy more, including a subscriber buying a fresh stretch past a fair-use rest."
         >
           <div className="grid gap-4 sm:grid-cols-3">
             <ConfigField
@@ -1250,7 +1250,7 @@ function PricingTab({
               label="Top-up price per credit, USD"
               value={form.topUpPrice}
               error={errors['top-up-price']}
-              hint="What a subscriber pays for extra credits when the monthly allowance runs out."
+              hint="What someone pays per credit when they top up: pay-as-you-go users, and subscribers buying past a fair-use rest."
               onChange={(value) => updateForm({ topUpPrice: value })}
             />
             <ConfigField
@@ -1271,7 +1271,7 @@ function PricingTab({
         <SectionPanel
           id="packages-heading"
           title="Done For You packages and Marketplace"
-          description="One-time purchases. Neither needs a subscription, and neither draws on the monthly credit allowance."
+          description="One-time purchases. Neither needs a subscription, and neither draws on a plan or a credit balance."
         >
           <div className="grid gap-4 lg:grid-cols-2">
             {form.packages.map((item) => (
