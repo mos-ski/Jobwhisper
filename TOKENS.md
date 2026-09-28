@@ -19,6 +19,7 @@ paints a dark frame before the app mounts.
 | `surface-raised` | `bg-surface-raised` | Elevated surface (hover states) |
 | `surface-subtle` | `bg-surface-subtle` | Subtle background (skeletons, placeholders) |
 | `surface-inverse` | `bg-surface-inverse` | Dark-on-light inversions (tooltips, toasts) |
+| `desktop-backdrop` | `bg-desktop-backdrop` | The deepest layer behind the floating desktop-app window, standing in for the OS desktop the window sits on. Theme-stable dark in both modes so the app window always reads as lifted above it — like `paper`, it does not follow app chrome |
 
 ### Text
 

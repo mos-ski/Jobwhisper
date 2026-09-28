@@ -18,6 +18,7 @@ const config: Config = {
           subtle: 'var(--lf-surface-subtle)',
           inverse: 'var(--lf-surface-inverse)',
         },
+        'desktop-backdrop': 'var(--lf-desktop-backdrop)',
         ink: {
           DEFAULT: 'var(--lf-ink)',
           muted: 'var(--lf-ink-muted)',
