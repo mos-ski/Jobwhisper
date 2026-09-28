@@ -100,10 +100,17 @@ describe('PricingPage', () => {
 
     // Interview credits cover both the live session and the practice one.
     expect(screen.getByRole('heading', { level: 3, name: 'Interview' })).toBeInTheDocument()
-    expect(screen.getByText('per interview minute')).toBeInTheDocument()
+    expect(screen.getByText('$0.10 per interview minute')).toBeInTheDocument()
     expect(screen.getByText('Works for Interview Prep and Interview Copilot')).toBeInTheDocument()
-    expect(screen.getByText('per AI prompt')).toBeInTheDocument()
-    expect(screen.getByText('per successful application')).toBeInTheDocument()
+    expect(screen.getByText('$0.10 per AI prompt')).toBeInTheDocument()
+    expect(screen.getByText('$1 per successful application')).toBeInTheDocument()
+
+    // Each card sells a pack: the picker changes what the price and Buy credits cover.
+    const interview = screen.getByRole('heading', { level: 3, name: 'Interview' }).closest('article') as HTMLElement
+    expect(within(interview).getByText('$10', { selector: '.font-gowun' })).toBeInTheDocument()
+    await user.click(within(interview).getByRole('button', { name: /100 interview minutes/ }))
+    await user.click(within(interview).getByRole('radio', { name: /250 interview minutes/ }))
+    expect(within(interview).getByText('$25', { selector: '.font-gowun' })).toBeInTheDocument()
 
     await user.click(screen.getByRole('tab', { name: 'Done for you' }))
 

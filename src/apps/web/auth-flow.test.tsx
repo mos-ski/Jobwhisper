@@ -516,10 +516,13 @@ describe('v3 web auth flow', () => {
     )
 
     expect(screen.getByRole('tab', { name: 'Subscription plans' })).toHaveAttribute('aria-selected', 'true')
-    expect(screen.getAllByText('Unlimited with your Pro plan')).toHaveLength(2)
+    expect(screen.getAllByText('Unlimited with your Pro plan')).toHaveLength(1)
+    // Auto Apply shows how much of the current usage window is spent instead of a credit bar.
+    expect(screen.getByRole('progressbar', { name: 'Auto Apply Credits usage this session' })).toHaveAttribute('aria-valuenow', '19')
+    expect(screen.getByText('Resets at 2:50 PM')).toBeInTheDocument()
     // The limit notice is the shared NoticeCard now, so it reads the same here as in a session.
-    expect(screen.getByRole('status')).toHaveTextContent("You've reached your usage limit")
-    expect(screen.getByRole('status')).toHaveTextContent('Available again at 4:58 PM, June 4')
+    const limit = screen.getByText("You've reached your usage limit").closest('[role="status"]') as HTMLElement
+    expect(limit).toHaveTextContent('Available again at 4:58 PM, June 4')
     expect(screen.queryByText('Automatic reload')).not.toBeInTheDocument()
 
     // The tour waits until Credits & Balances scrolls into view; How it works opens it straight away.

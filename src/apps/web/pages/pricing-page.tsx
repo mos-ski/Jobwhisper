@@ -4,6 +4,7 @@ import { ChevronDown } from 'lucide-react'
 
 import { MarketingFooter, MarketingNav } from '@/features/marketing/marketing-chrome'
 import { PlanAmount, PlanCard, PlanCarousel } from '@/features/pricing/plan-card'
+import { CreditProductCard } from '@/features/pricing/credit-pack-picker'
 import { CREDIT_PRODUCTS, MANAGED_PACKAGES } from '@/features/pricing/pricing-products'
 import { ProOfferWidget } from '@/features/billing/pro-offer-widget'
 import { Button, Tabs, TabsContent, TabsList, TabsTrigger, cn } from '@/ui'
@@ -417,18 +418,7 @@ function PayAsYouGo() {
       />
       <PlanCarousel count={CREDIT_PRODUCTS.length}>
         {CREDIT_PRODUCTS.map((product) => (
-          <PlanCard
-            key={product.id}
-            name={product.name}
-            tagline={product.tagline}
-            amount={<PlanAmount>{product.amount}</PlanAmount>}
-            unit={product.unit}
-            terms={product.terms}
-            features={product.features}
-            ctaLabel="Buy credits"
-            onCta={() => navigate('/v3/billing')}
-            plan={product.wash}
-          />
+          <CreditProductCard key={product.id} product={product} ctaLabel="Buy credits" onBuy={() => navigate('/v3/billing')} />
         ))}
       </PlanCarousel>
     </section>
