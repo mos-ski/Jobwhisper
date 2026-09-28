@@ -6,6 +6,8 @@ import { Avatar, Button, Dialog, DialogClose, DialogPopup, DialogTitle, Switch, 
 
 export type DesktopSettingsSection = 'general' | 'interview' | 'coding' | 'meeting' | 'billing' | 'usage' | 'window' | 'account' | 'connectors'
 
+export type DesktopTheme = 'system' | 'light' | 'dark'
+
 export type DesktopSettingsDialogProps = {
   readonly open: boolean
   readonly onOpenChange: (open: boolean) => void
@@ -14,6 +16,8 @@ export type DesktopSettingsDialogProps = {
   readonly onSectionChange: (section: DesktopSettingsSection) => void
   /** Set during a live session: the section for that session's kind notes that changes apply to it. */
   readonly liveKind?: DesktopSessionKind
+  readonly theme: DesktopTheme
+  readonly onThemeChange: (theme: DesktopTheme) => void
   readonly user: { readonly fullName: string; readonly email: string }
   readonly credits: DesktopCredits
   readonly planLabel: string
@@ -145,7 +149,7 @@ function CaptureKeyCard() {
 }
 
 export function DesktopSettingsDialog(props: DesktopSettingsDialogProps) {
-  const { open, onOpenChange, section, onSectionChange, liveKind, user, credits, planLabel, planNote, sessions, version, platform, calendarConnected, onConnectCalendar, onAddCredits, onOpenBilling, onOpenWhatsNew, onSignOut } = props
+  const { open, onOpenChange, section, onSectionChange, liveKind, theme, onThemeChange, user, credits, planLabel, planNote, sessions, version, platform, calendarConnected, onConnectCalendar, onAddCredits, onOpenBilling, onOpenWhatsNew, onSignOut } = props
   const [stealth, setStealth] = useState(false)
   const [meetingDetection, setMeetingDetection] = useState(true)
   const [textSize, setTextSize] = useState<'small' | 'medium' | 'large'>('medium')
@@ -154,7 +158,6 @@ export function DesktopSettingsDialog(props: DesktopSettingsDialogProps) {
   const [answerStyle, setAnswerStyle] = useState<'direct' | 'pointers'>('direct')
   const [autoCopy, setAutoCopy] = useState(true)
   const [othersTranscript, setOthersTranscript] = useState(true)
-  const [theme, setTheme] = useState<'system' | 'light' | 'dark'>('light')
   const [appearance, setAppearance] = useState<'solid' | 'clear'>('solid')
   const [alwaysOnTop, setAlwaysOnTop] = useState(false)
   const applies = (kind: DesktopSessionKind) => (liveKind === kind ? `Applies to a running ${KIND_LABELS[kind]} session` : 'Applies from the next answer on.')
@@ -291,7 +294,7 @@ export function DesktopSettingsDialog(props: DesktopSettingsDialogProps) {
             {section === 'window' ? (
               <>
                 <Card title="Appearance">
-                  <Row title="Theme" description="System follows your computer's own light or dark setting." control={<Segmented label="Theme" value={theme} onChange={setTheme} options={[{ value: 'system', label: 'System' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]} />} />
+                  <Row title="Theme" description="System follows your computer's own light or dark setting." control={<Segmented label="Theme" value={theme} onChange={onThemeChange} options={[{ value: 'system', label: 'System' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]} />} />
                   <Row title="Window appearance" description="Clear makes the live call transparent, with every panel floating as its own pane of glass over your desktop. Other screens stay solid." control={<Segmented label="Window appearance" value={appearance} onChange={setAppearance} options={[{ value: 'solid', label: 'Solid' }, { value: 'clear', label: 'Clear' }]} />} />
                 </Card>
                 <Card title="Window">

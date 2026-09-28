@@ -4,6 +4,7 @@
   --color-surface-raised: var(--lf-surface-raised);
   --color-surface-subtle: var(--lf-surface-subtle);
   --color-surface-inverse: var(--lf-surface-inverse);
+  --color-desktop-backdrop: var(--lf-desktop-backdrop);
   --color-ink: var(--lf-ink);
   --color-ink-muted: var(--lf-ink-muted);
   --color-border: var(--lf-border);
@@ -110,6 +111,7 @@
     --lf-surface-raised: #ffffff;
     --lf-surface-subtle: #f8fafc;
     --lf-surface-inverse: #101828;
+    --lf-desktop-backdrop: #101828;
     --lf-ink: #101828;
     --lf-ink-muted: #475467;
     --lf-border: #eceef2;
@@ -229,6 +231,7 @@
     --lf-surface-raised: #172033;
     --lf-surface-subtle: #0f172a;
     --lf-surface-inverse: #f8fafc;
+    --lf-desktop-backdrop: #05070e;
     --lf-ink: #f8fafc;
     --lf-ink-muted: #cbd5e1;
     --lf-border: #242c3d;
@@ -349,6 +352,7 @@
       --lf-surface-raised: #172033;
       --lf-surface-subtle: #0f172a;
       --lf-surface-inverse: #f8fafc;
+      --lf-desktop-backdrop: #05070e;
       --lf-ink: #f8fafc;
       --lf-ink-muted: #cbd5e1;
       --lf-border: #2c3446;

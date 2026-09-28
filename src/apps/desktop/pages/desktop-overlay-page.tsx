@@ -12,9 +12,9 @@ export function DesktopOverlayPage() {
   const [dismissed, setDismissed] = useState(false)
   const latest = [...desktopTranscript].reverse().find((entry) => entry.kind === 'answer')
   return (
-    <div className="fixed inset-0 bg-surface-inverse">
+    <div className="fixed inset-0 bg-desktop-backdrop">
       {/* Stands in for whatever call is on screen under the overlay. */}
-      <div aria-hidden="true" className="absolute inset-8 rounded-2xl bg-ink-muted opacity-30" />
+      <div aria-hidden="true" className="absolute inset-8 rounded-2xl bg-live-panel" />
       <div className="absolute left-1/2 top-6 -translate-x-1/2">
         <DesktopOverlayView
           connection={params.get('connection') === 'connected' ? 'connected' : 'unstable'}

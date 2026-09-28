@@ -24,7 +24,7 @@ export type DesktopCredits = {
 export type DesktopAnswerRun = { readonly text: string; readonly emphasis?: boolean }
 
 export type DesktopTranscriptEntry =
-  | { readonly kind: 'interviewer'; readonly id: string; readonly text: string; readonly partial?: boolean }
+  | { readonly kind: 'interviewer'; readonly id: string; readonly text: string; readonly partial?: boolean; /** Who spoke, in a meeting; 'Interviewer' when absent. */ readonly speaker?: string }
   | {
       readonly kind: 'answer'
       readonly id: string

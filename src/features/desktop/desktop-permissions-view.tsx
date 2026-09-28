@@ -51,10 +51,10 @@ export function DesktopPermissionsView() {
   }
 
   return (
-    <div className="flex h-full min-h-[520px] items-center justify-center bg-live-workspace px-6 py-16">
-      <div className="w-full max-w-[485px] overflow-hidden rounded-lg bg-[#0d1929] shadow-panel">
-        <div className="flex items-center justify-center bg-[#101e32] py-8">
-          <h1 className="text-xl font-medium text-white">Set up Permission</h1>
+    <div className="flex h-full min-h-[520px] items-center justify-center bg-canvas px-6 py-16">
+      <div className="w-full max-w-[485px] overflow-hidden rounded-lg border border-border bg-surface shadow-panel">
+        <div className="flex items-center justify-center bg-surface-subtle py-8">
+          <h1 className="text-xl font-medium text-ink">Set up Permission</h1>
         </div>
         <div className="grid gap-3 p-8">
           {PERMISSION_STEPS.map((step, index) => {
@@ -68,8 +68,8 @@ export function DesktopPermissionsView() {
                 <div className="flex items-center gap-3">
                   <span
                     className={cn(
-                      'relative grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-white text-xs font-bold',
-                      isGranted ? 'text-positive' : 'text-[#0052ff]',
+                      'relative grid size-8 shrink-0 place-items-center overflow-hidden rounded-full text-xs font-bold',
+                      isGranted ? 'bg-positive-surface text-positive' : 'bg-accent-subtle text-accent-text',
                     )}
                   >
                     <AnimatePresence mode="wait" initial={false}>
@@ -98,8 +98,8 @@ export function DesktopPermissionsView() {
                     </AnimatePresence>
                   </span>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold leading-5 text-white">{step.title}</p>
-                    <p className="mt-0.5 text-xs leading-4 text-[#d2d2d2]">{step.description}</p>
+                    <p className="text-sm font-semibold leading-5 text-ink">{step.title}</p>
+                    <p className="mt-0.5 text-xs leading-4 text-ink-muted">{step.description}</p>
                   </div>
                 </div>
                 <AnimatePresence mode="wait" initial={false}>
@@ -126,8 +126,8 @@ export function DesktopPermissionsView() {
                       disabled={!isAvailable || isPending}
                       onClick={() => handleGrant(step.id)}
                       className={cn(
-                        'flex h-10 w-full items-center justify-center gap-2 rounded-lg text-sm font-medium text-white transition-colors',
-                        isAvailable ? 'bg-[#0052ff]' : 'bg-[#21a0fc]/25 text-white/50',
+                        'flex h-10 w-full items-center justify-center gap-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+                        isAvailable ? 'bg-accent text-on-accent hover:bg-accent-hover' : 'bg-surface-subtle text-muted',
                         isPending && 'animate-pulse',
                       )}
                     >
@@ -148,7 +148,7 @@ export function DesktopPermissionsView() {
                 transition={{ duration: 0.22 }}
                 type="button"
                 onClick={() => navigate('/desktop/home')}
-                className="mt-1 flex h-10 w-full items-center justify-center rounded-lg bg-[#0052ff] text-sm font-medium text-white"
+                className="mt-1 flex h-10 w-full items-center justify-center rounded-lg bg-accent text-sm font-medium text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
               >
                 Continue
               </motion.button>

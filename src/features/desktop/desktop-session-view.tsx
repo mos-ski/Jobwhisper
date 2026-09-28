@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
-import { ArrowDown, Camera, CornerDownRight, EyeOff, GripVertical, MessageSquare, Mic, MicOff, Minimize2, Plus, Send, Settings } from 'lucide-react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { ArrowDown, ArrowLeft, Camera, CornerDownRight, EyeOff, GripVertical, MessageSquare, Mic, MicOff, Minimize2, Plus, Send, Settings } from 'lucide-react'
 
 import type { DesktopActivity, DesktopAnswerRun, DesktopChatMessage, DesktopConnection, DesktopResponseLength, DesktopTranscriptEntry } from '@/contracts/desktop.draft'
-import { Menu, MenuContent, MenuItem, MenuTrigger, Popover, PopoverContent, PopoverTrigger, cn } from '@/ui'
+import { Menu, MenuContent, MenuItem, MenuTrigger, Popover, PopoverContent, PopoverTrigger, Skeleton, cn } from '@/ui'
 
 export type DesktopSessionViewProps = {
   /** e.g. "Product Manager · Guwe". */
@@ -17,10 +17,18 @@ export type DesktopSessionViewProps = {
   readonly onAsk: (text: string) => void
   readonly micOn: boolean
   readonly onToggleMic: () => void
-  readonly stealth: boolean
-  readonly onToggleStealth: () => void
+  /** Desktop only: stealth and the floating overlay have no meaning in a browser tab. */
+  readonly stealth?: boolean
+  readonly onToggleStealth?: () => void
   readonly onCapture: () => void
-  readonly onCompact: () => void
+  readonly onCompact?: () => void
+  /** The web session leaves by a back arrow; the desktop window has its own chrome. */
+  readonly onBack?: () => void
+  /** A limit or balance notice, shown under the toolbar. */
+  readonly notice?: ReactNode
+  readonly loading?: boolean
+  /** The call being shared, shown above the AI chat in the browser; the desktop app is beside the call instead. */
+  readonly screenPreview?: { readonly src: string; readonly label: string }
   readonly onOpenSettings: () => void
   readonly onEnd: () => void
   readonly modelLabel: string
@@ -50,7 +58,7 @@ export function AnswerText({ runs }: { readonly runs: readonly DesktopAnswerRun[
 }
 
 export function DesktopSessionView(props: DesktopSessionViewProps) {
-  const { title, connection, activity, elapsedLabel, length, onLengthChange, transcript, chat, onAsk, micOn, onToggleMic, stealth, onToggleStealth, onCapture, onCompact, onOpenSettings, onEnd, modelLabel, creditsUsed, minutesLeftLabel } = props
+  const { title, connection, activity, elapsedLabel, length, onLengthChange, transcript, chat, onAsk, micOn, onToggleMic, stealth, onToggleStealth, onCapture, onCompact, onBack, notice, loading = false, screenPreview, onOpenSettings, onEnd, modelLabel, creditsUsed, minutesLeftLabel } = props
   const [chatOpen, setChatOpen] = useState(true)
   const [draft, setDraft] = useState('')
   const [atLatest, setAtLatest] = useState(true)
@@ -71,6 +79,11 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
   return (
     <div className="flex h-full flex-col gap-2 p-3">
       <div className="flex flex-wrap items-center gap-2">
+        {onBack ? (
+          <button type="button" aria-label="Leave the session" onClick={onBack} className={iconButton}>
+            <ArrowLeft aria-hidden="true" className="size-4 rtl:rotate-180" />
+          </button>
+        ) : null}
         <div className={cn(pill, 'ps-2')}>
           <GripVertical aria-hidden="true" className="size-4 text-ink-muted" />
           <span aria-hidden="true" className="flex items-end gap-0.5">
@@ -107,12 +120,16 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
           <button type="button" aria-label="Capture the screen and answer" onClick={onCapture} className={iconButton}>
             <Camera aria-hidden="true" className="size-4" />
           </button>
-          <button type="button" aria-label={stealth ? 'Stealth mode on' : 'Stealth mode off'} aria-pressed={stealth} onClick={onToggleStealth} className={cn(iconButton, stealth && 'border-accent text-accent-text')}>
-            <EyeOff aria-hidden="true" className="size-4" />
-          </button>
-          <button type="button" aria-label="Shrink to the overlay" onClick={onCompact} className={iconButton}>
-            <Minimize2 aria-hidden="true" className="size-4" />
-          </button>
+          {onToggleStealth ? (
+            <button type="button" aria-label={stealth ? 'Stealth mode on' : 'Stealth mode off'} aria-pressed={Boolean(stealth)} onClick={onToggleStealth} className={cn(iconButton, stealth && 'border-accent text-accent-text')}>
+              <EyeOff aria-hidden="true" className="size-4" />
+            </button>
+          ) : null}
+          {onCompact ? (
+            <button type="button" aria-label="Shrink to the overlay" onClick={onCompact} className={iconButton}>
+              <Minimize2 aria-hidden="true" className="size-4" />
+            </button>
+          ) : null}
           <button type="button" aria-label="Settings" onClick={onOpenSettings} className={iconButton}>
             <Settings aria-hidden="true" className="size-4" />
           </button>
@@ -126,8 +143,9 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
         {ACTIVITY[activity]}
         {activity === 'thinking' ? <span aria-hidden="true" className="tracking-widest motion-safe:animate-pulse">&bull;&bull;&bull;</span> : null}
       </p>
+      {notice}
 
-      <div className={cn('grid min-h-0 flex-1 gap-3', chatOpen && 'md:grid-cols-[3fr_2fr]')}>
+      <div className={cn('grid min-h-0 flex-1 gap-3', (chatOpen || screenPreview) && 'md:grid-cols-[3fr_2fr]')}>
         <section aria-label="Live transcript" className="relative min-h-0 rounded-panel border border-border bg-surface">
           <div
             ref={listRef}
@@ -137,7 +155,9 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
             }}
             className="h-full overflow-y-auto px-6"
           >
-            {transcript.length === 0 ? (
+            {loading ? (
+              <div role="status" aria-busy="true" aria-label="Loading copilot session" className="grid gap-4 py-6">{[0, 1, 2].map((item) => <Skeleton key={item} className="h-24" />)}</div>
+            ) : transcript.length === 0 ? (
               <p className="py-10 text-center text-sm text-ink-muted">Press Space, or Get answer, and Copilot answers the interviewer&rsquo;s last question.</p>
             ) : (
               <ol className="divide-y divide-border">
@@ -145,7 +165,7 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
                   <li key={entry.id} className="py-4">
                     {entry.kind === 'interviewer' ? (
                       <>
-                        <p className="text-xs font-semibold text-ink-muted">Interviewer</p>
+                        <p className="text-xs font-semibold text-ink-muted">{entry.speaker ?? 'Interviewer'}</p>
                         <p className="mt-1 text-base text-ink">
                           {entry.text}
                           {entry.partial ? <span aria-hidden="true" className="ms-0.5 inline-block h-4 w-0.5 translate-y-0.5 bg-accent motion-safe:animate-pulse" /> : null}
@@ -175,8 +195,16 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
           ) : null}
         </section>
 
+        {chatOpen || screenPreview ? (
+        <div className="flex min-h-0 flex-col gap-3">
+        {screenPreview ? (
+          <section aria-labelledby="session-screen" className="shrink-0 overflow-hidden rounded-panel border border-border bg-surface">
+            <h2 id="session-screen" className="flex min-h-11 items-center border-b border-border px-4 text-sm font-semibold text-ink">{screenPreview.label}</h2>
+            <img src={screenPreview.src} alt={`Your shared screen: ${screenPreview.label}`} className="aspect-video max-h-[40vh] w-full bg-surface-inverse object-cover" />
+          </section>
+        ) : null}
         {chatOpen ? (
-          <section aria-label="AI chat" className="flex min-h-0 flex-col rounded-panel border border-border bg-surface">
+          <section aria-label="AI chat" className="flex min-h-0 flex-1 flex-col rounded-panel border border-border bg-surface">
             <div className="min-h-0 flex-1 overflow-y-auto p-5">
               {chat.length === 0 ? (
                 <>
@@ -247,6 +275,8 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
               </div>
             </form>
           </section>
+        ) : null}
+        </div>
         ) : null}
       </div>
     </div>
