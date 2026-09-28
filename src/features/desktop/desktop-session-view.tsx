@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { ArrowDown, ArrowLeft, Camera, CornerDownRight, EyeOff, GripVertical, MessageSquare, Mic, MicOff, Minimize2, Plus, Send, Settings } from 'lucide-react'
+import { ArrowDown, ArrowLeft, Camera, MoreHorizontal, CornerDownRight, EyeOff, GripVertical, MessageSquare, Mic, MicOff, Minimize2, Plus, Send, Settings } from 'lucide-react'
 
 import type { DesktopActivity, DesktopAnswerRun, DesktopChatMessage, DesktopConnection, DesktopResponseLength, DesktopTranscriptEntry } from '@/contracts/desktop.draft'
-import { Menu, MenuContent, MenuItem, MenuTrigger, Popover, PopoverContent, PopoverTrigger, Skeleton, cn } from '@/ui'
+import { Dialog, DialogClose, DialogPopup, DialogTitle, Menu, MenuContent, MenuItem, MenuTrigger, Popover, PopoverContent, PopoverTrigger, Skeleton, cn } from '@/ui'
 
 export type DesktopSessionViewProps = {
   /** e.g. "Product Manager · Guwe". */
@@ -46,8 +46,8 @@ const ACTIVITY: Record<DesktopActivity, string> = { listening: 'Listening…', t
 const LENGTHS: readonly DesktopResponseLength[] = ['short', 'medium', 'long']
 const TRY_ASKING = ['Summarize what I just said', 'What should I ask them?'] as const
 
-const pill = 'inline-flex min-h-10 items-center gap-2 rounded-full border border-border bg-surface px-4 text-sm text-ink shadow-control'
-const iconButton = 'grid size-10 place-items-center rounded-full border border-border bg-surface text-ink shadow-control hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus'
+const pill = 'inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full border border-border bg-surface px-4 text-sm text-ink shadow-control'
+const iconButton = 'grid size-10 shrink-0 place-items-center rounded-full border border-border bg-surface text-ink shadow-control hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus'
 
 export function AnswerText({ runs }: { readonly runs: readonly DesktopAnswerRun[] }) {
   return (
@@ -60,6 +60,9 @@ export function AnswerText({ runs }: { readonly runs: readonly DesktopAnswerRun[
 export function DesktopSessionView(props: DesktopSessionViewProps) {
   const { title, connection, activity, elapsedLabel, length, onLengthChange, transcript, chat, onAsk, micOn, onToggleMic, stealth, onToggleStealth, onCapture, onCompact, onBack, notice, loading = false, screenPreview, onOpenSettings, onEnd, modelLabel, creditsUsed, minutesLeftLabel } = props
   const [chatOpen, setChatOpen] = useState(true)
+  // Phones show one pane at a time; from md up both sit side by side.
+  const [phonePane, setPhonePane] = useState<'interview' | 'chat'>('interview')
+  const [controlsOpen, setControlsOpen] = useState(false)
   const [draft, setDraft] = useState('')
   const [atLatest, setAtLatest] = useState(true)
   const listRef = useRef<HTMLDivElement>(null)
@@ -84,19 +87,67 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
             <ArrowLeft aria-hidden="true" className="size-4 rtl:rotate-180" />
           </button>
         ) : null}
-        <div className={cn(pill, 'ps-2')}>
-          <GripVertical aria-hidden="true" className="size-4 text-ink-muted" />
+        <div className={cn(pill, 'min-w-0 flex-1 ps-2 sm:flex-none')}>
+          <GripVertical aria-hidden="true" className="hidden size-4 shrink-0 text-ink-muted sm:block" />
           <span aria-hidden="true" className="flex items-end gap-0.5">
             {[2, 3, 4].map((height) => <span key={height} className="w-1 rounded-sm bg-positive" style={{ height: height * 3 }} />)}
           </span>
-          <span className="font-semibold">{title}</span>
+          <span className="truncate font-semibold">{title}</span>
         </div>
-        <span role="status" className={pill}>
-          <span aria-hidden="true" className={cn('size-2 rounded-full', CONNECTION[connection].dot)} />
-          {CONNECTION[connection].label}
+        <span role="status" aria-label={CONNECTION[connection].label} className={cn(pill, 'px-3 sm:px-4')}>
+          <span aria-hidden="true" className={cn('size-2 shrink-0 rounded-full', CONNECTION[connection].dot)} />
+          <span aria-hidden="true" className="hidden sm:inline">{CONNECTION[connection].label}</span>
         </span>
-        <div className="ms-auto flex flex-wrap items-center gap-2">
-          <div role="radiogroup" aria-label="Answer length" className="flex rounded-full border border-border bg-surface p-1 shadow-control">
+        {/* On a phone the controls fold into one menu; the timer moves to the status line. */}
+        <button type="button" aria-label="Session controls" onClick={() => setControlsOpen(true)} className={cn(iconButton, 'sm:hidden')}>
+          <MoreHorizontal aria-hidden="true" className="size-4" />
+        </button>
+        <Dialog open={controlsOpen} onOpenChange={setControlsOpen}>
+          <DialogPopup className="sm:hidden">
+            <DialogTitle className="text-base font-semibold">Session controls</DialogTitle>
+            <p className="mt-5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Answer length</p>
+            <div role="radiogroup" aria-label="Answer length" className="mt-2 grid grid-cols-3 gap-1 rounded-xl bg-surface-subtle p-1">
+              {LENGTHS.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  role="radio"
+                  aria-checked={length === option}
+                  onClick={() => onLengthChange(option)}
+                  className={cn('min-h-12 rounded-lg text-sm font-semibold capitalize focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus', length === option ? 'bg-accent text-on-accent' : 'text-ink')}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+            <ul className="mt-4 grid gap-1">
+              {[
+                { label: micOn ? 'Mute microphone' : 'Unmute microphone', icon: micOn ? Mic : MicOff, onClick: onToggleMic },
+                { label: 'Capture the screen', icon: Camera, onClick: onCapture },
+                ...(onToggleStealth ? [{ label: stealth ? 'Turn stealth off' : 'Turn stealth on', icon: EyeOff, onClick: onToggleStealth }] : []),
+                ...(onCompact ? [{ label: 'Shrink to the overlay', icon: Minimize2, onClick: onCompact }] : []),
+                { label: 'Settings', icon: Settings, onClick: onOpenSettings },
+              ].map(({ label, icon: Icon, onClick }) => (
+                <li key={label}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setControlsOpen(false)
+                      onClick()
+                    }}
+                    className="flex min-h-14 w-full items-center gap-3 rounded-xl px-3 text-start text-base font-medium text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  >
+                    <Icon aria-hidden="true" className="size-5 text-ink-muted" />
+                    {label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <DialogClose aria-label="Close session controls" />
+          </DialogPopup>
+        </Dialog>
+        <div className="ms-auto hidden flex-wrap items-center gap-2 sm:flex">
+          <div role="radiogroup" aria-label="Answer length" className="flex shrink-0 rounded-full border border-border bg-surface p-1 shadow-control">
             {LENGTHS.map((option) => (
               <button
                 key={option}
@@ -114,7 +165,7 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
           <button type="button" aria-label={micOn ? 'Mute microphone' : 'Unmute microphone'} aria-pressed={!micOn} onClick={onToggleMic} className={iconButton}>
             {micOn ? <Mic aria-hidden="true" className="size-4" /> : <MicOff aria-hidden="true" className="size-4 text-danger" />}
           </button>
-          <button type="button" aria-label={chatOpen ? 'Hide the AI chat' : 'Show the AI chat'} aria-pressed={chatOpen} onClick={() => setChatOpen((open) => !open)} className={iconButton}>
+          <button type="button" aria-label={chatOpen ? 'Hide the AI chat' : 'Show the AI chat'} aria-pressed={chatOpen} onClick={() => setChatOpen((open) => !open)} className={cn(iconButton, 'hidden md:grid')}>
             <MessageSquare aria-hidden="true" className="size-4" />
           </button>
           <button type="button" aria-label="Capture the screen and answer" onClick={onCapture} className={iconButton}>
@@ -133,20 +184,35 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
           <button type="button" aria-label="Settings" onClick={onOpenSettings} className={iconButton}>
             <Settings aria-hidden="true" className="size-4" />
           </button>
-          <button type="button" onClick={onEnd} className="inline-flex min-h-10 items-center rounded-full bg-danger px-5 text-sm font-semibold text-on-danger hover:bg-danger-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-            End Session
-          </button>
         </div>
+        <button type="button" onClick={onEnd} className="inline-flex min-h-10 shrink-0 items-center rounded-full bg-danger px-4 text-sm font-semibold text-on-danger hover:bg-danger-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:px-5">
+          End<span className="hidden sm:inline">&nbsp;Session</span>
+        </button>
       </div>
 
       <p aria-live="polite" className="flex items-center gap-1.5 px-1 text-sm text-ink-muted">
         {ACTIVITY[activity]}
         {activity === 'thinking' ? <span aria-hidden="true" className="tracking-widest motion-safe:animate-pulse">&bull;&bull;&bull;</span> : null}
+        <span className="ms-auto font-semibold tabular-nums text-ink sm:hidden">{elapsedLabel}</span>
       </p>
       {notice}
+      <div role="tablist" aria-label="Session panes" className="flex gap-6 border-b border-border px-1 md:hidden">
+        {(['interview', 'chat'] as const).map((pane) => (
+          <button
+            key={pane}
+            type="button"
+            role="tab"
+            aria-selected={phonePane === pane}
+            onClick={() => setPhonePane(pane)}
+            className={cn('-mb-px inline-flex min-h-11 items-center border-b-2 px-1 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus', phonePane === pane ? 'border-accent text-accent-text' : 'border-transparent text-ink-muted')}
+          >
+            {pane === 'interview' ? 'Interview' : 'AI chat'}
+          </button>
+        ))}
+      </div>
 
       <div className={cn('grid min-h-0 flex-1 gap-3', (chatOpen || screenPreview) && 'md:grid-cols-[3fr_2fr]')}>
-        <section aria-label="Live transcript" className="relative min-h-0 rounded-panel border border-border bg-surface">
+        <section aria-label="Live transcript" className={cn('relative min-h-0 rounded-panel border border-border bg-surface', phonePane !== 'interview' && 'hidden md:block')}>
           <div
             ref={listRef}
             onScroll={(event) => {
@@ -195,16 +261,16 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
           ) : null}
         </section>
 
-        {chatOpen || screenPreview ? (
-        <div className="flex min-h-0 flex-col gap-3">
+        {chatOpen || screenPreview || phonePane === 'chat' ? (
+        <div className={cn('min-h-0 flex-col gap-3', phonePane === 'chat' ? 'flex' : 'hidden md:flex')}>
         {screenPreview ? (
-          <section aria-labelledby="session-screen" className="shrink-0 overflow-hidden rounded-panel border border-border bg-surface">
+          <section aria-labelledby="session-screen" className="hidden shrink-0 overflow-hidden rounded-panel border border-border bg-surface md:block">
             <h2 id="session-screen" className="flex min-h-11 items-center border-b border-border px-4 text-sm font-semibold text-ink">{screenPreview.label}</h2>
             <img src={screenPreview.src} alt={`Your shared screen: ${screenPreview.label}`} className="aspect-video max-h-[40vh] w-full bg-surface-inverse object-cover" />
           </section>
         ) : null}
-        {chatOpen ? (
-          <section aria-label="AI chat" className="flex min-h-0 flex-1 flex-col rounded-panel border border-border bg-surface">
+        {chatOpen || phonePane === 'chat' ? (
+          <section aria-label="AI chat" className={cn('min-h-0 flex-1 flex-col rounded-panel border border-border bg-surface', chatOpen ? 'flex' : 'flex md:hidden')}>
             <div className="min-h-0 flex-1 overflow-y-auto p-5">
               {chat.length === 0 ? (
                 <>

@@ -36,7 +36,12 @@ const FAIR_USE_STATES = {
 
 // Figures in an answer (45%, 12 live apps, $2,000) are what the eye should land on, so they read in blue.
 function toRuns(answer: string): readonly DesktopAnswerRun[] {
-  return answer.split(/(\$?\d[\d,.]*(?:%|k|m|\+)?)/i).filter(Boolean).map((text) => ({ text, emphasis: /^\$?\d/.test(text) }))
+  // Standalone figures only: the 2 in "B2B" is part of a word, not a result.
+  // split() with a capture group puts each figure at an odd index.
+  return answer
+    .split(/((?<![\w$])\$?\d[\d,.]*(?:%|k|m|\+)?(?!\w))/i)
+    .map((text, index) => ({ text, emphasis: index % 2 === 1 }))
+    .filter((run) => run.text.length > 0)
 }
 
 function toEntries(turns: readonly CopilotTranscriptTurn[], meeting: boolean): readonly DesktopTranscriptEntry[] {
