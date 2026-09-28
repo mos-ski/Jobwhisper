@@ -1,32 +1,45 @@
-import { useNavigate } from 'react-router-dom'
-import { Home } from 'lucide-react'
+import { ThumbsDown, ThumbsUp } from 'lucide-react'
 
-export function DesktopCompleteView() {
-  const navigate = useNavigate()
+import type { DesktopSessionKind } from '@/contracts/desktop.draft'
+import { JobwhisperIcon, cn } from '@/ui'
 
+export type DesktopCompleteViewProps = {
+  readonly kind: DesktopSessionKind
+  readonly feedback: 'up' | 'down' | null
+  readonly onFeedback: (value: 'up' | 'down') => void
+  readonly onHome: () => void
+}
+
+const TITLES: Record<DesktopSessionKind, string> = { interview: 'Your interview is complete!', coding: 'Your coding session is complete!', meeting: 'Your meeting is complete!' }
+
+export function DesktopCompleteView({ kind, feedback, onFeedback, onHome }: DesktopCompleteViewProps) {
   return (
-    <div className="relative flex h-full min-h-[520px] flex-col items-center justify-center gap-10 overflow-hidden bg-[#0a1220] px-8 text-center">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-0 size-[480px] -translate-x-1/2 -translate-y-1/3 rounded-full bg-[#0052ff]/25 blur-[100px]"
-      />
-      <h1 className="relative max-w-md font-gowun text-4xl font-medium leading-[1.15] text-white">Interview completed!</h1>
-      <div className="relative flex w-full max-w-80 flex-col gap-3">
-        <button
-          type="button"
-          onClick={() => navigate('/v3/interview-copilot/report')}
-          className="inline-flex min-h-11 w-full items-center justify-center rounded-lg border-2 border-white/12 bg-[#0052ff] px-4 text-base font-semibold text-white shadow-[inset_0px_0px_0px_1px_rgba(16,24,40,0.18),inset_0px_-2px_0px_0px_rgba(16,24,40,0.05)]"
-        >
-          See Reports
-        </button>
-        <button
-          type="button"
-          onClick={() => navigate('/desktop/home')}
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/5 px-4 text-base font-semibold text-white hover:bg-white/10"
-        >
-          <Home aria-hidden="true" className="size-[18px]" />
-          Home
-        </button>
+    <div className="grid min-h-full place-items-center px-6 py-10 text-center">
+      <div className="grid justify-items-center gap-5">
+        <JobwhisperIcon className="h-8 w-10 text-on-accent" />
+        <h1 className="font-gowun text-4xl text-on-accent">{TITLES[kind]}</h1>
+        <p className="text-sm text-on-accent">Your report is on its way. This can take a moment.</p>
+        <div className="mt-2 flex items-center gap-4 rounded-2xl bg-surface px-6 py-5 text-ink">
+          {feedback ? (
+            <p role="status" className="text-sm font-semibold">Thanks, that helps us tune Copilot.</p>
+          ) : (
+            <>
+              <p className="text-sm font-semibold">How was this session?</p>
+              {(['up', 'down'] as const).map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  aria-label={value === 'up' ? 'It went well' : 'It could be better'}
+                  onClick={() => onFeedback(value)}
+                  className={cn('grid size-12 place-items-center rounded-xl border border-border hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus')}
+                >
+                  {value === 'up' ? <ThumbsUp aria-hidden="true" className="size-5" /> : <ThumbsDown aria-hidden="true" className="size-5" />}
+                </button>
+              ))}
+            </>
+          )}
+        </div>
+        <button type="button" onClick={onHome} className="min-h-11 rounded-md px-3 text-sm font-semibold text-on-accent underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-accent">Back to home</button>
       </div>
     </div>
   )

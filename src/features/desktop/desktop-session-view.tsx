@@ -1,382 +1,254 @@
-import { useEffect, useState, type ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Check, Settings } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { ArrowDown, Camera, CornerDownRight, EyeOff, GripVertical, MessageSquare, Mic, MicOff, Minimize2, Plus, Send, Settings } from 'lucide-react'
 
-import { CopilotTranscriptPanel } from '@/features/copilot/interview-copilot-view'
-import { settingsProfile } from '@/mocks/account'
-import { authPlanFixtures, billingSnapshot } from '@/mocks/billing'
-import { copilotInterviewTranscript, copilotLiveSession } from '@/mocks/copilot'
-import { Avatar, Badge, Button, cn, Dialog, DialogClose, DialogTitle } from '@/ui'
+import type { DesktopActivity, DesktopAnswerRun, DesktopChatMessage, DesktopConnection, DesktopResponseLength, DesktopTranscriptEntry } from '@/contracts/desktop.draft'
+import { Menu, MenuContent, MenuItem, MenuTrigger, Popover, PopoverContent, PopoverTrigger, cn } from '@/ui'
 
-import { DesktopDialogPopup } from './desktop-dialog'
-
-function formatElapsed(seconds: number): string {
-  const mm = String(Math.floor(seconds / 60)).padStart(2, '0')
-  const ss = String(seconds % 60).padStart(2, '0')
-  return `${mm}:${ss}`
+export type DesktopSessionViewProps = {
+  /** e.g. "Product Manager · Guwe". */
+  readonly title: string
+  readonly connection: DesktopConnection
+  readonly activity: DesktopActivity
+  readonly elapsedLabel: string
+  readonly length: DesktopResponseLength
+  readonly onLengthChange: (length: DesktopResponseLength) => void
+  readonly transcript: readonly DesktopTranscriptEntry[]
+  readonly chat: readonly DesktopChatMessage[]
+  readonly onAsk: (text: string) => void
+  readonly micOn: boolean
+  readonly onToggleMic: () => void
+  readonly stealth: boolean
+  readonly onToggleStealth: () => void
+  readonly onCapture: () => void
+  readonly onCompact: () => void
+  readonly onOpenSettings: () => void
+  readonly onEnd: () => void
+  readonly modelLabel: string
+  /** Share of this session's credits already spent, 0 to 1. */
+  readonly creditsUsed: number
+  readonly minutesLeftLabel: string
 }
 
-type SessionSettingsTab = 'live' | 'window' | 'session'
+const CONNECTION: Record<DesktopConnection, { readonly label: string; readonly dot: string }> = {
+  connected: { label: 'Connected', dot: 'bg-positive' },
+  fair: { label: 'Fair connection', dot: 'bg-warning' },
+  unstable: { label: 'Unstable connection', dot: 'bg-danger' },
+}
+const ACTIVITY: Record<DesktopActivity, string> = { listening: 'Listening…', thinking: 'Thinking', answering: 'Answering…' }
+const LENGTHS: readonly DesktopResponseLength[] = ['short', 'medium', 'long']
+const TRY_ASKING = ['Summarize what I just said', 'What should I ask them?'] as const
 
-const SCROLL_SPEED_LABELS: Record<number, string> = { 1: 'Slow', 2: 'Normal', 3: 'Fast' }
-const APPEARANCE_OPTIONS = [
-  { value: 'clear', label: 'Clear', description: 'Solid surfaces' },
-  { value: 'tinted', label: 'Tinted', description: 'Blurred translucent surfaces' },
-] as const
+const pill = 'inline-flex min-h-10 items-center gap-2 rounded-full border border-border bg-surface px-4 text-sm text-ink shadow-control'
+const iconButton = 'grid size-10 place-items-center rounded-full border border-border bg-surface text-ink shadow-control hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus'
 
-function LiveToggle({ checked, onChange, label }: { readonly checked: boolean; readonly onChange: (value: boolean) => void; readonly label: string }) {
+export function AnswerText({ runs }: { readonly runs: readonly DesktopAnswerRun[] }) {
   return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      aria-label={label}
-      onClick={() => onChange(!checked)}
-      className={cn('relative flex h-6 w-11 shrink-0 items-center rounded-full px-0.5 transition-colors', checked ? 'bg-positive' : 'bg-white/15')}
-    >
-      <span className={cn('block size-5 rounded-full bg-white shadow transition-transform', checked ? 'translate-x-5' : 'translate-x-0')} />
-    </button>
+    <>
+      {runs.map((run, index) => (run.emphasis ? <strong key={index} className="font-normal text-accent-text">{run.text}</strong> : <span key={index}>{run.text}</span>))}
+    </>
   )
 }
 
-function SettingRow({ title, description, control }: { readonly title: string; readonly description?: string; readonly control: ReactNode }) {
-  return (
-    <div className="flex items-center justify-between gap-4">
-      <div>
-        <p className="text-sm font-medium text-white">{title}</p>
-        {description ? <p className="mt-0.5 text-xs text-white/50">{description}</p> : null}
-      </div>
-      {control}
-    </div>
-  )
-}
-
-function SessionSettingsTabButton({ active, onClick, children }: { readonly active: boolean; readonly onClick: () => void; readonly children: ReactNode }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        'shrink-0 rounded-lg px-4 py-2.5 text-left text-sm font-medium transition-colors sm:w-full',
-        active ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white',
-      )}
-    >
-      {children}
-    </button>
-  )
-}
-
-function SessionSettingsModal({
-  open,
-  onOpenChange,
-  autoScroll,
-  setAutoScroll,
-  scrollSpeed,
-  setScrollSpeed,
-  fontSize,
-  setFontSize,
-  responseMode,
-  setResponseMode,
-  stealthMode,
-  setStealthMode,
-  appearance,
-  setAppearance,
-  alwaysOnTop,
-  setAlwaysOnTop,
-  meetingDetect,
-  setMeetingDetect,
-  onSignOut,
-}: {
-  readonly open: boolean
-  readonly onOpenChange: (open: boolean) => void
-  readonly autoScroll: boolean
-  readonly setAutoScroll: (value: boolean) => void
-  readonly scrollSpeed: number
-  readonly setScrollSpeed: (value: number) => void
-  readonly fontSize: number
-  readonly setFontSize: (value: number) => void
-  readonly responseMode: 'auto' | 'manual'
-  readonly setResponseMode: (mode: 'auto' | 'manual') => void
-  readonly stealthMode: boolean
-  readonly setStealthMode: (value: boolean) => void
-  readonly appearance: 'clear' | 'tinted'
-  readonly setAppearance: (value: 'clear' | 'tinted') => void
-  readonly alwaysOnTop: boolean
-  readonly setAlwaysOnTop: (value: boolean) => void
-  readonly meetingDetect: boolean
-  readonly setMeetingDetect: (value: boolean) => void
-  readonly onSignOut: () => void
-}) {
-  const [tab, setTab] = useState<SessionSettingsTab>('live')
-  const activePlan = billingSnapshot.status === 'ready' ? billingSnapshot.plan : undefined
-  const planName = authPlanFixtures.find((plan) => plan.id === activePlan)?.name ?? 'Free'
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DesktopDialogPopup aria-label="Session settings" className="border border-live-border bg-live-panel p-6 text-white">
-        <DialogClose className="text-white/50 hover:text-white" />
-        <DialogTitle className="text-lg font-semibold text-white">Settings</DialogTitle>
-        <div className="mt-4 flex max-h-[65vh] flex-col gap-4 overflow-y-auto sm:max-h-[28rem] sm:flex-row sm:gap-0">
-          <nav className="flex shrink-0 gap-1 overflow-x-auto sm:w-40 sm:flex-col sm:gap-0 sm:border-r sm:border-live-border sm:pe-4">
-            <SessionSettingsTabButton active={tab === 'live'} onClick={() => setTab('live')}>
-              Live Controls
-            </SessionSettingsTabButton>
-            <SessionSettingsTabButton active={tab === 'window'} onClick={() => setTab('window')}>
-              Window
-            </SessionSettingsTabButton>
-            <SessionSettingsTabButton active={tab === 'session'} onClick={() => setTab('session')}>
-              Session
-            </SessionSettingsTabButton>
-          </nav>
-
-          <div className="flex-1 sm:ps-6">
-            {tab === 'live' ? (
-              <div className="grid gap-5">
-                <SettingRow
-                  title="Auto-scroll"
-                  description="Follows the latest response; scroll up to pause"
-                  control={<LiveToggle checked={autoScroll} onChange={setAutoScroll} label="Toggle auto-scroll" />}
-                />
-                <SettingRow
-                  title="Auto-scroll speed"
-                  description="How quickly new responses move into view"
-                  control={
-                    <select
-                      value={scrollSpeed}
-                      onChange={(event) => setScrollSpeed(Number(event.target.value))}
-                      className="rounded-lg border border-live-control-border bg-white/5 px-3 py-1.5 text-sm text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                    >
-                      {[1, 2, 3].map((speed) => (
-                        <option key={speed} value={speed} className="bg-[#0d1929] text-white">
-                          {SCROLL_SPEED_LABELS[speed]}
-                        </option>
-                      ))}
-                    </select>
-                  }
-                />
-                <SettingRow
-                  title="Font size"
-                  description="Transcript and AI response text"
-                  control={
-                    <select
-                      value={fontSize}
-                      onChange={(event) => setFontSize(Number(event.target.value))}
-                      className="rounded-lg border border-live-control-border bg-white/5 px-3 py-1.5 text-sm text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                    >
-                      {[12, 14, 16, 18].map((size) => (
-                        <option key={size} value={size} className="bg-[#0d1929] text-white">
-                          {size}px
-                        </option>
-                      ))}
-                    </select>
-                  }
-                />
-                <SettingRow
-                  title="Response"
-                  description={responseMode === 'auto' ? 'Answers automatically' : 'Press Space to answer'}
-                  control={
-                    <div className="flex rounded-lg border border-live-control-border">
-                      <button
-                        type="button"
-                        onClick={() => setResponseMode('auto')}
-                        className={cn('rounded-lg px-3.5 py-1.5 text-sm font-medium transition-colors', responseMode === 'auto' ? 'bg-accent text-on-accent' : 'text-white/50 hover:text-white')}
-                      >
-                        Auto
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setResponseMode('manual')}
-                        className={cn('rounded-lg px-3.5 py-1.5 text-sm font-medium transition-colors', responseMode === 'manual' ? 'bg-accent text-on-accent' : 'text-white/50 hover:text-white')}
-                      >
-                        Manual
-                      </button>
-                    </div>
-                  }
-                />
-              </div>
-            ) : null}
-
-            {tab === 'window' ? (
-              <div className="grid gap-5">
-                <SettingRow
-                  title="Stealth Mode"
-                  description="Hides Copilot from screen share"
-                  control={<LiveToggle checked={stealthMode} onChange={setStealthMode} label="Toggle stealth mode" />}
-                />
-                <div>
-                  <p className="text-sm font-medium text-white">Appearance</p>
-                  <p className="mt-0.5 text-xs text-white/50">Choose solid Clear panels or translucent Tinted panels</p>
-                  <div className="mt-2.5 grid grid-cols-2 gap-2">
-                    {APPEARANCE_OPTIONS.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        aria-pressed={appearance === option.value}
-                        onClick={() => setAppearance(option.value)}
-                        className={cn(
-                          'rounded-lg border px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
-                          appearance === option.value ? 'border-accent bg-accent/10' : 'border-live-control-border bg-white/5 hover:border-white/30',
-                        )}
-                      >
-                        <span className="flex items-center justify-between text-sm font-medium text-white">
-                          {option.label}
-                          {appearance === option.value ? <Check aria-hidden="true" className="size-3.5 text-accent" /> : null}
-                        </span>
-                        <span className="mt-0.5 block text-xs text-white/50">{option.description}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <SettingRow
-                  title="Always on Top"
-                  description="Keeps Copilot above all other windows"
-                  control={<LiveToggle checked={alwaysOnTop} onChange={setAlwaysOnTop} label="Toggle always on top" />}
-                />
-                <SettingRow
-                  title="Meeting Detect"
-                  description="Notify me when a meeting app is active"
-                  control={<LiveToggle checked={meetingDetect} onChange={setMeetingDetect} label="Toggle meeting detect" />}
-                />
-              </div>
-            ) : null}
-
-            {tab === 'session' ? (
-              <div className="grid gap-5">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-white/50">Role</span>
-                  <span className="text-sm font-medium text-white">{copilotLiveSession.title}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-white/50">Resume</span>
-                  <span className="text-sm font-medium text-white">Jobwhisper Resume</span>
-                </div>
-                <div className="border-t border-live-border pt-4">
-                  <button
-                    type="button"
-                    className="w-full rounded-lg border border-live-control-border px-4 py-2.5 text-sm font-medium text-white/70 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                  >
-                    Reset — show setup next time
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-3 border-t border-live-border pt-5">
-                  <Avatar name={`${settingsProfile.firstName} ${settingsProfile.lastName}`} size="md" className="bg-white/10 text-white" />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-white">
-                      {settingsProfile.firstName} {settingsProfile.lastName}
-                    </p>
-                    <p className="truncate text-xs text-white/50">{settingsProfile.email}</p>
-                  </div>
-                  <Badge size="sm" className="border-accent/30 bg-accent/15 text-accent">
-                    {planName}
-                  </Badge>
-                </div>
-                <Button variant="secondary" className="border-live-control-border bg-transparent text-white hover:bg-white/5" onClick={onSignOut}>
-                  Sign out
-                </Button>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      </DesktopDialogPopup>
-    </Dialog>
-  )
-}
-
-export function DesktopSessionView() {
-  const navigate = useNavigate()
-  const [seconds, setSeconds] = useState(0)
-  const [settingsOpen, setSettingsOpen] = useState(false)
-  const [activityLabel, setActivityLabel] = useState(copilotLiveSession.activityLabel)
-  const [meetingDetect, setMeetingDetect] = useState(false)
-  const [autoScroll, setAutoScroll] = useState(true)
-  const [scrollSpeed, setScrollSpeed] = useState(2)
-  const [fontSize, setFontSize] = useState(14)
-  const [responseMode, setResponseMode] = useState<'auto' | 'manual'>('auto')
-  const [stealthMode, setStealthMode] = useState(false)
-  const [appearance, setAppearance] = useState<'clear' | 'tinted'>('tinted')
-  const [alwaysOnTop, setAlwaysOnTop] = useState(true)
+export function DesktopSessionView(props: DesktopSessionViewProps) {
+  const { title, connection, activity, elapsedLabel, length, onLengthChange, transcript, chat, onAsk, micOn, onToggleMic, stealth, onToggleStealth, onCapture, onCompact, onOpenSettings, onEnd, modelLabel, creditsUsed, minutesLeftLabel } = props
+  const [chatOpen, setChatOpen] = useState(true)
+  const [draft, setDraft] = useState('')
+  const [atLatest, setAtLatest] = useState(true)
+  const listRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const id = window.setInterval(() => setSeconds((prev) => prev + 1), 1000)
-    return () => window.clearInterval(id)
-  }, [])
+    const list = listRef.current
+    if (list && atLatest) list.scrollTop = list.scrollHeight
+  }, [transcript, atLatest])
+
+  const send = (text: string) => {
+    const value = text.trim()
+    if (!value) return
+    onAsk(value)
+    setDraft('')
+  }
 
   return (
-    <div className="flex h-full min-h-[520px] flex-col bg-live-workspace text-white">
-      <header className="flex min-h-[57px] shrink-0 items-center justify-between border-b border-white/10 bg-live-header px-5 py-3">
-        <div className="flex items-center gap-3">
-          <ArrowLeft aria-hidden="true" className="size-4 text-white/60" />
-          <h1 className="truncate text-sm font-medium leading-5">{copilotLiveSession.title}</h1>
+    <div className="flex h-full flex-col gap-2 p-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className={cn(pill, 'ps-2')}>
+          <GripVertical aria-hidden="true" className="size-4 text-ink-muted" />
+          <span aria-hidden="true" className="flex items-end gap-0.5">
+            {[2, 3, 4].map((height) => <span key={height} className="w-1 rounded-sm bg-positive" style={{ height: height * 3 }} />)}
+          </span>
+          <span className="font-semibold">{title}</span>
         </div>
-        <div className="flex shrink-0 items-center gap-4">
-          <span className="text-sm font-medium leading-5 text-slate-300">{formatElapsed(seconds)}</span>
-          <button
-            type="button"
-            onClick={() => navigate('/desktop/complete')}
-            className="inline-flex min-h-[30px] items-center rounded-lg bg-[#ef4444] px-4 text-sm font-semibold text-white"
-          >
+        <span role="status" className={pill}>
+          <span aria-hidden="true" className={cn('size-2 rounded-full', CONNECTION[connection].dot)} />
+          {CONNECTION[connection].label}
+        </span>
+        <div className="ms-auto flex flex-wrap items-center gap-2">
+          <div role="radiogroup" aria-label="Answer length" className="flex rounded-full border border-border bg-surface p-1 shadow-control">
+            {LENGTHS.map((option) => (
+              <button
+                key={option}
+                type="button"
+                role="radio"
+                aria-checked={length === option}
+                onClick={() => onLengthChange(option)}
+                className={cn('min-h-8 rounded-full px-3 text-sm capitalize focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus', length === option ? 'bg-accent font-semibold text-on-accent' : 'text-ink')}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+          <span className={cn(pill, 'font-semibold tabular-nums')} aria-label={`Elapsed ${elapsedLabel}`}>{elapsedLabel}</span>
+          <button type="button" aria-label={micOn ? 'Mute microphone' : 'Unmute microphone'} aria-pressed={!micOn} onClick={onToggleMic} className={iconButton}>
+            {micOn ? <Mic aria-hidden="true" className="size-4" /> : <MicOff aria-hidden="true" className="size-4 text-danger" />}
+          </button>
+          <button type="button" aria-label={chatOpen ? 'Hide the AI chat' : 'Show the AI chat'} aria-pressed={chatOpen} onClick={() => setChatOpen((open) => !open)} className={iconButton}>
+            <MessageSquare aria-hidden="true" className="size-4" />
+          </button>
+          <button type="button" aria-label="Capture the screen and answer" onClick={onCapture} className={iconButton}>
+            <Camera aria-hidden="true" className="size-4" />
+          </button>
+          <button type="button" aria-label={stealth ? 'Stealth mode on' : 'Stealth mode off'} aria-pressed={stealth} onClick={onToggleStealth} className={cn(iconButton, stealth && 'border-accent text-accent-text')}>
+            <EyeOff aria-hidden="true" className="size-4" />
+          </button>
+          <button type="button" aria-label="Shrink to the overlay" onClick={onCompact} className={iconButton}>
+            <Minimize2 aria-hidden="true" className="size-4" />
+          </button>
+          <button type="button" aria-label="Settings" onClick={onOpenSettings} className={iconButton}>
+            <Settings aria-hidden="true" className="size-4" />
+          </button>
+          <button type="button" onClick={onEnd} className="inline-flex min-h-10 items-center rounded-full bg-danger px-5 text-sm font-semibold text-on-danger hover:bg-danger-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
             End Session
           </button>
         </div>
-      </header>
-
-      <div className="flex min-h-9 shrink-0 items-center justify-between bg-live-strip px-5">
-        <div className="flex items-center gap-4">
-          <span className="flex items-end gap-[3px]" aria-label={copilotLiveSession.signalLabel}>
-            <span className="h-[5px] w-[3px] rounded bg-[#4ade80]" />
-            <span className="h-2 w-[3px] rounded bg-[#4ade80]" />
-            <span className="h-[11px] w-[3px] rounded bg-[#4ade80]" />
-            <span className="h-3.5 w-[3px] rounded bg-[#4ade80]" />
-          </span>
-          <span className="text-sm font-medium leading-5 text-[#4ade80]">{copilotLiveSession.signalLabel}</span>
-          <span className="text-sm italic leading-5 text-slate-400">{activityLabel}</span>
-        </div>
-        <button type="button" onClick={() => setSettingsOpen(true)} className="flex items-center gap-3 text-sm font-medium text-white">
-          <Settings aria-hidden="true" className="size-4" />
-          Settings
-        </button>
       </div>
 
-      <div className="flex flex-1 flex-col gap-3 overflow-hidden p-3">
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-[#1e2d45] bg-[#0d1929]">
-          <div className="flex min-h-[57px] items-center justify-between border-b border-[#1e2d45] px-4 py-3">
-            <span className="inline-flex items-center gap-2 text-sm font-semibold leading-5">
-              Live Response
-              <span className="size-2 animate-pulse rounded-full bg-[#ef4444]" />
-            </span>
+      <p aria-live="polite" className="flex items-center gap-1.5 px-1 text-sm text-ink-muted">
+        {ACTIVITY[activity]}
+        {activity === 'thinking' ? <span aria-hidden="true" className="tracking-widest motion-safe:animate-pulse">&bull;&bull;&bull;</span> : null}
+      </p>
+
+      <div className={cn('grid min-h-0 flex-1 gap-3', chatOpen && 'md:grid-cols-[3fr_2fr]')}>
+        <section aria-label="Live transcript" className="relative min-h-0 rounded-panel border border-border bg-surface">
+          <div
+            ref={listRef}
+            onScroll={(event) => {
+              const el = event.currentTarget
+              setAtLatest(el.scrollHeight - el.scrollTop - el.clientHeight < 40)
+            }}
+            className="h-full overflow-y-auto px-6"
+          >
+            {transcript.length === 0 ? (
+              <p className="py-10 text-center text-sm text-ink-muted">Press Space, or Get answer, and Copilot answers the interviewer&rsquo;s last question.</p>
+            ) : (
+              <ol className="divide-y divide-border">
+                {transcript.map((entry) => (
+                  <li key={entry.id} className="py-4">
+                    {entry.kind === 'interviewer' ? (
+                      <>
+                        <p className="text-xs font-semibold text-ink-muted">Interviewer</p>
+                        <p className="mt-1 text-base text-ink">
+                          {entry.text}
+                          {entry.partial ? <span aria-hidden="true" className="ms-0.5 inline-block h-4 w-0.5 translate-y-0.5 bg-accent motion-safe:animate-pulse" /> : null}
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <span className="inline-flex rounded-md bg-accent-subtle px-2 py-0.5 text-xs font-semibold text-accent-text">WhisperAI</span>
+                        <p className="mt-2 text-sm font-semibold text-ink">{entry.question}</p>
+                        <p className="mt-2 font-gowun text-lg leading-8 text-ink"><AnswerText runs={entry.runs} /></p>
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            )}
           </div>
-          <CopilotTranscriptPanel
-            bank={copilotInterviewTranscript}
-            responseMode="manual"
-            fontSize={14}
-            onActivityChange={setActivityLabel}
-            manualHint="Press Space to start the simulation…"
-          />
-        </div>
-      </div>
+          {!atLatest ? (
+            <button
+              type="button"
+              onClick={() => setAtLatest(true)}
+              className="absolute bottom-4 left-1/2 inline-flex min-h-9 -translate-x-1/2 items-center gap-1.5 rounded-full border border-border bg-surface px-4 text-sm font-semibold text-ink shadow-panel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              Jump to latest
+              <ArrowDown aria-hidden="true" className="size-4" />
+            </button>
+          ) : null}
+        </section>
 
-      <SessionSettingsModal
-        open={settingsOpen}
-        onOpenChange={setSettingsOpen}
-        autoScroll={autoScroll}
-        setAutoScroll={setAutoScroll}
-        scrollSpeed={scrollSpeed}
-        setScrollSpeed={setScrollSpeed}
-        fontSize={fontSize}
-        setFontSize={setFontSize}
-        responseMode={responseMode}
-        setResponseMode={setResponseMode}
-        stealthMode={stealthMode}
-        setStealthMode={setStealthMode}
-        appearance={appearance}
-        setAppearance={setAppearance}
-        alwaysOnTop={alwaysOnTop}
-        setAlwaysOnTop={setAlwaysOnTop}
-        meetingDetect={meetingDetect}
-        setMeetingDetect={setMeetingDetect}
-        onSignOut={() => navigate('/desktop')}
-      />
+        {chatOpen ? (
+          <section aria-label="AI chat" className="flex min-h-0 flex-col rounded-panel border border-border bg-surface">
+            <div className="min-h-0 flex-1 overflow-y-auto p-5">
+              {chat.length === 0 ? (
+                <>
+                  <p className="text-sm text-ink-muted">Ask anything about the conversation so far.</p>
+                  <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-ink-muted">Try asking</p>
+                  <ul className="mt-2 grid gap-1">
+                    {TRY_ASKING.map((prompt) => (
+                      <li key={prompt}>
+                        <button type="button" onClick={() => send(prompt)} className="flex min-h-10 items-center gap-2 rounded-md text-sm text-ink hover:text-accent-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                          <CornerDownRight aria-hidden="true" className="size-4 text-ink-muted" />
+                          {prompt}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <ol className="grid gap-3">
+                  {chat.map((message) => (
+                    <li key={message.id} className={cn('rounded-xl p-4', message.author === 'you' ? 'bg-surface-subtle' : 'bg-accent-subtle')}>
+                      <p className="text-xs font-semibold text-ink-muted">{message.author === 'you' ? 'You' : 'Copilot'}</p>
+                      <p className={cn('mt-1 text-ink', message.author === 'copilot' ? 'font-gowun text-base leading-7' : 'text-base')}>{message.text}</p>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
+            <form
+              className="grid gap-2 border-t border-border p-3"
+              onSubmit={(event) => {
+                event.preventDefault()
+                send(draft)
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <label className="min-w-0 flex-1">
+                  <span className="sr-only">Ask a follow-up</span>
+                  <input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Ask a follow-up…" className="min-h-11 w-full rounded-lg border border-input bg-surface px-3 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus" />
+                </label>
+                <button type="submit" aria-label="Send" disabled={!draft.trim()} className="grid size-11 place-items-center rounded-lg text-ink-muted hover:text-ink disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                  <Send aria-hidden="true" className="size-4" />
+                </button>
+              </div>
+              <div className="flex items-center gap-2">
+                <Menu>
+                  <MenuTrigger aria-label="Quick asks" className="grid size-9 place-items-center rounded-lg border border-border text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                    <Plus aria-hidden="true" className="size-4" />
+                  </MenuTrigger>
+                  <MenuContent align="start" side="top">
+                    <MenuItem onClick={() => send('What should I say?')}>What should I say?</MenuItem>
+                    <MenuItem onClick={() => send('Recap')}>Recap</MenuItem>
+                  </MenuContent>
+                </Menu>
+                <span className="inline-flex min-h-9 items-center rounded-lg border border-border px-3 text-sm font-semibold text-ink">Auto</span>
+                <Popover>
+                  <PopoverTrigger className="ms-auto inline-flex min-h-9 items-center gap-2 rounded-lg px-2 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                    {modelLabel}
+                    <span aria-hidden="true" className="size-5 rounded-full border-2 border-border" style={{ background: `conic-gradient(var(--lf-accent) ${creditsUsed * 360}deg, transparent 0)` }} />
+                    <span className="sr-only">, session credits</span>
+                  </PopoverTrigger>
+                  <PopoverContent side="top" align="end" className="w-72">
+                    <p className="font-semibold text-ink">Session credits</p>
+                    <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-subtle"><div className="h-full rounded-full bg-accent" style={{ width: `${creditsUsed * 100}%` }} /></div>
+                    <p className="mt-2 flex justify-between text-sm text-ink-muted"><span>{Math.round(creditsUsed * 100)}% used</span><span className="font-semibold text-ink">{Math.round((1 - creditsUsed) * 100)}% left</span></p>
+                    <p className="mt-2 text-sm text-ink-muted">{minutesLeftLabel}</p>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </form>
+          </section>
+        ) : null}
+      </div>
     </div>
   )
 }
