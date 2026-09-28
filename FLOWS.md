@@ -11,7 +11,7 @@
    Failure branch: Complete stays disabled until the required answers are in.
 
 3. Entry condition: the dashboard opens with `welcome=1`.
-   Exit condition: the "Special One-time Trial" Pro offer ($1.39 for 7 days, then $99/month) shows as a centred modal (a bottom sheet on phones). Try 1 week for $1.39 opens `/v3/billing?plan=pro&offer=welcome-60`; closing or Esc swaps it for a top banner carrying the same deal and the same countdown (`?offer=banner`, which keeps the banner through a refresh); its Upgrade now goes to the same billing link.
+   Exit condition: the "Special One-time Trial" Pro offer ($4.57 for 7 days, then $99/month) shows as a centred modal (a bottom sheet on phones). Try 1 week for $4.57 opens `/v3/billing?plan=pro&offer=welcome-60`; closing or Esc swaps it for a top banner carrying the same deal and the same countdown (`?offer=banner`, which keeps the banner through a refresh); its Upgrade now goes to the same billing link.
    Failure branch: none in this slice.
 
 4. Entry condition: a returning user signs in at `/v3/auth/sign-in`.
@@ -200,15 +200,15 @@
    Failure branch: Continue stays disabled until the question is answered; offline, the answers are kept and Continue waits for the connection. Back on the first question returns to the landing page.
 
 
-3. Entry condition: the reward step shows the answer recap and the Pro offer widget: "Try Pro for 7 days, 94% off, just $1.39", then Pro at $99 a month.
-   Exit condition: Try 1 week for $1.39, which opens the account step for anonymous visitors and the card step for signed-in ones. Not now leaves the funnel.
+3. Entry condition: the reward step shows the answer recap and the Pro offer widget: "Try Pro for 7 days, 80% off, just $4.57", then Pro at $99 a month.
+   Exit condition: Try 1 week for $4.57, which opens the account step for anonymous visitors and the card step for signed-in ones. Not now leaves the funnel.
    Failure branch: none.
 
 4. Entry condition: an anonymous visitor reaches the account step.
    Exit condition: they continue with Google or a valid email.
    Failure branch: an invalid email shows a field error describing the fix.
 
-5. Entry condition: the card step opens with the full terms above the form: $1.39 today for 7 days of Pro until the first charge date, then Pro at $99 a month until cancelled, and a reminder email 2 days before.
+5. Entry condition: the card step opens with the full terms above the form: $4.57 today for 7 days of Pro until the first charge date, then Pro at $99 a month until cancelled, and a reminder email 2 days before.
    Exit condition: a complete card starts the week and the started step shows.
    Failure branch: a declined card shows the bank's reason with the form ready for another card; offline disables submit.
 

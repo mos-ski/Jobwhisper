@@ -39,7 +39,7 @@ export type FunnelTrialOffer = {
   /** What the plan unlocks, one short line each, e.g. "Unlimited Interview Copilot and practice". */
   readonly includes: readonly string[]
   readonly monthlyUsd: number
-  /** What the first week costs, charged today (e.g. 1.39). */
+  /** What the first week costs, charged today (e.g. 4.57). */
   readonly introUsd: number
   readonly reminderDaysBefore: number
   /** ISO date (YYYY-MM-DD) of the first charge if the trial is not cancelled. */

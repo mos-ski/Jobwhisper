@@ -25,7 +25,7 @@ const tryFunnelRoutes = [
   {
     href: '/v3/try/pro',
     label: 'A week of Pro',
-    description: 'The landing-page quiz, ending in the Pro offer widget: one week of Pro for $1.39, then $99 a month.',
+    description: 'The landing-page quiz, ending in the Pro offer widget: one week of Pro for $4.57, then $99 a month.',
   },
   {
     href: '/v3/try/resume',

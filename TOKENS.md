@@ -80,6 +80,7 @@ paints a dark frame before the app mounts.
 | `brand-bar-text` | `text-brand-bar-text` | Nav bar text |
 | `brand-mark` | `text-brand-mark` | Logo mark color |
 | `brand-mark-accent` | `text-brand-mark-accent` | Logo mark accent |
+| `wash-mint` | `from-wash-mint` | Soft wash rising from the foot of a promotional card (the Pro offer). Light `rgba(110,225,195,.22)`, dark `rgba(110,225,195,.1)` |
 
 ### Public Landing Page
 

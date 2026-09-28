@@ -68,6 +68,7 @@ const config: Config = {
         'landing-btn-text': 'var(--lf-landing-btn-text)',
         'landing-ink': 'var(--lf-landing-ink)',
         overlay: 'var(--lf-overlay)',
+        'wash-mint': 'var(--lf-wash-mint)',
         'brand-bar': {
           DEFAULT: 'var(--lf-brand-bar)',
           text: 'var(--lf-brand-bar-text)',

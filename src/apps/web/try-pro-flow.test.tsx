@@ -26,17 +26,17 @@ describe('/v3/try/pro', () => {
       }
     }
 
-    fireEvent.click(screen.getByRole('button', { name: 'Try 1 week for $1.39' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Try 1 week for $4.57' }))
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Create your account')
 
     fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'darnell@example.com' } })
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-    expect(screen.getByText('$1.39')).toBeInTheDocument()
+    expect(screen.getByText('$4.57')).toBeInTheDocument()
   })
 
   it('skips the account step for someone already signed in', () => {
     renderAt('/v3/try/pro?step=reward&session=signed-in')
-    fireEvent.click(screen.getByRole('button', { name: 'Try 1 week for $1.39' }))
-    expect(screen.getByText('$1.39')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Try 1 week for $4.57' }))
+    expect(screen.getByText('$4.57')).toBeInTheDocument()
   })
 })
