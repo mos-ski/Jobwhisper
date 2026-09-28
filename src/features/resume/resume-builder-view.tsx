@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react'
-import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, ChevronRight, Columns2, Download, FileText, HelpCircle, Minus, Plus, Target, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, ChevronRight, ArrowLeftRight, Download, FileText, HelpCircle, Minus, Plus, Target, X } from 'lucide-react'
 
 import type { ResumeBuilderSession, ResumeBuilderTab, ResumeChatState, ResumeDocument, ResumeExtraSection, ResumeExtraSectionKind, ResumeHistoryRow, ResumeIssue, ResumeSectionId } from '@/contracts/resume.draft'
 import type { FairUseSnapshot } from '@/contracts/fair-use.draft'
@@ -109,10 +109,10 @@ function BuilderHeader({
           type="button"
           onClick={onCompareClick}
           aria-label="Compare with your original resume"
-          title="Compare with your original"
-          className="inline-flex size-9 items-center justify-center rounded-lg border border-border bg-surface text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-border bg-surface px-3 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
         >
-          <Columns2 aria-hidden="true" className="size-4" />
+          <ArrowLeftRight aria-hidden="true" className="size-4" />
+          <span className="hidden lg:inline">Compare</span>
         </button>
       ) : null}
       {onAtsClick ? (
@@ -1182,7 +1182,7 @@ function ResumeCompareDialog({ open, onOpenChange, before, after, hasChanges }: 
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogPopup className="sm:max-w-3xl">
+      <DialogPopup className="rounded-none sm:max-w-3xl sm:rounded-none">
         <DialogTitle className="font-gowun text-lg">Compare with your original</DialogTitle>
         <p className="mt-1 pe-10 text-sm text-ink-muted">
           {hasChanges ? 'Drag across the page to see what you have changed so far.' : 'No changes yet. Accept a suggestion or edit a section, then drag across the page to compare.'}
