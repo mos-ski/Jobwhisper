@@ -28,6 +28,8 @@ export type ResumeInlineEditorProps = {
   readonly onRemoveSection?: (id: string) => void
   /** Reports the section holding focus, so the Edit panel can mark it. */
   readonly onActiveSectionChange?: (id: string) => void
+  /** Reports the resume as edited so far, skills flattened from their groups, for the before/after compare. */
+  readonly onDraftChange?: (draft: ResumeDocument) => void
 }
 
 type BodySection = Exclude<ResumeSectionId, 'personal-information'>
@@ -125,7 +127,7 @@ function issueKey(section: BodySection, roleIndex?: number): string {
   return roleIndex === undefined ? section : `${section}:${roleIndex}`
 }
 
-export function ResumeInlineEditor({ document, issues, pendingSuggestion = false, acceptedSuggestion = false, typedSummary, extraSections = NO_EXTRA_SECTIONS, hiddenSections = NO_HIDDEN_SECTIONS, onlySection = null, onRenameSection, onRemoveSection, onActiveSectionChange }: ResumeInlineEditorProps) {
+export function ResumeInlineEditor({ document, issues, pendingSuggestion = false, acceptedSuggestion = false, typedSummary, extraSections = NO_EXTRA_SECTIONS, hiddenSections = NO_HIDDEN_SECTIONS, onlySection = null, onRenameSection, onRemoveSection, onActiveSectionChange, onDraftChange }: ResumeInlineEditorProps) {
   const [draft, setDraft] = useState<ResumeDocument>(document)
   const [order, setOrder] = useState<readonly string[]>(DEFAULT_ORDER)
   const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set())
@@ -137,6 +139,10 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
   const [announcement, setAnnouncement] = useState('')
   const [phone, setPhone] = useState('')
   const [skillGroups, setSkillGroups] = useState<readonly ResumeSkillGroup[]>(() => document.skillGroups ?? [{ id: 'group-core', title: 'Core skills', skills: document.skills }])
+
+  useEffect(() => {
+    onDraftChange?.({ ...draft, skills: skillGroups.flatMap((group) => group.skills) })
+  }, [draft, skillGroups, onDraftChange])
   const [newSkills, setNewSkills] = useState<Readonly<Record<string, string>>>({})
   const [newLanguage, setNewLanguage] = useState('')
   const [draggingLanguage, setDraggingLanguage] = useState<number | null>(null)

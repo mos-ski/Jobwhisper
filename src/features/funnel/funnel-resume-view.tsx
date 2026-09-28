@@ -1,7 +1,8 @@
 import { useId, useState } from 'react'
-import { ArrowRight, Download, FileCheck, MoveHorizontal } from 'lucide-react'
+import { ArrowRight, Download, FileCheck } from 'lucide-react'
 
 import type { AtsIssueSeverity, AtsReport, ResumeRewrite } from '@/contracts/funnel.draft'
+import { ResumeCompare } from '@/features/resume/resume-compare'
 import { ClassicResume } from '@/features/resume/resume-templates'
 import { Button, cn } from '@/ui'
 import { FunnelGate } from './funnel-gate'
@@ -206,31 +207,16 @@ function CompareStep({ rewrite, onDownload }: FunnelResumeViewProps) {
           <span className="text-sm text-accent-muted">from {rewrite.scoreBefore}</span>
         </p>
 
-        <div className="relative mx-auto grid w-full max-w-[44rem] overflow-hidden rounded-xl shadow-panel has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus">
-          {/* The template carries its own h1 for the candidate's name, so both pages are visual only; the list below reads the changes out. */}
-          <div aria-hidden="true" className="col-start-1 row-start-1">
-            <ClassicResume document={rewrite.document} showImproved={false} highlightChanges={false} showPageBreaks={false} />
-          </div>
-          <div aria-hidden="true" className="col-start-1 row-start-1" style={{ clipPath: `inset(0 ${100 - reveal}% 0 0)` }}>
-            <ClassicResume document={rewrite.document} showImproved highlightChanges showPageBreaks={false} />
-          </div>
-          <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-accent" style={{ left: `${reveal}%` }}>
-            <span className="absolute left-1/2 top-1/2 flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-accent text-on-accent shadow-panel"><MoveHorizontal className="size-5" /></span>
-          </div>
-          <span aria-hidden="true" className="pointer-events-none absolute left-3 top-3 rounded-full bg-accent px-2.5 py-0.5 text-xs font-semibold text-on-accent">Jobwhisper version</span>
-          <span aria-hidden="true" className="pointer-events-none absolute right-3 top-3 rounded-full bg-surface-inverse px-2.5 py-0.5 text-xs font-semibold text-surface">Your resume</span>
-          <input
-            type="range"
-            min={0}
-            max={100}
-            step={1}
-            value={reveal}
-            onChange={(event) => setReveal(Number(event.target.value))}
-            aria-label="Show the Jobwhisper version"
-            aria-valuetext={valueText}
-            className="absolute inset-0 h-full w-full cursor-ew-resize opacity-0"
-          />
-        </div>
+        <ResumeCompare
+          before={<ClassicResume document={rewrite.document} showImproved={false} highlightChanges={false} showPageBreaks={false} />}
+          after={<ClassicResume document={rewrite.document} showImproved highlightChanges showPageBreaks={false} />}
+          beforeLabel="Your resume"
+          afterLabel="Jobwhisper version"
+          sliderLabel="Show the Jobwhisper version"
+          describe={() => valueText}
+          reveal={reveal}
+          onRevealChange={setReveal}
+        />
         <p className="text-center text-sm text-accent-muted">Drag across the page, or focus it and use the arrow keys. Changed lines are highlighted.</p>
         <div className="sr-only">
           <h2>What the Jobwhisper version changes</h2>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react'
-import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, ChevronRight, Download, FileText, HelpCircle, Minus, Plus, Target, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, ChevronRight, Columns2, Download, FileText, HelpCircle, Minus, Plus, Target, X } from 'lucide-react'
 
 import type { ResumeBuilderSession, ResumeBuilderTab, ResumeChatState, ResumeDocument, ResumeExtraSection, ResumeExtraSectionKind, ResumeHistoryRow, ResumeIssue, ResumeSectionId } from '@/contracts/resume.draft'
 import type { FairUseSnapshot } from '@/contracts/fair-use.draft'
@@ -10,6 +10,7 @@ import { FairUseMeter, FairUseNotice } from '@/features/billing/fair-use'
 import { InterviewPrepFeatureWidget } from '@/features/interview/interview-prep-feature-widget'
 import { useTypewriter } from '@/hooks/useTypewriter'
 import { ResumeInlineEditor, resumeSectionAnchor } from './resume-inline-editor'
+import { ResumeCompare } from './resume-compare'
 import { ClassicResume } from './resume-templates'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 
@@ -75,11 +76,13 @@ function BuilderHeader({
   current,
   action,
   onAtsClick,
+  onCompareClick,
 }: {
   readonly homeHref: string
   readonly current: string
   readonly action?: 'download'
   readonly onAtsClick?: () => void
+  readonly onCompareClick?: () => void
 }) {
   const [downloadOpen, setDownloadOpen] = useState(false)
   const downloadRef = useRef<HTMLDivElement>(null)
@@ -99,6 +102,17 @@ function BuilderHeader({
       closeHref={action === 'download' ? undefined : homeHref}
       closeLabel="Close resume builder"
     >
+      {onCompareClick ? (
+        <button
+          type="button"
+          onClick={onCompareClick}
+          aria-label="Compare with your original resume"
+          title="Compare with your original"
+          className="inline-flex size-9 items-center justify-center rounded-lg border border-border bg-surface text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+        >
+          <Columns2 aria-hidden="true" className="size-4" />
+        </button>
+      ) : null}
       {onAtsClick ? (
         <button
           type="button"
@@ -1156,6 +1170,31 @@ function useIsMobileViewport() {
   return isMobile
 }
 
+/** Before and after in one frame: the resume as uploaded, and as it stands now. */
+function ResumeCompareDialog({ open, onOpenChange, before, after, hasChanges }: {
+  readonly open: boolean
+  readonly onOpenChange: (open: boolean) => void
+  readonly before: ReactNode
+  readonly after: ReactNode
+  readonly hasChanges: boolean
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogPopup className="sm:max-w-3xl">
+        <DialogTitle className="font-gowun text-lg">Compare with your original</DialogTitle>
+        <p className="mt-1 pe-10 text-sm text-ink-muted">
+          {hasChanges ? 'Drag across the page to see what you have changed so far.' : 'No changes yet. Accept a suggestion or edit a section, then drag across the page to compare.'}
+        </p>
+        <div className="mt-4 max-h-[70vh] overflow-y-auto rounded-xl bg-surface-subtle p-2 sm:p-4">
+          <ResumeCompare before={before} after={after} beforeLabel="Your original" afterLabel="Now" sliderLabel="Show your edited resume" />
+        </div>
+        <p className="mt-3 text-center text-xs text-ink-muted">Focus the page and use the arrow keys to move the divider.</p>
+        <DialogClose aria-label="Close compare" />
+      </DialogPopup>
+    </Dialog>
+  )
+}
+
 export function ResumeEditorView({ homeHref, document, session, issues, tab, chatState, jd, fairUse, onFairUseUnlock }: ResumeEditorViewProps) {
   const hasJd = Boolean(jd && jd.trim())
   const [messages, setMessages] = useState<readonly ChatMessage[]>(() => {
@@ -1179,6 +1218,9 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
   const [pendingSuggestion, setPendingSuggestion] = useState(hasJd || chatState === 'suggestions')
   const [hasAcceptedChanges, setHasAcceptedChanges] = useState(false)
   const [atsOpen, setAtsOpen] = useState(false)
+  const [compareOpen, setCompareOpen] = useState(false)
+  // The resume as edited on the Edit tab; null until the editor has reported it.
+  const [editedDocument, setEditedDocument] = useState<ResumeDocument | null>(null)
   const [showPostAcceptTip, setShowPostAcceptTip] = useState(false)
   const [typedSummary, setTypedSummary] = useState<string | null>(null)
   const { type: typeSummary, isTyping: isTypingSummary } = useTypewriter()
@@ -1297,7 +1339,18 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
 
   return (
     <Workspace>
-      <BuilderHeader homeHref={homeHref} current="Build a Resume" action="download" onAtsClick={() => setAtsOpen(true)} />
+      <BuilderHeader homeHref={homeHref} current="Build a Resume" action="download" onAtsClick={() => setAtsOpen(true)} onCompareClick={() => setCompareOpen(true)} />
+      <ResumeCompareDialog
+        open={compareOpen}
+        onOpenChange={setCompareOpen}
+        before={<ClassicResume document={document} showImproved={false} highlightChanges={false} showPageBreaks={false} />}
+        after={
+          editedDocument
+            ? <ClassicResume document={editedDocument} showImproved={false} highlightChanges={false} showPageBreaks={false} />
+            : <ClassicResume document={document} showImproved={hasAcceptedChanges} highlightChanges={hasAcceptedChanges} showPageBreaks={false} />
+        }
+        hasChanges={hasAcceptedChanges || (editedDocument !== null && JSON.stringify(editedDocument) !== JSON.stringify(document))}
+      />
       <section className="relative flex h-[calc(100dvh-3.5rem)] flex-col overflow-hidden lg:flex-row">
         {tab === 'chat' ? (
           <ChatSidebar
@@ -1378,6 +1431,7 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
             pendingSuggestion={pendingSuggestion}
             acceptedSuggestion={hasAcceptedChanges}
             typedSummary={typedSummary}
+            onDraftChange={setEditedDocument}
           />
           {pendingSuggestion ? (
             <InlineChangeControls onAccept={handleAccept} onReject={handleReject} />
