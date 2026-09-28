@@ -50,6 +50,8 @@ export type ClassicResumeProps = {
   readonly decisions?: Readonly<Partial<Record<ResumeChangeKey, ResumeChangeDecision>>>
   /** Set while a rewrite is under review: each highlighted change gets its own accept and reject. */
   readonly onDecide?: (key: ResumeChangeKey, decision: ResumeChangeDecision) => void
+  /** Highlights, in blue, every summary, bullet and skill that differs from this earlier version. */
+  readonly changedFrom?: ResumeDocument
 }
 
 /** The parts of a resume a Chat rewrite can change, each decided on its own. */
@@ -101,7 +103,9 @@ export function ClassicResume({
   showPageBreaks = true,
   decisions,
   onDecide,
+  changedFrom,
 }: ClassicResumeProps) {
+  const changed = 'bg-accent-subtle text-accent-text'
   const uses = (key: ResumeChangeKey) => (decisions?.[key] ? decisions[key] === 'accepted' : showImproved)
   const reviewing = (key: ResumeChangeKey) => highlightChanges && !decisions?.[key]
   return (
@@ -117,7 +121,7 @@ export function ClassicResume({
         <p
           className={cn(
             'mt-2 rounded-sm text-xs italic leading-5 transition-shadow duration-normal ease-default',
-            reviewing('summary') ? 'bg-accent-subtle text-accent-text' : 'text-paper-ink',
+            reviewing('summary') || (changedFrom && (uses('summary') ? document.improvedSummary : document.summary) !== changedFrom.summary) ? changed : 'text-paper-ink',
             isTypingSummary && 'shadow-[0_0_0_3px_var(--lf-accent-subtle)]',
           )}
         >
@@ -152,7 +156,7 @@ export function ClassicResume({
                     const key = bulletKey(index)
                     const pending = key !== null && reviewing(key)
                     return (
-                      <li key={bullet} className={cn(pending && 'bg-accent-subtle text-accent-text marker:text-accent-text')}>
+                      <li key={bullet} className={cn((pending || (changedFrom && changedFrom.roles[roleIndex]?.bullets[index] !== bullet)) && `${changed} marker:text-accent-text`)}>
                         {bullet}
                         {pending && key && onDecide ? <ChangeActions changeKey={key} onDecide={onDecide} /> : null}
                       </li>
@@ -168,7 +172,7 @@ export function ClassicResume({
         <h2 className="border-b border-paper-ink pb-1 text-sm font-bold uppercase tracking-wide">Skills</h2>
         <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1 text-xs">
           {(uses('skills') ? document.improvedSkills : document.skills).slice(0, uses('skills') ? 22 : 14).map((skill) => (
-            <span key={skill} className={cn(reviewing('skills') && !document.skills.includes(skill) ? 'bg-accent-subtle font-semibold text-accent-text' : undefined)}>
+            <span key={skill} className={cn((reviewing('skills') && !document.skills.includes(skill)) || (changedFrom && !changedFrom.skills.includes(skill)) ? `${changed} font-semibold` : undefined)}>
               {skill}
             </span>
           ))}

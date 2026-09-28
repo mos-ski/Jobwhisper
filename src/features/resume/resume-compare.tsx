@@ -38,15 +38,16 @@ export function ResumeCompare({ before, after, beforeLabel, afterLabel, sliderLa
         : `${reveal}% of ${afterLabel} shown`
 
   return (
-    <div className="relative mx-auto grid w-full max-w-[44rem] overflow-hidden rounded-xl shadow-panel has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus">
+    <div className="relative mx-auto grid w-full max-w-[44rem] overflow-clip shadow-panel has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus">
       <div aria-hidden="true" className="col-start-1 row-start-1">
         {before}
       </div>
       <div aria-hidden="true" className="col-start-1 row-start-1" style={{ clipPath: `inset(0 ${100 - reveal}% 0 0)` }}>
         {after}
       </div>
-      <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-accent" style={{ left: `${reveal}%` }}>
-        <span className="absolute left-1/2 top-[min(50%,14rem)] flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-accent text-on-accent shadow-panel">
+      {/* The handle is sticky inside the full-height divider, so it rides along as the page scrolls. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 flex w-0.5 -translate-x-1/2 justify-center bg-accent" style={{ left: `${reveal}%` }}>
+        <span className="sticky top-[40vh] mt-40 flex size-11 shrink-0 items-center justify-center rounded-full bg-accent text-on-accent shadow-panel">
           <MoveHorizontal className="size-5" />
         </span>
       </div>
