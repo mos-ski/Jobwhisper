@@ -149,6 +149,7 @@ export const trialFunnelOffer: FunnelTrialOffer = {
     'Auto Apply for up to 500 jobs a month',
   ],
   monthlyUsd: 99,
+  introUsd: 1.39,
   reminderDaysBefore: 2,
   firstChargeOn: '2026-10-02',
 }

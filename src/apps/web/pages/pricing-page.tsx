@@ -5,7 +5,9 @@ import { ChevronDown } from 'lucide-react'
 import { MarketingFooter, MarketingNav } from '@/features/marketing/marketing-chrome'
 import { PlanAmount, PlanCard, PlanCarousel } from '@/features/pricing/plan-card'
 import { CreditProductCard } from '@/features/pricing/credit-pack-picker'
-import { CREDIT_PRODUCTS, MANAGED_PACKAGES } from '@/features/pricing/pricing-products'
+import { CREDIT_PRODUCTS } from '@/features/pricing/pricing-products'
+import { SuccessManagerPicker } from '@/features/billing/success-manager-picker'
+import { successManagers } from '@/mocks/done-for-you'
 import { ProOfferWidget } from '@/features/billing/pro-offer-widget'
 import { Button, Tabs, TabsContent, TabsList, TabsTrigger, cn } from '@/ui'
 
@@ -428,27 +430,17 @@ function PayAsYouGo() {
 function DoneForYou() {
   const navigate = useNavigate()
 
+  // The same success managers, prices and intros as Billing's Done for you tab; a visitor
+  // signs up first, so Start with goes to the account step rather than the signed-in dialog.
   return (
     <section className="pricing-plans">
-      <SectionIntro
-        title="Or have it done for you"
-        description="A success manager runs the search on your behalf until the guaranteed number of interviews lands. Sold once, not as a subscription."
+      <SuccessManagerPicker
+        setupHref="/v3/auth/create-account"
+        profile={{ country: '', desiredRole: [], locations: [] }}
+        savedCard={{ label: '', expiryLabel: '' }}
+        directory={{ status: 'ready', managers: successManagers }}
+        onStart={(manager) => navigate(`/v3/auth/create-account?plan=done-for-you&manager=${manager.id}`)}
       />
-      <PlanCarousel count={MANAGED_PACKAGES.length}>
-        {MANAGED_PACKAGES.map((managedPackage) => (
-          <PlanCard
-            key={managedPackage.id}
-            name={managedPackage.name}
-            tagline={managedPackage.tagline}
-            amount={<PlanAmount>${managedPackage.price.toLocaleString('en-US')}</PlanAmount>}
-            unit="one time"
-            terms={managedPackage.terms}
-            features={managedPackage.features}
-            ctaLabel="Sign up"
-            onCta={() => navigate('/v3/billing?plan=done-for-you')}
-          />
-        ))}
-      </PlanCarousel>
     </section>
   )
 }

@@ -13,7 +13,7 @@ function renderAt(path: string) {
 }
 
 describe('/v3/try/pro', () => {
-  it('walks the quiz, reveals the free week, then asks for an account before the card', () => {
+  it('walks the quiz, offers a week of Pro, then asks for an account before the card', () => {
     renderAt('/v3/try/pro')
 
     for (const question of trialFunnelQuestions) {
@@ -26,17 +26,17 @@ describe('/v3/try/pro', () => {
       }
     }
 
-    fireEvent.click(screen.getByRole('button', { name: 'Claim my free week' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Try 1 week for $1.39' }))
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Create your account')
 
     fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'darnell@example.com' } })
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-    expect(screen.getByText('$0 today')).toBeInTheDocument()
+    expect(screen.getByText('$1.39')).toBeInTheDocument()
   })
 
   it('skips the account step for someone already signed in', () => {
     renderAt('/v3/try/pro?step=reward&session=signed-in')
-    fireEvent.click(screen.getByRole('button', { name: 'Claim my free week' }))
-    expect(screen.getByText('$0 today')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Try 1 week for $1.39' }))
+    expect(screen.getByText('$1.39')).toBeInTheDocument()
   })
 })

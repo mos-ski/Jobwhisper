@@ -3,6 +3,7 @@ import { ArrowRight, CircleCheck, Lock } from 'lucide-react'
 
 import type { FunnelAnswers, FunnelCardStatus, FunnelQuestion as FunnelQuestionData, FunnelTrialOffer } from '@/contracts/funnel.draft'
 import type { Session } from '@/contracts/identity'
+import { ProOfferPanel } from '@/features/billing/pro-offer-widget'
 import { Button, FormField } from '@/ui'
 import { FunnelGate } from './funnel-gate'
 import { FunnelQuestion, FunnelQuestionFooter } from './funnel-question'
@@ -85,34 +86,11 @@ export function FunnelTrialView(props: FunnelTrialViewProps) {
   )
 }
 
-function PlanPass({ offer, caption }: { readonly offer: FunnelTrialOffer; readonly caption: string }) {
-  return (
-    <div data-slot="plan-pass" className="relative overflow-hidden rounded-3xl bg-surface-inverse text-surface shadow-panel">
-      <div className="px-6 pb-7 pt-6 sm:px-10 sm:pt-8">
-        <p className="text-sm font-semibold text-accent-muted">{caption}</p>
-        <p className="mt-3 font-gowun text-5xl font-bold leading-none sm:text-6xl">{offer.trialDays} days of {offer.planName}</p>
-      </div>
-      {/* The notches and dashed rule make the card read as a pass you tear off, not another panel. */}
-      <div aria-hidden="true" className="relative">
-        <span className="absolute -start-3 top-0 size-6 -translate-y-1/2 rounded-full bg-surface" />
-        <span className="absolute -end-3 top-0 size-6 -translate-y-1/2 rounded-full bg-surface" />
-        <div className="mx-6 border-t-2 border-dashed border-ink-muted sm:mx-10" />
-      </div>
-      <ul className="grid gap-3 px-6 pb-7 pt-6 text-sm leading-6 sm:grid-cols-2 sm:px-10 sm:pb-8">
-        {offer.includes.map((line) => (
-          <li key={line} className="flex gap-2"><CircleCheck aria-hidden="true" className="mt-1 size-4 shrink-0 text-accent-muted" />{line}</li>
-        ))}
-      </ul>
-    </div>
-  )
-}
-
 function RewardStep({ offer, questions, answers, resumeName, onClaim, onClose }: FunnelTrialViewProps) {
   const recap = questions.filter((item) => (answers[item.id] ?? '').trim()).slice(0, 4)
   return (
-    <div className="grid gap-10">
-      <FunnelTitle eyebrow="Your setup is ready">You’ve unlocked a free week of {offer.planName}.</FunnelTitle>
-      <PlanPass offer={offer} caption="Starts today, free" />
+    <div className="grid gap-8">
+      <FunnelTitle eyebrow="Your setup is ready">You’ve unlocked {offer.planName} for one week.</FunnelTitle>
 
       {recap.length > 0 || resumeName ? (
         <dl aria-label="Your setup" className="flex flex-wrap justify-center gap-2">
@@ -121,14 +99,9 @@ function RewardStep({ offer, questions, answers, resumeName, onClaim, onClose }:
         </dl>
       ) : null}
 
-      <div className="grid justify-items-center gap-3 text-center">
-        <Button size="lg" onClick={onClaim} className={cta}>
-          Claim my free week
-          <ArrowRight aria-hidden="true" className="size-4 rtl:rotate-180" />
-        </Button>
-        <p className="max-w-sm text-sm leading-6 text-ink-muted">
-          $0 today. Add a card to start it, then ${offer.monthlyUsd} a month after {offer.trialDays} days unless you cancel.
-        </p>
+      <ProOfferPanel onClaim={onClaim} />
+
+      <div className="grid justify-items-center">
         <button type="button" onClick={onClose} className="min-h-11 rounded-md px-2 text-sm font-medium text-ink-muted underline underline-offset-4 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
           Not now
         </button>
@@ -149,8 +122,8 @@ function RecapChip({ term, detail }: { readonly term: string; readonly detail: s
 function AccountStep({ online, offer, onCreateAccount, onGoogleSignUp }: FunnelTrialViewProps) {
   return (
     <FunnelGate
-      title="Create your account for your free week."
-      body={`Your answers are saved to it, so ${offer.planName} opens set up for you. Next you add a card, and nothing is charged today.`}
+      title={`Create your account for your week of ${offer.planName}.`}
+      body={`Your answers are saved to it, so ${offer.planName} opens set up for you. Next you add a card: $${offer.introUsd} today for the week.`}
       online={online}
       emailFieldId="funnel-trial-email"
       onCreateAccount={onCreateAccount}
@@ -176,14 +149,14 @@ function CardStep({ offer, online, cardStatus, cardError, onSubmitCard }: Funnel
 
   return (
     <div className="grid gap-10">
-      <FunnelTitle eyebrow="Nothing is charged today">Start your free week of {offer.planName}.</FunnelTitle>
+      <FunnelTitle eyebrow={`$${offer.introUsd} today`}>Start your week of {offer.planName}.</FunnelTitle>
 
       <section aria-labelledby="funnel-trial-terms" className="mx-auto grid w-full max-w-md gap-5">
         <h2 id="funnel-trial-terms" className="sr-only">Trial terms</h2>
         <dl className="divide-y divide-border rounded-2xl border border-border">
           <div className="flex items-baseline justify-between gap-4 px-5 py-4">
             <dt className="text-base font-semibold text-ink">Today</dt>
-            <dd className="font-gowun text-3xl font-bold leading-none text-ink">$0 today</dd>
+            <dd className="font-gowun text-3xl font-bold leading-none text-ink">${offer.introUsd}</dd>
           </div>
           <div className="flex items-baseline justify-between gap-4 px-5 py-4">
             <dt className="text-sm text-ink-muted">From {chargeDate}</dt>
@@ -191,9 +164,9 @@ function CardStep({ offer, online, cardStatus, cardError, onSubmitCard }: Funnel
           </div>
         </dl>
         <ul className="grid gap-2 text-sm leading-6 text-ink">
-          <li className="flex gap-2"><CircleCheck aria-hidden="true" className="mt-1 size-4 shrink-0 text-positive" />Free for {offer.trialDays} days, until {chargeDate}.</li>
+          <li className="flex gap-2"><CircleCheck aria-hidden="true" className="mt-1 size-4 shrink-0 text-positive" />{offer.planName} for {offer.trialDays} days for ${offer.introUsd}, until {chargeDate}.</li>
           <li className="flex gap-2"><CircleCheck aria-hidden="true" className="mt-1 size-4 shrink-0 text-positive" />Then {offer.planName} at ${offer.monthlyUsd} a month, until you cancel.</li>
-          <li className="flex gap-2"><CircleCheck aria-hidden="true" className="mt-1 size-4 shrink-0 text-positive" />We’ll email you {offer.reminderDaysBefore} days before the first charge. Cancel before {chargeDate} and you pay nothing.</li>
+          <li className="flex gap-2"><CircleCheck aria-hidden="true" className="mt-1 size-4 shrink-0 text-positive" />We’ll email you {offer.reminderDaysBefore} days before the first charge. Cancel before {chargeDate} and you pay nothing more.</li>
         </ul>
       </section>
 
@@ -210,11 +183,11 @@ function CardStep({ offer, online, cardStatus, cardError, onSubmitCard }: Funnel
           <FormField id="funnel-card-cvc" label="Security code" autoComplete="cc-csc" inputMode="numeric" value={cvc} onChange={(event) => setCvc(event.target.value)} />
         </div>
         <Button type="submit" size="lg" className="min-h-12 text-base" disabled={!complete || !online}>
-          Start my free week
+          Start my week for ${offer.introUsd}
         </Button>
         <p className="flex items-start justify-center gap-2 text-center text-sm leading-6 text-ink-muted">
           <Lock aria-hidden="true" className="mt-1 size-4 shrink-0" />
-          <span>Card details go straight to our payment processor. By starting the trial you agree to the <a href="/terms" className="font-medium text-accent-text underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Terms</a>.</span>
+          <span>Card details go straight to our payment processor. By starting you agree to the <a href="/terms" className="font-medium text-accent-text underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Terms</a>.</span>
         </p>
       </form>
     </div>
@@ -222,12 +195,20 @@ function CardStep({ offer, online, cardStatus, cardError, onSubmitCard }: Funnel
 }
 
 function DoneStep({ offer, onStart }: FunnelTrialViewProps) {
+  const until = formatDate(offer.firstChargeOn)
   return (
     <div className="grid gap-10">
-      <FunnelTitle eyebrow="You’re in">Your free week of {offer.planName} has started.</FunnelTitle>
-      <PlanPass offer={offer} caption={`Free until ${formatDate(offer.firstChargeOn)}`} />
+      <FunnelTitle eyebrow="You’re in">Your week of {offer.planName} has started.</FunnelTitle>
+      <section aria-label={`What ${offer.planName} includes`} className="mx-auto w-full max-w-md rounded-panel border border-border bg-surface p-6 shadow-panel">
+        <p className="text-sm font-semibold text-accent-text">{offer.planName} until {until}</p>
+        <ul className="mt-4 grid gap-3 text-sm leading-6 text-ink">
+          {offer.includes.map((line) => (
+            <li key={line} className="flex gap-2"><CircleCheck aria-hidden="true" className="mt-1 size-4 shrink-0 text-positive" />{line}</li>
+          ))}
+        </ul>
+      </section>
       <div className="grid justify-items-center gap-4 text-center">
-        <p className="max-w-md text-base leading-7 text-ink-muted">We’ll email you {offer.reminderDaysBefore} days before it ends. Cancel from Billing any time before {formatDate(offer.firstChargeOn)} and you pay nothing.</p>
+        <p className="max-w-md text-base leading-7 text-ink-muted">We’ll email you {offer.reminderDaysBefore} days before the week ends. Cancel from Billing any time before {until} and you pay nothing more.</p>
         <Button size="lg" onClick={onStart} className={cta}>
           Start with your setup
           <ArrowRight aria-hidden="true" className="size-4 rtl:rotate-180" />

@@ -1,6 +1,6 @@
 import type { PlanTerms } from './plan-card'
 
-/** Pay-as-you-go products and Done for you packages, shown on the public pricing page and in Billing. */
+/** Pay-as-you-go products, shown on the public pricing page and in Billing. */
 export type CreditProduct = {
   readonly id: string
   readonly name: string
@@ -19,16 +19,6 @@ export type CreditProduct = {
   readonly unitNoun: { readonly one: string; readonly many: string }
   /** The packs the card offers, in dollars, smallest first. */
   readonly packs: readonly number[]
-}
-
-export type ManagedPackage = {
-  readonly id: string
-  readonly name: string
-  readonly tagline: string
-  readonly price: number
-  readonly terms: PlanTerms
-  readonly description: string
-  readonly features: readonly string[]
 }
 
 export const CREDIT_PRODUCTS: readonly CreditProduct[] = [
@@ -85,38 +75,6 @@ export const CREDIT_PRODUCTS: readonly CreditProduct[] = [
       'Includes job matching and resume tailoring',
       'Track every application status',
       'No subscription required',
-    ],
-  },
-]
-
-export const MANAGED_PACKAGES: readonly ManagedPackage[] = [
-  {
-    id: 'ten-interviews',
-    name: '5 interviews guaranteed',
-    tagline: 'A managed search, start to offer',
-    price: 497,
-    terms: [['Interviews guaranteed', '5'], ['Payment', 'One time']],
-    description: 'A dedicated success manager runs your search until you receive 5 interview invitations.',
-    features: [
-      'Job scouting and match review',
-      'Resume tailoring for each role',
-      'Applications submitted for you',
-      'Full Jobwhisper access during fulfillment',
-    ],
-  },
-  {
-    id: 'twenty-interviews',
-    name: '20 interviews guaranteed',
-    tagline: 'The same service, run longer',
-    price: 1997,
-    terms: [['Interviews guaranteed', '20'], ['Payment', 'One time']],
-    description: 'The same managed service for a longer search, continuing until 20 invitations are delivered.',
-    features: [
-      'Job scouting and match review',
-      'Resume tailoring for each role',
-      'Applications submitted for you',
-      'Full Jobwhisper access during fulfillment',
-      'Priority scheduling',
     ],
   },
 ]
