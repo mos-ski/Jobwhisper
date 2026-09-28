@@ -189,6 +189,12 @@
    Exit condition: preferences and payment confirmed; the package becomes active.
    Failure branch: payment declined keeps the dialog open with the card error.
 
+## Try-It Funnel: Resume Week Landing (Hero Field -> Pro Week Quiz)
+
+1. Entry condition: a visitor lands on `/resume-week` from paid traffic. The hero carries the job description field and resume attach; the demo video sits right under it. There is no footer, sign-in, menu, Lightforth banner or cookie prompt to leave by.
+   Exit condition: with a posting pasted and a resume attached, Set me up (grey and disabled until then) opens `/v3/try/pro` with the resume name, and the Pro Week funnel below takes over.
+   Failure branch: missing either input keeps Set me up disabled and the hint under the field names what is missing.
+
 ## Try-It Funnel: Pro Week (Landing -> Quiz -> Week of Pro Offer -> Account -> Card -> Started)
 
 1. Entry condition: a visitor pastes a job description and attaches a resume in the landing page's "Try it" card.

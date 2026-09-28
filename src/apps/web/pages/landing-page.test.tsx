@@ -137,4 +137,22 @@ describe('LandingPage', () => {
     expect(screen.getByRole('link', { name: 'TikTok' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Instagram' })).toBeInTheDocument()
   })
+
+  it('runs the resume-week funnel variant with the setup field in the hero and nothing to leave by', () => {
+    document.cookie = 'jw_cookie_consent=; Max-Age=0; Path=/'
+    render(<MemoryRouter initialEntries={['/resume-week']}><LandingPage variant="resume-week" /></MemoryRouter>)
+
+    const hero = screen.getByRole('heading', { level: 1 }).closest('section') as HTMLElement
+    expect(within(hero).getByLabelText('Paste a job description')).toBeInTheDocument()
+    expect(within(hero).getByRole('button', { name: 'Set me up' })).toBeDisabled()
+    // No footer, no sign-in or menu, no Lightforth banner and no cookie banner on the funnel.
+    expect(screen.queryByRole('contentinfo')).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Log in' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Open menu' })).not.toBeInTheDocument()
+    expect(screen.queryByText(/moved on from Lightforth/)).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Reject all' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'See pricing' })).not.toBeInTheDocument()
+    // The field moved up, so the lower Try it section is not repeated.
+    expect(screen.queryByRole('heading', { name: 'Try it on a job you actually want.' })).not.toBeInTheDocument()
+  })
 })

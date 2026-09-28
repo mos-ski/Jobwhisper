@@ -39,6 +39,7 @@ export default function App() {
           <Route path="/products/interview-prep" element={<ProductPage slug="interview-prep" />} />
           <Route path="/products/auto-apply" element={<ProductPage slug="auto-apply" />} />
           <Route path="/vsl" element={<VslLandingPage />} />
+          <Route path="/resume-week" element={<LandingPage variant="resume-week" />} />
           <Route path="/brand-guide" element={<BrandingGuidePage />} />
           <Route path="/emails" element={<EmailsIndexPage />} />
           <Route path="/emails/:slug" element={<EmailPreviewPage />} />
