@@ -7,7 +7,8 @@ import type { BadgeVariant } from '@/ui'
 import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
 import { BillingPlanCards } from '@/features/billing/plan-compare-view'
 import { SuccessManagerPicker, type SuccessManagerPickerProps } from '@/features/billing/success-manager-picker'
-import { PlanAmount, PlanCard, PlanCarousel } from '@/features/pricing/plan-card'
+import { PlanCarousel } from '@/features/pricing/plan-card'
+import { CreditProductCard } from '@/features/pricing/credit-pack-picker'
 import { CREDIT_PRODUCTS } from '@/features/pricing/pricing-products'
 import { AppShell } from '@/features/dashboard/app-nav'
 import { centsToCredits, creditsToCents, formatCredits } from '@/lib/credits'
@@ -894,9 +895,11 @@ type CreditBalanceCardProps = {
   readonly extraHint?: string
   /** Set when the subscriber has hit the plan's usage limit: when it resets, e.g. "4:58 PM, June 4". */
   readonly limitResetLabel?: string
+  /** How much of the plan's current usage window is spent, 0 to 1, and when it resets; replaces the credit bar. */
+  readonly usage?: { readonly used: number; readonly resetLabel: string }
 }
 
-function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, centsPerCredit, unitNoun, minimumDollars, presetDollars, onPurchase, reloadHint, requiresActivePlan, hasActivePlan, guide, planName, extraHint, limitResetLabel }: CreditBalanceCardProps) {
+function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, centsPerCredit, unitNoun, minimumDollars, presetDollars, onPurchase, reloadHint, requiresActivePlan, hasActivePlan, guide, planName, extraHint, limitResetLabel, usage }: CreditBalanceCardProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
   // Nothing bought yet is an empty bar, not a full one.
   const percentLeft = totalCredits > 0 ? Math.max(0, Math.min(100, Math.round((balanceCredits / totalCredits) * 100))) : 0
@@ -921,6 +924,24 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
             </div>
             <span className="shrink-0 rounded-pill bg-surface px-3 py-1 text-xs font-semibold text-ink">Resets {limitResetLabel}</span>
           </div>
+        ) : planName && usage ? (
+          <div className="grid items-center gap-x-6 gap-y-2 border-b border-border p-4 sm:grid-cols-[auto_1fr_auto] sm:p-5">
+            <div>
+              <p className="text-sm font-semibold text-ink">Current session</p>
+              <p className="mt-0.5 text-sm text-ink-muted">Resets at {usage.resetLabel}</p>
+            </div>
+            <div
+              role="progressbar"
+              aria-label={`${title} usage this session`}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(usage.used * 100)}
+              className="h-2 overflow-hidden rounded-pill bg-accent-subtle"
+            >
+              <div className={cn('h-full rounded-pill', usage.used >= 0.9 ? 'bg-danger' : 'bg-accent')} style={{ inlineSize: `${Math.round(usage.used * 100)}%` }} />
+            </div>
+            <p className="text-sm text-ink-muted sm:text-end">{Math.round(usage.used * 100)}% used</p>
+          </div>
         ) : planName ? (
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4 sm:p-5">
             <p className="flex items-center gap-2 text-sm font-semibold text-ink">
@@ -933,8 +954,8 @@ function CreditBalanceCard({ title, rateLabel, balanceCredits, totalCredits, cen
         <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-ink">{planName ? `Extra credits: ${balanceCredits}` : `${balanceCredits} credits`}</p>
-            {planName && totalCredits === 0 ? (
-              <p className="mt-1 text-sm text-ink-muted">{extraHint}</p>
+            {planName && (totalCredits === 0 || usage) ? (
+              <p className="mt-1 text-sm text-ink-muted">{extraHint}{usage ? ` ${rateLabel}.` : ''}</p>
             ) : (
               <>
                 <div className="mt-2 flex items-center gap-3">
@@ -1195,18 +1216,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
             <div className={cn('-mx-4 min-w-0 [grid-area:1/1] sm:-mx-6 lg:-mx-8', shownTab !== 'pay-as-you-go' && 'hidden sm:block sm:invisible')} data-plan-tab="pay-as-you-go">
               <PlanCarousel count={CREDIT_PRODUCTS.length}>
                 {CREDIT_PRODUCTS.map((product) => (
-                  <PlanCard
-                    key={product.id}
-                    name={product.name}
-                    tagline={product.tagline}
-                    amount={<PlanAmount>{product.amount}</PlanAmount>}
-                    unit={product.unit}
-                    terms={product.terms}
-                    features={product.features}
-                    ctaLabel="Buy credits"
-                    onCta={onBuyCredits}
-                    plan={product.wash}
-                  />
+                  <CreditProductCard key={product.id} product={product} ctaLabel="Buy credits" onBuy={onBuyCredits ? () => onBuyCredits() : undefined} />
                 ))}
               </PlanCarousel>
             </div>
@@ -1263,6 +1273,7 @@ export function BillingView({ homeHref, plans, standalonePurchases, usageRows, w
                   reloadHint="Buy more automatically when your balance runs low."
                   planName={planName}
                   extraHint="Used only if you reach your plan's usage limit."
+                  usage={{ used: 0.19, resetLabel: '2:50 PM' }}
                   onPurchase={(credits) => {
                     setAutoApplyBalance((prev) => prev + credits)
                     setAutoApplyTotalCredits((prev) => prev + credits)

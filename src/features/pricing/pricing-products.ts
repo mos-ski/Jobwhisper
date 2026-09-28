@@ -13,6 +13,12 @@ export type CreditProduct = {
   readonly features: readonly string[]
   /** Which plan-card colour wash the card wears. */
   readonly wash: 'starter' | 'pro' | 'premium'
+  /** Dollars per unit, and how the unit reads after the rate. */
+  readonly rate: number
+  readonly rateUnit: string
+  readonly unitNoun: { readonly one: string; readonly many: string }
+  /** The packs the card offers, in dollars, smallest first. */
+  readonly packs: readonly number[]
 }
 
 export type ManagedPackage = {
@@ -28,6 +34,10 @@ export type ManagedPackage = {
 export const CREDIT_PRODUCTS: readonly CreditProduct[] = [
   {
     id: 'interview',
+    rate: 0.1,
+    rateUnit: 'per interview minute',
+    unitNoun: { one: 'interview minute', many: 'interview minutes' },
+    packs: [10, 25, 50, 100],
     wash: 'starter',
     name: 'Interview',
     tagline: 'Pay for the minutes you use',
@@ -44,6 +54,10 @@ export const CREDIT_PRODUCTS: readonly CreditProduct[] = [
   },
   {
     id: 'resume',
+    rate: 0.1,
+    rateUnit: 'per AI prompt',
+    unitNoun: { one: 'AI prompt', many: 'AI prompts' },
+    packs: [5, 10, 25, 50],
     wash: 'pro',
     name: 'Resume Builder',
     tagline: 'Pay for the prompts you use',
@@ -55,6 +69,10 @@ export const CREDIT_PRODUCTS: readonly CreditProduct[] = [
   },
   {
     id: 'auto-apply',
+    rate: 1,
+    rateUnit: 'per successful application',
+    unitNoun: { one: 'application', many: 'applications' },
+    packs: [10, 25, 50, 100],
     wash: 'premium',
     name: 'Auto Apply',
     tagline: 'Pay only when one lands',

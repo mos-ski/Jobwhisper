@@ -20,6 +20,8 @@ export type PlanCardProps = {
   /** A quiet line under the price, for when the price needs explaining rather than
    *  qualifying — e.g. a weekly plan saying why an annual switch left it alone. */
   readonly priceNote?: string
+  /** A control between the price and the CTA, e.g. a pay-as-you-go card's pack picker. */
+  readonly picker?: ReactNode
   readonly terms?: PlanTerms
   readonly features: readonly string[]
   readonly ctaLabel: string
@@ -40,7 +42,7 @@ export type PlanCardProps = {
  * pricing page and the in-app plan picker are one component rather than two that drift.
  */
 export function PlanCard({
-  name, badge, banner, tagline, amount, unit, priceNote, terms, features, ctaLabel, onCta, ctaDisabled, ctaVariant, note, plan, onMouseEnter,
+  name, badge, banner, tagline, amount, unit, priceNote, picker, terms, features, ctaLabel, onCta, ctaDisabled, ctaVariant, note, plan, onMouseEnter,
 }: PlanCardProps) {
   return (
     <article className="pricing-plan" data-featured={banner ? 'true' : undefined} data-plan={plan} onMouseEnter={onMouseEnter}>
@@ -55,6 +57,7 @@ export function PlanCard({
           <p className="pricing-plan-price">{amount}{unit ? <span className="pricing-plan-cadence">{unit}</span> : null}</p>
           {priceNote ? <p className="pricing-plan-price-note" role="status">{priceNote}</p> : null}
         </div>
+        {picker}
         <button type="button" className="pricing-plan-cta" data-variant={ctaVariant} onClick={onCta} disabled={ctaDisabled}>{ctaLabel}</button>
         {terms?.length ? (
           <dl className="pricing-plan-credits">
