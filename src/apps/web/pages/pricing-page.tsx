@@ -374,16 +374,6 @@ function SubscriptionPlans({ annual }: { readonly annual: boolean }) {
   )
 }
 
-/** A titled lead-in for the sections that used to be tabs. */
-function SectionIntro({ title, description }: { readonly title: string; readonly description: string }) {
-  return (
-    <div className="pb-5">
-      <h2 className="font-gowun text-2xl font-bold text-ink">{title}</h2>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-muted">{description}</p>
-    </div>
-  )
-}
-
 /** Figma 1130:20587 — the models the copilot picks between, with their own marks. */
 const PRICING_MODELS = [
   { name: 'Claude', logo: '/figma-landing/models/claude.svg' },
@@ -414,10 +404,6 @@ function PayAsYouGo() {
 
   return (
     <section className="pricing-plans">
-      <SectionIntro
-        title="Pay as you go"
-        description="Interview minutes, Resume Builder prompts and Auto Apply submissions, bought on their own with no subscription. All three are included unlimited on a plan."
-      />
       <PlanCarousel count={CREDIT_PRODUCTS.length}>
         {CREDIT_PRODUCTS.map((product) => (
           <CreditProductCard key={product.id} product={product} ctaLabel="Buy credits" onBuy={() => navigate('/v3/billing')} />
