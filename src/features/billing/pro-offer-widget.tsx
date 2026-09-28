@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useId, useState, type CSSProperties, type PointerEvent } from 'react'
 
 import { Button, Dialog, DialogPopup } from '@/ui'
 
@@ -25,6 +25,27 @@ function useCountdown(endsAt: number | undefined): string {
   const minutes = Math.floor(secondsRemaining / 60).toString().padStart(2, '0')
   const seconds = (secondsRemaining % 60).toString().padStart(2, '0')
   return `${minutes}:${seconds}`
+}
+
+const MAX_TILT_DEG = 8
+
+/** Tilts the card toward the pointer in 3D. Mouse only, and not at all under reduced motion. */
+function useTilt() {
+  const [tilt, setTilt] = useState<{ x: number; y: number } | null>(null)
+
+  function onPointerMove(event: PointerEvent<HTMLElement>) {
+    if (event.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const box = event.currentTarget.getBoundingClientRect()
+    const px = (event.clientX - box.left) / box.width - 0.5
+    const py = (event.clientY - box.top) / box.height - 0.5
+    setTilt({ x: -py * MAX_TILT_DEG * 2, y: px * MAX_TILT_DEG * 2 })
+  }
+
+  const style: CSSProperties = {
+    transform: tilt ? `perspective(900px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(1.02)` : 'perspective(900px)',
+    transition: tilt ? 'transform 80ms ease-out' : 'transform 400ms ease-out',
+  }
+  return { style, onPointerMove, onPointerLeave: () => setTilt(null) }
 }
 
 type ProOfferCardProps = Omit<ProOfferWidgetProps, 'onDismiss'> & {
@@ -108,8 +129,9 @@ export type ProOfferPanelProps = {
 
 /** The same offer card, sitting in the flow of a page rather than pinned to a corner. */
 export function ProOfferPanel({ onClaim, endsAt }: ProOfferPanelProps) {
+  const tilt = useTilt()
   return (
-    <section aria-label="Pro plan offer" className="mx-auto w-full max-w-md overflow-hidden rounded-panel border border-border bg-surface shadow-panel">
+    <section aria-label="Pro plan offer" {...tilt} className="mx-auto w-full max-w-md overflow-hidden rounded-panel border border-border bg-surface shadow-panel">
       <ProOfferCard onClaim={onClaim} endsAt={endsAt} />
     </section>
   )
@@ -117,8 +139,10 @@ export function ProOfferPanel({ onClaim, endsAt }: ProOfferPanelProps) {
 
 /** The offer as a card pinned to the corner of a page the visitor is already reading. */
 export function ProOfferWidget({ onDismiss, onClaim, endsAt }: ProOfferWidgetProps) {
+  const tilt = useTilt()
   return (
     <aside
+      {...tilt}
       role="region"
       aria-label="Pro plan offer"
       className="fixed bottom-4 end-4 z-sticky w-[min(27rem,calc(100vw-2rem))] overflow-hidden rounded-panel border border-border bg-surface shadow-panel animate-ease-in-bottom motion-reduce:animate-none"
