@@ -2005,7 +2005,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
               {session.mode !== 'coding' ? (
                 <>
                   <section className="overflow-hidden rounded-panel bg-[var(--lf-live-panel)]">
-                    <h2 className="bg-[var(--lf-live-panel-header)] px-5 py-[13px] text-[18.67px] font-medium leading-[37px]">
+                    <h2 className="flex min-h-[57px] items-center border-b border-[var(--lf-live-border)] bg-[var(--lf-live-panel-header)] px-4 py-3 text-sm font-semibold leading-5">
                       {session.mode === 'meeting' ? 'Your Meeting' : 'Your Interview'}
                     </h2>
                     <img src={session.screenPreviewSrc} alt="" className="h-[22.666rem] w-full rounded-b-lg object-cover" />
@@ -2015,7 +2015,7 @@ export function CopilotLiveView({ completeHref, session, isLoading = false, tran
               ) : null}
               <section className="grid min-h-0 grid-rows-[auto_1fr] rounded-panel border border-[var(--lf-live-border)] bg-[var(--lf-live-panel)]">
                 <div className="flex min-h-[57px] items-center justify-between border-b border-[var(--lf-live-border)] px-4 py-3">
-                  <h2 className="text-sm font-medium leading-5">AI Assistant</h2>
+                  <h2 className="text-sm font-semibold leading-5">AI Assistant</h2>
                   <button type="button" aria-label="Close AI assistant" className="grid size-8 place-items-center rounded-soft text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                     <X aria-hidden="true" className="size-4" />
                   </button>
