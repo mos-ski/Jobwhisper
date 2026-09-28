@@ -390,7 +390,7 @@ const statusFilterOptions = [
 
 const planFilterOptions = [
   { value: 'all', label: 'Any plan' },
-  { value: 'starter', label: 'Starter · $47/mo' },
+  { value: 'starter', label: 'Starter · $47/wk' },
   { value: 'pro', label: 'Pro · $99/mo' },
   { value: 'premium', label: 'Premium · $497/mo' },
   { value: 'unsubscribed', label: 'Unsubscribed' },
@@ -1832,9 +1832,9 @@ export function AdminAccountDetailView({
                   <span className="flex-1">
                     <span className="block text-sm font-semibold text-ink">{planShortLabels[planId]}</span>
                     <span className="block text-xs text-ink-muted">
-                      {planId === 'starter' && '$47/mo · 500 credits'}
-                      {planId === 'pro' && '$99/mo · 1,500 credits'}
-                      {planId === 'premium' && '$497/mo · 4,000 credits'}
+                      {planId === 'starter' && '$47/wk · unlimited interviews'}
+                      {planId === 'pro' && '$99/mo · Auto Apply 500 jobs/mo'}
+                      {planId === 'premium' && '$497/mo · uncapped Auto Apply'}
                     </span>
                   </span>
                 </label>

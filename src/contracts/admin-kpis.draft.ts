@@ -18,7 +18,7 @@ import type { AdminDateRangeId } from './admin.draft'
 export type AdminKpiDetailRow = {
   readonly id: string
   readonly label: string
-  /** The volume the target assumes, e.g. "5 sales · $997" or "90 subscribers · $47/mo". */
+  /** The volume the target assumes, e.g. "5 sales · $997" or "90 subscribers · $47/wk". */
   readonly targetDetail: string
   readonly targetCents: number
   /** What that volume actually came out at, e.g. "2 sales". */

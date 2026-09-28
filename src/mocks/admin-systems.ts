@@ -280,7 +280,7 @@ const featuredAuditSeeds: readonly AuditSeed[] = [
     affectedRecord: [
       { field: 'Account', before: 'Amara Nwosu', after: 'Amara Nwosu' },
       { field: 'Status', before: 'Active', after: 'Suspended' },
-      { field: 'Plan', before: 'Starter · $47/mo', after: 'Starter · $47/mo (billing paused)' },
+      { field: 'Plan', before: 'Starter · $47/wk', after: 'Starter · $47/wk (billing paused)' },
       { field: 'Credits frozen', before: '0', after: '214' },
     ],
   },

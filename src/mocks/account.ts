@@ -262,7 +262,7 @@ export const accountFaqs: readonly AccountFaqEntry[] = [
 
   // Ace Your Interview — plans
   { category: 'Plans & subscription', question: 'What is Ace Your Interview?', answer: "Ace Your Interview is Jobwhisper's subscription: Interview Prep and Interview Copilot, with Coding Copilot and Meeting Copilot on Pro and Premium. It's the only recurring subscription Jobwhisper sells." },
-  { category: 'Plans & subscription', question: 'What are the plan tiers and prices?', answer: 'Starter is $47/month with about 500 minutes of Copilot. Pro is $99/month with about 1,000 minutes, plus the desktop app, Coding Copilot, and Meeting Copilot. Premium is $497/month with about 4,000 minutes, same features as Pro.' },
+  { category: 'Plans & subscription', question: 'What are the plan tiers and prices?', answer: 'All three are unlimited, with no credit balance. Starter is $47 a week for Interview Prep and Interview Copilot. Pro is $99 a month and adds Meeting Copilot, Coding Copilot, Resume Builder, and Auto Apply for up to 500 jobs a month. Premium is $497 a month and takes the cap off Auto Apply, plus priority support.' },
   { category: 'Plans & subscription', question: "What's the difference between Pro and Premium?", answer: "Nothing feature-wise, both include the desktop app, Coding Copilot, and Meeting Copilot. Premium's difference is volume, about four times Pro's monthly minutes for people running a heavier search." },
   { category: 'Plans & subscription', question: 'What does Starter not include?', answer: 'Starter has Interview Prep and web Copilot only, no desktop app, Coding Copilot, or Meeting Copilot. Upgrade to Pro for those.' },
   { category: 'Plans & subscription', question: 'Is there a free trial of Pro or Premium?', answer: "First-time subscribers get a $40 first month of Pro, renewing at $99/month after that. It's available once per account." },
@@ -348,7 +348,7 @@ export const accountFaqs: readonly AccountFaqEntry[] = [
   { category: 'Referrals', question: 'Where do I find my referral link?', answer: 'On your account page under the referral card, use Copy referral link to grab it, or View referrals to see who you have invited.' },
   { category: 'Referrals', question: 'When do I get my referral credits?', answer: 'As soon as your referral\'s subscription payment goes through, not just when they sign up for a free account.' },
   { category: 'Referrals', question: 'Is there a limit to how many people I can refer?', answer: 'No cap on the number of referrals, every one that converts to a paid subscriber earns you another 100 credits.' },
-  { category: 'Referrals', question: 'Do referral credits expire?', answer: "Referral credits behave like your other purchased credits and don't expire on the same rolling reset as your plan's monthly allowance." },
+  { category: 'Referrals', question: 'Do referral credits expire?', answer: "Referral credits behave like your other purchased credits and follow the same expiry as a pay-as-you-go top-up." },
   { category: 'Referrals', question: 'Can I refer myself with a second account?', answer: 'No, referral rewards are for bringing in new, separate users, not for self-referral or duplicate accounts.' },
 
   // Credits & billing

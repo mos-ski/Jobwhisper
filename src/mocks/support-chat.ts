@@ -108,7 +108,7 @@ export const kbArticles: readonly KBArticle[] = [
     id: 'kb_003',
     category: 'credits-billing',
     question: 'How do I upgrade to Pro?',
-    answer: 'Navigate to Billing > Plans and select the Pro plan. You can pay with card or bank transfer. Pro includes 100 credits per month, unlimited resume builds, and priority support.',
+    answer: 'Navigate to Billing > Plans and select the Pro plan. You can pay with card or bank transfer. Pro is $99 a month and includes unlimited Interview Prep and every Copilot, unlimited Resume Builder, and Auto Apply for up to 500 jobs a month.',
     updatedAtLabel: '3 days ago',
     isPublished: true,
   },

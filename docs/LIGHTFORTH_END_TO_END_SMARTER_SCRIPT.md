@@ -39,7 +39,7 @@ Paste the Lightforth end-to-end smarter script below this line.
 
 The landing page carries no download section of its own. Downloads reach visitors through the navigation dropdown and the floating social-proof control instead, and the Download Apps catalog lives on the dashboard at /v3/downloads, where it is the single source for the Mac, Windows, Linux, browser extension, iOS, and Android releases.
 
-The page closes on a call to action rather than prose alone: **Get started free** and **See pricing**, under the reassurance row the hero uses — free credits, no card required, plans from $47 a month. A second **Try Interview Copilot** action sits at the end of the Copilot section, so the page no longer runs its full length on the hero button alone.
+The page closes on a call to action rather than prose alone: **Get started free** and **See pricing**, under the reassurance row the hero uses: free credits, no card required, plans from $47 a week. A second **Try Interview Copilot** action sits at the end of the Copilot section, so the page no longer runs its full length on the hero button alone.
 
 The public landing page uses one primary blue action: **Ace my next interview**, written in the visitor's own voice. It leads to account creation. Downloads remain available from the text-only navigation dropdown and the product-demo social proof, while **Log in** uses a secondary treatment in the navigation.
 

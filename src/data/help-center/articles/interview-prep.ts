@@ -5,7 +5,7 @@ export const interviewPrepArticles: readonly HelpArticle[] = [
     slug: 'how-mock-interviews-work',
     title: 'How AI mock interviews work',
     description: 'Running a practice session, reading the report, and what practice actually fixes.',
-    lastUpdated: '2026-09-22',
+    lastUpdated: '2026-09-28',
     content: [
       { type: 'paragraph', text: 'Interview Prep is a rehearsal with an AI interviewer that has read your resume and the posting. It asks, you answer out loud or in writing, it follows up, and afterwards you get a written report on how the answers landed.' },
 
@@ -32,7 +32,7 @@ export const interviewPrepArticles: readonly HelpArticle[] = [
       { type: 'heading', text: 'How much practice is useful', level: 2 },
       { type: 'paragraph', text: 'Two or three sessions per role is the point of diminishing returns. The first exposes the obvious gaps, the second tests whether your fixes hold under a differently-worded question, and a third is worth it for a role you badly want. Beyond that you are memorising, and memorised answers are audible.' },
 
-      { type: 'callout', variant: 'info', text: 'Practice sessions draw on the same credit balance as live Copilot minutes — one credit is one interview minute. A twenty-minute practice session costs twenty credits.' },
+      { type: 'callout', variant: 'info', text: 'On any plan, practice is unlimited and costs nothing extra. Without a plan, practice draws on the same interview credits as live Copilot, one credit per minute, so a twenty-minute session costs twenty credits.' },
     ],
   },
 

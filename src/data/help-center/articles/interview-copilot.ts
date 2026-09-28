@@ -5,7 +5,7 @@ export const interviewCopilotArticles: readonly HelpArticle[] = [
     slug: 'what-is-interview-copilot',
     title: 'What is Interview Copilot?',
     description: 'Live support during a real interview — what it shows you and what it will not.',
-    lastUpdated: '2026-09-22',
+    lastUpdated: '2026-09-28',
     content: [
       { type: 'paragraph', text: 'Interview Copilot runs alongside a live interview. It follows the conversation, works out what is being asked, and puts the relevant material from your own background on your screen while you are answering.' },
 
@@ -38,9 +38,9 @@ export const interviewCopilotArticles: readonly HelpArticle[] = [
       ]},
 
       { type: 'heading', text: 'Where it runs', level: 2 },
-      { type: 'paragraph', text: 'Copilot on the web is available on every interview plan. The desktop app — which is what you need for system audio capture and for Coding and Meeting Copilot — is on Pro and above.' },
+      { type: 'paragraph', text: 'Copilot runs on web, desktop and mobile on every plan. The desktop app is what you need for system audio capture, and it is where Coding and Meeting Copilot run on Pro and Premium.' },
 
-      { type: 'callout', variant: 'info', text: 'Live Copilot minutes come out of your monthly credits at one credit per minute. A 45-minute interview costs 45 credits, so Starter\'s 500 credits cover roughly ten hour-long interviews a month.' },
+      { type: 'callout', variant: 'info', text: 'On any plan, Copilot is unlimited: no credits, no minutes counted against a monthly total. One unbroken stretch is capped at 90 minutes on Starter, two hours on Pro and three on Premium, which is well past a normal interview. Without a plan, Copilot uses interview credits at one credit per minute, so a 45-minute interview costs 45 credits.' },
     ],
   },
 
@@ -172,7 +172,7 @@ export const interviewCopilotArticles: readonly HelpArticle[] = [
     slug: 'coding-and-meeting-copilot',
     title: 'Coding Copilot and Meeting Copilot',
     description: 'The two specialised Copilots on Pro and above, and when each one helps.',
-    lastUpdated: '2026-09-22',
+    lastUpdated: '2026-09-28',
     content: [
       { type: 'paragraph', text: 'Alongside the interview Copilot, Pro and Premium include two variants tuned for situations where general interview support is the wrong shape. Both run in the desktop app.' },
 
@@ -200,7 +200,7 @@ export const interviewCopilotArticles: readonly HelpArticle[] = [
         'A two-way conversation where you also have an agenda — Meeting Copilot.',
       ]},
 
-      { type: 'callout', variant: 'info', text: 'Both are included on Pro and Premium and both need the desktop app. They draw on the same credit balance as Interview Copilot, at one credit per minute.' },
+      { type: 'callout', variant: 'info', text: 'Both are included, unlimited, on Pro and Premium, and both need the desktop app. There is no credit balance to draw on.' },
     ],
   },
 
