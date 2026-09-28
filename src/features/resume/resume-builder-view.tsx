@@ -109,10 +109,10 @@ function BuilderHeader({
           type="button"
           onClick={onCompareClick}
           aria-label="Compare with your original resume"
-          className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-border bg-surface px-3 text-sm font-semibold text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          title="Compare with your original"
+          className="inline-flex size-9 items-center justify-center rounded-lg border border-border bg-surface text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
         >
           <ArrowLeftRight aria-hidden="true" className="size-4" />
-          <span className="hidden lg:inline">Compare</span>
         </button>
       ) : null}
       {onAtsClick ? (
