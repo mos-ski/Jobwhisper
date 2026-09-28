@@ -168,7 +168,7 @@ export function ProOfferBanner({ onClaim, endsAt }: ProOfferBannerProps) {
       <button
         type="button"
         onClick={onClaim}
-        className="inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-surface px-3 text-sm font-semibold text-ink hover:bg-accent-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-inverse sm:px-4"
+        className="relative inline-flex min-h-8 shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-surface px-3 before:absolute before:-inset-y-2 before:inset-x-0 before:content-[''] text-sm font-semibold text-ink hover:bg-accent-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-inverse sm:px-4"
       >
         <span aria-hidden="true" className="tabular-nums text-ink-muted"><span className="hidden sm:inline">Ends in </span>{remaining}</span>
         <span aria-hidden="true" className="hidden text-ink-muted sm:inline">|</span>
