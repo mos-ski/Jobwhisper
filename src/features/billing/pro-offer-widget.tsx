@@ -32,46 +32,72 @@ type ProOfferCardProps = Omit<ProOfferWidgetProps, 'onDismiss'> & {
   readonly titleId?: string
 }
 
+const OFFER_FEATURES = ['Unlimited Interview Help Copilot', 'Unlimited AI Auto Apply Jobs', '500+ Tailored Resume', '100+ Hrs Interview Preps'] as const
+
+/** A switched-on toggle, drawn small: each feature is something the week turns on. */
+function ToggleBullet() {
+  return (
+    <span aria-hidden="true" className="flex w-5 shrink-0 justify-end rounded-sm bg-accent p-px shadow-sm">
+      <span className="h-2 w-2.5 rounded-sm bg-surface shadow-sm" />
+    </span>
+  )
+}
+
 function ProOfferCard({ onDismiss, onClaim, titleId, endsAt }: ProOfferCardProps) {
   const remaining = useCountdown(endsAt)
 
   return (
-    <>
+    <div className="relative isolate">
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-10 h-3/5 bg-gradient-to-t from-wash-mint to-transparent" />
       <div className="relative h-52 overflow-hidden bg-accent px-6 pt-7 text-on-accent">
         <img src="/v3-assets/figma/dfy-widget-background.svg" alt="" className="pointer-events-none absolute inset-0 size-full object-cover" />
-        <img src="/v3-assets/figma/dfy-widget-wordmark.svg" alt="Jobwhisper" className="absolute inset-x-0 top-7 mx-auto h-6 w-auto" />
+        <img src="/v3-assets/figma/dfy-widget-wordmark.svg" alt="Jobwhisper" className="absolute inset-x-0 top-9 mx-auto h-5 w-auto" />
         {onDismiss ? <button
           type="button"
           onClick={onDismiss}
           aria-label="Close Pro plan offer"
-          className="absolute end-2 top-2 grid size-11 place-items-center rounded-soft text-on-accent transition-colors hover:bg-on-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          className="absolute end-2 top-2 z-10 grid size-11 place-items-center rounded-soft text-on-accent transition-colors hover:bg-on-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
         >
           <span aria-hidden="true" className="text-2xl leading-none">×</span>
         </button> : null}
-        <div className="absolute inset-x-0 top-20 text-center font-gowun leading-tight">
-          <h2 id={titleId} className="text-4xl font-normal tracking-[-0.2rem]">Special One-time Trial</h2>
-          <p className="mt-2 text-xl tracking-[-0.06rem]">Land 3x more interviews with Pro now</p>
+        <div className="absolute inset-x-0 top-24 px-4 text-center font-gowun">
+          <h2 id={titleId} className="text-[2rem] font-normal leading-10 tracking-[-0.18rem]">Special One-time Trial</h2>
+          <p className="text-base leading-5 tracking-[-0.05rem]">Land 3x more interviews with Pro now</p>
         </div>
       </div>
-      <div className="px-6 pb-6 pt-6 sm:px-7">
-        <div className="rounded-2xl border-2 border-dashed border-border text-center">
-          <div className="px-4 pb-4 pt-5">
-            <p className="flex flex-wrap items-center justify-center gap-2 text-base font-semibold text-ink">
-              Try Pro for 7 days
-              <span className="rounded-full bg-accent-subtle px-2.5 py-0.5 text-sm font-bold text-accent-text">94% OFF</span>
+      {/* The wave rides over the seam between the blue header and the white body. */}
+      <img src="/v3-assets/figma/pro-offer-wave.svg" alt="" className="pointer-events-none relative -mt-5 block h-10 w-full" />
+      <div className="px-6 sm:px-7">
+        <div className="pb-3 pt-4 text-center">
+          <p className="flex flex-wrap items-center justify-center gap-2 text-sm font-semibold text-ink">
+            Try Pro for 7 days
+            <span className="rounded-full bg-accent-subtle px-2.5 py-0.5 text-xs font-bold text-accent-text">80% OFF</span>
+          </p>
+          <div className="mt-3 border-t border-border py-3">
+            <p className="font-gowun text-5xl leading-none tracking-[-0.2rem]">
+              <span className="text-ink-muted">Just</span> <span className="text-accent-text">$4.57</span>
             </p>
-            <p className="mt-2 font-gowun text-5xl leading-none text-ink">Just <span className="font-bold text-accent">$1.39</span></p>
-            <p className="mt-2 text-lg text-ink-muted"><s>$22.85/week</s></p>
+            <p className="mt-2 text-sm text-ink-muted"><s>$22.85/week</s></p>
           </div>
         </div>
-        <Button className="mt-5 min-h-12 w-full text-base" onClick={onClaim}>
-          Try 1 week for $1.39
+        <ul className="grid gap-3" aria-label="Included in the Pro week">
+          {OFFER_FEATURES.map((feature) => (
+            <li key={feature} className="flex items-center gap-2 text-lg leading-6 text-ink-muted sm:text-xl">
+              <ToggleBullet />
+              {feature}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="px-6 py-6 sm:px-7">
+        <Button className="min-h-11 w-full text-sm" onClick={onClaim}>
+          <span>Try 1 week for <strong className="font-bold">$4.57</strong></span>
           {/* The countdown ticks every second, so it is left out of the button's spoken name. */}
           <span aria-hidden="true" className="ms-1 tabular-nums opacity-80">Ends in {remaining}</span>
         </Button>
-        <p className="mt-3 text-center text-xs leading-5 text-ink-muted">Then Pro at $99/month, billed monthly. Cancel anytime.</p>
+        <p className="mt-1.5 text-center text-xs leading-5 text-ink-muted">Then Pro at $99/month, billed monthly. Cancel anytime.</p>
       </div>
-    </>
+    </div>
   )
 }
 
@@ -135,7 +161,7 @@ export function ProOfferBanner({ onClaim, endsAt }: ProOfferBannerProps) {
       className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 bg-surface-inverse px-4 py-2.5 text-center text-sm text-surface"
     >
       <p>
-        <span className="font-semibold">Your special offer ends soon.</span> Try Pro for 7 days for $1.39, 94% off.
+        <span className="font-semibold">Your special offer ends soon.</span> Try Pro for 7 days for $4.57, 80% off.
       </p>
       <button
         type="button"

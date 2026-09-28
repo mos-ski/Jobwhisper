@@ -40,6 +40,7 @@
   --color-brand-bar-text: var(--lf-brand-bar-text);
   --color-brand-mark: var(--lf-brand-mark);
   --color-brand-mark-accent: var(--lf-brand-mark-accent);
+  --color-wash-mint: var(--lf-wash-mint);
   --color-live-canvas: var(--lf-live-canvas);
   --color-live-header: var(--lf-live-header);
   --color-live-strip: var(--lf-live-strip);
@@ -147,6 +148,7 @@
     --lf-brand-bar-text: #ffffff;
     --lf-brand-mark: #0052ff;
     --lf-brand-mark-accent: #21a0fc;
+    --lf-wash-mint: rgba(110, 225, 195, 0.22);
     --lf-live-canvas: #0a1628;
     --lf-live-header: #0a1628;
     --lf-live-strip: #0f2340;
@@ -267,6 +269,7 @@
     --lf-brand-bar-text: #ffffff;
     --lf-brand-mark: #ffffff;
     --lf-brand-mark-accent: #21a0fc;
+    --lf-wash-mint: rgba(110, 225, 195, 0.1);
     --lf-live-canvas: #0a1628;
     --lf-live-header: #0a1628;
     --lf-live-strip: #0f2340;
@@ -388,6 +391,7 @@
       --lf-brand-bar-text: #ffffff;
       --lf-brand-mark: #ffffff;
       --lf-brand-mark-accent: #21a0fc;
+      --lf-wash-mint: rgba(110, 225, 195, 0.1);
       --lf-live-canvas: #0a1628;
       --lf-live-header: #0a1628;
       --lf-live-strip: #0f2340;

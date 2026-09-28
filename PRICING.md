@@ -115,12 +115,12 @@ Shown once, as a centred modal on the dashboard straight after sign-up and onboa
 
 | | |
 |---|---|
-| Trial | **7 days of Pro for $1.39** |
+| Trial | **7 days of Pro for $4.57** |
 | Anchor (struck through) | **$22.85/week**, Pro's $99/month as a weekly rate ($99 × 12 ÷ 52) |
-| Discount shown | **94% off** ($1.39 is 93.9% off $22.85) |
+| Discount shown | **80% off** ($4.57 is 80% off $22.85) |
 | After the trial | **Pro at $99/month**, billed monthly, cancel anytime |
 
-Open: this coexists with the free week of Pro in the try-it funnel (`/v3/try/pro`, $0 today). Decide whether a visitor who came through that funnel should still see a paid $1.39 week, or skip this modal.
+Open: this coexists with the free week of Pro in the try-it funnel (`/v3/try/pro`, $0 today). Decide whether a visitor who came through that funnel should still see a paid $4.57 week, or skip this modal.
 
 ## 2. Finding Jobs without a plan (Auto Apply + Resume Builder)
 

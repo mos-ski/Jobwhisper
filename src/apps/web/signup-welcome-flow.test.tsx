@@ -48,7 +48,7 @@ describe('After sign-up', () => {
     await user.click(await screen.findByRole('button', { name: 'Close Pro plan offer' }))
 
     const banner = screen.getByRole('region', { name: 'Pro trial offer' })
-    expect(banner).toHaveTextContent('Try Pro for 7 days for $1.39, 94% off')
+    expect(banner).toHaveTextContent('Try Pro for 7 days for $4.57, 80% off')
     await user.click(screen.getByRole('button', { name: 'Upgrade now' }))
     expect(screen.getByTestId('where')).toHaveTextContent('/v3/billing?plan=pro&offer=welcome-60')
   })
@@ -61,7 +61,7 @@ describe('After sign-up', () => {
 
   it('claims the offer into billing', async () => {
     renderAt('/v3/app?welcome=1')
-    fireEvent.click(await screen.findByRole('button', { name: 'Try 1 week for $1.39' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Try 1 week for $4.57' }))
     expect(screen.getByTestId('where')).toHaveTextContent('/v3/billing?plan=pro&offer=welcome-60')
   })
 })

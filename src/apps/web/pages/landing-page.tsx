@@ -307,7 +307,7 @@ function CopilotShowcase() {
 
 /**
  * The way in: paste a job and add a resume. The questions about them are asked full screen
- * at /v3/try/pro, which ends at a week of Pro for $1.39.
+ * at /v3/try/pro, which ends at a week of Pro for $4.57.
  */
 function TryItNow() {
   const navigate = useNavigate()
