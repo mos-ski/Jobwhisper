@@ -4,6 +4,8 @@ import { ArrowRight, ChevronDown, GripVertical, Link as LinkIcon, Mail, MapPin, 
 import type { ResumeDocument, ResumeEducation, ResumeExtraEntry, ResumeExtraSection, ResumeExtraSectionKind, ResumeIssue, ResumeIssueSeverity, ResumeRole, ResumeSectionId, ResumeSkillGroup } from '@/contracts/resume.draft'
 import { Button, cn } from '@/ui'
 
+import { bulletChangeKey, improvedBullet } from './resume-templates'
+
 export type ResumeInlineEditorProps = {
   readonly document: ResumeDocument
   readonly issues: readonly ResumeIssue[]
@@ -199,7 +201,7 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
       ...current,
       summary: keeps('summary') ? document.improvedSummary : current.summary,
       skills: keeps('skills') ? document.improvedSkills : current.skills,
-      roles: current.roles.map((role, index) => (index === 0 ? { ...role, bullets: role.bullets.map((bullet, i) => (i < document.improvedFirstRoleBullets.length && keeps(`bullet-${i}`) ? document.improvedFirstRoleBullets[i] ?? bullet : bullet)) } : role)),
+      roles: current.roles.map((role, roleIndex) => ({ ...role, bullets: role.bullets.map((bullet, i) => (keeps(bulletChangeKey(roleIndex, i)) ? improvedBullet(document, roleIndex, i) ?? bullet : bullet)) })),
     }))
     if (keeps('skills')) setSkillGroups((current) => current.map((group, index) => (index === 0 ? { ...group, skills: document.improvedSkills } : group)))
   }, [acceptedSuggestion])
@@ -210,7 +212,7 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
         ...draft,
         summary: typedSummary ?? document.improvedSummary,
         skills: document.improvedSkills,
-        roles: draft.roles.map((role, index) => (index === 0 ? { ...role, bullets: [...document.improvedFirstRoleBullets, ...role.bullets.slice(document.improvedFirstRoleBullets.length)] } : role)),
+        roles: draft.roles.map((role, roleIndex) => ({ ...role, bullets: role.bullets.map((bullet, i) => improvedBullet(document, roleIndex, i) ?? bullet) })),
       }
     : draft
   const changed = 'bg-accent-subtle text-accent-text'
@@ -441,9 +443,9 @@ export function ResumeInlineEditor({ document, issues, pendingSuggestion = false
                       <GrowingTextarea
                         aria-label={`Bullet ${bulletIndex + 1}, ${role.company}`}
                         value={bullet}
-                        readOnly={pendingSuggestion && roleIndex === 0 && bulletIndex < document.improvedFirstRoleBullets.length}
+                        readOnly={pendingSuggestion && improvedBullet(document, roleIndex, bulletIndex) !== undefined}
                         onChange={(event) => updateRole(roleIndex, { bullets: role.bullets.map((b, i) => (i === bulletIndex ? event.target.value : b)) })}
-                        className={cn(field, 'resize-none text-sm leading-6', pendingSuggestion && roleIndex === 0 && bulletIndex < document.improvedFirstRoleBullets.length && changed)}
+                        className={cn(field, 'resize-none text-sm leading-6', pendingSuggestion && improvedBullet(document, roleIndex, bulletIndex) !== undefined && changed)}
                       />
                     </div>
                     <button
