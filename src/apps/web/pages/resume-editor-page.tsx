@@ -4,6 +4,7 @@ import type { ResumeBuilderTab, ResumeChatState } from '@/contracts/resume.draft
 import { ResumeEditorView } from '@/features/resume/resume-builder-view'
 import { resumeFairUseNearing, resumeFairUseSpent } from '@/mocks/fair-use'
 import { resumeBuilderSession, resumeDocument, resumeIssues } from '@/mocks/resume'
+import { resumeDocumentAdjusted } from '@/mocks/resume-adjusted'
 
 const tabs: readonly ResumeBuilderTab[] = ['chat', 'edit']
 const chatStates: readonly ResumeChatState[] = ['empty', 'suggestions']
@@ -40,6 +41,7 @@ export function ResumeEditorPage() {
       homeHref="/v3/app"
       historyHref="/v3/resume/history"
       document={resumeDocument}
+      simulatedAdjustment={resumeDocumentAdjusted}
       session={resumeBuilderSession}
       issues={resumeIssues}
       tab={tab}

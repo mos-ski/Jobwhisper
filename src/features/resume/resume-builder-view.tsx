@@ -45,6 +45,8 @@ export type ResumeEditorViewProps = {
   /** Fair use on an unlimited plan: how many prompts this sitting has spent (PRICING.md §1.2). */
   readonly fairUse?: FairUseSnapshot
   readonly onFairUseUnlock?: () => void
+  /** A heavily tailored version the compare shows as "Now" until the person has made changes of their own. */
+  readonly simulatedAdjustment?: ResumeDocument
 }
 
 export type ResumeHistoryViewProps = {
@@ -1197,7 +1199,7 @@ function ResumeCompareDialog({ open, onOpenChange, before, after, hasChanges }: 
 
 const RESUME_CHANGE_KEYS_ALL: readonly ResumeChangeKey[] = ['summary', 'bullet-0', 'bullet-1', 'skills']
 
-export function ResumeEditorView({ homeHref, document, session, issues, tab, chatState, jd, fairUse, onFairUseUnlock }: ResumeEditorViewProps) {
+export function ResumeEditorView({ homeHref, document, session, issues, tab, chatState, jd, fairUse, onFairUseUnlock, simulatedAdjustment }: ResumeEditorViewProps) {
   const hasJd = Boolean(jd && jd.trim())
   const [messages, setMessages] = useState<readonly ChatMessage[]>(() => {
     if (hasJd) {
@@ -1225,6 +1227,7 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
   const [changeDecisions, setChangeDecisions] = useState<Readonly<Partial<Record<ResumeChangeKey, ResumeChangeDecision>>>>({})
   // The resume as edited on the Edit tab; null until the editor has reported it.
   const [editedDocument, setEditedDocument] = useState<ResumeDocument | null>(null)
+  const editedChanged = editedDocument !== null && JSON.stringify(editedDocument) !== JSON.stringify(document)
   const [showPostAcceptTip, setShowPostAcceptTip] = useState(false)
   const [typedSummary, setTypedSummary] = useState<string | null>(null)
   const { type: typeSummary, isTyping: isTypingSummary } = useTypewriter()
@@ -1370,11 +1373,13 @@ export function ResumeEditorView({ homeHref, document, session, issues, tab, cha
         onOpenChange={setCompareOpen}
         before={<ClassicResume document={document} showImproved={false} highlightChanges={false} showPageBreaks={false} />}
         after={
-          editedDocument
+          editedChanged && editedDocument
             ? <ClassicResume document={editedDocument} showImproved={false} highlightChanges={false} changedFrom={document} showPageBreaks={false} />
-            : <ClassicResume document={document} showImproved={hasAcceptedChanges} highlightChanges={false} decisions={changeDecisions} changedFrom={document} showPageBreaks={false} />
+            : hasAcceptedChanges || !simulatedAdjustment
+              ? <ClassicResume document={document} showImproved={hasAcceptedChanges} highlightChanges={false} decisions={changeDecisions} changedFrom={document} showPageBreaks={false} />
+              : <ClassicResume document={simulatedAdjustment} showImproved={false} highlightChanges={false} changedFrom={document} showPageBreaks={false} />
         }
-        hasChanges={hasAcceptedChanges || (editedDocument !== null && JSON.stringify(editedDocument) !== JSON.stringify(document))}
+        hasChanges={hasAcceptedChanges || editedChanged || Boolean(simulatedAdjustment)}
       />
       <section className="relative flex h-[calc(100dvh-3.5rem)] flex-col overflow-hidden lg:flex-row">
         {tab === 'chat' ? (
