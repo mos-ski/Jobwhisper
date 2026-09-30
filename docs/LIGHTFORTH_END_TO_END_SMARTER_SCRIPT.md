@@ -49,6 +49,8 @@ The five public acquisition surfaces keep one job per page. The main page says *
 
 The generic **Job seeker results** strip is not used on the homepage or public funnels. Each redesigned funnel carries only the proof treatment created for that specific experience, so proof does not repeat or interrupt the primary action.
 
+The Auto Apply resume-upload hero fills the first viewport. Its search action remains visibly disabled until a resume is uploaded. After upload, the file control changes from **Import resume** to the text-only **Change resume** action, and the visitor can continue. The benefit and testimonial section begins below the fold, keeps its card dividers aligned, and does not repeat the search action beneath the cards.
+
 ## Episode 1 — Welcome to Lightforth
 
 Hey, I’m Moski, Product Manager at Lightforth, and welcome to Lightforth.
@@ -233,7 +235,7 @@ The first thing Lightforth will ask you to do is set up your job preferences.
 
 The first step is to upload your resume.
 
-The public Resume Builder funnel begins on a focused, light-only ATS-check page. It leads with **Let’s analyze your resume to see why you haven’t landed your dream role.** A compact live feed in the lower-left rotates through recent job seekers, their country, ATS score, and **Just now** timestamp. The visitor pastes the target job description into the composer card, attaches a resume from the paperclip, and sends it with the circular **Analyze for free** button. That button stays disabled until a readable resume is attached (and while offline). Analysis moves to the ATS score, followed by the rewritten before-and-after comparison and download gate. Beneath it sits this funnel's proof treatment: **Trusted by 2,000+ teams** above three outcome cards — **3× more interviews**, **94/100 ATS score**, and **11 days time to offer** — each with a one-line quote from the seeker who earned it.
+The public Resume Builder funnel begins on a focused, light-only ATS-check page. It leads with **Let’s analyze your resume to see why you haven’t landed your dream role.** The lower-left live feed of recent job seekers is hidden for now. The visitor pastes the target job description into the composer card, attaches a resume from the paperclip, and sends it with the circular **Analyze for free** button. That button stays disabled until a readable resume is attached (and while offline). Analysis moves to the ATS score, followed by the rewritten before-and-after comparison and download gate. Beneath it sits this funnel's proof treatment: **Trusted by 3,478 job seekers** above three outcome cards — **3× more interviews**, **94/100 ATS score**, and **11 days time to offer** — each with a one-line quote from the seeker who earned it.
 
 The public Auto Apply funnel begins on a light-only resume-import page that leads with **Apply to jobs in 1-click** and **Find your next role. Land the Job. Or Don’t Pay!** Visitors see the scale of the job-seeker community, import a PDF resume, and explicitly select **Start Your Remote Job Search Now!** before the matching questions begin. Its supporting section is a measured card carousel under **The #1 Site for Remote jobs**. Each page presents three substantial benefits with a customer outcome, reviewer identity, previous and next controls, and the same search CTA below the cards.
 

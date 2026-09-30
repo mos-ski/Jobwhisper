@@ -16,6 +16,8 @@ export type ResumeFunnelActivity = {
   readonly countryFlag: string
   readonly score: number
   readonly timeLabel: string
+  /** Portrait URL; initials show when absent. */
+  readonly avatar?: string
 }
 
 export type FunnelResumeViewProps = {
@@ -211,7 +213,7 @@ const RESUME_TRUST_STORIES: readonly ResumeTrustStory[] = [
     quote: '“I went from two callbacks a month to six after the rewrite.”',
     name: 'Priya N',
     role: 'Product Manager, hired at Klarna',
-    image: '/funnel/resume/testimonials/jani.png',
+    image: '/figma-landing/social-proof-1.jpg',
   },
   {
     metric: '94/100',
@@ -227,13 +229,14 @@ const RESUME_TRUST_STORIES: readonly ResumeTrustStory[] = [
     quote: '“From tailored application to signed offer in eleven days.”',
     name: 'Elena R',
     role: 'UX Researcher, hired at Atlassian',
+    image: '/v3-assets/interview-voice-caitlyn.png',
   },
 ]
 
 function ResumeTrustFooter() {
   return (
-    <section aria-label="Trusted by 2,000+ teams" className="w-full max-w-4xl px-6 py-9 sm:px-6">
-      <p className="text-center text-[10px] font-semibold uppercase tracking-[1px] text-landing-muted">Trusted by 2,000+ teams</p>
+    <section aria-label="Trusted by 3,478 job seekers" className="w-full max-w-4xl px-6 py-9 sm:px-6">
+      <p className="text-center text-[10px] font-semibold uppercase tracking-[1px] text-landing-muted">Trusted by 3,478 job seekers</p>
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
         {RESUME_TRUST_STORIES.map((story) => (
           <article key={story.name} className="flex min-h-[147px] flex-col gap-2.5 rounded-soft border border-landing-border bg-surface p-4">
@@ -269,9 +272,13 @@ function ResumeActivityToast({ activity }: { readonly activity: ResumeFunnelActi
       aria-label="Recent ATS activity"
       className="fixed bottom-4 start-4 z-20 flex w-[calc(100%-2rem)] max-w-[292px] items-center gap-3 rounded-2xl border border-border bg-surface px-3 py-3 text-start shadow-popover sm:bottom-6 sm:start-6"
     >
-      <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-sm font-bold text-accent-text">
-        {initials}
-      </span>
+      {activity.avatar ? (
+        <img src={activity.avatar} alt="" aria-hidden="true" className="size-10 shrink-0 rounded-full object-cover" />
+      ) : (
+        <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-sm font-bold text-accent-text">
+          {initials}
+        </span>
+      )}
       <span className="grid min-w-0 flex-1 gap-0.5">
         <span className="truncate text-sm font-semibold text-ink">{activity.name} <span aria-hidden="true">{activity.countryFlag}</span></span>
         <span className="text-sm text-ink-muted">Scored {activity.score} in ATS</span>

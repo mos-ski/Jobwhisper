@@ -33,7 +33,7 @@ describe('FunnelResumeView', () => {
     renderView()
     expect(screen.getByText(/get a free ATS check/)).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Let’s analyze your resume')
-    expect(screen.getByRole('region', { name: 'Trusted by 2,000+ teams' })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Trusted by 3,478 job seekers' })).toBeInTheDocument()
     expect(screen.getByText('More interviews')).toBeInTheDocument()
     expect(screen.getByText('ATS score')).toBeInTheDocument()
     expect(screen.getByText('Time to offer')).toBeInTheDocument()
@@ -41,11 +41,18 @@ describe('FunnelResumeView', () => {
   })
 
   it('shows the latest ATS activity in the fixed live feed', () => {
-    renderView({ liveActivity: { id: 'jason-bake', name: 'Jason Bake', countryFlag: '🇺🇸', score: 57, timeLabel: 'Just now' } })
+    renderView({ liveActivity: { id: 'jason-bake', name: 'Jason Bake', countryFlag: '🇺🇸', score: 57, timeLabel: 'Just now', avatar: '/figma-landing/social-proof-2.jpg' } })
     const activity = screen.getByRole('complementary', { name: 'Recent ATS activity' })
     expect(activity).toHaveTextContent('Jason Bake')
     expect(activity).toHaveTextContent('Scored 57 in ATS')
     expect(activity).toHaveTextContent('Just now')
+    expect(activity.querySelector('img')).toHaveAttribute('src', '/figma-landing/social-proof-2.jpg')
+    expect(activity).not.toHaveTextContent('JB')
+  })
+
+  it('falls back to initials when an activity carries no portrait', () => {
+    renderView({ liveActivity: { id: 'jason-bake', name: 'Jason Bake', countryFlag: '🇺🇸', score: 57, timeLabel: 'Just now' } })
+    expect(screen.getByRole('complementary', { name: 'Recent ATS activity' })).toHaveTextContent('JB')
   })
 
   it('hands the chosen file over and states why a file was refused', () => {
