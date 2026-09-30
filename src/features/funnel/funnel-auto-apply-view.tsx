@@ -279,18 +279,18 @@ function MatchHeader({ matches, answers }: Pick<FunnelAutoApplyViewProps, 'match
     <div className="grid gap-8">
       <FunnelTitle eyebrow="Your matches">{matches.length} jobs we’d apply to for you.</FunnelTitle>
 
-      <dl className="grid grid-cols-3 divide-x divide-ink-muted rounded-3xl bg-surface-inverse py-5 text-center text-surface rtl:divide-x-reverse">
-        <div className="grid gap-1 px-2">
-          <dt className="order-2 text-xs text-accent-muted sm:text-sm">Roles found</dt>
-          <dd className="order-1 font-gowun text-3xl font-bold leading-none sm:text-4xl">{matches.length}</dd>
+      <dl className="mx-auto flex w-full max-w-2xl items-stretch justify-center divide-x divide-border text-center rtl:divide-x-reverse">
+        <div className="grid flex-1 gap-1 px-4">
+          <dt className="order-2 text-sm text-ink-muted">Roles found</dt>
+          <dd className="order-1 font-gowun text-3xl font-bold leading-none text-ink sm:text-4xl">{matches.length}</dd>
         </div>
-        <div className="grid gap-1 px-2">
-          <dt className="order-2 text-xs text-accent-muted sm:text-sm">Average match</dt>
-          <dd className="order-1 font-gowun text-3xl font-bold leading-none sm:text-4xl">{average}%</dd>
+        <div className="grid flex-1 gap-1 px-4">
+          <dt className="order-2 text-sm text-ink-muted">Average match</dt>
+          <dd className="order-1 font-gowun text-3xl font-bold leading-none text-ink sm:text-4xl">{average}%</dd>
         </div>
-        <div className="grid gap-1 px-2">
-          <dt className="order-2 text-xs text-accent-muted sm:text-sm">Best match</dt>
-          <dd className="order-1 font-gowun text-3xl font-bold leading-none sm:text-4xl">{best.matchPercent}%</dd>
+        <div className="grid flex-1 gap-1 px-4">
+          <dt className="order-2 text-sm text-ink-muted">Best match</dt>
+          <dd className="order-1 font-gowun text-3xl font-bold leading-none text-ink sm:text-4xl">{best.matchPercent}%</dd>
         </div>
       </dl>
       {summary ? <p className="-mt-4 text-center text-sm text-ink-muted">For {summary}</p> : null}

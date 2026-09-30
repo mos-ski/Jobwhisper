@@ -134,3 +134,10 @@ job area, with only the rows in the left column and the panel beside them.
 - Matches step renders `grid gap-8`: `MatchHeader` first, then the existing
   `lg:flex-row` row containing `MatchRows` + `JobDetailPanel`.
 - List-only state is visually unchanged (header and list stack in one column).
+
+## Revision 4 — stats become a light inline row
+
+User review of the dark `bg-surface-inverse` stats bar: not liked. Replaced with a
+light, container-less stat row: ink numbers (`font-gowun` 3xl/4xl) over muted
+`text-sm` labels, `divide-border` hairline dividers, centered at `max-w-2xl` under
+the title. No fill, no radius, no inverse surface.
