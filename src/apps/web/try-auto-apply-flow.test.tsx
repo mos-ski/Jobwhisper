@@ -39,6 +39,9 @@ describe('/v3/try/auto-apply', () => {
       } else if (question.kind === 'text') {
         fireEvent.change(screen.getByRole('combobox', { name: question.ask }), { target: { value: 'Customer Success Manager' } })
         fireEvent.click(screen.getByRole('button', { name: /^(Continue|Finish)$/ }))
+      } else if (question.kind === 'multi') {
+        fireEvent.click(screen.getByRole('checkbox', { name: new RegExp(`^${(question.choices[0] ?? '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`) }))
+        fireEvent.click(screen.getByRole('button', { name: /^(Continue|Finish)$/ }))
       } else {
         const first = question.kind === 'options' ? question.options[0]?.label : question.choices[0]
         fireEvent.click(screen.getByRole('radio', { name: new RegExp(`^${(first ?? '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`) }))

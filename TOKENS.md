@@ -101,6 +101,8 @@ These fixed roles reproduce the approved Figma marketing art direction in both t
 | `landing-nav-border` | `rgba(255, 255, 255, 0.12)` | Dividers on dark landing navigation surfaces |
 | `landing-border` | `rgba(20, 20, 20, 0.14)` | Hairline borders on light landing surfaces |
 | `landing-control` | `#d2d2d7` | Neutral control and inactive indicator surface |
+| `disabled-surface` | `#edecec` light / `#242c3d` dark | Background for controls that cannot currently be activated |
+| `disabled-text` | `#c7c2c2` light / `#667085` dark | Text on disabled controls |
 | `landing-footer` | `#000000` | Closing footer canvas |
 | `landing-footer-text` | `rgba(255, 255, 250, 0.62)` | Secondary footer copy |
 

@@ -241,15 +241,15 @@
    Exit condition: Google or a valid email downloads the resume and offers Resume Builder.
    Failure branch: an invalid email shows a field error describing the fix.
 
-## Try-It Funnel: Auto Apply (Resume -> Nine Questions -> Matches -> Apply Gate)
+## Try-It Funnel: Auto Apply (Resume -> Preference Questionnaire -> Matches -> Apply Gate)
 
-1. Entry condition: a visitor opens `/v3/try/auto-apply`. The first screen says "Free to match. Sign up to apply."
-   Exit condition: they upload a resume, which counts as question one of ten.
+1. Entry condition: a visitor opens `/v3/try/auto-apply`. The first screen says "Find your next role. Land the Job. Or Don’t Pay!"
+   Exit condition: they upload a resume and explicitly start the remote-job search.
    Failure branch: a refused file states the fix and holds Continue.
 
-2. Entry condition: `/v3/try/auto-apply?step=quiz&q=<n>` asks role, experience, salary, location, job type, work mode, start date, work authorization and sponsorship, one per page.
+2. Entry condition: `/v3/try/auto-apply?step=quiz&q=<n>` asks one focused question per page: work style, search goal, minimum salary, location, resume status, target titles, categories, experience, education, and benefits.
    Exit condition: the last answer opens the matches.
-   Failure branch: Continue stays disabled until answered; offline, answers are kept and Continue waits. Personal details are not asked here; the real flow asks them after sign-up.
+   Failure branch: Continue stays disabled until answered; capped multi-select questions prevent choosing beyond five; offline, answers are kept and Continue waits. Personal details are not asked here; the real flow asks them after sign-up.
 
 
 3. Entry condition: the matches list shows each job's title, company, location, salary and match score.

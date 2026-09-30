@@ -72,6 +72,32 @@ export function FunnelQuestion({ question, value, onChange, eyebrow, onAutoAdvan
     )
   }
 
+  if (question.kind === 'multi') {
+    const selected = value ? value.split('|').filter(Boolean) : []
+    return (
+      <div data-slot="funnel-question" data-kind="multi" className="grid gap-8">
+        <FunnelTitle id={headingId} eyebrow={eyebrow}>{question.ask}</FunnelTitle>
+        <fieldset aria-labelledby={headingId} className="flex flex-wrap justify-center gap-2">
+          {question.choices.map((choice) => {
+            const checked = selected.includes(choice)
+            const disabled = !checked && selected.length >= question.maxSelections
+            return (
+              <label key={choice} className="group inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-full border border-border bg-surface pe-5 ps-2 text-base font-medium text-ink hover:border-ink-muted has-[:checked]:border-accent has-[:checked]:bg-accent-subtle has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus">
+                <input type="checkbox" name={question.id} value={choice} checked={checked} disabled={disabled} onChange={() => {
+                  const next = checked ? selected.filter((item) => item !== choice) : [...selected, choice]
+                  onChange(next.join('|'))
+                }} className="sr-only" />
+                <span aria-hidden="true" className={cn(key, 'size-7 rounded-full text-xs')}>{checked ? <Check data-testid="funnel-multi-check" className="size-4" /> : '+'}</span>
+                {choice}
+              </label>
+            )
+          })}
+        </fieldset>
+        <p className="text-center text-sm text-ink-muted">Choose up to {question.maxSelections}.</p>
+      </div>
+    )
+  }
+
   return (
     <div data-slot="funnel-question" data-kind={question.kind} className="grid gap-8">
       <FunnelTitle id={headingId} eyebrow={eyebrow}>{question.ask}</FunnelTitle>

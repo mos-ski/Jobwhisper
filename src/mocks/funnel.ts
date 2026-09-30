@@ -232,65 +232,16 @@ export const resumeFunnelRewrite: ResumeRewrite = {
 }
 
 export const autoApplyFunnelQuestions: readonly FunnelQuestion[] = [
-  { id: 'role', tab: 'Role', ask: 'What role do you want next?', kind: 'text', placeholder: 'e.g. Customer Success Manager', suggestions: JOB_TITLE_SUGGESTIONS },
-  {
-    id: 'experience',
-    tab: 'Experience',
-    ask: 'How much experience do you have in it?',
-    kind: 'options',
-    options: [
-      { label: 'Entry level', hint: 'Under two years, or moving into the field.' },
-      { label: 'Mid level', hint: 'Two to five years doing the work.' },
-      { label: 'Senior', hint: 'Five years or more, leading the work.' },
-      { label: 'Lead or manager', hint: 'You run a team or a function.' },
-    ],
-  },
-  {
-    id: 'salary',
-    tab: 'Salary',
-    ask: 'What base salary are you aiming for?',
-    kind: 'range',
-    min: 30000,
-    max: 250000,
-    step: 5000,
-    defaultRange: [80000, 130000],
-  },
-  { id: 'location', tab: 'Location', ask: 'Where do you want to work?', kind: 'text', placeholder: 'e.g. Atlanta, GA, or anywhere in the US', suggestions: LOCATION_SUGGESTIONS },
-  { id: 'jobType', tab: 'Job type', ask: 'What kind of contract?', kind: 'pills', choices: ['Full-time', 'Contract', 'Part-time', 'Internship'] },
-  {
-    id: 'workMode',
-    tab: 'Work mode',
-    ask: 'How do you want to work?',
-    kind: 'options',
-    options: [
-      { label: 'Remote', hint: 'From home, with no office days.' },
-      { label: 'Hybrid', hint: 'A few days a week in the office.' },
-      { label: 'On-site', hint: 'In the office every day.' },
-      { label: 'Any of these', hint: 'The role matters more than where.' },
-    ],
-  },
-  { id: 'start', tab: 'Start date', ask: 'When could you start?', kind: 'pills', choices: ['Immediately', 'In two weeks', 'In a month', 'In two months or more'] },
-  {
-    id: 'authorization',
-    tab: 'Authorization',
-    ask: 'Are you authorized to work in the US?',
-    kind: 'options',
-    options: [
-      { label: 'Yes, as a citizen or permanent resident' },
-      { label: 'Yes, on a work visa' },
-      { label: 'No, not yet' },
-    ],
-  },
-  {
-    id: 'sponsorship',
-    tab: 'Sponsorship',
-    ask: 'Will you need visa sponsorship, now or later?',
-    kind: 'options',
-    options: [
-      { label: 'No', hint: 'We only match roles that do not require it.' },
-      { label: 'Yes', hint: 'We favour employers who sponsor.' },
-    ],
-  },
+  { id: 'workMode', tab: 'Work style', ask: 'What kind of remote work are you looking for?', kind: 'pills', choices: ['100% Remote', 'Hybrid', 'I’m open to both'] },
+  { id: 'goal', tab: 'Goal', ask: 'I’m looking for...', kind: 'pills', choices: ['Any job', 'Career progression', 'A side hustle', 'An entry-level role', 'Other'] },
+  { id: 'salary', tab: 'Salary', ask: 'What is your minimum desired salary?', kind: 'range', min: 30000, max: 250000, step: 5000, defaultRange: [65000, 65000] },
+  { id: 'location', tab: 'Location', ask: 'Where do you want to work remotely from?', kind: 'text', placeholder: 'e.g. Nigeria', suggestions: LOCATION_SUGGESTIONS },
+  { id: 'resumeStatus', tab: 'Resume', ask: 'Where are you with your resume right now?', kind: 'pills', choices: ['My resume is up to date', 'I have a resume, but it needs updates', "I don't have a resume yet"] },
+  { id: 'role', tab: 'Job titles', ask: 'Tell us what job title(s) you have in mind.', kind: 'text', placeholder: 'Add up to 5 job titles', suggestions: JOB_TITLE_SUGGESTIONS },
+  { id: 'categories', tab: 'Categories', ask: 'Select up to 5 job categories.', kind: 'multi', maxSelections: 5, choices: ['Account Management', 'Administrative', 'Bilingual', 'Business Development', 'Call Center', 'Communications', 'Animals & Wildlife', 'Art & Creative'] },
+  { id: 'experience', tab: 'Experience', ask: 'How many years of relevant experience do you have?', kind: 'pills', choices: ['Less Than 3 Years', '3-5 Years', '5-10 Years', '10+ Years'] },
+  { id: 'education', tab: 'Education', ask: 'What best describes your level of education?', kind: 'pills', choices: ['High School or GED', "Associate's Degree or Some College", "Bachelor's Degree", "Master's or Higher", 'Unspecified Education', 'Other', 'Prefer Not to Answer'] },
+  { id: 'benefits', tab: 'Benefits', ask: 'What benefits are you looking for?', kind: 'multi', maxSelections: 5, choices: ['Health/Medical Insurance', 'Dental Insurance', 'Vision Insurance', 'Disability Insurance', 'Life Insurance', '401k Matching/Retirement Savings', 'Tuition/Education Assistance', 'Paid Holidays', 'Paid Vacation', 'Flexible/Unlimited PTO', 'Paid Sick Leave', 'Parental and Family Leave', 'Professional/Career Development', 'Home Office Reimbursement/Stipend'] },
 ]
 
 export const autoApplyFunnelMatches: readonly FunnelJobMatch[] = [

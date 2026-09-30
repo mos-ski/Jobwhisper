@@ -15,6 +15,7 @@ type FunnelQuestionBase = {
 export type FunnelQuestion =
   | (FunnelQuestionBase & { readonly kind: 'options'; readonly options: readonly FunnelChoice[] })
   | (FunnelQuestionBase & { readonly kind: 'pills'; readonly choices: readonly string[] })
+  | (FunnelQuestionBase & { readonly kind: 'multi'; readonly choices: readonly string[]; readonly maxSelections: number })
   | (FunnelQuestionBase & {
       readonly kind: 'text'
       readonly placeholder: string
