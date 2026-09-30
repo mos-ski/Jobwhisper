@@ -184,7 +184,7 @@ What a real implementation needs that this draft does not model: what happens wh
 - `FunnelCardStatus` is presentation state only; production maps Stripe SetupIntent outcomes onto it.
 - `AtsReport` gives the score with a `verdict` in words, so the screen never leans on colour, and each `AtsIssue` pairs the problem with the fix and a three-level severity. Production scoring should return the fix text too, not just a code.
 - `ResumeRewrite` is a `ResumeDocument` from `resume.draft.ts` plus the two scores, so the before and after renders with the Resume Builder's own Classic template: `summary`, `roles` and `skills` as uploaded, `improvedSummary`, `improvedFirstRoleBullets` and `improvedSkills` as rewritten.
-- `FunnelJobMatch` is a flat match with pre-formatted `salaryRange` and `postedLabel` and a list of human `reasons`. Production matching should return the reasons it used, since they are what sells the sign-up.
+- `FunnelJobMatch` was removed (2026-09-30): the matches step now renders the Jobs-tab job layout, so its `matches` prop is `readonly AutoApplyJob[]` from `auto-apply.draft.ts` and the page passes the same open-role set the Jobs tab shows (`autoApplyJobs` minus applied/closed). Production matching should return `AutoApplyJob` rows — the `matchPercent`/`matchBreakdown` pair is what the panel's score card sells, and `reasons`-style copy is now expressed as breakdown factors.
 ## Fair Use Draft Contract
 
 `src/contracts/fair-use.draft.ts` backs the ceiling that sits under "unlimited" (`PRICING.md` §1.2): one uninterrupted stretch runs to a cap, the feature then rests for a set number of hours, and a top-up can end that rest early. `AdminPlanFairUseRule` in `admin-configuration.draft.ts` is the per-plan editable form of the same rule.

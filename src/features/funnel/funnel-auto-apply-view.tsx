@@ -1,7 +1,8 @@
 import { useEffect, useId, useRef, useState, type DragEvent, type ReactNode } from 'react'
-import { ChevronLeft, ChevronRight, CircleCheck, SearchX, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, CircleHelp, ExternalLink, FileText, SearchX, Send, X } from 'lucide-react'
 
-import type { FunnelAnswers, FunnelJobMatch, FunnelQuestion as FunnelQuestionData } from '@/contracts/funnel.draft'
+import type { AutoApplyJob } from '@/contracts/auto-apply.draft'
+import type { FunnelAnswers, FunnelQuestion as FunnelQuestionData } from '@/contracts/funnel.draft'
 import { Button, cn } from '@/ui'
 import { FunnelGate } from './funnel-gate'
 import { FunnelQuestion, FunnelQuestionFooter } from './funnel-question'
@@ -19,7 +20,7 @@ export type FunnelAutoApplyViewProps = {
   readonly fileName?: string
   readonly uploadError?: string
   readonly online: boolean
-  readonly matches: readonly FunnelJobMatch[]
+  readonly matches: readonly AutoApplyJob[]
   /** The job open in the side panel on the matches step; absent shows the list only. */
   readonly selectedJobId?: string
   /** What the gate is standing in front of: `'all'` or one job id. */
@@ -60,7 +61,7 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
     footer = <FunnelQuestionFooter position={0} total={total} canContinue={online && Boolean(props.fileName)} showContinue={false} onBack={props.onBack} onContinue={props.onContinue} />
   } else if (step === 'quiz' && question) {
     footer = <FunnelQuestionFooter position={questionIndex + 1} total={total} canContinue={online && (answers[question.id] ?? '').trim().length > 0} showContinue={question.kind === 'text' || question.kind === 'range' || question.kind === 'multi'} onBack={props.onBack} onContinue={props.onContinue} continueLabel={question.cta} />
-  } else if (step === 'matches' && selectedJob) {
+  } else if (step === 'matches' && selectedJob?.status === 'new') {
     footer = <Button size="lg" className="w-full sm:ms-auto sm:w-auto" onClick={() => props.onApply(selectedJob.id)}>Apply to this job</Button>
   } else if (step === 'matches' && matches.length > 0) {
     footer = (
@@ -91,11 +92,14 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
         />
       ) : null}
       {step === 'matches' && matches.length > 0 ? (
-        <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-6">
-          <div className="min-w-0 flex-1">
-            <MatchList {...props} />
+        <div className="grid gap-8">
+          <MatchHeader matches={matches} answers={answers} />
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-6">
+            <div className="min-w-0 flex-1">
+              <MatchRows {...props} />
+            </div>
+            {selectedJob ? <JobDetailPanel job={selectedJob} onClose={() => props.onSelectJob(null)} onApply={props.onApply} /> : null}
           </div>
-          {selectedJob ? <JobDetailPanel job={selectedJob} onClose={() => props.onSelectJob(null)} onApply={props.onApply} /> : null}
         </div>
       ) : null}
       {step === 'matches' && matches.length === 0 ? <NoMatches onEditAnswer={props.onEditAnswer} /> : null}
@@ -267,10 +271,10 @@ function BenefitCard({ icon, title, body, quote, emphasis, person, company, avat
   return <article className="flex min-h-[520px] flex-col rounded-lg bg-surface px-7 pb-7 pt-10 shadow-lg"><img src={`/funnel/auto-apply/${icon}`} alt="" width="74" height="71" /><h3 className="mt-5 text-[28px] font-semibold leading-10">{title}</h3><p data-slot="auto-apply-benefit-body" className="mt-3 min-h-28 text-base font-medium leading-6 text-ink-muted">{body}</p><div data-slot="auto-apply-benefit-testimonial" className="mt-8 border-t border-border pt-7"><blockquote className="min-h-24 text-sm leading-5">“{quote} <strong className="font-semibold text-accent-text">{emphasis}</strong>”</blockquote><div className="mt-4 flex items-center gap-2"><img src={`/funnel/auto-apply/${avatar}`} alt="" width="32" height="32" className="rounded-full" /><p className="grid text-sm leading-4 text-ink-muted"><span>{person}</span><strong className="font-semibold text-ink">{company}</strong></p></div></div></article>
 }
 
-function MatchList({ matches, answers, onSelectJob, selectedJobId }: FunnelAutoApplyViewProps) {
+function MatchHeader({ matches, answers }: Pick<FunnelAutoApplyViewProps, 'matches' | 'answers'>) {
   const summary = [answers.role, answers.location, answers.workMode].filter(Boolean).join(' · ')
-  const average = Math.round(matches.reduce((sum, job) => sum + job.matchScore, 0) / matches.length)
-  const best = matches.reduce((top, job) => (job.matchScore > top.matchScore ? job : top))
+  const average = Math.round(matches.reduce((sum, job) => sum + job.matchPercent, 0) / matches.length)
+  const best = matches.reduce((top, job) => (job.matchPercent > top.matchPercent ? job : top))
   return (
     <div className="grid gap-8">
       <FunnelTitle eyebrow="Your matches">{matches.length} jobs we’d apply to for you.</FunnelTitle>
@@ -286,41 +290,94 @@ function MatchList({ matches, answers, onSelectJob, selectedJobId }: FunnelAutoA
         </div>
         <div className="grid gap-1 px-2">
           <dt className="order-2 text-xs text-accent-muted sm:text-sm">Best match</dt>
-          <dd className="order-1 font-gowun text-3xl font-bold leading-none sm:text-4xl">{best.matchScore}%</dd>
+          <dd className="order-1 font-gowun text-3xl font-bold leading-none sm:text-4xl">{best.matchPercent}%</dd>
         </div>
       </dl>
       {summary ? <p className="-mt-4 text-center text-sm text-ink-muted">For {summary}</p> : null}
-
-      <ul aria-label="Matched jobs" className="divide-y divide-border rounded-2xl border border-border">
-        {matches.map((job) => (
-          <li key={job.id}>
-            <button
-              type="button"
-              onClick={() => onSelectJob(job.id)}
-              aria-label={`${job.title} at ${job.company}, ${job.matchScore}% match. View job`}
-              aria-current={job.id === selectedJobId ? 'true' : undefined}
-              className="grid w-full gap-3 px-5 py-4 text-start first:rounded-t-2xl last:rounded-b-2xl hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus sm:grid-cols-[minmax(0,1fr)_9rem] sm:items-center"
-            >
-              <span className="grid min-w-0 gap-1">
-                <span className="line-clamp-2 font-semibold text-ink">{job.title}</span>
-                <span className="text-sm text-ink-muted">{job.company} · {job.location} · {job.workMode}</span>
-                <span className="text-sm text-ink">{job.salaryRange} <span className="text-ink-muted">· {job.postedLabel}</span></span>
-              </span>
-              <span className="grid gap-1.5">
-                <span className="text-sm font-semibold text-accent-text sm:text-end">{job.matchScore}% match</span>
-                <span aria-hidden="true" className="h-1.5 w-full overflow-hidden rounded-full bg-surface-subtle">
-                  <span className="block h-full rounded-full bg-accent" style={{ width: `${job.matchScore}%` }} />
-                </span>
-              </span>
-            </button>
-          </li>
-        ))}
-      </ul>
     </div>
   )
 }
 
-function JobDetailPanel({ job, onClose, onApply }: { readonly job: FunnelJobMatch; readonly onClose: () => void; readonly onApply: (target: string) => void }) {
+function MatchRows({ matches, onSelectJob, onApply, selectedJobId }: FunnelAutoApplyViewProps) {
+  return (
+    <ul aria-label="Matched jobs" className="divide-y divide-border rounded-2xl border border-border">
+        {matches.map((job) => (
+          <li key={job.id} className={cn('flex items-start gap-3 px-4 py-3', job.id === selectedJobId ? 'bg-accent-subtle' : 'hover:bg-surface-subtle')}>
+            <button
+              type="button"
+              onClick={() => onSelectJob(job.id)}
+              aria-label={`View ${job.title} at ${job.company}, ${JOB_STATUS_LABELS[job.status]}`}
+              aria-current={job.id === selectedJobId ? 'true' : undefined}
+              className="flex min-w-0 flex-1 items-start gap-4 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              <span
+                className={cn(
+                  'grid size-9 shrink-0 place-items-center rounded-lg text-xs font-bold',
+                  job.company.toLowerCase().includes('stripe') ? 'bg-accent-subtle text-accent-text' : 'bg-danger-surface text-danger',
+                )}
+              >
+                {job.company.slice(0, 2).toUpperCase()}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="flex flex-wrap items-center gap-2">
+                  <span className="font-gowun font-semibold text-ink">{job.title}</span>
+                  <span className="rounded bg-positive-surface px-2 py-0.5 text-[10px] font-bold text-positive">{job.matchPercent}% MATCH</span>
+                  {job.status === 'new' ? <MatchStatusBadge status="new" className="rounded-full px-2 py-0.5 text-xs" /> : null}
+                </span>
+                <span className="mt-1 block text-xs text-ink-muted">
+                  {job.company} - {job.location} - {job.type}
+                </span>
+                <span className="mt-1 block text-xs text-ink-muted">
+                  Found {job.dateLabel} - {job.source}
+                </span>
+              </span>
+            </button>
+            {job.status === 'new' ? (
+              <button
+                type="button"
+                onClick={() => onApply(job.id)}
+                aria-label={`Apply to ${job.title} at ${job.company}`}
+                className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                Apply
+              </button>
+            ) : (
+              <MatchStatusBadge status={job.status} />
+            )}
+          </li>
+        ))}
+    </ul>
+  )
+}
+
+const JOB_STATUS_LABELS: Record<AutoApplyJob['status'], string> = {
+  applied: 'Applied',
+  new: 'New',
+  queued: 'Queued',
+  applying: 'Applying',
+  'posting-closed': 'Posting closed',
+}
+
+const JOB_STATUS_CLASSES: Record<AutoApplyJob['status'], string> = {
+  applied: 'bg-accent-subtle text-accent-text',
+  new: 'bg-warning-surface text-warning',
+  queued: 'bg-accent-subtle text-accent-text',
+  applying: 'bg-accent-subtle text-accent-text',
+  'posting-closed': 'bg-surface-subtle text-ink-muted',
+}
+
+function MatchStatusBadge({ status, className }: { readonly status: AutoApplyJob['status']; readonly className?: string }) {
+  return <span className={cn('shrink-0 rounded-lg px-4 py-2 text-sm font-medium', JOB_STATUS_CLASSES[status], className)}>{JOB_STATUS_LABELS[status]}</span>
+}
+
+function matchLabel(percent: number): string {
+  if (percent >= 90) return 'Excellent Match'
+  if (percent >= 75) return 'Great Match'
+  if (percent >= 60) return 'Good Match'
+  return 'Fair Match'
+}
+
+function JobDetailPanel({ job, onClose, onApply }: { readonly job: AutoApplyJob; readonly onClose: () => void; readonly onApply: (target: string) => void }) {
   const titleId = useId()
   const closeRef = useRef<HTMLButtonElement>(null)
   const openerRef = useRef<HTMLElement | null>(null)
@@ -356,7 +413,7 @@ function JobDetailPanel({ job, onClose, onApply }: { readonly job: FunnelJobMatc
         <div className="flex shrink-0 items-start justify-between gap-3 px-6 pt-3 pb-4">
           <div className="min-w-0">
             <h2 id={titleId} className="font-gowun text-xl font-bold leading-tight text-ink">{job.title}</h2>
-            <p className="mt-1 text-sm text-ink-muted">{job.company} · {job.location} · {job.workMode}</p>
+            <p className="mt-1 text-sm text-ink-muted">{job.company} · {job.location}</p>
           </div>
           <button
             ref={closeRef}
@@ -369,23 +426,121 @@ function JobDetailPanel({ job, onClose, onApply }: { readonly job: FunnelJobMatc
           </button>
         </div>
         <div className="flex-1 overflow-y-auto px-6 pb-6">
-          <p className="text-sm text-ink">{job.salaryRange} <span className="text-ink-muted">· {job.postedLabel}</span></p>
-          <p className="mt-3 text-sm leading-6 text-ink-muted">{job.summary}</p>
-          <section aria-labelledby="funnel-job-reasons" className="mt-5 grid gap-3 rounded-panel border border-border bg-surface p-4">
-            <h3 id="funnel-job-reasons" className="flex items-center justify-between gap-3 text-base font-semibold text-ink">
-              Why it matched
-              <span className="rounded-full bg-accent-subtle px-3 py-1 text-xs font-semibold text-accent-text">{job.matchScore}% match</span>
-            </h3>
-            <ul className="grid gap-2">
-              {job.reasons.map((reason) => (
-                <li key={reason} className="flex gap-2 text-sm leading-6 text-ink"><CircleCheck aria-hidden="true" className="mt-1 size-4 shrink-0 text-positive" />{reason}</li>
+          <div className="flex flex-wrap items-center gap-2">
+            <MatchStatusBadge status={job.status} className="rounded-full px-3 py-1 text-xs" />
+            <span className="rounded-full border border-border px-3 py-1 text-xs font-medium text-ink">{job.salaryLabel}</span>
+            <span className="rounded-full border border-border px-3 py-1 text-xs font-medium text-ink">{job.postedDateLabel}</span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-subtle px-3 py-1 text-xs font-medium text-ink-muted">
+              <CircleHelp aria-hidden="true" className="size-3.5" />
+              Still open? Not checked
+            </span>
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Posted</p>
+              <p className="mt-1 text-sm text-ink">{job.postedDateLabel}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Found</p>
+              <p className="mt-1 text-sm text-ink">{job.dateLabel}</p>
+            </div>
+          </div>
+
+          <div className="mt-5 grid gap-5">
+            <section className="grid gap-2">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Job Listing</h3>
+              <a href={job.listingUrl} target="_blank" rel="noopener noreferrer" className="flex min-w-0 items-center gap-2 text-sm text-accent underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                <ExternalLink aria-hidden="true" className="size-4 shrink-0" />
+                <span className="truncate">{job.listingUrl}</span>
+              </a>
+            </section>
+
+            <section className="grid gap-2">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Resume We&rsquo;ll Submit</h3>
+              <div className="flex items-center justify-between gap-2">
+                <span className="flex min-w-0 items-center gap-2 text-sm text-ink">
+                  <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
+                  <span className="truncate">{job.resumeFileName}</span>
+                </span>
+                <span className="shrink-0 rounded-full bg-positive-surface px-2.5 py-0.5 text-xs font-bold text-positive">ATS {job.matchPercent}</span>
+              </div>
+            </section>
+
+            <section className="grid gap-2">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Get Tailored Resume</h3>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="flex min-w-0 items-center gap-2">
+                  <FileText aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
+                  <span className="text-sm font-bold text-accent-text underline decoration-solid underline-offset-4">Get a resume for this role</span>
+                </span>
+                <span className="text-ink-muted" aria-hidden="true">·</span>
+                <span className="text-sm text-ink-muted">1 Credit</span>
+              </div>
+            </section>
+
+            <section className="rounded-lg bg-positive-surface p-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold uppercase tracking-wide text-positive">{matchLabel(job.matchPercent)}</h3>
+                <p className="text-2xl font-bold text-positive">{job.matchPercent}%</p>
+              </div>
+              {job.matchBreakdown.length > 0 ? (
+                <ul className="mt-3 grid gap-1.5 border-t border-border pt-3">
+                  {job.matchBreakdown.map((factor) => (
+                    <li key={factor.label} className="flex items-center justify-between gap-3 text-sm text-ink">
+                      <span>{factor.label}</span>
+                      <span className="shrink-0 font-semibold text-positive">+{factor.points}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </section>
+
+            <div className="flex flex-wrap gap-2">
+              {job.tags.map((tag) => (
+                <span key={tag} className="rounded-full bg-accent-subtle px-2 py-1 text-xs font-medium text-accent-text">{tag}</span>
               ))}
-            </ul>
-          </section>
+            </div>
+
+            <section className="grid gap-2">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">About the role</h3>
+              <p className="text-sm leading-6 text-ink-muted">{job.description}</p>
+            </section>
+          </div>
+
+          <div className="mt-6 grid gap-2 border-t border-border pt-5">
+            {job.status === 'new' ? (
+              <>
+                <button type="button" onClick={() => onApply(job.id)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                  <Send aria-hidden="true" className="size-4" />
+                  Apply Now
+                </button>
+                <a href={job.listingUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-medium text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                  <ExternalLink aria-hidden="true" className="size-4" />
+                  Apply Manually
+                </a>
+                <button type="button" onClick={onClose} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-medium text-ink-muted transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                  Close
+                </button>
+              </>
+            ) : (
+              <>
+                <a href={job.listingUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                  <ExternalLink aria-hidden="true" className="size-4" />
+                  View Listing
+                </a>
+                <button type="button" onClick={onClose} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-medium text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                  Close
+                </button>
+              </>
+            )}
+          </div>
         </div>
-        <div className="shrink-0 border-t border-border px-6 py-4 lg:hidden">
-          <Button size="lg" className="w-full" onClick={() => onApply(job.id)}>Apply to this job</Button>
-        </div>
+        {job.status === 'new' ? (
+          <div className="shrink-0 border-t border-border px-6 py-4 lg:hidden">
+            <Button size="lg" className="w-full" onClick={() => onApply(job.id)}>Apply to this job</Button>
+          </div>
+        ) : null}
       </aside>
     </>
   )
@@ -424,7 +579,7 @@ function Gate({ applyTarget, matches, online, onCreateAccount, onGoogleSignUp }:
                 <span className="truncate text-sm font-semibold text-ink">{item.title}</span>
                 <span className="truncate text-xs text-ink-muted">{item.company} · {item.location}</span>
               </span>
-              <span className="shrink-0 text-sm font-semibold text-accent-text">{item.matchScore}%</span>
+              <span className="shrink-0 text-sm font-semibold text-accent-text">{item.matchPercent}%</span>
             </li>
           ))}
           {waiting.length > 3 ? <li className="text-center text-sm text-ink-muted">and {waiting.length - 3} more</li> : null}

@@ -122,3 +122,15 @@ Scope after review ("the whole view, the jobs also", "leave the current jobs fou
   "Apply to all N".
 - Stats read `matchPercent`; gate reads the same field. Tests move to the new data
   (10 jobs, `coinbase-financial-engineering` as the open panel fixture).
+
+## Revision 3 — header spans above the list/panel row
+
+User review ("move this above it"): with the panel open, the title and stats bar were
+trapped inside the narrow left column. They must sit **full width above** the whole
+job area, with only the rows in the left column and the panel beside them.
+
+- Split `MatchList` into `MatchHeader` (title, stats `dl`, answers summary) and
+  `MatchRows` (the `ul`).
+- Matches step renders `grid gap-8`: `MatchHeader` first, then the existing
+  `lg:flex-row` row containing `MatchRows` + `JobDetailPanel`.
+- List-only state is visually unchanged (header and list stack in one column).

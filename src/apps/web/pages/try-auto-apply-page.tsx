@@ -4,7 +4,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { FunnelAnswers } from '@/contracts/funnel.draft'
 import type { Session } from '@/contracts/identity'
 import { FunnelAutoApplyView, type FunnelAutoApplyStep } from '@/features/funnel/funnel-auto-apply-view'
-import { autoApplyFunnelMatches, autoApplyFunnelQuestions } from '@/mocks/funnel'
+import { autoApplyFunnelQuestions } from '@/mocks/funnel'
+import { autoApplyJobs } from '@/mocks/auto-apply'
 import { anonymousSession, candidateSession } from '@/mocks/sessions'
 import { resumeUploadError, useOnline } from '../funnel-page-state'
 
@@ -23,7 +24,8 @@ export function TryAutoApplyPage() {
   const step = parseStep(params.get('step'))
   const questionIndex = Math.min(Math.max(Number(params.get('q') ?? 0) || 0, 0), LAST_QUESTION)
   const online = useOnline(params.get('offline') === '1')
-  const matches = params.get('matches') === 'none' ? [] : autoApplyFunnelMatches
+  // The same open roles the Jobs tab shows: nothing applied, nothing closed.
+  const matches = params.get('matches') === 'none' ? [] : autoApplyJobs.filter((job) => job.status !== 'applied' && job.status !== 'posting-closed')
 
   const [fileName, setFileName] = useState<string | undefined>()
   const [uploadError, setUploadError] = useState<string | undefined>()

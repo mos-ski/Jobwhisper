@@ -64,9 +64,9 @@ describe('/v3/try/auto-apply', () => {
       vi.useRealTimers()
     }
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('8 jobs we’d apply to for you')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('10 jobs we’d apply to for you')
 
-    fireEvent.click(screen.getByRole('button', { name: 'Apply to all 8' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Apply to all 10' }))
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Sign up and your agent applies for you')
   })
 
@@ -80,7 +80,7 @@ describe('/v3/try/auto-apply', () => {
 
   it('sends a signed-in visitor straight to the real Auto Apply review', () => {
     renderAt('/v3/try/auto-apply?step=matches&session=signed-in')
-    fireEvent.click(screen.getByRole('button', { name: 'Apply to all 8' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Apply to all 10' }))
     expect(screen.queryByText('Sign up and your agent applies for you.')).not.toBeInTheDocument()
   })
 })

@@ -2,8 +2,12 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
-import { autoApplyFunnelMatches, autoApplyFunnelQuestions } from '@/mocks/funnel'
+import { autoApplyFunnelQuestions } from '@/mocks/funnel'
+import { autoApplyJobs } from '@/mocks/auto-apply'
 import { FunnelAutoApplyView, type FunnelAutoApplyViewProps } from './funnel-auto-apply-view'
+
+// The same open roles the Jobs tab shows: nothing applied, nothing closed.
+const openJobs = autoApplyJobs.filter((job) => job.status !== 'applied' && job.status !== 'posting-closed')
 
 function renderView(overrides: Partial<FunnelAutoApplyViewProps> = {}) {
   const props: FunnelAutoApplyViewProps = {
@@ -12,7 +16,7 @@ function renderView(overrides: Partial<FunnelAutoApplyViewProps> = {}) {
     questionIndex: 0,
     answers: {},
     online: true,
-    matches: autoApplyFunnelMatches,
+    matches: openJobs,
     onFile: vi.fn(),
     onAnswer: vi.fn(),
     onBack: vi.fn(),
@@ -93,43 +97,47 @@ describe('FunnelAutoApplyView', () => {
     const user = userEvent.setup()
     const props = renderView({ step: 'matches', answers: { role: 'Customer Success Manager' } })
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('8 jobs we’d apply to for you')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('10 jobs we’d apply to for you')
     const list = screen.getByRole('list', { name: 'Matched jobs' })
-    expect(within(list).getAllByRole('listitem')).toHaveLength(8)
-    expect(screen.getByText('94% match')).toBeInTheDocument()
+    expect(within(list).getAllByRole('listitem')).toHaveLength(10)
+    expect(screen.getByText('94% MATCH')).toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: 'Apply to all 8' }))
+    await user.click(screen.getByRole('button', { name: 'Apply to all 10' }))
     expect(props.onApply).toHaveBeenCalledWith('all')
   })
 
   it('opens a job in a side panel beside the list, and applies to that one', async () => {
     const user = userEvent.setup()
-    const props = renderView({ step: 'matches', selectedJobId: 'lattice-csm' })
+    const props = renderView({ step: 'matches', selectedJobId: 'coinbase-financial-engineering' })
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('8 jobs we’d apply to for you')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('10 jobs we’d apply to for you')
     expect(screen.getByRole('list', { name: 'Matched jobs' })).toBeInTheDocument()
 
     const panel = document.querySelector('[data-slot="funnel-job-panel"]')
     expect(panel).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'Customer Success Manager, Mid-Market' })).toBeInTheDocument()
-    expect(screen.getByText('Your churn reduction pilot matches their retention goal')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'Group Product Manager, Financial Engineering' })).toBeInTheDocument()
+    expect(screen.getByText('Still open? Not checked')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 3, name: 'Job Listing' })).toBeInTheDocument()
+    expect(screen.getByText('Excellent Match')).toBeInTheDocument()
+    expect(screen.getByText('ATS 100')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 3, name: 'About the role' })).toBeInTheDocument()
 
     const close = screen.getByRole('button', { name: 'Close job details' })
     expect(close).toHaveFocus()
     expect(
-      screen.getByRole('button', { name: /Customer Success Manager, Mid-Market at .* View job/ }),
+      screen.getByRole('button', { name: 'View Group Product Manager, Financial Engineering at Coinbase, New' }),
     ).toHaveAttribute('aria-current', 'true')
 
     // The shell footer carries the CTA on desktop; the mobile sheet has its own copy under lg:hidden.
     await user.click(within(screen.getByRole('contentinfo')).getByRole('button', { name: 'Apply to this job' }))
-    expect(props.onApply).toHaveBeenCalledWith('lattice-csm')
+    expect(props.onApply).toHaveBeenCalledWith('coinbase-financial-engineering')
 
     await user.click(close)
     expect(props.onSelectJob).toHaveBeenCalledWith(null)
   })
 
   it('closes the side panel with Escape without leaving the funnel', () => {
-    const props = renderView({ step: 'matches', selectedJobId: 'lattice-csm' })
+    const props = renderView({ step: 'matches', selectedJobId: 'coinbase-financial-engineering' })
     fireEvent.keyDown(window, { key: 'Escape' })
     expect(props.onSelectJob).toHaveBeenCalledWith(null)
     expect(props.onClose).not.toHaveBeenCalled()
@@ -146,7 +154,7 @@ describe('FunnelAutoApplyView', () => {
   it('names the jobs waiting behind the sign-up gate', () => {
     renderView({ step: 'gate', applyTarget: 'all' })
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Sign up and your agent applies for you')
-    expect(screen.getByText(/all 8 matches/)).toBeInTheDocument()
+    expect(screen.getByText(/all 10 matches/)).toBeInTheDocument()
   })
 
   it('shows the work-style helper banner under the choices', () => {

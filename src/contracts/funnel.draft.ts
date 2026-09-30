@@ -94,18 +94,3 @@ export type ResumeRewrite = {
   readonly scoreBefore: number
   readonly scoreAfter: number
 }
-
-export type FunnelJobMatch = {
-  readonly id: string
-  readonly title: string
-  readonly company: string
-  readonly location: string
-  readonly workMode: string
-  readonly salaryRange: string
-  readonly postedLabel: string
-  /** 0 to 100. */
-  readonly matchScore: number
-  readonly summary: string
-  /** Why it matched, drawn from the visitor's answers and resume. */
-  readonly reasons: readonly string[]
-}
