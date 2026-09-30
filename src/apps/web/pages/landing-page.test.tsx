@@ -67,7 +67,7 @@ describe('LandingPage', () => {
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: /Pass Your Next Interview\.\s*Land the Job\. Or Don’t Pay!/,
+        name: /Find the right role\.\s*Show up ready\.\s*Land the job\./,
       }),
     ).toBeInTheDocument()
     // The announcement marquee carries a second copy so the loop has no seam; it is hidden
@@ -77,11 +77,8 @@ describe('LandingPage', () => {
     expect(announcements[1]).toHaveAttribute('aria-hidden', 'true')
     expect(screen.getByRole('link', { name: 'Learn more' })).toHaveAttribute('href', 'https://lightforth.ai/')
     expect(screen.queryByText('Join 57,000+ job seekers landing better roles')).not.toBeInTheDocument()
-    expect(
-      screen.getByText(
-        /Jobwhisper Copilot listens to every interview question and instantly gives you a tailored answer/,
-      ),
-    ).toBeInTheDocument()
+    expect(screen.getByText(/Build a stronger resume, find roles that fit, and get live interview support/)).toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: 'Job seeker results' })).not.toBeInTheDocument()
     const mainNavigation = screen.getByRole('navigation', { name: 'Main navigation' })
     expect(within(mainNavigation).getByRole('link', { name: 'Features' })).toBeInTheDocument()
     expect(within(mainNavigation).getByRole('link', { name: 'FAQ' })).toHaveAttribute('href', '/#faq')
@@ -94,7 +91,7 @@ describe('LandingPage', () => {
     const heroActions = document.querySelector('.landing-hero-actions')
     expect(heroActions).not.toBeNull()
     expect(within(heroActions as HTMLElement).getAllByRole('button')).toHaveLength(1)
-    expect(within(heroActions as HTMLElement).getByRole('button', { name: 'Ace my next interview' })).toBeInTheDocument()
+    expect(within(heroActions as HTMLElement).getByRole('button', { name: 'Get started free' })).toBeInTheDocument()
     const hero = document.querySelector('.landing-hero')
     expect(hero).not.toBeNull()
     act(() => intersectionVisibilityCallbacks.get(hero as Element)?.(false))
@@ -122,7 +119,7 @@ describe('LandingPage', () => {
     expect(screen.getByRole('img', { name: 'Interview Prep preview' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /Your copilot\.\s*Always within reach\./ })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /Ready when you are\.\s*Let’s get you hired\./ })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Get started free/ })).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: /Get started free/ })).toHaveLength(2)
     expect(screen.getByRole('button', { name: 'See pricing' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Try Interview Copilot/ })).toBeInTheDocument()
     expect(screen.queryByText('Your next role')).not.toBeInTheDocument()

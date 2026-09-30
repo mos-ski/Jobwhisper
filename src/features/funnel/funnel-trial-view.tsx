@@ -3,7 +3,7 @@ import { ArrowRight, CircleCheck, Lock } from 'lucide-react'
 
 import type { FunnelAnswers, FunnelCardStatus, FunnelQuestion as FunnelQuestionData, FunnelTrialOffer } from '@/contracts/funnel.draft'
 import type { Session } from '@/contracts/identity'
-import { ProOfferPanel } from '@/features/billing/pro-offer-widget'
+import { ProOfferPanel, type ProOfferCopy } from '@/features/billing/pro-offer-widget'
 import { Button, FormField } from '@/ui'
 import { FunnelGate } from './funnel-gate'
 import { FunnelQuestion, FunnelQuestionFooter } from './funnel-question'
@@ -70,13 +70,21 @@ export function FunnelTrialView(props: FunnelTrialViewProps) {
       footer={step === 'quiz' && question ? <FunnelQuestionFooter position={questionIndex} total={questions.length} canContinue={online && (answers[question.id] ?? '').trim().length > 0} showContinue={question.kind === 'text' || question.kind === 'range'} onBack={props.onBack} onContinue={props.onContinue} /> : undefined}
     >
       {step === 'quiz' && question ? (
-        <FunnelQuestion
-          key={question.id}
-          question={question}
-          value={answers[question.id] ?? ''}
-          onChange={(value) => props.onAnswer(question.id, value)}
-          onAutoAdvance={online ? props.onContinue : undefined}
-        />
+        <div className="grid gap-8">
+          {questionIndex === 0 ? (
+            <div className="grid gap-5 text-center">
+              <p className="font-gowun text-2xl font-bold leading-tight text-ink sm:text-3xl">Try every Jobwhisper tool for 7 days.</p>
+              <p className="text-sm leading-6 text-ink-muted">Set up your job search first. If the plan fits, start Pro for ${props.offer.introUsd} today, then ${props.offer.monthlyUsd}/month. We remind you before renewal, and you can cancel before the first charge.</p>
+            </div>
+          ) : null}
+          <FunnelQuestion
+            key={question.id}
+            question={question}
+            value={answers[question.id] ?? ''}
+            onChange={(value) => props.onAnswer(question.id, value)}
+            onAutoAdvance={online ? props.onContinue : undefined}
+          />
+        </div>
       ) : null}
       {step === 'reward' ? <RewardStep {...props} /> : null}
       {step === 'account' ? <AccountStep {...props} /> : null}
@@ -88,6 +96,15 @@ export function FunnelTrialView(props: FunnelTrialViewProps) {
 
 function RewardStep({ offer, questions, answers, resumeName, onClaim, onClose }: FunnelTrialViewProps) {
   const recap = questions.filter((item) => (answers[item.id] ?? '').trim()).slice(0, 4)
+  const copy: ProOfferCopy = {
+    heading: '7 days of Pro for $10',
+    subheading: 'Cancel anytime before it renews',
+    badge: '56% OFF',
+    price: `$${offer.introUsd}`,
+    comparisonPrice: '$22.78 for 7 days',
+    features: offer.includes,
+    action: `Try 1 week for $${offer.introUsd}`,
+  }
   return (
     <div className="grid gap-8">
       <FunnelTitle eyebrow="Your setup is ready">You’ve unlocked {offer.planName} for one week.</FunnelTitle>
@@ -99,7 +116,7 @@ function RewardStep({ offer, questions, answers, resumeName, onClaim, onClose }:
         </dl>
       ) : null}
 
-      <ProOfferPanel onClaim={onClaim} />
+      <ProOfferPanel onClaim={onClaim} copy={copy} />
 
       <div className="grid justify-items-center">
         <button type="button" onClick={onClose} className="min-h-11 rounded-md px-2 text-sm font-medium text-ink-muted underline underline-offset-4 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">

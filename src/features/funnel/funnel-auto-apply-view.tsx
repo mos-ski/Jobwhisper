@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useId, useState, type DragEvent, type ReactNode } from 'react'
 import { ArrowLeft, Building2, CircleCheck, MapPin, SearchX } from 'lucide-react'
 
 import type { FunnelAnswers, FunnelJobMatch, FunnelQuestion as FunnelQuestionData } from '@/contracts/funnel.draft'
@@ -6,7 +6,7 @@ import { Button } from '@/ui'
 import { FunnelGate } from './funnel-gate'
 import { FunnelQuestion, FunnelQuestionFooter } from './funnel-question'
 import { FunnelOfflineNotice, FunnelShell, FunnelTitle } from './funnel-shell'
-import { FunnelUpload } from './funnel-upload'
+import { FUNNEL_UPLOAD_ACCEPT } from './funnel-upload'
 
 export type FunnelAutoApplyStep = 'upload' | 'quiz' | 'matches' | 'gate'
 
@@ -69,17 +69,10 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
     )
   }
 
+  if (step === 'upload') return <AutoApplyUploadLanding {...props} />
+
   return (
     <FunnelShell label={label} stepCount={total + 2} currentStep={currentStep} onClose={onClose} notice={online ? null : <FunnelOfflineNotice />} footer={footer} width={step === 'matches' ? 'wide' : 'narrow'}>
-      {step === 'upload' ? (
-        <div className="grid gap-10">
-          <div className="grid gap-4">
-            <FunnelTitle>See the jobs we’d apply to for you.</FunnelTitle>
-            <p className="text-center text-base leading-7 text-ink-muted">Start with your resume, then nine quick questions. Free to match. Sign up to apply.</p>
-          </div>
-          <FunnelUpload fileName={props.fileName} error={props.uploadError} onFile={props.onFile} />
-        </div>
-      ) : null}
       {step === 'quiz' && question ? (
         <FunnelQuestion
           key={question.id}
@@ -95,6 +88,63 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
       {step === 'gate' ? <Gate {...props} /> : null}
     </FunnelShell>
   )
+}
+
+function AutoApplyUploadLanding({ fileName, uploadError, online, onFile, onContinue }: FunnelAutoApplyViewProps) {
+  const inputId = useId()
+  const errorId = useId()
+  const [dragging, setDragging] = useState(false)
+
+  function receiveFile(file: File) {
+    onFile(file)
+  }
+
+  function handleDrop(event: DragEvent<HTMLLabelElement>) {
+    event.preventDefault()
+    setDragging(false)
+    const file = event.dataTransfer.files?.[0]
+    if (file) receiveFile(file)
+  }
+
+  return (
+    <main data-slot="auto-apply-funnel-upload" data-theme="light" className="min-h-dvh bg-surface text-ink">
+      <section className="bg-accent-subtle px-4 py-12 sm:px-8 sm:py-16">
+        <div className="mx-auto flex w-full max-w-[1114px] flex-col items-center gap-10">
+          <a href="/" aria-label="Jobwhisper home" className="flex h-[54px] items-center rounded-[22px] bg-surface-inverse px-6 shadow-announcement focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"><img src="/funnel/auto-apply/logo.svg" alt="Jobwhisper" width="122" height="24" /></a>
+          <header className="grid justify-items-center gap-1 text-center">
+            <p className="text-xl font-bold leading-7 text-ink sm:text-2xl">Apply to jobs in 1-click.</p>
+            <h1 id="auto-apply-upload-title" className="font-gowun text-[clamp(2.75rem,5vw,4rem)] font-bold leading-none tracking-[-3.01px] text-landing-ink"><span className="block">Find your next role.</span><span className="block">Land the Job. Or Don’t Pay!</span></h1>
+          </header>
+          <div className="grid justify-items-center gap-1 text-center">
+            <h2 className="text-lg font-semibold sm:text-xl">Browse handpicked jobs from the best companies</h2>
+            <p className="flex items-center gap-2 text-sm sm:text-lg"><img src="/funnel/auto-apply/people.png" alt="" width="100" height="31" />Trusted by 2M+ job seekers</p>
+          </div>
+          <div className="w-full overflow-hidden rounded-xl border border-border bg-surface">
+            <label htmlFor={inputId} data-dragging={dragging || undefined} onDragOver={(event) => { event.preventDefault(); setDragging(true) }} onDragLeave={() => setDragging(false)} onDrop={handleDrop} className="flex min-h-[340px] cursor-pointer flex-col items-center justify-center gap-3.5 rounded-[10px] border border-dashed border-input p-6 text-center data-[dragging]:border-accent data-[dragging]:bg-accent-subtle has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus">
+              <span className="grid size-12 place-items-center rounded-xl border border-border bg-surface shadow-control"><img src="/funnel/auto-apply/upload.svg" alt="" width="22" height="22" /></span>
+              <span className="grid gap-1"><strong className="text-[15px] font-medium">{fileName ?? 'Drop a resume here, or browse files'}</strong><span className="text-[13px] text-ink-muted">{fileName ? 'Choose a different file' : 'PDF · up to 2 MB'}</span></span>
+              <span className="rounded-full bg-accent px-4 py-2 text-[13px] font-medium text-on-accent">Import resume</span>
+              <input id={inputId} type="file" accept={FUNNEL_UPLOAD_ACCEPT} aria-label="Your resume" aria-describedby={uploadError ? errorId : undefined} aria-invalid={uploadError ? true : undefined} onChange={(event) => { const file = event.target.files?.[0]; if (file) receiveFile(file); event.target.value = '' }} className="sr-only" />
+            </label>
+          </div>
+          {uploadError ? <p id={errorId} role="alert" className="-mt-8 text-sm text-danger">{uploadError}</p> : null}
+          {fileName ? <button type="button" disabled={!online} onClick={onContinue} className="min-h-12 w-full max-w-[415px] rounded bg-accent px-4 text-xl font-bold text-on-accent disabled:opacity-60">Start Your Remote Job Search Now!</button> : <label htmlFor={inputId} className="flex min-h-12 w-full max-w-[415px] cursor-pointer items-center justify-center rounded bg-accent px-4 text-xl font-bold text-on-accent focus-within:ring-2 focus-within:ring-focus">Start Your Remote Job Search Now!</label>}
+        </div>
+      </section>
+      <section aria-labelledby="auto-apply-benefits" className="px-5 py-14 sm:px-8 sm:py-16">
+        <h2 id="auto-apply-benefits" className="text-center font-gowun text-[clamp(2.5rem,5vw,4rem)] font-bold leading-none tracking-[-3.01px] text-landing-ink">The <span className="relative inline-block">#1 Site<img className="absolute -bottom-1 start-0" src="/funnel/auto-apply/underline.png" alt="" width="173" height="8" /></span> for Remote jobs</h2>
+        <div className="mx-auto mt-12 grid max-w-[960px] gap-6 md:grid-cols-3">
+          <BenefitCard icon="quality.svg" title="Higher Quality Listings" body="Only legitimate jobs. No ads, scams, or junk to sift through. Our team reviews every role so you know who’s hiring." quote="The listings were relevant and trustworthy from the start." person="Kylie R." company="Hired at Quick Med Claims" avatar="avatar-2.png" />
+          <BenefitCard icon="tools.svg" title="Personalized Tools" body="Save and apply to jobs, track activity logs and checklists, and get alerts for new roles of interest." quote="Jobwhisper gives me one clear place to manage every application." person="Daniel S." company="Hired at Lyft" avatar="avatar-3.png" />
+          <BenefitCard icon="time.svg" title="Save Time" body="Go straight from job listings to applications. No more hopping from one job board to the next." quote="I had tried other job sites sooner. Jobwhisper made the search easier." person="Stephanie H." company="Hired at Belay" avatar="avatar-4.png" />
+        </div>
+      </section>
+    </main>
+  )
+}
+
+function BenefitCard({ icon, title, body, quote, person, company, avatar }: { readonly icon: string; readonly title: string; readonly body: string; readonly quote: string; readonly person: string; readonly company: string; readonly avatar: string }) {
+  return <article className="flex min-h-[440px] flex-col bg-surface px-7 py-8 shadow-control"><img src={`/funnel/auto-apply/${icon}`} alt="" width="74" height="71" /><h3 className="mt-5 text-2xl font-semibold">{title}</h3><p className="mt-3 text-base leading-6 text-ink-muted">{body}</p><div className="mt-auto border-t border-border pt-6"><blockquote className="text-sm leading-5">“{quote}”</blockquote><div className="mt-4 flex items-center gap-2"><img src={`/funnel/auto-apply/${avatar}`} alt="" width="32" height="32" className="rounded-full" /><p className="grid text-xs"><span>{person}</span><strong>{company}</strong></p></div></div></article>
 }
 
 function MatchList({ matches, answers, onSelectJob }: FunnelAutoApplyViewProps) {

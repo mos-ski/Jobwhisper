@@ -67,6 +67,9 @@ const config: Config = {
         'landing-footer-frame': 'var(--lf-landing-footer-frame)',
         'landing-btn-text': 'var(--lf-landing-btn-text)',
         'landing-ink': 'var(--lf-landing-ink)',
+        'landing-muted': 'var(--lf-landing-muted)',
+        'landing-border': 'var(--lf-landing-border)',
+        'landing-control': 'var(--lf-landing-control)',
         overlay: 'var(--lf-overlay)',
         'wash-mint': 'var(--lf-wash-mint)',
         'brand-bar': {
@@ -104,6 +107,7 @@ const config: Config = {
         panel: 'var(--lf-shadow-panel)',
         control: 'var(--lf-shadow-control)',
         popover: 'var(--lf-shadow-popover)',
+        float: 'var(--lf-shadow-float)',
         lg: 'var(--lf-shadow-lg)',
         xl: 'var(--lf-shadow-xl)',
         announcement: 'var(--lf-shadow-announcement)',

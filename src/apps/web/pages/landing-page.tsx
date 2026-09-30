@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger } from '@/ui'
 import { CookieConsent } from '@/features/marketing/cookie-consent'
 import { MarketingFooter, MarketingNav } from '@/features/marketing/marketing-chrome'
+import { MarketingDemo } from '@/features/marketing/marketing-demo'
 import { ALL_OPTIONAL_COOKIES, NO_OPTIONAL_COOKIES, useCookieConsent } from '../cookie-consent-state'
 import './landing-page.css'
 
@@ -57,11 +58,11 @@ function SocialProofSignup() {
 
 function Hero({ heroRef, withSetup }: { readonly heroRef: RefObject<HTMLElement | null>; readonly withSetup: boolean }) {
   const navigate = useNavigate()
-  return <section className="landing-hero" ref={heroRef}><MarketingNav minimal={withSetup} /><div className="landing-hero-copy"><h1>Pass Your <span>Next Interview.</span><br />Land the Job. Or Don’t Pay!</h1><p>Jobwhisper Copilot listens to every interview question and instantly gives you a tailored answer using your resume and the job description, so you always know what to say. No guessing. No delay. No memorizing scripts. No freezing under pressure.</p>{withSetup ? <div className="landing-hero-setup"><TrySetupCard id="landing-hero-job" /></div> : <div className="landing-hero-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Ace my next interview <ArrowUpRight aria-hidden="true" /></button></div>}<div className="landing-hero-notes"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span></div></div></section>
+  return <section className="landing-hero" ref={heroRef}><MarketingNav minimal={withSetup} /><div className="landing-hero-copy"><h1>{withSetup ? <>Pass Your <span>Next Interview.</span><br />Land the Job. Or Don’t Pay!</> : <>Find the right role.<br /><span>Show up ready.</span><br />Land the job.</>}</h1><p>{withSetup ? 'Jobwhisper Copilot listens to every interview question and instantly gives you a tailored answer using your resume and the job description, so you always know what to say. No guessing. No delay. No memorizing scripts. No freezing under pressure.' : 'Build a stronger resume, find roles that fit, and get live interview support grounded in your own experience. Jobwhisper keeps the work in one place, so you spend less time searching and more time ready for the conversation that matters.'}</p>{withSetup ? <div className="landing-hero-setup"><TrySetupCard id="landing-hero-job" /></div> : <div className="landing-hero-actions"><button className="landing-primary-button" onClick={() => navigate('/v3/auth/create-account')}>Get started free <ArrowUpRight aria-hidden="true" /></button></div>}<div className="landing-hero-notes"><span><img src="/figma-landing/free-credits-gift.svg" alt="" />Includes free credits</span><b aria-hidden="true">·</b><span><img src="/figma-landing/no-card.svg" alt="" />No card required</span></div></div></section>
 }
 
 function Demo() {
-  return <section className="landing-demo" aria-label="Jobwhisper live copilot demo"><video src="/landing-demo.mp4" autoPlay muted loop playsInline /><div className="landing-demo-fade" /></section>
+  return <MarketingDemo className="landing-demo" />
 }
 
 function JourneyPreview({ active }: { readonly active: number }) {
@@ -386,7 +387,7 @@ function TrySetupCard({ id }: { readonly id: string }) {
 
 /**
  * The way in: paste a job and add a resume. The questions about them are asked full screen
- * at /v3/try/pro, which ends at a week of Pro for $4.57.
+ * at /v3/try/pro, which ends at a week of Pro for $10.
  */
 function TryItNow() {
   return <section className="landing-try" aria-labelledby="landing-try-title">

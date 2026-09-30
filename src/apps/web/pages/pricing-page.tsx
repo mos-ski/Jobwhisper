@@ -548,7 +548,7 @@ export function PricingPage() {
       <div className="flex justify-center px-4 pt-4 sm:pt-9"><MarketingNav /></div>
       <main>
         <PageShell className="pb-8 pt-10 sm:pt-14">
-          <h1 className="max-w-3xl font-gowun text-4xl font-bold leading-tight text-ink sm:text-5xl">
+          <h1 className="max-w-3xl font-gowun text-4xl font-bold leading-tight tracking-[-3.01px] text-ink sm:text-5xl">
             Three ways to buy Jobwhisper
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-ink-muted">

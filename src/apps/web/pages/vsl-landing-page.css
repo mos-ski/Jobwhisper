@@ -171,6 +171,9 @@
 }
 .vsl-hero h1 {
   margin-bottom: 0.28em;
+  font-family: 'Gowun Batang', serif;
+  font-weight: 700;
+  letter-spacing: -3.01px;
 }
 .vsl-hero .vsl-sub-h1 {
   display: block;

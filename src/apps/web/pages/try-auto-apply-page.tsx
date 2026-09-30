@@ -47,8 +47,7 @@ export function TryAutoApplyPage() {
     go('gate', { apply: target })
   }
 
-  return (
-    <FunnelAutoApplyView
+  return <FunnelAutoApplyView
       step={step}
       questions={autoApplyFunnelQuestions}
       questionIndex={questionIndex}
@@ -63,7 +62,6 @@ export function TryAutoApplyPage() {
         const error = resumeUploadError(file)
         setUploadError(error)
         setFileName(error ? undefined : file.name)
-        if (!error && online) go('quiz', { q: '0' })
       }}
       onAnswer={(id, value) => setAnswers((previous) => ({ ...previous, [id]: value }))}
       onBack={() => {
@@ -86,5 +84,4 @@ export function TryAutoApplyPage() {
       onCreateAccount={() => navigate('/v3/auto-apply/review')}
       onGoogleSignUp={() => navigate('/v3/auto-apply/review')}
     />
-  )
 }

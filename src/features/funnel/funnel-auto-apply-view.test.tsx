@@ -30,10 +30,18 @@ function renderView(overrides: Partial<FunnelAutoApplyViewProps> = {}) {
 }
 
 describe('FunnelAutoApplyView', () => {
-  it('counts the resume as the first of ten questions and says what is free', () => {
+  it('opens with the light Auto Apply resume-import page from the approved design', () => {
     renderView()
-    expect(screen.getByText('1 of 10')).toBeInTheDocument()
-    expect(screen.getByText(/Free to match\. Sign up to apply\./)).toBeInTheDocument()
+    expect(screen.getByRole('main')).toHaveAttribute('data-theme', 'light')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/Find your next role\.\s*Land the Job\. Or Don’t Pay!/)
+    expect(screen.getByText('Apply to jobs in 1-click.')).toBeInTheDocument()
+    expect(screen.getByText('Trusted by 2M+ job seekers')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Jobwhisper home' })).toHaveAttribute('href', '/')
+    expect(screen.getByText('Drop a resume here, or browse files')).toBeInTheDocument()
+    expect(screen.getByText('Start Your Remote Job Search Now!')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Higher Quality Listings' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Personalized Tools' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Save Time' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument()
   })
 

@@ -43,6 +43,7 @@ export function FunnelUpload({ fileName, error, onFile, label = 'Your resume' }:
           id={inputId}
           type="file"
           accept={FUNNEL_UPLOAD_ACCEPT}
+          aria-label={label}
           aria-describedby={error ? errorId : undefined}
           aria-invalid={error ? true : undefined}
           onChange={(event) => {

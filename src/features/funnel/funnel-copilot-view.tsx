@@ -1,0 +1,184 @@
+import { ShieldCheck } from 'lucide-react'
+
+import { ProOfferPanel, type ProOfferCopy } from '@/features/billing/pro-offer-widget'
+import { MarketingDemo } from '@/features/marketing/marketing-demo'
+import { JobwhisperMark } from '@/ui'
+import { FunnelUpload } from './funnel-upload'
+
+export type FunnelCopilotStep = 'landing' | 'role' | 'upload' | 'stage' | 'offer'
+export type CopilotInterviewStage = 'General/Introductory' | 'Technical Stage' | 'Final Interview'
+export type FunnelCopilotDateOption = {
+  readonly value: string
+  readonly weekday: string
+  readonly month: string
+  readonly day: string
+}
+
+export type FunnelCopilotViewProps = {
+  readonly step: FunnelCopilotStep
+  readonly role: string
+  readonly fileName?: string
+  readonly uploadError?: string
+  readonly selectedStage?: CopilotInterviewStage
+  readonly dates: readonly FunnelCopilotDateOption[]
+  readonly selectedDate: string
+  readonly onDateChange: (value: string) => void
+  readonly onLandingContinue: () => void
+  readonly onRoleChange: (role: string) => void
+  readonly onRoleContinue: () => void
+  readonly onFile: (file: File) => void
+  readonly onUploadContinue: () => void
+  readonly onStageSelect: (stage: CopilotInterviewStage) => void
+  readonly onStartTrial: () => void
+}
+
+const ROLE_SUGGESTIONS = ['Product Manager', 'Software Engineer', 'Customer Success Manager', 'Data Analyst', 'Product Designer', 'Marketing Manager'] as const
+const STAGES: readonly { readonly title: CopilotInterviewStage; readonly image: string; readonly body: string }[] = [
+  { title: 'General/Introductory', image: '/funnel/copilot/stage-general.png', body: 'Prepare for introductions, motivation questions, and the story behind your experience.' },
+  { title: 'Technical Stage', image: '/funnel/copilot/stage-technical.png', body: 'Practice the role-specific questions that test how you think, decide, and execute.' },
+  { title: 'Final Interview', image: '/funnel/copilot/stage-final.png', body: 'Rehearse the high-stakes conversation that turns strong performance into an offer.' },
+] as const
+const COPILOT_OFFER: ProOfferCopy = {
+  heading: '7 days of Pro for $10',
+  subheading: 'Cancel anytime before it renews',
+  badge: '56% OFF',
+  price: '$10',
+  comparisonPrice: '$22.78 for 7 days',
+  features: ['Unlimited Interview Copilot', 'Unlimited AI Auto Apply Jobs', '500+ Tailored Resumes', '100+ Hrs Interview Preps'],
+  action: 'Start my 7 days for $10',
+}
+
+function FunnelHeader() {
+  return (
+    <a href="/" aria-label="Jobwhisper home" className="mx-auto flex min-h-11 w-fit items-center rounded-[22px] bg-landing-nav px-6 py-1.5 text-surface shadow-announcement focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+      <JobwhisperMark className="h-6 w-auto" />
+    </a>
+  )
+}
+
+function PrivacyNote() {
+  return (
+    <p className="mx-auto mt-14 flex max-w-5xl items-start gap-2 text-xs leading-5 text-ink-muted sm:mt-16">
+      <ShieldCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+      Jobwhisper is SOC 2 certified and never sells your data. Learn more in our <a href="/terms" className="underline underline-offset-2">Terms</a> &amp; <a href="/privacy" className="underline underline-offset-2">Privacy</a>.
+    </p>
+  )
+}
+
+export function FunnelCopilotView(props: FunnelCopilotViewProps) {
+  return (
+    <main data-slot="copilot-funnel" data-step={props.step} data-theme="light" className="min-h-dvh bg-surface px-4 pb-20 pt-10 text-ink sm:px-6 sm:pt-12">
+      <FunnelHeader />
+      {props.step === 'landing' ? <LandingStep {...props} /> : null}
+      {props.step === 'role' ? <RoleStep {...props} /> : null}
+      {props.step === 'upload' ? <UploadStep {...props} /> : null}
+      {props.step === 'stage' ? <StageStep {...props} /> : null}
+      {props.step === 'offer' ? <OfferStep onStartTrial={props.onStartTrial} /> : null}
+    </main>
+  )
+}
+
+function LandingStep({ dates, selectedDate, onDateChange, onLandingContinue }: FunnelCopilotViewProps) {
+  return (
+    <div className="mx-auto flex w-full max-w-7xl flex-col items-center pt-16 text-center sm:pt-20">
+      <section aria-labelledby="copilot-landing-title" className="flex max-w-4xl flex-col items-center">
+        <h1 id="copilot-landing-title" className="text-balance font-gowun text-4xl font-bold leading-none tracking-[-3.01px] text-landing-ink sm:text-6xl">
+          Pass your next interview with an answer ready when you need it.
+        </h1>
+        <p className="mt-9 max-w-3xl text-base leading-7 text-landing-muted sm:text-xl sm:leading-8">Jobwhisper Copilot listens to the question and drafts a tailored answer in real time using your resume and the job description. Stay present in the conversation instead of memorizing scripts or searching for what to say.</p>
+        <fieldset className="mt-12 w-full max-w-3xl">
+          <legend className="mb-6 text-lg font-medium text-landing-ink">When is your next Interview?</legend>
+          <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
+            {dates.map((date) => (
+              <button key={date.value} type="button" aria-pressed={selectedDate === date.value} onClick={() => onDateChange(date.value)} className="grid min-h-20 place-items-center rounded-panel border border-border bg-surface px-2 py-3 text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus aria-pressed:border-accent aria-pressed:bg-accent aria-pressed:text-on-accent">
+                <span className="text-xs font-medium">{date.weekday}</span>
+                <span className="text-lg font-semibold">{date.day}</span>
+                <span className="text-xs opacity-70">{date.month}</span>
+              </button>
+            ))}
+          </div>
+        </fieldset>
+        <label htmlFor="copilot-interview-date" className="sr-only">Select a Date</label>
+        <input id="copilot-interview-date" type="date" value={selectedDate} onChange={(event) => onDateChange(event.target.value)} className="mt-5 min-h-12 w-full max-w-md rounded-panel border border-input bg-surface px-5 text-center text-base text-ink shadow-control outline-none focus-visible:ring-2 focus-visible:ring-focus" />
+        <button type="button" onClick={onLandingContinue} className="mt-7 min-h-12 rounded-full bg-accent px-8 text-base font-semibold text-on-accent hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Ace my Interview</button>
+      </section>
+      <MarketingDemo className="mt-28 max-w-[1510px]" />
+    </div>
+  )
+}
+
+function RoleStep({ role, onRoleChange, onRoleContinue }: FunnelCopilotViewProps) {
+  return (
+    <section aria-labelledby="copilot-role-title" className="mx-auto flex w-full max-w-5xl flex-col items-center pt-16 text-center sm:pt-20">
+      <h1 id="copilot-role-title" className="max-w-4xl text-balance font-gowun text-4xl font-bold leading-none tracking-[-3.01px] text-landing-ink sm:text-6xl">
+        What role are you looking to Ace. So we get you.
+      </h1>
+      <form className="mt-16 grid w-full max-w-xl justify-items-center gap-6" onSubmit={(event) => { event.preventDefault(); if (role.trim()) onRoleContinue() }}>
+        <label htmlFor="copilot-role" className="text-lg font-medium text-landing-ink">Enter job role</label>
+        <input id="copilot-role" value={role} onChange={(event) => onRoleChange(event.target.value)} placeholder="e.g. Customer Success Manager" className="min-h-14 w-full rounded-panel border border-input bg-surface px-5 text-center text-base text-ink shadow-control outline-none placeholder:text-ink-muted focus-visible:ring-2 focus-visible:ring-focus" />
+        <p className="text-xs text-ink-muted">Or select from here</p>
+        <div className="flex flex-wrap justify-center gap-2">
+          {ROLE_SUGGESTIONS.map((suggestion) => (
+            <button key={suggestion} type="button" aria-pressed={role === suggestion} onClick={() => onRoleChange(suggestion)} className="min-h-11 rounded-full border border-border bg-surface px-4 text-sm font-medium text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus aria-pressed:border-accent aria-pressed:bg-accent-subtle aria-pressed:text-accent-text">
+              {suggestion}
+            </button>
+          ))}
+        </div>
+        <button type="submit" disabled={!role.trim()} className="mt-2 min-h-11 rounded-full bg-accent px-7 text-sm font-medium text-on-accent disabled:bg-muted disabled:text-ink-muted">Continue</button>
+      </form>
+      <PrivacyNote />
+    </section>
+  )
+}
+
+function UploadStep({ fileName, uploadError, onFile, onUploadContinue }: FunnelCopilotViewProps) {
+  return (
+    <section aria-labelledby="copilot-upload-title" className="mx-auto flex w-full max-w-6xl flex-col items-center pt-12 sm:pt-16">
+      <h1 id="copilot-upload-title" className="max-w-3xl text-balance text-center font-gowun text-4xl font-bold leading-none tracking-[-3.01px] text-landing-ink sm:text-6xl">Upload a resume, so we can tell you how to prepare</h1>
+      <div className="mt-14 w-full max-w-5xl overflow-hidden rounded-panel border border-border bg-surface">
+        <header className="flex min-h-12 items-center justify-between border-b border-border px-5">
+          <h2 className="text-sm font-semibold">Resume</h2>
+          <button type="button" onClick={() => onFile(new File(['Jobwhisper sample resume'], 'sample-resume.pdf', { type: 'application/pdf' }))} className="inline-flex min-h-11 items-center rounded-md px-2 text-sm font-medium hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Use sample resume</button>
+        </header>
+        <div className="p-4 sm:p-5">
+          <FunnelUpload fileName={fileName} error={uploadError} onFile={onFile} />
+        </div>
+        <footer className="flex min-h-16 items-center justify-between gap-4 border-t border-border px-5">
+          <p className="truncate text-xs text-ink-muted">{fileName ?? 'Import a resume to start'}</p>
+          <button type="button" disabled={!fileName} onClick={onUploadContinue} className="inline-flex min-h-10 items-center rounded-full bg-accent px-5 text-sm font-medium text-on-accent disabled:bg-muted disabled:text-ink-muted">Continue</button>
+        </footer>
+      </div>
+      <PrivacyNote />
+    </section>
+  )
+}
+
+function StageStep({ selectedStage, onStageSelect }: FunnelCopilotViewProps) {
+  return (
+    <section aria-labelledby="copilot-stage-title" className="mx-auto flex w-full max-w-6xl flex-col items-center pt-12 sm:pt-16">
+      <h1 id="copilot-stage-title" className="max-w-3xl text-balance text-center font-gowun text-4xl font-bold leading-none tracking-[-3.01px] text-landing-ink sm:text-6xl">What Interview stage are you preparing for?</h1>
+      <div className="mt-14 grid w-full gap-5 md:grid-cols-3">
+        {STAGES.map((stage) => (
+          <button key={stage.title} type="button" aria-pressed={selectedStage === stage.title} onClick={() => onStageSelect(stage.title)} className="grid min-h-64 justify-items-center gap-4 rounded-panel border border-transparent bg-surface-subtle p-7 text-center hover:border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus aria-pressed:border-accent aria-pressed:bg-accent-subtle">
+            <img src={stage.image} alt="" className="h-24 w-28 object-contain" />
+            <span className="font-semibold text-ink">{stage.title}</span>
+            <span className="text-sm leading-6 text-ink-muted">{stage.body}</span>
+          </button>
+        ))}
+      </div>
+      <p className="mt-14 text-lg font-medium text-ink">Our users have landed roles in these companies</p>
+      <div className="mt-10 grid w-full grid-cols-2 items-center gap-px overflow-hidden rounded-panel bg-border sm:grid-cols-3" aria-label="Companies using Jobwhisper">
+        {['Adidas', 'Asana', 'ElevenLabs', 'Zendesk', 'Workday', 'NVIDIA'].map((company, index) => <div key={company} className="grid min-h-28 place-items-center bg-surface p-6"><img src={`/funnel/copilot/brand-${index + 1}.svg`} alt={company} className="max-h-10 max-w-36" /></div>)}
+      </div>
+    </section>
+  )
+}
+
+function OfferStep({ onStartTrial }: { readonly onStartTrial: () => void }) {
+  return (
+    <section aria-labelledby="copilot-offer-title" className="mx-auto flex w-full max-w-4xl flex-col items-center pt-12 text-center sm:pt-16">
+      <h1 id="copilot-offer-title" className="max-w-3xl text-balance font-gowun text-4xl font-bold leading-none tracking-[-3.01px] text-landing-ink sm:text-6xl">You are set!<br />You’ve unlocked Pro<br />for 7 days.</h1>
+      <div className="mt-14 w-full"><ProOfferPanel onClaim={onStartTrial} copy={COPILOT_OFFER} /></div>
+    </section>
+  )
+}

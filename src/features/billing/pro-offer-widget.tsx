@@ -7,6 +7,17 @@ export type ProOfferWidgetProps = {
   readonly onClaim: () => void
   /** When the offer expires, as epoch milliseconds. Pass the same value to every surface so they count down together. Defaults to an hour from first render. */
   readonly endsAt?: number
+  readonly copy?: ProOfferCopy
+}
+
+export type ProOfferCopy = {
+  readonly heading: string
+  readonly subheading: string
+  readonly badge: string
+  readonly price: string
+  readonly comparisonPrice: string
+  readonly features: readonly string[]
+  readonly action: string
 }
 
 const OFFER_WINDOW_MS = 60 * 60 * 1000
@@ -54,6 +65,15 @@ type ProOfferCardProps = Omit<ProOfferWidgetProps, 'onDismiss'> & {
 }
 
 const OFFER_FEATURES = ['Unlimited Interview Help Copilot', 'Unlimited AI Auto Apply Jobs', '500+ Tailored Resume', '100+ Hrs Interview Preps'] as const
+const DEFAULT_OFFER_COPY: ProOfferCopy = {
+  heading: 'Special One-time Trial',
+  subheading: 'Land 3x more interviews with Pro now',
+  badge: '80% OFF',
+  price: '$4.57',
+  comparisonPrice: '$22.85/week',
+  features: OFFER_FEATURES,
+  action: 'Try 1 week for $4.57',
+}
 
 /** A switched-on toggle, drawn small: each feature is something the week turns on. */
 function ToggleBullet() {
@@ -64,7 +84,7 @@ function ToggleBullet() {
   )
 }
 
-function ProOfferCard({ onDismiss, onClaim, titleId, endsAt }: ProOfferCardProps) {
+function ProOfferCard({ onDismiss, onClaim, titleId, endsAt, copy = DEFAULT_OFFER_COPY }: ProOfferCardProps) {
   const remaining = useCountdown(endsAt)
 
   return (
@@ -82,8 +102,8 @@ function ProOfferCard({ onDismiss, onClaim, titleId, endsAt }: ProOfferCardProps
           <span aria-hidden="true" className="text-2xl leading-none">×</span>
         </button> : null}
         <div className="absolute inset-x-0 top-24 px-4 text-center font-gowun">
-          <h2 id={titleId} className="text-[2rem] font-normal leading-10 tracking-[-0.18rem]">Special One-time Trial</h2>
-          <p className="text-base leading-5 tracking-[-0.05rem]">Land 3x more interviews with Pro now</p>
+          <h2 id={titleId} className="text-[2rem] font-normal leading-10 tracking-[-0.18rem]">{copy.heading}</h2>
+          <p className="text-base leading-5 tracking-[-0.05rem]">{copy.subheading}</p>
         </div>
       </div>
       {/* The wave rides over the seam between the blue header and the white body. */}
@@ -92,17 +112,17 @@ function ProOfferCard({ onDismiss, onClaim, titleId, endsAt }: ProOfferCardProps
         <div className="pb-3 pt-4 text-center">
           <p className="flex flex-wrap items-center justify-center gap-2 text-sm font-semibold text-ink">
             Try Pro for 7 days
-            <span className="rounded-full bg-accent-subtle px-2.5 py-0.5 text-xs font-bold text-accent-text">80% OFF</span>
+            <span className="rounded-full bg-accent-subtle px-2.5 py-0.5 text-xs font-bold text-accent-text">{copy.badge}</span>
           </p>
           <div className="mt-3 border-t border-border py-3">
             <p className="font-gowun text-5xl leading-none tracking-[-0.2rem]">
-              <span className="text-ink-muted">Just</span> <span className="text-accent-text">$4.57</span>
+              <span className="text-ink-muted">Just</span> <span className="text-accent-text">{copy.price}</span>
             </p>
-            <p className="mt-2 text-sm text-ink-muted"><s>$22.85/week</s></p>
+            <p className="mt-2 text-sm text-ink-muted"><s>{copy.comparisonPrice}</s></p>
           </div>
         </div>
         <ul className="grid gap-3" aria-label="Included in the Pro week">
-          {OFFER_FEATURES.map((feature) => (
+          {copy.features.map((feature) => (
             <li key={feature} className="flex items-center gap-2 text-lg leading-6 text-ink-muted sm:text-xl">
               <ToggleBullet />
               {feature}
@@ -112,7 +132,7 @@ function ProOfferCard({ onDismiss, onClaim, titleId, endsAt }: ProOfferCardProps
       </div>
       <div className="px-6 py-6 sm:px-7">
         <Button className="min-h-11 w-full text-sm" onClick={onClaim}>
-          <span>Try 1 week for <strong className="font-bold">$4.57</strong></span>
+          <span>{copy.action}</span>
           {/* The countdown ticks every second, so it is left out of the button's spoken name. */}
           <span aria-hidden="true" className="ms-1 tabular-nums opacity-80">Ends in {remaining}</span>
         </Button>
@@ -125,14 +145,15 @@ function ProOfferCard({ onDismiss, onClaim, titleId, endsAt }: ProOfferCardProps
 export type ProOfferPanelProps = {
   readonly onClaim: () => void
   readonly endsAt?: number
+  readonly copy?: ProOfferCopy
 }
 
 /** The same offer card, sitting in the flow of a page rather than pinned to a corner. */
-export function ProOfferPanel({ onClaim, endsAt }: ProOfferPanelProps) {
+export function ProOfferPanel({ onClaim, endsAt, copy }: ProOfferPanelProps) {
   const tilt = useTilt()
   return (
     <section aria-label="Pro plan offer" {...tilt} className="mx-auto w-full max-w-md overflow-hidden rounded-panel border border-border bg-surface shadow-panel">
-      <ProOfferCard onClaim={onClaim} endsAt={endsAt} />
+      <ProOfferCard onClaim={onClaim} endsAt={endsAt} copy={copy} />
     </section>
   )
 }

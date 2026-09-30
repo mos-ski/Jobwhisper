@@ -110,7 +110,7 @@ export function FunnelTitle({ children, id, eyebrow, align = 'center' }: FunnelT
   return (
     <div data-slot="funnel-title" className={cn('grid gap-3', align === 'center' ? 'text-center' : 'text-start')}>
       {eyebrow ? <p className="text-sm font-semibold text-accent-text">{eyebrow}</p> : null}
-      <h1 id={id} className="text-balance font-gowun text-3xl font-bold leading-tight text-ink sm:text-5xl">{children}</h1>
+      <h1 id={id} className="text-balance font-gowun text-3xl font-bold leading-tight tracking-[-3.01px] text-ink sm:text-5xl">{children}</h1>
     </div>
   )
 }

@@ -13,11 +13,24 @@ function renderAt(path: string) {
 }
 
 describe('/v3/try/auto-apply', () => {
+  it('keeps the landing focused on importing a resume', () => {
+    renderAt('/v3/try/auto-apply')
+
+    expect(screen.getByRole('heading', { name: /Find your next role\.\s*Land the Job\. Or Don’t Pay!/ })).toBeInTheDocument()
+    expect(screen.getByLabelText('Your resume')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'The #1 Site for Remote jobs' })).toBeInTheDocument()
+    expect(screen.getByText('Trusted by 2M+ job seekers')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Higher Quality Listings' })).toBeInTheDocument()
+    expect(screen.queryByText('AI Resume Builder')).not.toBeInTheDocument()
+  })
+
   it('asks every matching question, shows the matches, and gates the apply', () => {
     renderAt('/v3/try/auto-apply')
 
     const resume = new File(['Darnell Smith'], 'darnell-smith-resume.pdf', { type: 'application/pdf' })
     fireEvent.change(screen.getByLabelText(/Your resume/), { target: { files: [resume] } })
+    expect(screen.getByText('darnell-smith-resume.pdf')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Start Your Remote Job Search Now!' }))
 
     for (const question of autoApplyFunnelQuestions) {
       expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(question.ask)

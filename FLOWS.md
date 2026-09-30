@@ -225,7 +225,7 @@
 ## Try-It Funnel: Resume (Upload -> Score -> Before and After -> Download Gate)
 
 1. Entry condition: a visitor opens `/v3/try/resume`. The first screen says "Free to score. Create an account to download."
-   Exit condition: they optionally paste a job description, then choose a resume, which scores it straight away.
+   Exit condition: they optionally paste a job description in the composer, attach a resume with its paperclip, and press the circular Analyze for free send button, which scores it.
    Failure branch: an unsupported, oversized or empty file is refused with the fix stated; offline, the file is kept and scoring waits for the connection.
 
 

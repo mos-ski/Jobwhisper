@@ -30,7 +30,7 @@ const tryFunnelRoutes = [
   {
     href: '/v3/try/pro',
     label: 'A week of Pro',
-    description: 'The landing-page quiz, ending in the Pro offer widget: one week of Pro for $4.57, then $99 a month.',
+    description: 'The landing-page quiz, ending in the Pro offer widget: one week of Pro for $10, then $99 a month.',
   },
   {
     href: '/v3/try/resume',
@@ -41,6 +41,11 @@ const tryFunnelRoutes = [
     href: '/v3/try/auto-apply',
     label: 'Auto Apply',
     description: 'Resume plus nine questions, then matched jobs you sign up to apply to.',
+  },
+  {
+    href: '/v3/try/copilot',
+    label: 'Interview Copilot',
+    description: 'Choose a role, import a resume, select the interview stage, then unlock the seven-day Pro offer.',
   },
 ] as const
 

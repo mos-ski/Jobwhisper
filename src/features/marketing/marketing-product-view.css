@@ -200,7 +200,7 @@
   font-family: 'Gowun Batang', serif;
   font-size: clamp(42px, 3vw, 56px);
   line-height: 1;
-  letter-spacing: -0.047em;
+  letter-spacing: -3.01px;
   font-weight: 700;
   text-wrap: balance;
   display: -webkit-box;

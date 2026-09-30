@@ -9,7 +9,7 @@
   --type-lede:clamp(17px,1.4vw,21px);
 }
 .figma-landing-page h1,.figma-landing-page h2{font-family:'Gowun Batang',serif;font-weight:400;line-height:1.1;letter-spacing:-.02em;text-wrap:balance}
-.figma-landing-page h1{line-height:1.06}
+.figma-landing-page h1{line-height:1.06;font-weight:700;letter-spacing:-3.01px}
 /* strong inherits `bolder`, which against a 600 parent computes to 900 — a weight neither
    family ships, so the browser synthesises it. Pin it to the heaviest real cut. */
 .figma-landing-page strong{font-weight:700}

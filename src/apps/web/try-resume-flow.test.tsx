@@ -17,13 +17,14 @@ describe('/v3/try/resume', () => {
     const image = new File(['x'], 'headshot.png', { type: 'image/png' })
     fireEvent.change(screen.getByLabelText(/Your resume/), { target: { files: [image] } })
     expect(screen.getByRole('alert')).toHaveTextContent('Upload a PDF, DOC, DOCX or TXT file')
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('See your resume the way a hiring system does')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Let’s analyze your resume')
   })
 
   it('scores, shows the rewrite, and asks for an account at download', () => {
     renderAt('/v3/try/resume')
     const resume = new File(['Darnell Smith'], 'darnell-smith-resume.pdf', { type: 'application/pdf' })
     fireEvent.change(screen.getByLabelText(/Your resume/), { target: { files: [resume] } })
+    fireEvent.click(screen.getByRole('button', { name: 'Analyze for free' }))
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Likely filtered out')
     fireEvent.click(screen.getByRole('button', { name: /See it fixed/ }))

@@ -70,6 +70,7 @@ import { ResumeHistoryPage } from './pages/resume-history-page'
 import { ResumeUploadPage } from './pages/resume-upload-page'
 import { RouteIndexPage } from './pages/route-index-page'
 import { TryAutoApplyPage } from './pages/try-auto-apply-page'
+import { TryCopilotPage } from './pages/try-copilot-page'
 import { TryProPage } from './pages/try-pro-page'
 import { TryResumePage } from './pages/try-resume-page'
 import { LibraryPage } from './pages/library-page'
@@ -174,6 +175,10 @@ export function WebRoutes() {
 
   if (routePath === '/try/auto-apply') {
     return <TryAutoApplyPage />
+  }
+
+  if (routePath === '/try/copilot') {
+    return <TryCopilotPage />
   }
 
   if (routePath === '/auth/choose-plan') {

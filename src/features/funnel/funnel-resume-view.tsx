@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import { ArrowRight, Download, FileCheck } from 'lucide-react'
+import { ArrowRight, ArrowUp, Download, FileCheck, Paperclip } from 'lucide-react'
 
 import type { AtsIssueSeverity, AtsReport, ResumeRewrite } from '@/contracts/funnel.draft'
 import { ResumeCompare } from '@/features/resume/resume-compare'
@@ -7,9 +7,16 @@ import { ClassicResume } from '@/features/resume/resume-templates'
 import { Button, cn } from '@/ui'
 import { FunnelGate } from './funnel-gate'
 import { FunnelOfflineNotice, FunnelShell, FunnelTitle } from './funnel-shell'
-import { FunnelUpload } from './funnel-upload'
 
 export type FunnelResumeStep = 'upload' | 'score' | 'compare' | 'gate' | 'done'
+
+export type ResumeFunnelActivity = {
+  readonly id: string
+  readonly name: string
+  readonly countryFlag: string
+  readonly score: number
+  readonly timeLabel: string
+}
 
 export type FunnelResumeViewProps = {
   readonly step: FunnelResumeStep
@@ -19,7 +26,9 @@ export type FunnelResumeViewProps = {
   readonly online: boolean
   readonly report: AtsReport
   readonly rewrite: ResumeRewrite
+  readonly liveActivity?: ResumeFunnelActivity
   readonly onFile: (file: File) => void
+  readonly onAnalyze: () => void
   readonly onJobDescriptionChange: (value: string) => void
   readonly onBack: () => void
   readonly onClose: () => void
@@ -58,6 +67,8 @@ export function FunnelResumeView(props: FunnelResumeViewProps) {
   const { step, online, onClose, rewrite } = props
   const position = step === 'done' ? STEP_ORDER.length : STEP_ORDER.indexOf(step) + 1
 
+  if (step === 'upload') return <UploadStep {...props} />
+
   return (
     <FunnelShell
       label={STEP_LABELS[step]}
@@ -65,10 +76,8 @@ export function FunnelResumeView(props: FunnelResumeViewProps) {
       currentStep={position}
       onClose={onClose}
       notice={online ? null : <FunnelOfflineNotice />}
-      footer={step === 'upload' ? <UploadFooter {...props} /> : undefined}
       width={step === 'compare' || step === 'score' ? 'wide' : 'narrow'}
     >
-      {step === 'upload' ? <UploadStep {...props} /> : null}
       {step === 'score' ? <ScoreStep {...props} /> : null}
       {step === 'compare' ? <CompareStep {...props} /> : null}
       {step === 'gate' ? (
@@ -87,33 +96,127 @@ export function FunnelResumeView(props: FunnelResumeViewProps) {
   )
 }
 
-function UploadStep({ fileName, uploadError, jobDescription, onFile, onJobDescriptionChange }: FunnelResumeViewProps) {
+function UploadStep({ fileName, uploadError, jobDescription, online, liveActivity, onFile, onAnalyze, onJobDescriptionChange, onBack }: FunnelResumeViewProps) {
   const jobId = useId()
+  const fileId = useId()
+  const errorId = useId()
   return (
-    <div className="grid gap-10">
-      <div className="grid gap-4">
-        <FunnelTitle eyebrow="Free ATS check">See your resume the way a hiring system does.</FunnelTitle>
-        <p className="text-center text-base leading-7 text-ink-muted">Free to score. Create an account to download.</p>
+    <main
+      data-slot="resume-funnel-landing"
+      data-theme="light"
+      className="flex min-h-dvh flex-col items-center bg-[linear-gradient(to_bottom,var(--lf-landing-paper)_75%,var(--lf-landing-bg)_121%)] px-6 pb-20 pt-[68px] text-landing-ink"
+    >
+      <a
+        href="/"
+        onClick={(event) => {
+          event.preventDefault()
+          onBack()
+        }}
+        aria-label="Jobwhisper home"
+        className="flex h-[54px] items-center justify-center rounded-[22px] bg-surface-inverse px-6 py-1.5 shadow-popover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+      >
+        <img src="/funnel/resume/jobwhisper-logo.svg" alt="Jobwhisper" width="122" height="24" />
+      </a>
+
+      {!online ? <div className="mt-4 w-full max-w-3xl"><FunnelOfflineNotice /></div> : null}
+
+      <div className="flex w-full max-w-[820px] flex-1 flex-col items-center justify-center gap-7 py-14 text-center">
+        <h1 className="max-w-[802px] text-balance font-gowun text-[clamp(2.625rem,6.25vw,4rem)] font-bold leading-[1.0625] tracking-[-3.01px]">
+          Let’s analyze your resume to see why you haven’t landed your dream role.
+        </h1>
+        <p className="max-w-[642px] text-[clamp(1rem,2.05vw,1.3125rem)] leading-[1.42] text-landing-muted">
+          Attach a resume, get a free ATS check and we will re-write your resume for free. Add a job description to make it effective.
+        </p>
+
+        <div
+          data-slot="funnel-resume-composer"
+          className="w-full max-w-[456px] rounded-[28px] border border-landing-border bg-surface p-6 text-start shadow-float"
+        >
+          <label htmlFor={jobId} className="sr-only">Paste a job description</label>
+          <textarea
+            id={jobId}
+            rows={2}
+            value={jobDescription}
+            onChange={(event) => onJobDescriptionChange(event.target.value)}
+            placeholder="Paste a job description...."
+            className="min-h-12 w-full resize-none bg-transparent text-base leading-6 tracking-[-0.0195em] text-landing-ink outline-none placeholder:text-landing-muted focus-visible:ring-0"
+          />
+          <div className="mt-3 flex items-center justify-between gap-3">
+            <label
+              htmlFor={fileId}
+              className={cn(
+                'flex min-h-11 cursor-pointer items-center gap-2 rounded-full has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus',
+                fileName ? 'min-w-0 flex-1' : 'w-11 justify-center',
+              )}
+            >
+              <Paperclip aria-hidden="true" className="size-[18px] shrink-0 text-landing-ink" />
+              {fileName ? <span className="min-w-0 truncate text-sm text-landing-muted">{fileName}</span> : null}
+              <input
+                id={fileId}
+                type="file"
+                accept=".pdf,.doc,.docx,.txt"
+                aria-label="Your resume"
+                aria-describedby={uploadError ? errorId : undefined}
+                aria-invalid={uploadError ? true : undefined}
+                onChange={(event) => {
+                  const file = event.target.files?.[0]
+                  if (file) onFile(file)
+                  event.target.value = ''
+                }}
+                className="sr-only"
+              />
+            </label>
+            <button
+              type="button"
+              aria-label="Analyze for free"
+              disabled={!fileName || !online}
+              onClick={onAnalyze}
+              className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:cursor-not-allowed"
+            >
+              <span
+                data-ready={fileName && online ? '' : undefined}
+                className={cn(
+                  'flex size-8 items-center justify-center rounded-full text-surface transition-colors',
+                  fileName && online ? 'bg-surface-inverse' : 'bg-landing-control',
+                )}
+              >
+                <ArrowUp aria-hidden="true" className="size-[18px]" />
+              </span>
+            </button>
+          </div>
+        </div>
+        {uploadError ? (
+          <p id={errorId} role="alert" className="mt-3 w-full max-w-[456px] text-start text-sm text-danger">{uploadError}</p>
+        ) : null}
       </div>
-      {/* The job description comes first: choosing a file scores it straight away. */}
-      <div className="grid gap-2">
-        <label htmlFor={jobId} className="text-sm font-medium text-ink">Job description <span className="font-normal text-ink-muted">(optional, sharpens the score)</span></label>
-        <textarea
-          id={jobId}
-          rows={4}
-          value={jobDescription}
-          onChange={(event) => onJobDescriptionChange(event.target.value)}
-          placeholder="Paste the posting you are applying to"
-          className="w-full rounded-2xl border border-input bg-surface px-4 py-3 text-base leading-7 text-ink shadow-control outline-none placeholder:text-ink-muted focus:border-focus focus:ring-2 focus:ring-focus"
-        />
-      </div>
-      <FunnelUpload fileName={fileName} error={uploadError} onFile={onFile} />
-    </div>
+      {liveActivity ? <ResumeActivityToast activity={liveActivity} /> : null}
+    </main>
   )
 }
 
-function UploadFooter({ onBack }: FunnelResumeViewProps) {
-  return <Button variant="secondary" size="lg" onClick={onBack}>Back</Button>
+function ResumeActivityToast({ activity }: { readonly activity: ResumeFunnelActivity }) {
+  const initials = activity.name
+    .split(' ')
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+
+  return (
+    <aside
+      key={activity.id}
+      aria-label="Recent ATS activity"
+      className="fixed bottom-4 start-4 z-20 flex w-[calc(100%-2rem)] max-w-[292px] items-center gap-3 rounded-2xl border border-border bg-surface px-3 py-3 text-start shadow-popover sm:bottom-6 sm:start-6"
+    >
+      <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-sm font-bold text-accent-text">
+        {initials}
+      </span>
+      <span className="grid min-w-0 flex-1 gap-0.5">
+        <span className="truncate text-sm font-semibold text-ink">{activity.name} <span aria-hidden="true">{activity.countryFlag}</span></span>
+        <span className="text-sm text-ink-muted">Scored {activity.score} in ATS</span>
+      </span>
+      <span className="self-end whitespace-nowrap text-xs text-ink-muted">{activity.timeLabel}</span>
+    </aside>
+  )
 }
 
 const RING_RADIUS = 52

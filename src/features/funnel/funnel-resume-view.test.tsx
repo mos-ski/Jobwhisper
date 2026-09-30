@@ -13,6 +13,7 @@ function renderView(overrides: Partial<FunnelResumeViewProps> = {}) {
     report: resumeFunnelReport,
     rewrite: resumeFunnelRewrite,
     onFile: vi.fn(),
+    onAnalyze: vi.fn(),
     onJobDescriptionChange: vi.fn(),
     onBack: vi.fn(),
     onClose: vi.fn(),
@@ -28,10 +29,20 @@ function renderView(overrides: Partial<FunnelResumeViewProps> = {}) {
 }
 
 describe('FunnelResumeView', () => {
-  it('says what is free before anything is uploaded, with no button to press', () => {
+  it('explains the free ATS check and keeps analysis disabled before upload', () => {
     renderView()
-    expect(screen.getByText(/Free to score\. Create an account to download\./)).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /Score/ })).not.toBeInTheDocument()
+    expect(screen.getByText(/get a free ATS check/)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Let’s analyze your resume')
+    expect(screen.queryByRole('region', { name: 'Job seeker results' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Analyze for free' })).toBeDisabled()
+  })
+
+  it('shows the latest ATS activity in the fixed live feed', () => {
+    renderView({ liveActivity: { id: 'jason-bake', name: 'Jason Bake', countryFlag: '🇺🇸', score: 57, timeLabel: 'Just now' } })
+    const activity = screen.getByRole('complementary', { name: 'Recent ATS activity' })
+    expect(activity).toHaveTextContent('Jason Bake')
+    expect(activity).toHaveTextContent('Scored 57 in ATS')
+    expect(activity).toHaveTextContent('Just now')
   })
 
   it('hands the chosen file over and states why a file was refused', () => {
@@ -40,6 +51,15 @@ describe('FunnelResumeView', () => {
     fireEvent.change(screen.getByLabelText(/Your resume/), { target: { files: [file] } })
     expect(props.onFile).toHaveBeenCalledWith(file)
     expect(screen.getByRole('alert')).toHaveTextContent('over 5 MB')
+  })
+
+  it('starts analysis from the redesigned button after a resume is imported', () => {
+    const props = renderView({ fileName: 'darnell-smith-resume.pdf' })
+    expect(screen.getByText('darnell-smith-resume.pdf')).toBeInTheDocument()
+    const analyze = screen.getByRole('button', { name: 'Analyze for free' })
+    expect(analyze).toBeEnabled()
+    fireEvent.click(analyze)
+    expect(props.onAnalyze).toHaveBeenCalledOnce()
   })
 
   it('shows the score in words as well as a number, with every issue and its impact', () => {

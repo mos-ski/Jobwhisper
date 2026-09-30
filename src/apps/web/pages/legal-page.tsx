@@ -59,7 +59,7 @@ export function LegalPage({ kind }: LegalPageProps) {
 
       <main className="mx-auto w-full max-w-4xl px-4 pb-20 pt-16 sm:px-6 sm:pt-24 lg:px-8">
         <p className="text-sm font-semibold uppercase tracking-wide text-accent-text">Jobwhisper legal</p>
-        <h1 className="mt-3 max-w-3xl font-gowun text-4xl font-bold leading-tight sm:text-5xl">{content.title}</h1>
+        <h1 className="mt-3 max-w-3xl font-gowun text-4xl font-bold leading-tight tracking-[-3.01px] sm:text-5xl">{content.title}</h1>
         <p className="mt-5 max-w-2xl text-base leading-7 text-ink-muted">{content.intro}</p>
         <p className="mt-3 text-sm text-ink-muted">Effective September 11, 2026</p>
 

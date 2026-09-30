@@ -139,6 +139,7 @@ These fixed roles reproduce the approved Figma marketing art direction in both t
 | `shadow-panel` | `shadow-panel` | Card/panel elevation |
 | `shadow-control` | `shadow-control` | Input/button elevation |
 | `shadow-popover` | `shadow-popover` | Popover/dropdown elevation |
+| `shadow-float` | `shadow-float` | A card floating above the page, e.g. the composer card on the funnels |
 | `shadow-lg` | `shadow-lg` | Large elevation |
 | `shadow-xl` | `shadow-xl` | Extra large elevation |
 

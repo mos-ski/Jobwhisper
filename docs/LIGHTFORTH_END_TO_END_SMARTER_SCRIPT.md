@@ -45,6 +45,10 @@ The public landing page uses one primary blue action: **Ace my next interview**,
 
 The demo has no separate centered call to action. Once the visitor scrolls beyond the hero, a centered floating social-proof control appears with the concise outcome statement **Join 57,000+ job seekers landing better roles** and a blue Download action.
 
+The five public acquisition surfaces keep one job per page. The main page says **Find the right role. Show up ready. Land the job.** and explains that Jobwhisper keeps resume building, role matching, and live interview support in one place. The Resume funnel diagnoses the resume, shows the ATS score and rewrite before signup, and gates the download. The Interview Copilot funnel asks for the target role, resume, interview stage, and date before the seven-day Pro offer. The Auto Apply funnel says that Jobwhisper finds recent roles matching the visitor's experience, priorities, and location, then applies for them; the managed 14-day guarantee is qualified separately from standard Auto Apply plans. The general Pro funnel presents seven days for **$10 today, then $99/month**, with the reminder and cancellation terms shown before payment.
+
+Each funnel puts outcome-led proof near its first meaningful action. Proof uses the verified **57,000+ job seekers** aggregate and short, non-fabricated outcome descriptions. It remains readable as a stacked or horizontally scrollable block on narrow screens and does not depend on motion.
+
 ## Episode 1 — Welcome to Lightforth
 
 Hey, I’m Moski, Product Manager at Lightforth, and welcome to Lightforth.
@@ -228,6 +232,12 @@ The first thing Lightforth will ask you to do is set up your job preferences.
 ### Step 1 — Upload Your Resume
 
 The first step is to upload your resume.
+
+The public Resume Builder funnel begins on a focused, light-only ATS-check page. It leads with **Let’s analyze your resume to see why you haven’t landed your dream role.** A compact live feed in the lower-left rotates through recent job seekers, their country, ATS score, and **Just now** timestamp. The visitor pastes the target job description into the composer card, attaches a resume from the paperclip, and sends it with the circular **Analyze for free** button. That button stays disabled until a readable resume is attached (and while offline). Analysis moves to the ATS score, followed by the rewritten before-and-after comparison and download gate.
+
+The public Auto Apply funnel begins on a light-only resume-import page that leads with **Apply to jobs in 1-click** and **Find your next role. Land the Job. Or Don’t Pay!** Visitors see the scale of the job-seeker community, import a PDF resume, and explicitly select **Start Your Remote Job Search Now!** before the matching questions begin. The supporting section establishes the value of the search: reviewed listings, personalized application tools, and less time spent moving between job boards.
+
+The public Interview Copilot funnel is also light-only. It first asks for the role the visitor wants to ace, then imports a resume so the guidance can be grounded in their actual experience. The visitor chooses the interview stage — introductory, technical, or final — before seeing the seven-day Pro offer. Starting the trial hands the visitor into the real Interview Copilot setup rather than a parallel demo flow.
 
 Once you’ve uploaded it, Lightforth will parse your resume and extract important information about you, including your professional summary, work experience, skills, and other relevant details.
 

@@ -15,7 +15,7 @@ const offer: FunnelTrialOffer = {
   trialDays: 7,
   includes: ['Unlimited Interview Copilot and practice', 'Resume Builder, unlimited'],
   monthlyUsd: 99,
-  introUsd: 4.57,
+  introUsd: 10,
   reminderDaysBefore: 2,
   firstChargeOn: '2026-10-02',
 }
@@ -46,6 +46,13 @@ function renderView(overrides: Partial<FunnelTrialViewProps> = {}) {
 }
 
 describe('FunnelTrialView', () => {
+  it('introduces the seven-day Pro setup before the first question', () => {
+    renderView()
+    expect(screen.getByText('Try every Jobwhisper tool for 7 days.')).toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: 'Job seeker results' })).not.toBeInTheDocument()
+    expect(screen.getByText(/\$10 today, then \$99\/month/)).toBeInTheDocument()
+  })
+
   it('moves on as soon as an answer is picked, with no Continue to press', async () => {
     const user = userEvent.setup()
     const props = renderView()
@@ -78,7 +85,7 @@ describe('FunnelTrialView', () => {
     expect(screen.getByText('darnell-smith-resume.pdf')).toBeInTheDocument()
     expect(screen.getByRole('region', { name: 'Pro plan offer' })).toHaveTextContent('Then Pro at $99/month')
 
-    await user.click(screen.getByRole('button', { name: 'Try 1 week for $4.57' }))
+    await user.click(screen.getByRole('button', { name: 'Try 1 week for $10' }))
     expect(props.onClaim).toHaveBeenCalled()
   })
 
@@ -100,12 +107,12 @@ describe('FunnelTrialView', () => {
     const user = userEvent.setup()
     const props = renderView({ step: 'card', session: { status: 'authenticated', user: { id: 'u1', email: 'd@example.com', name: 'Darnell Smith', role: 'candidate', permissions: [] } } })
 
-    expect(screen.getByText('$4.57')).toBeInTheDocument()
-    expect(screen.getByText(/Pro for 7 days for \$4.57, until 2 October 2026/)).toBeInTheDocument()
+    expect(screen.getByText('$10')).toBeInTheDocument()
+    expect(screen.getByText(/Pro for 7 days for \$10, until 2 October 2026/)).toBeInTheDocument()
     expect(screen.getByText(/Pro at \$99 a month, until you cancel/)).toBeInTheDocument()
     expect(screen.getByText(/email you 2 days before/)).toBeInTheDocument()
 
-    const submit = screen.getByRole('button', { name: 'Start my week for $4.57' })
+    const submit = screen.getByRole('button', { name: 'Start my week for $10' })
     expect(submit).toBeDisabled()
 
     await user.type(screen.getByLabelText('Name on card'), 'Darnell Smith')
