@@ -38,7 +38,7 @@ describe('FunnelAutoApplyView', () => {
     expect(screen.getByText('Trusted by 2M+ job seekers')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Jobwhisper home' })).toHaveAttribute('href', '/')
     expect(screen.getByText('Drop a resume here, or browse files')).toBeInTheDocument()
-    expect(screen.getByText('Start Your Remote Job Search Now!')).toBeInTheDocument()
+    expect(screen.getAllByText('Start Your Remote Job Search Now!')).toHaveLength(2)
     expect(screen.getByRole('heading', { name: 'Higher Quality Listings' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Personalized Tools' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Save Time' })).toBeInTheDocument()

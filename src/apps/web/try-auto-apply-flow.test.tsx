@@ -30,7 +30,7 @@ describe('/v3/try/auto-apply', () => {
     const resume = new File(['Darnell Smith'], 'darnell-smith-resume.pdf', { type: 'application/pdf' })
     fireEvent.change(screen.getByLabelText(/Your resume/), { target: { files: [resume] } })
     expect(screen.getByText('darnell-smith-resume.pdf')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Start Your Remote Job Search Now!' }))
+    fireEvent.click(screen.getAllByRole('button', { name: 'Start Your Remote Job Search Now!' })[0])
 
     for (const question of autoApplyFunnelQuestions) {
       expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(question.ask)
