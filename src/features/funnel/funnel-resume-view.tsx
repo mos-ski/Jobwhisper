@@ -206,27 +206,27 @@ type ResumeTrustStory = {
 
 const RESUME_TRUST_STORIES: readonly ResumeTrustStory[] = [
   {
-    metric: '7×',
-    label: 'Revenue in 90 days',
-    quote: '“Heatmaps showed 70% of users never scrolled to our booking button.”',
-    name: 'Jani T',
-    role: 'Co-Founder, MatchDay Health',
+    metric: '3×',
+    label: 'More interviews',
+    quote: '“I went from two callbacks a month to six after the rewrite.”',
+    name: 'Priya N',
+    role: 'Product Manager, hired at Klarna',
     image: '/funnel/resume/testimonials/jani.png',
   },
   {
-    metric: '+63%',
-    label: 'Conversion lift',
-    quote: '“A benefit-oriented copy test drove a 63% higher conversion rate.”',
-    name: 'Dom Trovato',
-    role: 'Founder, The Host Report',
+    metric: '94/100',
+    label: 'ATS score',
+    quote: '“Nine years of work finally fit one page — and passed the screener.”',
+    name: 'Marcus L',
+    role: 'Data Analyst, hired at Deloitte',
     image: '/funnel/resume/testimonials/dom.jpeg',
   },
   {
-    metric: '2%→8%',
-    label: 'Booking CVR',
-    quote: '“Our landing page booking conversion went from 2% to 8% in three months.”',
-    name: 'Norbi',
-    role: 'Founder, Social See',
+    metric: '11 days',
+    label: 'Time to offer',
+    quote: '“From tailored application to signed offer in eleven days.”',
+    name: 'Elena R',
+    role: 'UX Researcher, hired at Atlassian',
   },
 ]
 
