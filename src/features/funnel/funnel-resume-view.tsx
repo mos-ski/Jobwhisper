@@ -202,17 +202,38 @@ function UploadStep({ fileName, uploadError, jobDescription, online, liveActivit
   )
 }
 
-/** Long enough to read the status line, short enough that it never feels stuck. */
-const ANALYZE_DURATION_MS = 1800
+/** The run log after the file line: one line every 300ms, last line holds before the score. */
+const ANALYZE_STEPS: readonly string[] = [
+  'pulling out roles, dates and contact details…',
+  'checking ATS keyword coverage…',
+  'scanning formatting and section order…',
+  'ranking issues by impact…',
+  'writing your report…',
+]
+const ANALYZE_LINE_MS = 300
+const ANALYZE_TOTAL_LINES = ANALYZE_STEPS.length + 1
+const ANALYZE_DURATION_MS = ANALYZE_TOTAL_LINES * ANALYZE_LINE_MS + 400
 
 function AnalyzingStep({ fileName, online, onClose, onAnalyzingComplete }: FunnelResumeViewProps) {
+  const steps = [`reading ${fileName ?? 'your resume'}…`, ...ANALYZE_STEPS]
+  const [active, setActive] = useState(0)
   const completeRef = useRef(onAnalyzingComplete)
   useEffect(() => {
     completeRef.current = onAnalyzingComplete
   })
   useEffect(() => {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setActive(ANALYZE_TOTAL_LINES)
+      const hold = setTimeout(() => completeRef.current(), 800)
+      return () => clearTimeout(hold)
+    }
+    const tick = setInterval(() => setActive((value) => Math.min(value + 1, ANALYZE_TOTAL_LINES)), ANALYZE_LINE_MS)
     const timer = setTimeout(() => completeRef.current(), ANALYZE_DURATION_MS)
-    return () => clearTimeout(timer)
+    return () => {
+      clearInterval(tick)
+      clearTimeout(timer)
+    }
+    // One run per visit; the log advances on its own clock, not on renders.
   }, [])
 
   return (
@@ -239,18 +260,23 @@ function AnalyzingStep({ fileName, online, onClose, onAnalyzingComplete }: Funne
         <div
           data-slot="funnel-resume-analyzing"
           data-state="running"
-          className="flex w-full max-w-[456px] flex-col items-center rounded-[28px] border border-landing-border bg-surface p-6 shadow-float"
+          className="min-h-64 w-full max-w-[456px] rounded-[28px] border border-landing-border bg-surface p-6 shadow-float"
         >
-          <FileCheck aria-hidden="true" className="size-8 text-accent-text" />
-          <p className="mt-3 max-w-full truncate text-sm text-landing-muted">{fileName ?? 'Your resume'}</p>
-          <h1 className="mt-1 text-base font-semibold text-landing-ink">Analyzing your resume…</h1>
-          <div
-            role="progressbar"
-            aria-label="Analysis progress"
-            className="mt-5 h-2 w-full overflow-hidden rounded-full bg-landing-control"
-          >
-            <div className="h-full w-full origin-left animate-resume-analyze-fill rounded-full bg-accent" />
-          </div>
+          <h1 className="text-base font-semibold text-landing-ink">Analyzing your resume…</h1>
+          <ol aria-live="polite" className="mt-4 grid gap-1.5 font-mono text-sm">
+            {steps.map((label, index) =>
+              index > active ? null : (
+                <li
+                  key={label}
+                  className={cn('flex items-start gap-2 leading-6', index < active ? 'text-landing-muted' : 'text-landing-ink')}
+                >
+                  <span aria-hidden="true" className="shrink-0">{index < active ? '✓' : '>'}</span>
+                  <span className="min-w-0 break-words">{label}</span>
+                  <span className="sr-only">{index < active ? '(done)' : '(in progress)'}</span>
+                </li>
+              ),
+            )}
+          </ol>
         </div>
       </div>
       <ResumeTrustFooter />

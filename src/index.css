@@ -243,22 +243,6 @@
       animation: none;
     }
   }
-
-  @keyframes resumeAnalyzeFill {
-    from { transform: scaleX(0); }
-    to { transform: scaleX(1); }
-  }
-
-  .animate-resume-analyze-fill {
-    animation: resumeAnalyzeFill 1.8s ease-out forwards;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .animate-resume-analyze-fill {
-      animation: none;
-      transform: scaleX(1);
-    }
-  }
 }
 
 /* The feature label above a headline — the same mark on the landing page and on every

@@ -78,13 +78,24 @@ describe('FunnelResumeView', () => {
     try {
       const props = renderView({ step: 'analyzing', fileName: 'darnell-smith-resume.pdf' })
       expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Analyzing your resume')
-      expect(screen.getByText('darnell-smith-resume.pdf')).toBeInTheDocument()
-      expect(screen.getByRole('progressbar', { name: 'Analysis progress' })).toBeInTheDocument()
       expect(screen.getByRole('region', { name: 'Trusted by 3,478 job seekers' })).toBeInTheDocument()
+      expect(screen.getByRole('list')).toHaveTextContent('reading darnell-smith-resume.pdf…')
+      expect(screen.getAllByRole('listitem')).toHaveLength(1)
       expect(props.onAnalyzingComplete).not.toHaveBeenCalled()
 
       await act(async () => {
-        await vi.advanceTimersByTimeAsync(1800)
+        await vi.advanceTimersByTimeAsync(300)
+      })
+      expect(screen.getAllByRole('listitem')).toHaveLength(2)
+      expect(screen.getByText('(done)')).toBeInTheDocument()
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1500)
+      })
+      expect(screen.getAllByRole('listitem')).toHaveLength(6)
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(400)
       })
       expect(props.onAnalyzingComplete).toHaveBeenCalledOnce()
     } finally {
