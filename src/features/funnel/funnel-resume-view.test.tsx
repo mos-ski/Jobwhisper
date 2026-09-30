@@ -33,7 +33,10 @@ describe('FunnelResumeView', () => {
     renderView()
     expect(screen.getByText(/get a free ATS check/)).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Let’s analyze your resume')
-    expect(screen.queryByRole('region', { name: 'Job seeker results' })).not.toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Trusted by 2,000+ teams' })).toBeInTheDocument()
+    expect(screen.getByText('Revenue in 90 days')).toBeInTheDocument()
+    expect(screen.getByText('Conversion lift')).toBeInTheDocument()
+    expect(screen.getByText('Booking CVR')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Analyze for free' })).toBeDisabled()
   })
 

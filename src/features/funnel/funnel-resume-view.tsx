@@ -139,7 +139,7 @@ function UploadStep({ fileName, uploadError, jobDescription, online, liveActivit
             value={jobDescription}
             onChange={(event) => onJobDescriptionChange(event.target.value)}
             placeholder="Paste a job description...."
-            className="min-h-12 w-full resize-none bg-transparent text-base leading-6 tracking-[-0.0195em] text-landing-ink outline-none placeholder:text-landing-muted focus-visible:ring-0"
+            className="min-h-12 w-full resize-none rounded-2xl bg-transparent text-base leading-6 tracking-[-0.0195em] text-landing-ink outline-none placeholder:text-landing-muted focus-visible:ring-2 focus-visible:ring-focus"
           />
           <div className="mt-3 flex items-center justify-between gap-3">
             <label
@@ -174,7 +174,7 @@ function UploadStep({ fileName, uploadError, jobDescription, online, liveActivit
               className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:cursor-not-allowed"
             >
               <span
-                data-ready={fileName && online ? '' : undefined}
+                data-state={fileName && online ? 'ready' : 'waiting'}
                 className={cn(
                   'flex size-8 items-center justify-center rounded-full text-surface transition-colors',
                   fileName && online ? 'bg-surface-inverse' : 'bg-landing-control',
@@ -189,8 +189,70 @@ function UploadStep({ fileName, uploadError, jobDescription, online, liveActivit
           <p id={errorId} role="alert" className="mt-3 w-full max-w-[456px] text-start text-sm text-danger">{uploadError}</p>
         ) : null}
       </div>
+      <ResumeTrustFooter />
       {liveActivity ? <ResumeActivityToast activity={liveActivity} /> : null}
     </main>
+  )
+}
+
+type ResumeTrustStory = {
+  readonly metric: string
+  readonly label: string
+  readonly quote: string
+  readonly name: string
+  readonly role: string
+  readonly image?: string
+}
+
+const RESUME_TRUST_STORIES: readonly ResumeTrustStory[] = [
+  {
+    metric: '7×',
+    label: 'Revenue in 90 days',
+    quote: '“Heatmaps showed 70% of users never scrolled to our booking button.”',
+    name: 'Jani T',
+    role: 'Co-Founder, MatchDay Health',
+    image: '/funnel/resume/testimonials/jani.png',
+  },
+  {
+    metric: '+63%',
+    label: 'Conversion lift',
+    quote: '“A benefit-oriented copy test drove a 63% higher conversion rate.”',
+    name: 'Dom Trovato',
+    role: 'Founder, The Host Report',
+    image: '/funnel/resume/testimonials/dom.jpeg',
+  },
+  {
+    metric: '2%→8%',
+    label: 'Booking CVR',
+    quote: '“Our landing page booking conversion went from 2% to 8% in three months.”',
+    name: 'Norbi',
+    role: 'Founder, Social See',
+  },
+]
+
+function ResumeTrustFooter() {
+  return (
+    <section aria-label="Trusted by 2,000+ teams" className="w-full max-w-4xl px-6 py-9 sm:px-6">
+      <p className="text-center text-[10px] font-semibold uppercase tracking-[1px] text-landing-muted">Trusted by 2,000+ teams</p>
+      <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        {RESUME_TRUST_STORIES.map((story) => (
+          <article key={story.name} className="flex min-h-[147px] flex-col gap-2.5 rounded-soft border border-landing-border bg-surface p-4">
+            <div className="flex h-4 items-baseline gap-2 whitespace-nowrap font-medium">
+              <span className="text-[15px] leading-4 text-accent-text">{story.metric}</span>
+              <span className="text-[10px] uppercase tracking-[0.6px] text-landing-muted">{story.label}</span>
+            </div>
+            <p className="min-h-0 flex-1 text-[13px] leading-[1.5] text-landing-muted">{story.quote}</p>
+            <div className="flex items-center gap-2.5 border-t border-landing-border pt-2.5">
+              {story.image ? <img src={story.image} alt="" className="size-7 shrink-0 rounded-full object-cover" /> : <span aria-hidden="true" className="size-7 shrink-0 rounded-full border border-landing-border" />}
+              <div className="min-w-0">
+                <p className="truncate text-xs font-medium leading-3 text-landing-ink">{story.name}</p>
+                <p className="truncate pt-1 text-[10.5px] leading-[1.05] text-landing-muted">{story.role}</p>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
   )
 }
 
