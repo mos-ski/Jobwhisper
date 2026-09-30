@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
@@ -23,6 +23,7 @@ function renderView(overrides: Partial<FunnelAutoApplyViewProps> = {}) {
     onEditAnswer: vi.fn(),
     onCreateAccount: vi.fn(),
     onGoogleSignUp: vi.fn(),
+    onSearchComplete: vi.fn(),
     ...overrides,
   }
   render(<FunnelAutoApplyView {...props} />)
@@ -125,5 +126,152 @@ describe('FunnelAutoApplyView', () => {
     renderView({ step: 'gate', applyTarget: 'all' })
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Sign up and your agent applies for you')
     expect(screen.getByText(/all 8 matches/)).toBeInTheDocument()
+  })
+
+  it('shows the work-style helper banner under the choices', () => {
+    renderView({ step: 'quiz', questionIndex: 0 })
+    expect(document.querySelector('[data-slot="funnel-question-banner"]')).toHaveTextContent('Work-life balance! We get it.')
+  })
+
+  it('shows the resume banner and keeps the pills reachable', () => {
+    renderView({ step: 'quiz', questionIndex: 4 })
+    expect(document.querySelector('[data-slot="funnel-question-banner"]')).toHaveTextContent('Even an incomplete resume can improve your job matches.')
+    expect(screen.getByRole('radio', { name: /^My resume is up to date/ })).toBeInTheDocument()
+  })
+
+  it('expands the category list from the first ten with See More', async () => {
+    const user = userEvent.setup()
+    renderView({ step: 'quiz', questionIndex: 6 })
+
+    const categories = autoApplyFunnelQuestions[6]
+    if (categories?.kind !== 'multi') throw new Error('expected a multi question')
+    const collapsed = categories.collapsedCount ?? categories.choices.length
+    expect(screen.getAllByRole('checkbox')).toHaveLength(collapsed)
+    expect(screen.getByText('No worries! We’ve got you covered.')).toBeInTheDocument()
+
+    const toggle = screen.getByRole('button', { name: 'See More' })
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    await user.click(toggle)
+    expect(screen.getAllByRole('checkbox')).toHaveLength(categories.choices.length)
+    expect(screen.getByRole('button', { name: 'Show less' })).toHaveAttribute('aria-expanded', 'true')
+  })
+
+  it('keeps a category picked past the fold when Show less would hide it', async () => {
+    const user = userEvent.setup()
+    renderView({ step: 'quiz', questionIndex: 6, answers: { categories: 'Web Development' } })
+
+    const categories = autoApplyFunnelQuestions[6]
+    if (categories?.kind !== 'multi') throw new Error('expected a multi question')
+    expect(screen.getAllByRole('checkbox')).toHaveLength(categories.choices.length)
+    expect(screen.queryByRole('button', { name: 'Show less' })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('checkbox', { name: /^Account Management/ }))
+    expect(screen.getAllByRole('checkbox')).toHaveLength(categories.choices.length)
+  })
+
+  it('checks both location includes by default and reports a change', async () => {
+    const user = userEvent.setup()
+    const props = renderView({ step: 'quiz', questionIndex: 3 })
+
+    const us = screen.getByRole('checkbox', { name: /anywhere in the US/ })
+    const world = screen.getByRole('checkbox', { name: /anywhere in the world/ })
+    expect(us).toBeChecked()
+    expect(world).toBeChecked()
+
+    await user.click(us)
+    expect(props.onAnswer).toHaveBeenCalledWith('location.checks', 'Include jobs where I can work from anywhere in the world')
+    expect(world).toBeChecked()
+  })
+
+  it('asks for the salary unit and skips when unsure', async () => {
+    const user = userEvent.setup()
+    const props = renderView({ step: 'quiz', questionIndex: 2 })
+
+    expect(screen.getByRole('button', { name: 'Annually' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: 'Hourly' })).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByText(/\$65k/)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Hourly' }))
+    expect(props.onAnswer).toHaveBeenCalledWith('salary.unit', 'Hourly')
+
+    await user.click(screen.getByRole('button', { name: 'Skip, I’m not sure yet' }))
+    expect(props.onAnswer).toHaveBeenCalledWith('salary', '')
+    expect(props.onContinue).toHaveBeenCalled()
+  })
+
+  it('reads the salary in hourly terms once the unit answer is hourly', () => {
+    renderView({ step: 'quiz', questionIndex: 2, answers: { 'salary.unit': 'Hourly', salary: '65000-65000' } })
+    expect(screen.getByRole('button', { name: 'Hourly' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByText(/\$31\/hr/)).toBeInTheDocument()
+    expect(screen.getByText(/2,080 hours a year/)).toBeInTheDocument()
+  })
+
+  it('finishes the benefits question with the design CTA', () => {
+    renderView({ step: 'quiz', questionIndex: autoApplyFunnelQuestions.length - 1, answers: { benefits: 'Dental Insurance' } })
+    expect(screen.getByRole('button', { name: 'Find Your Next Remote Job!' })).toBeEnabled()
+    expect(document.querySelector('[data-slot="funnel-question-banner"]')).toHaveTextContent('Great benefits for a productive work life!')
+  })
+
+  it('runs the search log for ten seconds and then completes', async () => {
+    vi.useFakeTimers()
+    try {
+      const props = renderView({ step: 'searching', fileName: 'darnell-smith-resume.pdf' })
+
+      const lines = screen.getByRole('list')
+      expect(lines).toHaveTextContent('reading your answers…')
+      expect(screen.queryByText('searching 12,480 open remote roles…')).not.toBeInTheDocument()
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(900)
+      })
+      expect(screen.getByRole('list').textContent).toContain('reading darnell-smith-resume.pdf…')
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(8300)
+      })
+      expect(screen.getByRole('list').textContent).toContain('shortlisting your best matches…')
+      expect(screen.getAllByRole('listitem')).toHaveLength(8)
+      expect(props.onSearchComplete).not.toHaveBeenCalled()
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(800)
+      })
+      expect(props.onSearchComplete).toHaveBeenCalledTimes(1)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('freezes the search run while offline, with the notice up', () => {
+    vi.useFakeTimers()
+    try {
+      const props = renderView({ step: 'searching', online: false })
+      expect(screen.getByText(/You are offline/)).toBeInTheDocument()
+      expect(screen.getAllByRole('listitem')).toHaveLength(1)
+      act(() => {
+        vi.advanceTimersByTime(60000)
+      })
+      expect(props.onSearchComplete).not.toHaveBeenCalled()
+      expect(screen.getAllByRole('listitem')).toHaveLength(1)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('shows every search line at once under reduced motion', async () => {
+    const originalMatchMedia = window.matchMedia
+    vi.useFakeTimers()
+    try {
+      window.matchMedia = (query: string) => ({ ...originalMatchMedia(query), matches: true })
+      const props = renderView({ step: 'searching', fileName: 'darnell.pdf' })
+      expect(screen.getAllByRole('listitem')).toHaveLength(8)
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(10000)
+      })
+      expect(props.onSearchComplete).toHaveBeenCalledTimes(1)
+    } finally {
+      window.matchMedia = originalMatchMedia
+      vi.useRealTimers()
+    }
   })
 })

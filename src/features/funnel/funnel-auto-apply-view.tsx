@@ -1,14 +1,14 @@
-import { useId, useState, type DragEvent, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type DragEvent, type ReactNode } from 'react'
 import { ArrowLeft, Building2, ChevronLeft, ChevronRight, CircleCheck, MapPin, SearchX } from 'lucide-react'
 
 import type { FunnelAnswers, FunnelJobMatch, FunnelQuestion as FunnelQuestionData } from '@/contracts/funnel.draft'
-import { Button } from '@/ui'
+import { Button, cn } from '@/ui'
 import { FunnelGate } from './funnel-gate'
 import { FunnelQuestion, FunnelQuestionFooter } from './funnel-question'
 import { FunnelOfflineNotice, FunnelShell, FunnelTitle } from './funnel-shell'
 import { FUNNEL_UPLOAD_ACCEPT } from './funnel-upload'
 
-export type FunnelAutoApplyStep = 'upload' | 'quiz' | 'matches' | 'gate'
+export type FunnelAutoApplyStep = 'upload' | 'quiz' | 'searching' | 'matches' | 'gate'
 
 export type FunnelAutoApplyViewProps = {
   readonly step: FunnelAutoApplyStep
@@ -35,6 +35,8 @@ export type FunnelAutoApplyViewProps = {
   readonly onEditAnswer: (questionId: string) => void
   readonly onCreateAccount: (email: string) => void
   readonly onGoogleSignUp: () => void
+  /** Fires when the searching run log finishes; the page replaces into the matches. */
+  readonly onSearchComplete: () => void
 }
 
 const WIDEN_SUGGESTIONS = [
@@ -57,7 +59,7 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
   if (step === 'upload') {
     footer = <FunnelQuestionFooter position={0} total={total} canContinue={online && Boolean(props.fileName)} showContinue={false} onBack={props.onBack} onContinue={props.onContinue} />
   } else if (step === 'quiz' && question) {
-    footer = <FunnelQuestionFooter position={questionIndex + 1} total={total} canContinue={online && (answers[question.id] ?? '').trim().length > 0} showContinue={question.kind === 'text' || question.kind === 'range' || question.kind === 'multi'} onBack={props.onBack} onContinue={props.onContinue} />
+    footer = <FunnelQuestionFooter position={questionIndex + 1} total={total} canContinue={online && (answers[question.id] ?? '').trim().length > 0} showContinue={question.kind === 'text' || question.kind === 'range' || question.kind === 'multi'} onBack={props.onBack} onContinue={props.onContinue} continueLabel={question.cta} />
   } else if (step === 'matches' && selectedJob) {
     footer = <Button size="lg" className="w-full sm:ms-auto sm:w-auto" onClick={() => props.onApply(selectedJob.id)}>Apply to this job</Button>
   } else if (step === 'matches' && matches.length > 0) {
@@ -70,6 +72,7 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
   }
 
   if (step === 'upload') return <AutoApplyUploadLanding {...props} />
+  if (step === 'searching') return <SearchingStep fileName={props.fileName} online={online} onSearchComplete={props.onSearchComplete} />
 
   return (
     <FunnelShell label={label} stepCount={total + 2} currentStep={currentStep} onClose={onClose} notice={online ? null : <FunnelOfflineNotice />} footer={footer} width={step === 'matches' ? 'wide' : 'narrow'}>
@@ -80,6 +83,11 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
           value={answers[question.id] ?? ''}
           onChange={(value) => props.onAnswer(question.id, value)}
           onAutoAdvance={online ? props.onContinue : undefined}
+          checksValue={answers[`${question.id}.checks`]}
+          onChecksChange={(value) => props.onAnswer(`${question.id}.checks`, value)}
+          unitValue={answers[`${question.id}.unit`]}
+          onUnitChange={(value) => props.onAnswer(`${question.id}.unit`, value)}
+          onSkip={online ? props.onContinue : undefined}
         />
       ) : null}
       {step === 'matches' && selectedJob ? <JobDetail job={selectedJob} onSelectJob={props.onSelectJob} /> : null}
@@ -87,6 +95,96 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
       {step === 'matches' && !selectedJob && matches.length === 0 ? <NoMatches onEditAnswer={props.onEditAnswer} /> : null}
       {step === 'gate' ? <Gate {...props} /> : null}
     </FunnelShell>
+  )
+}
+
+type SearchStep = {
+  /** The line once the run reaches it; a completed line takes a check. */
+  readonly label: string
+  /** How long this line stays current before it completes — the slow passes get their real weight. */
+  readonly ms: number
+}
+
+/** The search in the order it actually runs; 9.2s + 800ms hold, so the run reads as work, not a spinner. */
+const SEARCH_STEPS: readonly SearchStep[] = [
+  { label: 'reading your answers…', ms: 900 },
+  { label: '', ms: 1100 },
+  { label: 'searching 12,480 open remote roles…', ms: 1500 },
+  { label: 'scoring salary against your range…', ms: 1000 },
+  { label: 'checking work style and location…', ms: 900 },
+  { label: 'ranking your experience and education…', ms: 1000 },
+  { label: 'weighing your must-have benefits…', ms: 1200 },
+  { label: 'shortlisting your best matches…', ms: 1600 },
+]
+const SEARCH_TOTAL_MS = SEARCH_STEPS.reduce((sum, step) => sum + step.ms, 0)
+const SEARCH_HOLD_MS = 800
+
+const SEARCH_STATS: readonly { readonly value: string; readonly label: string }[] = [
+  { value: '12,480', label: 'open roles' },
+  { value: '1,930', label: 'companies hiring today' },
+  { value: '3,478', label: 'job seekers matched' },
+]
+
+function SearchingStep({ fileName, online, onSearchComplete }: Pick<FunnelAutoApplyViewProps, 'fileName' | 'online' | 'onSearchComplete'>) {
+  const steps = SEARCH_STEPS.map((step, index) => (index === 1 ? { ...step, label: `reading ${fileName ?? 'your profile'}…` } : step))
+  const [done, setDone] = useState(0)
+  const completeRef = useRef(onSearchComplete)
+  useEffect(() => {
+    completeRef.current = onSearchComplete
+  })
+  useEffect(() => {
+    // Offline freezes the run at its first line; the notice says why and nothing auto-advances.
+    if (!online) return
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setDone(SEARCH_STEPS.length)
+      const hold = setTimeout(() => completeRef.current(), SEARCH_TOTAL_MS + SEARCH_HOLD_MS)
+      return () => clearTimeout(hold)
+    }
+    const timers: ReturnType<typeof setTimeout>[] = []
+    let elapsed = 0
+    SEARCH_STEPS.forEach((step, index) => {
+      elapsed += step.ms
+      timers.push(setTimeout(() => setDone(index + 1), elapsed))
+    })
+    timers.push(setTimeout(() => completeRef.current(), elapsed + SEARCH_HOLD_MS))
+    return () => timers.forEach(clearTimeout)
+    // One run per visit; the log advances on its own clock, not on renders.
+  }, [])
+
+  return (
+    <main data-slot="auto-apply-funnel-searching" data-theme="light" className="flex min-h-dvh flex-col items-center bg-surface px-6 pb-16 pt-[68px] text-ink">
+      <a href="/" aria-label="Jobwhisper home" className="flex h-[54px] items-center justify-center rounded-[22px] bg-surface-inverse px-6 py-1.5 shadow-popover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+        <img src="/funnel/auto-apply/logo.svg" alt="Jobwhisper" width="122" height="24" />
+      </a>
+
+      {!online ? <div className="mt-4 w-full max-w-3xl"><FunnelOfflineNotice /></div> : null}
+
+      <div data-slot="funnel-auto-apply-searching" className="flex w-full max-w-[560px] flex-1 flex-col items-center justify-center gap-6 py-14 text-center">
+        <h1 className="text-balance text-base font-semibold text-ink sm:text-lg">Finding the best remote &amp; flexible jobs for you…</h1>
+        <ol aria-live="polite" className="grid w-full gap-2 font-mono text-sm text-start sm:text-base">
+          {steps.map((step, index) =>
+            index > done ? null : (
+              <li
+                key={index}
+                className={cn('flex items-start gap-2 leading-6', index < done ? 'text-ink-muted' : 'text-ink')}
+              >
+                <span aria-hidden="true" className="shrink-0">{index < done ? '✓' : '>'}</span>
+                <span className="min-w-0 break-words">{step.label}</span>
+                <span className="sr-only">{index < done ? '(done)' : '(in progress)'}</span>
+              </li>
+            ),
+          )}
+        </ol>
+        <dl className="grid w-full grid-cols-3 gap-2 border-t border-border pt-6 text-center sm:gap-4">
+          {SEARCH_STATS.map((stat) => (
+            <div key={stat.label} className="grid gap-1">
+              <dd className="font-gowun text-2xl font-bold leading-none text-ink tabular-nums sm:text-3xl">{stat.value}</dd>
+              <dt className="text-xs leading-4 text-ink-muted sm:text-sm">{stat.label}</dt>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </main>
   )
 }
 

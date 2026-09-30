@@ -10,17 +10,33 @@ type FunnelQuestionBase = {
   /** Short name for the step, shown in the funnel header. */
   readonly tab: string
   readonly ask: string
+  /** A lede under the heading, above the controls. */
+  readonly note?: string
+  /** A helper banner under the controls; always paired with an icon, never colour alone. */
+  readonly banner?: string
+  /** Label for this question's continue/finish button, when it should differ from the default. */
+  readonly cta?: string
 }
 
 export type FunnelQuestion =
   | (FunnelQuestionBase & { readonly kind: 'options'; readonly options: readonly FunnelChoice[] })
   | (FunnelQuestionBase & { readonly kind: 'pills'; readonly choices: readonly string[] })
-  | (FunnelQuestionBase & { readonly kind: 'multi'; readonly choices: readonly string[]; readonly maxSelections: number })
+  | (FunnelQuestionBase & {
+      readonly kind: 'multi'
+      readonly choices: readonly string[]
+      readonly maxSelections: number
+      /** Show only the first N choices until the visitor asks for more. */
+      readonly collapsedCount?: number
+    })
   | (FunnelQuestionBase & {
       readonly kind: 'text'
       readonly placeholder: string
       /** Offered in a dropdown as the visitor types; the first few also show as one-click chips. */
       readonly suggestions?: readonly string[]
+      /** Checkbox rows under the input, stored as `"<id>.checks"` (pipe-joined labels). */
+      readonly checks?: readonly string[]
+      /** Whether each check starts selected while the answer is empty. */
+      readonly checksDefault?: boolean
     })
   | (FunnelQuestionBase & {
       readonly kind: 'range'
@@ -29,6 +45,10 @@ export type FunnelQuestion =
       readonly max: number
       readonly step: number
       readonly defaultRange: readonly [number, number]
+      /** Two-unit segmented toggle (e.g. Annually / Hourly), stored as `"<id>.unit"`; defaults to the first entry. */
+      readonly unitToggle?: readonly [string, string]
+      /** A link under the slider that clears the answer and moves on. */
+      readonly skipLabel?: string
     })
 
 /** Keyed by `FunnelQuestion.id`. A range answer is stored as `"<low>-<high>"` in whole dollars, e.g. `"80000-130000"`. */

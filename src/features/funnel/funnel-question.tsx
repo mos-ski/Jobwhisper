@@ -1,5 +1,5 @@
-import { useEffect, useId, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from 'react'
-import { Check } from 'lucide-react'
+import { useEffect, useId, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react'
+import { Check, CircleCheck } from 'lucide-react'
 
 import type { FunnelQuestion as FunnelQuestionData } from '@/contracts/funnel.draft'
 import { Button, cn, Slider } from '@/ui'
@@ -16,6 +16,14 @@ export type FunnelQuestionProps = {
    * Omit it (e.g. while offline) and answers only select.
    */
   readonly onAutoAdvance?: () => void
+  /** The `"<id>.checks"` answer for text questions with checkbox rows; absent means unset. */
+  readonly checksValue?: string
+  readonly onChecksChange?: (value: string) => void
+  /** The `"<id>.unit"` answer for range questions with a unit toggle; absent picks the first unit. */
+  readonly unitValue?: string
+  readonly onUnitChange?: (value: string) => void
+  /** Wired for range questions with a `skipLabel`: clears the answer and moves on. */
+  readonly onSkip?: () => void
 }
 
 const LETTERS = 'ABCDEFGHIJ'
@@ -30,8 +38,35 @@ function isTypingTarget(target: EventTarget | null): boolean {
   return target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement
 }
 
-export function FunnelQuestion({ question, value, onChange, eyebrow, onAutoAdvance }: FunnelQuestionProps) {
+type QuestionFrameProps = {
+  readonly question: FunnelQuestionData
+  readonly headingId: string
+  readonly eyebrow?: string
+  readonly children: ReactNode
+}
+
+/** Heading (with optional lede) over the answer controls, with the question's helper banner underneath. */
+function QuestionFrame({ question, headingId, eyebrow, children }: QuestionFrameProps) {
+  return (
+    <div data-slot="funnel-question" data-kind={question.kind} className="grid gap-8">
+      <div className="grid gap-3">
+        <FunnelTitle id={headingId} eyebrow={eyebrow}>{question.ask}</FunnelTitle>
+        {question.note ? <p data-slot="funnel-question-note" className="text-center text-base leading-7 text-ink-muted">{question.note}</p> : null}
+      </div>
+      {children}
+      {question.banner ? (
+        <p data-slot="funnel-question-banner" className="mx-auto flex max-w-xl items-start gap-2 rounded-2xl bg-surface-subtle px-4 py-3 text-start text-sm leading-6 text-ink">
+          <CircleCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-positive" />
+          <span>{question.banner}</span>
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
+export function FunnelQuestion({ question, value, onChange, eyebrow, onAutoAdvance, checksValue, onChecksChange, unitValue, onUnitChange, onSkip }: FunnelQuestionProps) {
   const headingId = useId()
+  const [expanded, setExpanded] = useState(false)
   const choices = question.kind === 'options' ? question.options.map((option) => option.label) : question.kind === 'pills' ? question.choices : []
 
   function choose(choice: string) {
@@ -56,29 +91,64 @@ export function FunnelQuestion({ question, value, onChange, eyebrow, onAutoAdvan
 
   if (question.kind === 'range') {
     return (
-      <div data-slot="funnel-question" data-kind="range" className="grid gap-8">
-        <FunnelTitle id={headingId} eyebrow={eyebrow}>{question.ask}</FunnelTitle>
-        <RangeAnswer min={question.min} max={question.max} step={question.step} defaultRange={question.defaultRange} value={value} onChange={onChange} />
-      </div>
+      <QuestionFrame question={question} headingId={headingId} eyebrow={eyebrow}>
+        <RangeAnswer
+          min={question.min}
+          max={question.max}
+          step={question.step}
+          defaultRange={question.defaultRange}
+          value={value}
+          onChange={onChange}
+          unitToggle={question.unitToggle}
+          unit={unitValue}
+          onUnitChange={onUnitChange}
+          skipLabel={question.skipLabel}
+          onSkip={onSkip}
+        />
+      </QuestionFrame>
     )
   }
 
   if (question.kind === 'text') {
+    const checks = question.checks ?? []
+    const checkedLabels = checksValue === undefined ? (question.checksDefault ? [...checks] : []) : checksValue.split('|').filter(Boolean)
     return (
-      <div data-slot="funnel-question" data-kind="text" className="grid gap-8">
-        <FunnelTitle id={headingId} eyebrow={eyebrow}>{question.ask}</FunnelTitle>
+      <QuestionFrame question={question} headingId={headingId} eyebrow={eyebrow}>
         <TextAnswer labelledBy={headingId} placeholder={question.placeholder} suggestions={question.suggestions ?? []} value={value} onChange={onChange} onAutoAdvance={onAutoAdvance} />
-      </div>
+        {checks.length > 0 ? (
+          <fieldset className="mx-auto grid w-full max-w-xl">
+            <legend className="sr-only">Anything else about your search</legend>
+            {checks.map((label) => (
+              <label key={label} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-2 text-start text-base text-ink hover:bg-surface-subtle has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus">
+                <input
+                  type="checkbox"
+                  checked={checkedLabels.includes(label)}
+                  onChange={() => {
+                    const next = checkedLabels.includes(label) ? checkedLabels.filter((item) => item !== label) : [...checkedLabels, label]
+                    onChecksChange?.(next.join('|'))
+                  }}
+                  className="size-5 shrink-0 accent-accent"
+                />
+                {label}
+              </label>
+            ))}
+          </fieldset>
+        ) : null}
+      </QuestionFrame>
     )
   }
 
   if (question.kind === 'multi') {
     const selected = value ? value.split('|').filter(Boolean) : []
+    const collapsedAt = question.collapsedCount
+    // A choice picked while expanded keeps the list open, so Show less never hides a selection.
+    const beyond = collapsedAt === undefined ? false : question.choices.slice(collapsedAt).some((choice) => selected.includes(choice))
+    const showAll = collapsedAt === undefined || expanded || beyond
+    const visible = showAll ? question.choices : question.choices.slice(0, collapsedAt)
     return (
-      <div data-slot="funnel-question" data-kind="multi" className="grid gap-8">
-        <FunnelTitle id={headingId} eyebrow={eyebrow}>{question.ask}</FunnelTitle>
+      <QuestionFrame question={question} headingId={headingId} eyebrow={eyebrow}>
         <fieldset aria-labelledby={headingId} className="flex flex-wrap justify-center gap-2">
-          {question.choices.map((choice) => {
+          {visible.map((choice) => {
             const checked = selected.includes(choice)
             const disabled = !checked && selected.length >= question.maxSelections
             return (
@@ -93,14 +163,25 @@ export function FunnelQuestion({ question, value, onChange, eyebrow, onAutoAdvan
             )
           })}
         </fieldset>
+        {collapsedAt !== undefined && !beyond ? (
+          <div className="flex justify-center">
+            <button
+              type="button"
+              aria-expanded={showAll}
+              onClick={() => setExpanded((wasExpanded) => !wasExpanded)}
+              className="min-h-11 rounded-full border border-border bg-surface px-5 text-sm font-semibold text-accent-text hover:border-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              {showAll ? 'Show less' : 'See More'}
+            </button>
+          </div>
+        ) : null}
         <p className="text-center text-sm text-ink-muted">Choose up to {question.maxSelections}.</p>
-      </div>
+      </QuestionFrame>
     )
   }
 
   return (
-    <div data-slot="funnel-question" data-kind={question.kind} className="grid gap-8">
-      <FunnelTitle id={headingId} eyebrow={eyebrow}>{question.ask}</FunnelTitle>
+    <QuestionFrame question={question} headingId={headingId} eyebrow={eyebrow}>
       <fieldset aria-labelledby={headingId} className={question.kind === 'pills' ? 'flex flex-wrap justify-center gap-2' : 'grid gap-3'}>
         {question.kind === 'options'
           ? question.options.map((option, index) => (
@@ -126,7 +207,7 @@ export function FunnelQuestion({ question, value, onChange, eyebrow, onAutoAdvan
               </label>
             ))}
       </fieldset>
-    </div>
+    </QuestionFrame>
   )
 }
 
@@ -146,11 +227,22 @@ type RangeAnswerProps = {
   readonly defaultRange: readonly [number, number]
   readonly value: string
   readonly onChange: (value: string) => void
+  readonly unitToggle?: readonly [string, string]
+  readonly unit?: string
+  readonly onUnitChange?: (value: string) => void
+  readonly skipLabel?: string
+  readonly onSkip?: () => void
 }
 
-function RangeAnswer({ min, max, step, defaultRange, value, onChange }: RangeAnswerProps) {
+/** A year of full-time work, used to show the same salary as an hourly figure. */
+const HOURS_PER_YEAR = 2080
+
+function RangeAnswer({ min, max, step, defaultRange, value, onChange, unitToggle, unit, onUnitChange, skipLabel, onSkip }: RangeAnswerProps) {
   const [low, high] = parseRange(value, defaultRange)
   const dollars = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+  const activeUnit = unit ?? unitToggle?.[0]
+  const hourly = activeUnit !== undefined && unitToggle !== undefined && activeUnit === unitToggle[1]
+  const label = (amount: number) => (hourly ? `$${Math.round(amount / HOURS_PER_YEAR)}/hr` : formatThousands(amount, max))
 
   // A slider always has an answer, so the default counts as one and Continue is ready straight away.
   useEffect(() => {
@@ -160,8 +252,23 @@ function RangeAnswer({ min, max, step, defaultRange, value, onChange }: RangeAns
   return (
     <div className="grid gap-8">
       <p className="text-center font-gowun text-4xl font-bold leading-none text-ink tabular-nums sm:text-5xl" aria-live="polite">
-        {formatThousands(low, max)} <span className="text-2xl font-normal text-ink-muted">to</span> {formatThousands(high, max)}
+        {label(low)} <span className="text-2xl font-normal text-ink-muted">to</span> {label(high)}
       </p>
+      {unitToggle ? (
+        <div role="group" aria-label="Show salary" className="mx-auto flex rounded-full border border-border bg-surface p-1">
+          {unitToggle.map((option) => (
+            <button
+              key={option}
+              type="button"
+              aria-pressed={activeUnit === option}
+              onClick={() => onUnitChange?.(option)}
+              className={cn('min-h-11 rounded-full px-5 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus', activeUnit === option ? 'bg-accent text-on-accent' : 'text-ink-muted hover:text-ink')}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+      ) : null}
       <Slider
         value={[low, high]}
         min={min}
@@ -172,12 +279,26 @@ function RangeAnswer({ min, max, step, defaultRange, value, onChange }: RangeAns
           if (nextLow !== undefined && nextHigh !== undefined) onChange(`${nextLow}-${nextHigh}`)
         }}
         thumbLabels={['Minimum salary', 'Maximum salary']}
-        formatValueText={(amount) => `${dollars.format(amount)}${amount >= max ? ' or more' : ''} a year`}
-        minLabel={formatThousands(min, max)}
-        maxLabel={formatThousands(max, max)}
+        formatValueText={(amount) => (hourly ? `${dollars.format(Math.round(amount / HOURS_PER_YEAR))}${amount >= max ? ' or more' : ''} an hour` : `${dollars.format(amount)}${amount >= max ? ' or more' : ''} a year`)}
+        minLabel={label(min)}
+        maxLabel={label(max)}
         className="px-2"
       />
-      <p className="text-center text-sm text-ink-muted">Base salary a year, before bonus or equity.</p>
+      <p className="text-center text-sm text-ink-muted">{hourly ? `Based on ${HOURS_PER_YEAR.toLocaleString('en-US')} hours a year, before bonus or equity.` : 'Base salary a year, before bonus or equity.'}</p>
+      {skipLabel && onSkip ? (
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={() => {
+              onChange('')
+              onSkip()
+            }}
+            className="min-h-11 rounded-md text-sm font-semibold text-accent-text underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          >
+            {skipLabel}
+          </button>
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -330,14 +451,16 @@ export type FunnelQuestionFooterProps = {
   readonly showContinue: boolean
   readonly onBack: () => void
   readonly onContinue: () => void
+  /** Overrides the default Continue/Finish label, e.g. "Find Your Next Remote Job!". */
+  readonly continueLabel?: string
 }
 
-export function FunnelQuestionFooter({ position, total, canContinue, showContinue, onBack, onContinue }: FunnelQuestionFooterProps) {
+export function FunnelQuestionFooter({ position, total, canContinue, showContinue, onBack, onContinue, continueLabel }: FunnelQuestionFooterProps) {
   return (
     <>
       <Button variant="secondary" size="lg" onClick={onBack}>Back</Button>
       <span className="ms-auto text-sm tabular-nums text-ink-muted">{position + 1} of {total}</span>
-      {showContinue ? <Button size="lg" onClick={onContinue} disabled={!canContinue}>{position >= total - 1 ? 'Finish' : 'Continue'}</Button> : null}
+      {showContinue ? <Button size="lg" onClick={onContinue} disabled={!canContinue}>{continueLabel ?? (position >= total - 1 ? 'Finish' : 'Continue')}</Button> : null}
     </>
   )
 }

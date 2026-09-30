@@ -244,21 +244,24 @@
    Exit condition: Google or a valid email downloads the resume and offers Resume Builder.
    Failure branch: an invalid email shows a field error describing the fix.
 
-## Try-It Funnel: Auto Apply (Resume -> Preference Questionnaire -> Matches -> Apply Gate)
+## Try-It Funnel: Auto Apply (Resume -> Preference Questionnaire -> Search -> Matches -> Apply Gate)
 
 1. Entry condition: a visitor opens `/v3/try/auto-apply`. The first screen says "Find your next role. Land the Job. Or Don’t Pay!"
    Exit condition: they upload a resume and explicitly start the remote-job search.
    Failure branch: a refused file states the fix and holds Continue.
 
 2. Entry condition: `/v3/try/auto-apply?step=quiz&q=<n>` asks one focused question per page: work style, search goal, minimum salary, location, resume status, target titles, categories, experience, education, and benefits.
-   Exit condition: the last answer opens the matches.
-   Failure branch: Continue stays disabled until answered; capped multi-select questions prevent choosing beyond five; offline, answers are kept and Continue waits. Personal details are not asked here; the real flow asks them after sign-up.
+   Exit condition: the last answer opens the search run.
+   Failure branch: Continue stays disabled until answered; capped multi-select questions prevent choosing beyond five and expand from ten with See More, location carries two "work from anywhere" checks that start on, salary offers Annually/Hourly plus "Skip, I’m not sure yet" (skipping does not block matching), helper banners and ledes reassure where the design calls for it, and the benefits question finishes with "Find Your Next Remote Job!". Offline, answers are kept and Continue waits. Personal details are not asked here; the real flow asks them after sign-up.
 
+3. Entry condition: `/v3/try/auto-apply?step=searching` runs a staged log ("reading your answers…" through "shortlisting your best matches…") over 10 seconds with the open-role and company stats underneath.
+   Exit condition: the run completes and replaces into the matches, so Back from the matches returns to the last question.
+   Failure branch: offline freezes the run at its first line with the offline notice and nothing auto-advances; reduced motion shows every line at once on the same timer.
 
-3. Entry condition: the matches list shows each job's title, company, location, salary and match score.
+4. Entry condition: the matches list shows each job's title, company, location, salary and match score.
    Exit condition: View job opens its reasons; Apply to this job or Apply to all opens the gate for anonymous visitors, and `/v3/auto-apply/review` for signed-in ones.
    Failure branch: with no matches, the screen offers to widen the location, work mode or salary and returns to that question.
 
-4. Entry condition: the gate names the jobs waiting and says each application is approved before it goes.
+5. Entry condition: the gate names the jobs waiting and says each application is approved before it goes.
    Exit condition: Google or a valid email opens `/v3/auto-apply/review` with the answers carried over.
    Failure branch: an invalid email shows a field error describing the fix.

@@ -40,7 +40,7 @@ const tryFunnelRoutes = [
   {
     href: '/v3/try/auto-apply',
     label: 'Auto Apply',
-    description: 'Resume plus nine questions, then matched jobs you sign up to apply to.',
+    description: 'Resume plus ten questions, a ten-second search run, then matched jobs you sign up to apply to.',
   },
   {
     href: '/v3/try/copilot',

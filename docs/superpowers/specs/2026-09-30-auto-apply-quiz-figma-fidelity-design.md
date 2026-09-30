@@ -1,7 +1,7 @@
 # Auto Apply Quiz — Figma Fidelity Pass
 
 Date: 2026-09-30
-Source designs: Figma file `AQXk4ivy9vA7scCI9DgmQ3` (Jobwhisper 1.0), the 14 scraped questionnaire frames specced in `tmp/figma-quiz-specs.md`.
+Source designs: Figma file `AQXk4ivy9vA7scCI9DgmQ3` (Jobwhisper 1.0), the 14 scraped questionnaire frames specced in `docs/superpowers/specs/2026-09-30-figma-quiz-questionnaire-specs.md`.
 Scope: finish the `/v3/try/auto-apply` funnel so all 14 designs are covered, in Jobwhisper's own visual language (Approach A, approved).
 
 ## Decisions already made

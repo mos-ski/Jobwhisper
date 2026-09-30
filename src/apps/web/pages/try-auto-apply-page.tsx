@@ -8,7 +8,7 @@ import { autoApplyFunnelMatches, autoApplyFunnelQuestions } from '@/mocks/funnel
 import { anonymousSession, candidateSession } from '@/mocks/sessions'
 import { resumeUploadError, useOnline } from '../funnel-page-state'
 
-const STEPS: readonly FunnelAutoApplyStep[] = ['upload', 'quiz', 'matches', 'gate']
+const STEPS: readonly FunnelAutoApplyStep[] = ['upload', 'quiz', 'searching', 'matches', 'gate']
 // Review-only switches, carried through every step so a reviewer can walk a whole variant.
 const REVIEW_PARAMS = ['session', 'offline', 'matches'] as const
 const LAST_QUESTION = autoApplyFunnelQuestions.length - 1
@@ -72,8 +72,9 @@ export function TryAutoApplyPage() {
       onContinue={() => {
         if (step === 'upload') return go('quiz', { q: '0' })
         if (questionIndex < LAST_QUESTION) return go('quiz', { q: String(questionIndex + 1) })
-        go('matches')
+        go('searching')
       }}
+      onSearchComplete={() => go('matches', {}, true)}
       onClose={() => navigate('/')}
       onSelectJob={(jobId) => go('matches', jobId ? { job: jobId } : {})}
       onApply={apply}
