@@ -91,3 +91,34 @@ Targeted vitest (`funnel-auto-apply-view`, `funnel-kit`, `try-auto-apply-flow`),
 - Jobs tab (`AutoApplyJobsView`) itself — already has this interaction; not touched.
 - Focus trap / `aria-modal` on the mobile sheet (see keyboard note).
 - Scroll-position persistence between list and panel.
+
+## Revision 2 — matches step takes the Jobs-tab job layout
+
+User review of the first build: the panel interaction is right, the *content* is not —
+the funnel must look like the app's Jobs tab (Image 2), not a sparse funnel detail.
+
+Scope after review ("the whole view, the jobs also", "leave the current jobs found and all that"):
+
+- **Kept:** funnel pill header/progress, "N jobs we'd apply to for you" title, stats bar
+  (roles found / average match / best match), answers summary line, NoMatches, gate,
+  shell footer, the side-panel interaction itself.
+- **Replaced — list rows:** Jobs-tab row anatomy from `JobList`: company initials avatar
+  (accent tint for Stripe, danger tint otherwise), title + `{n}% MATCH` green badge +
+  `New` badge, `company - location - type` and `Found {date} - {source}` meta lines,
+  per-row **Apply** (status `new`) or a status badge (`Queued`/`Applying`). Row click
+  opens the panel; selected row gets `aria-current` + `bg-accent-subtle`.
+- **Replaced — panel:** `JobPreview` anatomy for the not-yet-applied state: status /
+  salary / posted / "Still open? Not checked" chips, POSTED + FOUND grid, JOB LISTING
+  link, Resume We'll Submit + ATS chip (static row, no dialog in the funnel), Get a
+  resume for this role · 1 Credit (solid `text-accent-text`, no raw-color gradient),
+  green match card (matchLabel + percent + `+points` breakdown), tag chips,
+  About the role, then actions: **Apply Now** + Apply Manually + Close for `new`
+  jobs, View Listing + Close otherwise.
+- **Data:** `matches` becomes `readonly AutoApplyJob[]`; the page passes
+  `autoApplyJobs.filter(j => j.status !== 'applied' && j.status !== 'posting-closed')`
+  — the exact set the Jobs tab shows (10 jobs). `FunnelJobMatch` and
+  `autoApplyFunnelMatches` are deleted as unused; noted in `CONTRACT-REQUESTS.md`.
+- **Footer:** "Apply to this job" only while a `new` job's panel is open; otherwise
+  "Apply to all N".
+- Stats read `matchPercent`; gate reads the same field. Tests move to the new data
+  (10 jobs, `coinbase-financial-engineering` as the open panel fixture).
