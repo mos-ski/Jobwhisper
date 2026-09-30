@@ -1,5 +1,5 @@
 import { useId, useState, type DragEvent, type ReactNode } from 'react'
-import { ArrowLeft, Building2, CircleCheck, MapPin, SearchX } from 'lucide-react'
+import { ArrowLeft, Building2, ChevronLeft, ChevronRight, CircleCheck, MapPin, SearchX } from 'lucide-react'
 
 import type { FunnelAnswers, FunnelJobMatch, FunnelQuestion as FunnelQuestionData } from '@/contracts/funnel.draft'
 import { Button } from '@/ui'
@@ -94,6 +94,7 @@ function AutoApplyUploadLanding({ fileName, uploadError, online, onFile, onConti
   const inputId = useId()
   const errorId = useId()
   const [dragging, setDragging] = useState(false)
+  const [benefitPage, setBenefitPage] = useState(0)
 
   function receiveFile(file: File) {
     onFile(file)
@@ -131,20 +132,34 @@ function AutoApplyUploadLanding({ fileName, uploadError, online, onFile, onConti
           {fileName ? <button type="button" disabled={!online} onClick={onContinue} className="min-h-12 w-full max-w-[415px] rounded bg-accent px-4 text-xl font-bold text-on-accent disabled:opacity-60">Start Your Remote Job Search Now!</button> : <label htmlFor={inputId} className="flex min-h-12 w-full max-w-[415px] cursor-pointer items-center justify-center rounded bg-accent px-4 text-xl font-bold text-on-accent focus-within:ring-2 focus-within:ring-focus">Start Your Remote Job Search Now!</label>}
         </div>
       </section>
-      <section aria-labelledby="auto-apply-benefits" className="px-5 py-14 sm:px-8 sm:py-16">
-        <h2 id="auto-apply-benefits" className="text-center font-gowun text-[clamp(2.5rem,5vw,4rem)] font-bold leading-none tracking-[-3.01px] text-landing-ink">The <span className="relative inline-block">#1 Site<img className="absolute -bottom-1 start-0" src="/funnel/auto-apply/underline.png" alt="" width="173" height="8" /></span> for Remote jobs</h2>
-        <div className="mx-auto mt-12 grid max-w-[960px] gap-6 md:grid-cols-3">
-          <BenefitCard icon="quality.svg" title="Higher Quality Listings" body="Only legitimate jobs. No ads, scams, or junk to sift through. Our team reviews every role so you know who’s hiring." quote="The listings were relevant and trustworthy from the start." person="Kylie R." company="Hired at Quick Med Claims" avatar="avatar-2.png" />
-          <BenefitCard icon="tools.svg" title="Personalized Tools" body="Save and apply to jobs, track activity logs and checklists, and get alerts for new roles of interest." quote="Jobwhisper gives me one clear place to manage every application." person="Daniel S." company="Hired at Lyft" avatar="avatar-3.png" />
-          <BenefitCard icon="time.svg" title="Save Time" body="Go straight from job listings to applications. No more hopping from one job board to the next." quote="I had tried other job sites sooner. Jobwhisper made the search easier." person="Stephanie H." company="Hired at Belay" avatar="avatar-4.png" />
+      <section aria-labelledby="auto-apply-benefits" className="px-5 py-16 sm:px-8">
+        <h2 id="auto-apply-benefits" className="text-center font-gowun text-[clamp(2.5rem,5vw,4rem)] font-bold leading-none tracking-[-3.01px] text-landing-ink">The <span className="relative inline-block">#1 Site<img className="absolute -bottom-1 start-0" src="/funnel/auto-apply/footer-underline.png" alt="" width="173" height="8" /></span> for Remote jobs</h2>
+        <div className="relative mx-auto mt-12 w-full max-w-[1290px] px-0 sm:px-16">
+          <div className="grid gap-9 md:grid-cols-3" aria-live="polite">
+            {AUTO_APPLY_BENEFITS.slice(benefitPage * 3, benefitPage * 3 + 3).map((benefit) => <BenefitCard key={benefit.title} {...benefit} />)}
+          </div>
+          <button type="button" aria-label="Previous benefits" onClick={() => setBenefitPage((page) => (page === 0 ? 1 : page - 1))} className="mt-6 inline-flex size-11 items-center justify-center rounded-full border border-border bg-surface text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:absolute sm:start-0 sm:top-1/2 sm:mt-0 sm:-translate-y-1/2"><ChevronLeft aria-hidden="true" className="size-5 rtl:rotate-180" /></button>
+          <button type="button" aria-label="Next benefits" onClick={() => setBenefitPage((page) => (page === 1 ? 0 : page + 1))} className="mt-6 inline-flex size-11 items-center justify-center rounded-full border border-border bg-surface text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:absolute sm:end-0 sm:top-1/2 sm:mt-0 sm:-translate-y-1/2"><ChevronRight aria-hidden="true" className="size-5 rtl:rotate-180" /></button>
         </div>
+        <div className="mx-auto mt-16 flex max-w-[415px] justify-center">{fileName ? <button type="button" disabled={!online} onClick={onContinue} className="min-h-12 w-full rounded bg-accent px-4 text-xl font-bold text-on-accent disabled:opacity-60">Start Your Remote Job Search Now!</button> : <label htmlFor={inputId} className="flex min-h-12 w-full cursor-pointer items-center justify-center rounded bg-accent px-4 text-center text-xl font-bold text-on-accent focus-within:ring-2 focus-within:ring-focus">Start Your Remote Job Search Now!</label>}</div>
       </section>
     </main>
   )
 }
 
-function BenefitCard({ icon, title, body, quote, person, company, avatar }: { readonly icon: string; readonly title: string; readonly body: string; readonly quote: string; readonly person: string; readonly company: string; readonly avatar: string }) {
-  return <article className="flex min-h-[440px] flex-col bg-surface px-7 py-8 shadow-control"><img src={`/funnel/auto-apply/${icon}`} alt="" width="74" height="71" /><h3 className="mt-5 text-2xl font-semibold">{title}</h3><p className="mt-3 text-base leading-6 text-ink-muted">{body}</p><div className="mt-auto border-t border-border pt-6"><blockquote className="text-sm leading-5">“{quote}”</blockquote><div className="mt-4 flex items-center gap-2"><img src={`/funnel/auto-apply/${avatar}`} alt="" width="32" height="32" className="rounded-full" /><p className="grid text-xs"><span>{person}</span><strong>{company}</strong></p></div></div></article>
+type AutoApplyBenefit = { readonly icon: string; readonly title: string; readonly body: string; readonly quote: string; readonly emphasis: string; readonly person: string; readonly company: string; readonly avatar: string }
+
+const AUTO_APPLY_BENEFITS: readonly AutoApplyBenefit[] = [
+  { icon: 'footer-quality.svg', title: 'Higher Quality Listings', body: 'Only legitimate jobs. No ads, scams, or junk to sift through. Our team reviews every role and writes clear company descriptions, so you know who is hiring.', quote: 'I fell prey to a job scam and decided to give Jobwhisper a try.', emphasis: 'Jobwhisper took the worry out of searching for a job.', person: 'Vickie R.', company: 'Hired at Quick Med Claims', avatar: 'avatar-2.png' },
+  { icon: 'footer-tools.svg', title: 'Personalized Tools', body: 'Save and apply to jobs, track activity logs and checklists, and get alerts for new roles that match what you want.', quote: 'Jobwhisper provides the tools I need to stay focused through every application.', emphasis: 'Everything is finally in one place.', person: 'Daniel S.', company: 'Hired at Lyft', avatar: 'avatar-3.png' },
+  { icon: 'footer-time.svg', title: 'Save Time', body: 'Go straight from job listings to applications. No more hopping from one job board to the next.', quote: 'I wish I had tried Jobwhisper sooner.', emphasis: 'I found job postings I had not seen elsewhere.', person: 'Stephanie H.', company: 'Hired at Belay', avatar: 'avatar-4.png' },
+  { icon: 'footer-quality.svg', title: 'Better Matches', body: 'Compare every opening with your experience, location, preferred work style, and salary before you spend time applying.', quote: 'The search stopped feeling random.', emphasis: 'The roles finally made sense for my experience.', person: 'Amara O.', company: 'Hired at Remote' , avatar: 'avatar-2.png' },
+  { icon: 'footer-tools.svg', title: 'One Search Workspace', body: 'Keep promising roles, application notes, next steps, and status updates together instead of rebuilding your shortlist every day.', quote: 'I could see exactly what needed my attention.', emphasis: 'Nothing disappeared into another tab.', person: 'Kwame M.', company: 'Hired at Deel', avatar: 'avatar-3.png' },
+  { icon: 'footer-time.svg', title: 'Privacy & Support', body: 'Your resume and job-search details stay protected. Support is available whenever an application needs a closer look.', quote: 'I always knew what Jobwhisper was doing.', emphasis: 'I stayed in control of every application.', person: 'Sophie M.', company: 'Hired at Notion', avatar: 'avatar-4.png' },
+]
+
+function BenefitCard({ icon, title, body, quote, emphasis, person, company, avatar }: AutoApplyBenefit) {
+  return <article className="flex min-h-[558px] flex-col rounded-lg bg-surface px-7 pb-7 pt-10 shadow-control"><img src={`/funnel/auto-apply/${icon}`} alt="" width="74" height="71" /><h3 className="mt-5 text-[28px] font-semibold leading-10">{title}</h3><p className="mt-3 text-base font-medium leading-6 text-ink-muted">{body}</p><div className="mt-auto border-t border-border pt-7"><blockquote className="min-h-16 text-sm leading-5">“{quote} <strong className="font-semibold text-accent-text">{emphasis}</strong>”</blockquote><div className="mt-4 flex items-center gap-2"><img src={`/funnel/auto-apply/${avatar}`} alt="" width="32" height="32" className="rounded-full" /><p className="grid text-sm leading-4 text-ink-muted"><span>{person}</span><strong className="font-semibold text-ink">{company}</strong></p></div></div></article>
 }
 
 function MatchList({ matches, answers, onSelectJob }: FunnelAutoApplyViewProps) {

@@ -45,6 +45,17 @@ describe('FunnelAutoApplyView', () => {
     expect(screen.queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument()
   })
 
+  it('moves through the footer benefit cards with accessible controls', async () => {
+    const user = userEvent.setup()
+    renderView()
+    await user.click(screen.getByRole('button', { name: 'Next benefits' }))
+    expect(screen.getByRole('heading', { name: 'Better Matches' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'One Search Workspace' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Privacy & Support' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Previous benefits' }))
+    expect(screen.getByRole('heading', { name: 'Higher Quality Listings' })).toBeInTheDocument()
+  })
+
   it('asks the matching questions one per page', () => {
     renderView({ step: 'quiz', questionIndex: 1 })
     expect(screen.getByText('3 of 10')).toBeInTheDocument()
