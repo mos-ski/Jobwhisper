@@ -77,6 +77,7 @@
   --color-landing-muted: var(--lf-landing-muted);
   --color-landing-border: var(--lf-landing-border);
   --color-landing-control: var(--lf-landing-control);
+  --color-landing-transparent: var(--lf-landing-transparent);
   --z-index-shell: var(--lf-z-shell);
   --z-index-dropdown: var(--lf-z-dropdown);
   --z-index-sticky: var(--lf-z-sticky);

@@ -26,6 +26,8 @@ const config: Config = {
         border: 'var(--lf-border)',
         input: 'var(--lf-input)',
         muted: 'var(--lf-muted)',
+        'disabled-surface': 'var(--lf-disabled-surface)',
+        'disabled-text': 'var(--lf-disabled-text)',
         accent: {
           DEFAULT: 'var(--lf-accent)',
           hover: 'var(--lf-accent-hover)',
@@ -70,6 +72,7 @@ const config: Config = {
         'landing-muted': 'var(--lf-landing-muted)',
         'landing-border': 'var(--lf-landing-border)',
         'landing-control': 'var(--lf-landing-control)',
+        'landing-transparent': 'var(--lf-landing-transparent)',
         overlay: 'var(--lf-overlay)',
         'wash-mint': 'var(--lf-wash-mint)',
         'brand-bar': {
