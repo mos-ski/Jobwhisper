@@ -259,7 +259,7 @@
    Failure branch: offline freezes the run at its first line with the offline notice and nothing auto-advances; reduced motion shows every line at once on the same timer.
 
 4. Entry condition: the matches list shows each job's title, company, location, salary and match score.
-   Exit condition: View job opens its reasons; Apply to this job or Apply to all opens the gate for anonymous visitors, and `/v3/auto-apply/review` for signed-in ones.
+   Exit condition: selecting a job slides its detail in as a right-hand panel beside the list (bottom sheet under the mobile breakpoint, `?job=<id>` in the URL); X, backdrop click, Escape or browser Back closes it and returns to the list with focus on the row. Apply to this job (shell footer on desktop, sheet footer on mobile) or Apply to all opens the gate for anonymous visitors, and `/v3/auto-apply/review` for signed-in ones.
    Failure branch: with no matches, the screen offers to widen the location, work mode or salary and returns to that question.
 
 5. Entry condition: the gate names the jobs waiting and says each application is approved before it goes.

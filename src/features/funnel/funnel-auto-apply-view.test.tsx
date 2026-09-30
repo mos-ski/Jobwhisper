@@ -1,4 +1,4 @@
-import { act, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
@@ -102,16 +102,37 @@ describe('FunnelAutoApplyView', () => {
     expect(props.onApply).toHaveBeenCalledWith('all')
   })
 
-  it('opens a job with why it matched, and applies to that one', async () => {
+  it('opens a job in a side panel beside the list, and applies to that one', async () => {
     const user = userEvent.setup()
     const props = renderView({ step: 'matches', selectedJobId: 'lattice-csm' })
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Customer Success Manager, Mid-Market')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('8 jobs we’d apply to for you')
+    expect(screen.getByRole('list', { name: 'Matched jobs' })).toBeInTheDocument()
+
+    const panel = document.querySelector('[data-slot="funnel-job-panel"]')
+    expect(panel).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'Customer Success Manager, Mid-Market' })).toBeInTheDocument()
     expect(screen.getByText('Your churn reduction pilot matches their retention goal')).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Apply to this job' }))
+
+    const close = screen.getByRole('button', { name: 'Close job details' })
+    expect(close).toHaveFocus()
+    expect(
+      screen.getByRole('button', { name: /Customer Success Manager, Mid-Market at .* View job/ }),
+    ).toHaveAttribute('aria-current', 'true')
+
+    // The shell footer carries the CTA on desktop; the mobile sheet has its own copy under lg:hidden.
+    await user.click(within(screen.getByRole('contentinfo')).getByRole('button', { name: 'Apply to this job' }))
     expect(props.onApply).toHaveBeenCalledWith('lattice-csm')
-    await user.click(screen.getByRole('button', { name: 'All matches' }))
+
+    await user.click(close)
     expect(props.onSelectJob).toHaveBeenCalledWith(null)
+  })
+
+  it('closes the side panel with Escape without leaving the funnel', () => {
+    const props = renderView({ step: 'matches', selectedJobId: 'lattice-csm' })
+    fireEvent.keyDown(window, { key: 'Escape' })
+    expect(props.onSelectJob).toHaveBeenCalledWith(null)
+    expect(props.onClose).not.toHaveBeenCalled()
   })
 
   it('suggests which answers to widen when nothing matches', async () => {

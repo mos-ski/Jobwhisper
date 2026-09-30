@@ -3,7 +3,7 @@ import { WifiOff, X } from 'lucide-react'
 
 import { cn, JobwhisperMark } from '@/ui'
 
-export type FunnelShellWidth = 'narrow' | 'wide'
+export type FunnelShellWidth = 'narrow' | 'wide' | 'xwide'
 
 export type FunnelShellProps = {
   /** Names the current step in the header. */
@@ -18,7 +18,7 @@ export type FunnelShellProps = {
   readonly notice?: ReactNode
   /** Pinned under the body; omit for steps whose actions live in the body. */
   readonly footer?: ReactNode
-  /** `narrow` for questions and forms, `wide` for results that need room. Defaults to `narrow`. */
+  /** `narrow` for questions and forms, `wide` for results that need room, `xwide` when a side panel shares the results. Defaults to `narrow`. */
   readonly width?: FunnelShellWidth
   readonly children: ReactNode
 }
@@ -26,6 +26,7 @@ export type FunnelShellProps = {
 const widths: Record<FunnelShellWidth, string> = {
   narrow: 'max-w-xl',
   wide: 'max-w-3xl',
+  xwide: 'max-w-5xl',
 }
 
 export function FunnelShell({ label, stepCount, currentStep, onClose, closeLabel = 'Leave setup', notice, footer, width = 'narrow', children }: FunnelShellProps) {
@@ -35,7 +36,8 @@ export function FunnelShell({ label, stepCount, currentStep, onClose, closeLabel
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
+      // A panel inside the shell claims Escape first (capture phase); leaving the funnel is the fallback.
+      if (event.key === 'Escape' && !event.defaultPrevented) onClose()
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)

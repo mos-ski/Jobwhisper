@@ -170,6 +170,18 @@ const config: Config = {
           from: { clipPath: 'inset(0 100% 0 0)', opacity: '0.3' },
           to: { clipPath: 'inset(0 0 0 0)', opacity: '1' },
         },
+        'slide-in-right': {
+          from: { opacity: '0', transform: 'translateX(100%)' },
+          to: { opacity: '1', transform: 'translateX(0)' },
+        },
+        'slide-in-left': {
+          from: { opacity: '0', transform: 'translateX(-100%)' },
+          to: { opacity: '1', transform: 'translateX(0)' },
+        },
+        'slide-in-bottom': {
+          from: { opacity: '0', transform: 'translateY(100%)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 200ms ease-out',
@@ -178,6 +190,9 @@ const config: Config = {
         marquee: 'marquee 18s linear infinite',
         'fix-pulse': 'fix-pulse 1.4s ease-out',
         'text-reveal': 'text-reveal 600ms ease-out',
+        'slide-in-right': 'slide-in-right 0.25s ease-out',
+        'slide-in-left': 'slide-in-left 0.25s ease-out',
+        'slide-in-bottom': 'slide-in-bottom 0.25s ease-out',
       },
       transitionDuration: {
         fast: 'var(--lf-duration-fast)',

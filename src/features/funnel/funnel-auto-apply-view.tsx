@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState, type DragEvent, type ReactNode } from 'react'
-import { ArrowLeft, Building2, ChevronLeft, ChevronRight, CircleCheck, MapPin, SearchX } from 'lucide-react'
+import { ChevronLeft, ChevronRight, CircleCheck, SearchX, X } from 'lucide-react'
 
 import type { FunnelAnswers, FunnelJobMatch, FunnelQuestion as FunnelQuestionData } from '@/contracts/funnel.draft'
 import { Button, cn } from '@/ui'
@@ -20,7 +20,7 @@ export type FunnelAutoApplyViewProps = {
   readonly uploadError?: string
   readonly online: boolean
   readonly matches: readonly FunnelJobMatch[]
-  /** The job open in detail on the matches step; absent shows the list. */
+  /** The job open in the side panel on the matches step; absent shows the list only. */
   readonly selectedJobId?: string
   /** What the gate is standing in front of: `'all'` or one job id. */
   readonly applyTarget?: string
@@ -75,7 +75,7 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
   if (step === 'searching') return <SearchingStep fileName={props.fileName} online={online} onSearchComplete={props.onSearchComplete} />
 
   return (
-    <FunnelShell label={label} stepCount={total + 2} currentStep={currentStep} onClose={onClose} notice={online ? null : <FunnelOfflineNotice />} footer={footer} width={step === 'matches' ? 'wide' : 'narrow'}>
+    <FunnelShell label={label} stepCount={total + 2} currentStep={currentStep} onClose={onClose} notice={online ? null : <FunnelOfflineNotice />} footer={footer} width={step === 'matches' ? (selectedJob ? 'xwide' : 'wide') : 'narrow'}>
       {step === 'quiz' && question ? (
         <FunnelQuestion
           key={question.id}
@@ -90,9 +90,15 @@ export function FunnelAutoApplyView(props: FunnelAutoApplyViewProps) {
           onSkip={online ? props.onContinue : undefined}
         />
       ) : null}
-      {step === 'matches' && selectedJob ? <JobDetail job={selectedJob} onSelectJob={props.onSelectJob} /> : null}
-      {step === 'matches' && !selectedJob && matches.length > 0 ? <MatchList {...props} /> : null}
-      {step === 'matches' && !selectedJob && matches.length === 0 ? <NoMatches onEditAnswer={props.onEditAnswer} /> : null}
+      {step === 'matches' && matches.length > 0 ? (
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-6">
+          <div className="min-w-0 flex-1">
+            <MatchList {...props} />
+          </div>
+          {selectedJob ? <JobDetailPanel job={selectedJob} onClose={() => props.onSelectJob(null)} onApply={props.onApply} /> : null}
+        </div>
+      ) : null}
+      {step === 'matches' && matches.length === 0 ? <NoMatches onEditAnswer={props.onEditAnswer} /> : null}
       {step === 'gate' ? <Gate {...props} /> : null}
     </FunnelShell>
   )
@@ -261,7 +267,7 @@ function BenefitCard({ icon, title, body, quote, emphasis, person, company, avat
   return <article className="flex min-h-[520px] flex-col rounded-lg bg-surface px-7 pb-7 pt-10 shadow-lg"><img src={`/funnel/auto-apply/${icon}`} alt="" width="74" height="71" /><h3 className="mt-5 text-[28px] font-semibold leading-10">{title}</h3><p data-slot="auto-apply-benefit-body" className="mt-3 min-h-28 text-base font-medium leading-6 text-ink-muted">{body}</p><div data-slot="auto-apply-benefit-testimonial" className="mt-8 border-t border-border pt-7"><blockquote className="min-h-24 text-sm leading-5">“{quote} <strong className="font-semibold text-accent-text">{emphasis}</strong>”</blockquote><div className="mt-4 flex items-center gap-2"><img src={`/funnel/auto-apply/${avatar}`} alt="" width="32" height="32" className="rounded-full" /><p className="grid text-sm leading-4 text-ink-muted"><span>{person}</span><strong className="font-semibold text-ink">{company}</strong></p></div></div></article>
 }
 
-function MatchList({ matches, answers, onSelectJob }: FunnelAutoApplyViewProps) {
+function MatchList({ matches, answers, onSelectJob, selectedJobId }: FunnelAutoApplyViewProps) {
   const summary = [answers.role, answers.location, answers.workMode].filter(Boolean).join(' · ')
   const average = Math.round(matches.reduce((sum, job) => sum + job.matchScore, 0) / matches.length)
   const best = matches.reduce((top, job) => (job.matchScore > top.matchScore ? job : top))
@@ -292,6 +298,7 @@ function MatchList({ matches, answers, onSelectJob }: FunnelAutoApplyViewProps) 
               type="button"
               onClick={() => onSelectJob(job.id)}
               aria-label={`${job.title} at ${job.company}, ${job.matchScore}% match. View job`}
+              aria-current={job.id === selectedJobId ? 'true' : undefined}
               className="grid w-full gap-3 px-5 py-4 text-start first:rounded-t-2xl last:rounded-b-2xl hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus sm:grid-cols-[minmax(0,1fr)_9rem] sm:items-center"
             >
               <span className="grid min-w-0 gap-1">
@@ -313,34 +320,74 @@ function MatchList({ matches, answers, onSelectJob }: FunnelAutoApplyViewProps) 
   )
 }
 
-function JobDetail({ job, onSelectJob }: { readonly job: FunnelJobMatch; readonly onSelectJob: (jobId: string | null) => void }) {
+function JobDetailPanel({ job, onClose, onApply }: { readonly job: FunnelJobMatch; readonly onClose: () => void; readonly onApply: (target: string) => void }) {
+  const titleId = useId()
+  const closeRef = useRef<HTMLButtonElement>(null)
+  const openerRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    openerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    closeRef.current?.focus()
+    return () => openerRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      // Capture phase, so the shell reads this as "close the panel", not "leave the funnel".
+      event.preventDefault()
+      onClose()
+    }
+    window.addEventListener('keydown', onKeyDown, true)
+    return () => window.removeEventListener('keydown', onKeyDown, true)
+  }, [onClose])
+
   return (
-    <div className="grid gap-6">
-      <button type="button" onClick={() => onSelectJob(null)} className="inline-flex min-h-11 items-center gap-2 justify-self-start rounded-md text-sm font-medium text-accent-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-        <ArrowLeft aria-hidden="true" className="size-4 rtl:rotate-180" />
-        All matches
-      </button>
-      <div className="grid gap-3">
-        <FunnelTitle align="start">{job.title}</FunnelTitle>
-        <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-muted">
-          <span className="inline-flex items-center gap-1.5"><Building2 aria-hidden="true" className="size-4" />{job.company}</span>
-          <span className="inline-flex items-center gap-1.5"><MapPin aria-hidden="true" className="size-4" />{job.location} · {job.workMode}</span>
-        </p>
-        <p className="text-base text-ink">{job.salaryRange} <span className="text-ink-muted">· {job.postedLabel}</span></p>
-      </div>
-      <p className="text-base leading-7 text-ink">{job.summary}</p>
-      <section aria-labelledby="funnel-job-reasons" className="grid gap-3 rounded-panel border border-border bg-surface p-5">
-        <h2 id="funnel-job-reasons" className="flex items-center justify-between gap-3 text-lg font-semibold text-ink">
-          Why it matched
-          <span className="rounded-full bg-accent-subtle px-3 py-1 text-sm font-semibold text-accent-text">{job.matchScore}% match</span>
-        </h2>
-        <ul className="grid gap-2">
-          {job.reasons.map((reason) => (
-            <li key={reason} className="flex gap-2 text-sm leading-6 text-ink"><CircleCheck aria-hidden="true" className="mt-1 size-4 shrink-0 text-positive" />{reason}</li>
-          ))}
-        </ul>
-      </section>
-    </div>
+    <>
+      <div className="fixed inset-0 z-40 bg-overlay lg:hidden" onClick={onClose} aria-hidden="true" />
+      <aside
+        data-slot="funnel-job-panel"
+        aria-labelledby={titleId}
+        className="animate-slide-in-bottom fixed inset-x-0 bottom-0 z-50 flex max-h-[90vh] w-full flex-col overflow-hidden rounded-t-xl border border-border bg-surface shadow-panel lg:static lg:z-auto lg:h-full lg:w-[26rem] lg:max-h-none lg:shrink-0 lg:animate-slide-in-right lg:rounded-none lg:border-0 lg:border-s lg:shadow-none lg:rtl:animate-slide-in-left motion-reduce:animate-none"
+      >
+        <div className="flex shrink-0 items-center justify-between px-6 pt-4 pb-1 lg:hidden">
+          <div className="mx-auto h-1 w-10 rounded-full bg-muted" aria-hidden="true" />
+        </div>
+        <div className="flex shrink-0 items-start justify-between gap-3 px-6 pt-3 pb-4">
+          <div className="min-w-0">
+            <h2 id={titleId} className="font-gowun text-xl font-bold leading-tight text-ink">{job.title}</h2>
+            <p className="mt-1 text-sm text-ink-muted">{job.company} · {job.location} · {job.workMode}</p>
+          </div>
+          <button
+            ref={closeRef}
+            type="button"
+            onClick={onClose}
+            aria-label="Close job details"
+            className="grid size-10 shrink-0 place-items-center rounded-lg text-ink-muted transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          >
+            <X aria-hidden="true" className="size-5" />
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto px-6 pb-6">
+          <p className="text-sm text-ink">{job.salaryRange} <span className="text-ink-muted">· {job.postedLabel}</span></p>
+          <p className="mt-3 text-sm leading-6 text-ink-muted">{job.summary}</p>
+          <section aria-labelledby="funnel-job-reasons" className="mt-5 grid gap-3 rounded-panel border border-border bg-surface p-4">
+            <h3 id="funnel-job-reasons" className="flex items-center justify-between gap-3 text-base font-semibold text-ink">
+              Why it matched
+              <span className="rounded-full bg-accent-subtle px-3 py-1 text-xs font-semibold text-accent-text">{job.matchScore}% match</span>
+            </h3>
+            <ul className="grid gap-2">
+              {job.reasons.map((reason) => (
+                <li key={reason} className="flex gap-2 text-sm leading-6 text-ink"><CircleCheck aria-hidden="true" className="mt-1 size-4 shrink-0 text-positive" />{reason}</li>
+              ))}
+            </ul>
+          </section>
+        </div>
+        <div className="shrink-0 border-t border-border px-6 py-4 lg:hidden">
+          <Button size="lg" className="w-full" onClick={() => onApply(job.id)}>Apply to this job</Button>
+        </div>
+      </aside>
+    </>
   )
 }
 
