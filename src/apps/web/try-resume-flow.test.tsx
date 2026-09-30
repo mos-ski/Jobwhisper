@@ -30,11 +30,11 @@ describe('/v3/try/resume', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Analyze for free' }))
 
       expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Analyzing your resume')
-      expect(screen.getByRole('list')).toHaveTextContent('reading darnell-smith-resume.pdf…')
+      expect(screen.getByRole('list')).toHaveTextContent('opening darnell-smith-resume.pdf…')
       expect(screen.getByText('(in progress)')).toBeInTheDocument()
 
       await act(async () => {
-        await vi.advanceTimersByTimeAsync(2200)
+        await vi.advanceTimersByTimeAsync(13200)
       })
     } finally {
       vi.useRealTimers()
@@ -53,7 +53,7 @@ describe('/v3/try/resume', () => {
   it('opens the analyzing page straight from a shared link', () => {
     renderAt('/v3/try/resume?step=analyzing')
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Analyzing your resume')
-    expect(screen.getByRole('list')).toHaveTextContent('reading your resume…')
+    expect(screen.getByRole('list')).toHaveTextContent('opening your resume…')
   })
 
   it('downloads straight away for someone signed in', () => {

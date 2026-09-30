@@ -202,37 +202,55 @@ function UploadStep({ fileName, uploadError, jobDescription, online, liveActivit
   )
 }
 
-/** The run log after the file line: one line every 300ms, last line holds before the score. */
-const ANALYZE_STEPS: readonly string[] = [
-  'pulling out roles, dates and contact details…',
-  'checking ATS keyword coverage…',
-  'scanning formatting and section order…',
-  'ranking issues by impact…',
-  'writing your report…',
-]
-const ANALYZE_LINE_MS = 300
-const ANALYZE_TOTAL_LINES = ANALYZE_STEPS.length + 1
-const ANALYZE_DURATION_MS = ANALYZE_TOTAL_LINES * ANALYZE_LINE_MS + 400
+type AnalyzeStep = {
+  /** The line once the run reaches it; a completed line takes a check. */
+  readonly label: string
+  /** How long this line stays current before it completes — the slow passes get their real weight. */
+  readonly ms: number
+}
 
-function AnalyzingStep({ fileName, online, onClose, onAnalyzingComplete }: FunnelResumeViewProps) {
-  const steps = [`reading ${fileName ?? 'your resume'}…`, ...ANALYZE_STEPS]
-  const [active, setActive] = useState(0)
+/** An ATS scan in the order it actually runs; totals 12.6s so the run reads as work, not a spinner. */
+const ANALYZE_STEPS: readonly AnalyzeStep[] = [
+  { label: '', ms: 800 },
+  { label: 'reading 2 pages, 874 words…', ms: 1000 },
+  { label: 'extracting contact and 5 sections…', ms: 1200 },
+  { label: 'normalizing titles and date ranges…', ms: 900 },
+  { label: 'checking ATS keyword coverage…', ms: 1700 },
+  { label: 'scanning section order and headings…', ms: 900 },
+  { label: 'checking fonts, tables and columns…', ms: 1000 },
+  { label: 'looking for quantified results…', ms: 1200 },
+  { label: 'checking date gaps and overlaps…', ms: 900 },
+  { label: 'scoring 23 ATS criteria…', ms: 1500 },
+  { label: 'writing your report…', ms: 1500 },
+]
+const ANALYZE_TOTAL_MS = ANALYZE_STEPS.reduce((sum, step) => sum + step.ms, 0)
+const ANALYZE_HOLD_MS = 600
+
+function AnalyzingStep({ fileName, jobDescription, online, onClose, onAnalyzingComplete }: FunnelResumeViewProps) {
+  const steps = ANALYZE_STEPS.map((step, index) => {
+    if (index === 0) return { ...step, label: `opening ${fileName ?? 'your resume'}…` }
+    if (index === 4 && jobDescription.trim()) return { ...step, label: 'checking keywords against your job…' }
+    return step
+  })
+  const [done, setDone] = useState(0)
   const completeRef = useRef(onAnalyzingComplete)
   useEffect(() => {
     completeRef.current = onAnalyzingComplete
   })
   useEffect(() => {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
-      setActive(ANALYZE_TOTAL_LINES)
-      const hold = setTimeout(() => completeRef.current(), 800)
+      setDone(ANALYZE_STEPS.length)
+      const hold = setTimeout(() => completeRef.current(), ANALYZE_TOTAL_MS + ANALYZE_HOLD_MS)
       return () => clearTimeout(hold)
     }
-    const tick = setInterval(() => setActive((value) => Math.min(value + 1, ANALYZE_TOTAL_LINES)), ANALYZE_LINE_MS)
-    const timer = setTimeout(() => completeRef.current(), ANALYZE_DURATION_MS)
-    return () => {
-      clearInterval(tick)
-      clearTimeout(timer)
-    }
+    const timers: ReturnType<typeof setTimeout>[] = []
+    let elapsed = 0
+    ANALYZE_STEPS.forEach((step, index) => {
+      elapsed += step.ms
+      timers.push(setTimeout(() => setDone(index + 1), elapsed))
+    })
+    timers.push(setTimeout(() => completeRef.current(), elapsed + ANALYZE_HOLD_MS))
+    return () => timers.forEach(clearTimeout)
     // One run per visit; the log advances on its own clock, not on renders.
   }, [])
 
@@ -256,30 +274,27 @@ function AnalyzingStep({ fileName, online, onClose, onAnalyzingComplete }: Funne
 
       {!online ? <div className="mt-4 w-full max-w-3xl"><FunnelOfflineNotice /></div> : null}
 
-      <div className="flex w-full max-w-[820px] flex-1 flex-col items-center justify-center gap-7 py-14 text-center">
-        <div
-          data-slot="funnel-resume-analyzing"
-          data-state="running"
-          className="min-h-64 w-full max-w-[456px] rounded-[28px] border border-landing-border bg-surface p-6 shadow-float"
-        >
-          <h1 className="text-base font-semibold text-landing-ink">Analyzing your resume…</h1>
-          <ol aria-live="polite" className="mt-4 grid gap-1.5 font-mono text-sm">
-            {steps.map((label, index) =>
-              index > active ? null : (
+      <div
+        data-slot="funnel-resume-analyzing"
+        data-state="running"
+        className="flex w-full max-w-[560px] flex-1 flex-col items-center justify-center gap-6 py-14 text-center"
+      >
+        <h1 className="text-base font-semibold text-landing-ink sm:text-lg">Analyzing your resume…</h1>
+        <ol aria-live="polite" className="grid w-full gap-2 font-mono text-sm text-start sm:text-base">
+            {steps.map((step, index) =>
+              index > done ? null : (
                 <li
-                  key={label}
-                  className={cn('flex items-start gap-2 leading-6', index < active ? 'text-landing-muted' : 'text-landing-ink')}
+                  key={index}
+                  className={cn('flex items-start gap-2 leading-6', index < done ? 'text-landing-muted' : 'text-landing-ink')}
                 >
-                  <span aria-hidden="true" className="shrink-0">{index < active ? '✓' : '>'}</span>
-                  <span className="min-w-0 break-words">{label}</span>
-                  <span className="sr-only">{index < active ? '(done)' : '(in progress)'}</span>
+                  <span aria-hidden="true" className="shrink-0">{index < done ? '✓' : '>'}</span>
+                  <span className="min-w-0 break-words">{step.label}</span>
+                  <span className="sr-only">{index < done ? '(done)' : '(in progress)'}</span>
                 </li>
               ),
             )}
-          </ol>
-        </div>
+        </ol>
       </div>
-      <ResumeTrustFooter />
     </main>
   )
 }

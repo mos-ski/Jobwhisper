@@ -228,8 +228,8 @@
    Exit condition: they optionally paste a job description in the composer, attach a resume with its paperclip, and press the circular Analyze for free send button, which opens the analyzing page.
    Failure branch: an unsupported, oversized or empty file is refused with the fix stated; offline, the file is kept and the Analyze button waits for the connection.
 
-2. Entry condition: `/v3/try/resume?step=analyzing` is its own page, reachable directly and by pressing Analyze for free. It carries the landing frame and proof strip, with a card headed "Analyzing your resume…" and a run log that ticks off one line at a time — reading the file, pulling out roles and dates, checking ATS keywords, scanning formatting, ranking issues, writing the report — completed lines marked with a check, the current line prefixed with ">".
-   Exit condition: after about two seconds the score opens at `?step=score`, replacing the analyzing entry so browser back returns to the upload rather than replaying the run.
+2. Entry condition: `/v3/try/resume?step=analyzing` is its own page, reachable directly and by pressing Analyze for free. It is a full-page run log under the landing frame — no card — headed "Analyzing your resume…" with eleven mono lines that tick off in order over about 13 seconds: opening the file, reading pages and word count, extracting sections, normalizing titles and dates, checking ATS keyword coverage (against the pasted job description when there is one), scanning section order, fonts and tables, looking for quantified results, checking date gaps, scoring the criteria, writing the report. Completed lines take a check, the live line is prefixed with ">".
+   Exit condition: after about 13 seconds the score opens at `?step=score`, replacing the analyzing entry so browser back returns to the upload rather than replaying the run.
    Failure branch: browser back at any time returns to the upload; if the connection drops mid-run the offline notice appears above the card and the run still resolves.
 
 3. Entry condition: the score step shows the score out of 100, a verdict in words, and each issue with its impact and fix.
