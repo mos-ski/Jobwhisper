@@ -47,7 +47,7 @@ The demo has no separate centered call to action. Once the visitor scrolls beyon
 
 The five public acquisition surfaces keep one job per page. The main page says **Find the right role. Show up ready. Land the job.** and explains that Jobwhisper keeps resume building, role matching, and live interview support in one place. The Resume funnel diagnoses the resume, shows the ATS score and rewrite before signup, and gates the download. The Interview Copilot funnel asks for the target role, resume, interview stage, and date before the seven-day Pro offer. The Auto Apply funnel says that Jobwhisper finds recent roles matching the visitor's experience, priorities, and location, then applies for them; the managed 14-day guarantee is qualified separately from standard Auto Apply plans. The general Pro funnel presents seven days for **$10 today, then $99/month**, with the reminder and cancellation terms shown before payment.
 
-Each funnel puts outcome-led proof near its first meaningful action. Proof uses the verified **57,000+ job seekers** aggregate and short, non-fabricated outcome descriptions. It remains readable as a stacked or horizontally scrollable block on narrow screens and does not depend on motion.
+The generic **Job seeker results** strip is not used on the homepage or public funnels. Each redesigned funnel carries only the proof treatment created for that specific experience, so proof does not repeat or interrupt the primary action.
 
 ## Episode 1 — Welcome to Lightforth
 
