@@ -1,5 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+import { vi } from 'vitest'
 
 import { WebRoutes } from './routes'
 
@@ -20,11 +21,24 @@ describe('/v3/try/resume', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Let’s analyze your resume')
   })
 
-  it('scores, shows the rewrite, and asks for an account at download', () => {
-    renderAt('/v3/try/resume')
-    const resume = new File(['Darnell Smith'], 'darnell-smith-resume.pdf', { type: 'application/pdf' })
-    fireEvent.change(screen.getByLabelText(/Your resume/), { target: { files: [resume] } })
-    fireEvent.click(screen.getByRole('button', { name: 'Analyze for free' }))
+  it('analyzes on its own page, scores, shows the rewrite, and asks for an account at download', async () => {
+    vi.useFakeTimers()
+    try {
+      renderAt('/v3/try/resume')
+      const resume = new File(['Darnell Smith'], 'darnell-smith-resume.pdf', { type: 'application/pdf' })
+      fireEvent.change(screen.getByLabelText(/Your resume/), { target: { files: [resume] } })
+      fireEvent.click(screen.getByRole('button', { name: 'Analyze for free' }))
+
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Analyzing your resume')
+      expect(screen.getByText('darnell-smith-resume.pdf')).toBeInTheDocument()
+      expect(screen.getByRole('progressbar', { name: 'Analysis progress' })).toBeInTheDocument()
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1800)
+      })
+    } finally {
+      vi.useRealTimers()
+    }
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Likely filtered out')
     fireEvent.click(screen.getByRole('button', { name: /See it fixed/ }))
@@ -34,6 +48,13 @@ describe('/v3/try/resume', () => {
     fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'darnell@example.com' } })
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Your resume is downloading')
+  })
+
+  it('opens the analyzing page straight from a shared link', () => {
+    renderAt('/v3/try/resume?step=analyzing')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Analyzing your resume')
+    expect(screen.getByText('Your resume')).toBeInTheDocument()
+    expect(screen.getByRole('progressbar', { name: 'Analysis progress' })).toBeInTheDocument()
   })
 
   it('downloads straight away for someone signed in', () => {

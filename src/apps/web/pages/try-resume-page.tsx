@@ -7,7 +7,7 @@ import { resumeFunnelReport, resumeFunnelRewrite } from '@/mocks/funnel'
 import { anonymousSession, candidateSession } from '@/mocks/sessions'
 import { resumeUploadError, useOnline } from '../funnel-page-state'
 
-const STEPS: readonly FunnelResumeStep[] = ['upload', 'score', 'compare', 'gate', 'done']
+const STEPS: readonly FunnelResumeStep[] = ['upload', 'analyzing', 'score', 'compare', 'gate', 'done']
 // Review-only switches, carried through every step so a reviewer can walk a whole variant.
 const REVIEW_PARAMS = ['session', 'offline'] as const
 
@@ -56,7 +56,8 @@ export function TryResumePage() {
         setUploadError(error)
         setFileName(error ? undefined : file.name)
       }}
-      onAnalyze={() => go('score')}
+      onAnalyze={() => go('analyzing')}
+      onAnalyzingComplete={() => go('score', true)}
       onJobDescriptionChange={setJobDescription}
       onBack={() => navigate('/')}
       onClose={() => navigate('/')}

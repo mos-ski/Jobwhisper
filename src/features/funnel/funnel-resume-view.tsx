@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { ArrowRight, ArrowUp, Download, FileCheck, Paperclip } from 'lucide-react'
 
 import type { AtsIssueSeverity, AtsReport, ResumeRewrite } from '@/contracts/funnel.draft'
@@ -8,7 +8,7 @@ import { Button, cn } from '@/ui'
 import { FunnelGate } from './funnel-gate'
 import { FunnelOfflineNotice, FunnelShell, FunnelTitle } from './funnel-shell'
 
-export type FunnelResumeStep = 'upload' | 'score' | 'compare' | 'gate' | 'done'
+export type FunnelResumeStep = 'upload' | 'analyzing' | 'score' | 'compare' | 'gate' | 'done'
 
 export type ResumeFunnelActivity = {
   readonly id: string
@@ -31,6 +31,8 @@ export type FunnelResumeViewProps = {
   readonly liveActivity?: ResumeFunnelActivity
   readonly onFile: (file: File) => void
   readonly onAnalyze: () => void
+  /** Fired when the analyzing run finishes and the score is ready. */
+  readonly onAnalyzingComplete: () => void
   readonly onJobDescriptionChange: (value: string) => void
   readonly onBack: () => void
   readonly onClose: () => void
@@ -45,6 +47,7 @@ const STEP_ORDER: readonly FunnelResumeStep[] = ['upload', 'score', 'compare', '
 
 const STEP_LABELS: Record<FunnelResumeStep, string> = {
   upload: 'Your resume',
+  analyzing: 'Analyzing',
   score: 'ATS score',
   compare: 'Before and after',
   gate: 'Download',
@@ -67,9 +70,11 @@ const cta = 'min-h-12 w-full px-7 text-base sm:w-auto'
 
 export function FunnelResumeView(props: FunnelResumeViewProps) {
   const { step, online, onClose, rewrite } = props
-  const position = step === 'done' ? STEP_ORDER.length : STEP_ORDER.indexOf(step) + 1
+  // Analyzing belongs to the upload segment: it is the analysis running, not a new segment.
+  const position = step === 'done' ? STEP_ORDER.length : step === 'analyzing' ? 1 : STEP_ORDER.indexOf(step) + 1
 
   if (step === 'upload') return <UploadStep {...props} />
+  if (step === 'analyzing') return <AnalyzingStep {...props} />
 
   return (
     <FunnelShell
@@ -193,6 +198,62 @@ function UploadStep({ fileName, uploadError, jobDescription, online, liveActivit
       </div>
       <ResumeTrustFooter />
       {liveActivity ? <ResumeActivityToast activity={liveActivity} /> : null}
+    </main>
+  )
+}
+
+/** Long enough to read the status line, short enough that it never feels stuck. */
+const ANALYZE_DURATION_MS = 1800
+
+function AnalyzingStep({ fileName, online, onClose, onAnalyzingComplete }: FunnelResumeViewProps) {
+  const completeRef = useRef(onAnalyzingComplete)
+  useEffect(() => {
+    completeRef.current = onAnalyzingComplete
+  })
+  useEffect(() => {
+    const timer = setTimeout(() => completeRef.current(), ANALYZE_DURATION_MS)
+    return () => clearTimeout(timer)
+  }, [])
+
+  return (
+    <main
+      data-slot="resume-funnel-analyzing"
+      data-theme="light"
+      className="flex min-h-dvh flex-col items-center bg-[linear-gradient(to_bottom,var(--lf-landing-paper)_75%,var(--lf-landing-bg)_121%)] px-6 pb-20 pt-[68px] text-landing-ink"
+    >
+      <a
+        href="/"
+        onClick={(event) => {
+          event.preventDefault()
+          onClose()
+        }}
+        aria-label="Jobwhisper home"
+        className="flex h-[54px] items-center justify-center rounded-[22px] bg-surface-inverse px-6 py-1.5 shadow-popover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+      >
+        <img src="/funnel/resume/jobwhisper-logo.svg" alt="Jobwhisper" width="122" height="24" />
+      </a>
+
+      {!online ? <div className="mt-4 w-full max-w-3xl"><FunnelOfflineNotice /></div> : null}
+
+      <div className="flex w-full max-w-[820px] flex-1 flex-col items-center justify-center gap-7 py-14 text-center">
+        <div
+          data-slot="funnel-resume-analyzing"
+          data-state="running"
+          className="flex w-full max-w-[456px] flex-col items-center rounded-[28px] border border-landing-border bg-surface p-6 shadow-float"
+        >
+          <FileCheck aria-hidden="true" className="size-8 text-accent-text" />
+          <p className="mt-3 max-w-full truncate text-sm text-landing-muted">{fileName ?? 'Your resume'}</p>
+          <h1 className="mt-1 text-base font-semibold text-landing-ink">Analyzing your resume…</h1>
+          <div
+            role="progressbar"
+            aria-label="Analysis progress"
+            className="mt-5 h-2 w-full overflow-hidden rounded-full bg-landing-control"
+          >
+            <div className="h-full w-full origin-left animate-resume-analyze-fill rounded-full bg-accent" />
+          </div>
+        </div>
+      </div>
+      <ResumeTrustFooter />
     </main>
   )
 }

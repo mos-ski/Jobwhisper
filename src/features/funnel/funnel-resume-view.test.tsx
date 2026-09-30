@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
@@ -14,6 +14,7 @@ function renderView(overrides: Partial<FunnelResumeViewProps> = {}) {
     rewrite: resumeFunnelRewrite,
     onFile: vi.fn(),
     onAnalyze: vi.fn(),
+    onAnalyzingComplete: vi.fn(),
     onJobDescriptionChange: vi.fn(),
     onBack: vi.fn(),
     onClose: vi.fn(),
@@ -70,6 +71,25 @@ describe('FunnelResumeView', () => {
     expect(analyze).toBeEnabled()
     fireEvent.click(analyze)
     expect(props.onAnalyze).toHaveBeenCalledOnce()
+  })
+
+  it('runs the analyzing page with the file name, then hands over to the score', async () => {
+    vi.useFakeTimers()
+    try {
+      const props = renderView({ step: 'analyzing', fileName: 'darnell-smith-resume.pdf' })
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Analyzing your resume')
+      expect(screen.getByText('darnell-smith-resume.pdf')).toBeInTheDocument()
+      expect(screen.getByRole('progressbar', { name: 'Analysis progress' })).toBeInTheDocument()
+      expect(screen.getByRole('region', { name: 'Trusted by 3,478 job seekers' })).toBeInTheDocument()
+      expect(props.onAnalyzingComplete).not.toHaveBeenCalled()
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1800)
+      })
+      expect(props.onAnalyzingComplete).toHaveBeenCalledOnce()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('shows the score in words as well as a number, with every issue and its impact', () => {

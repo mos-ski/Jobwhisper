@@ -222,22 +222,25 @@
    Exit condition: Start with your setup opens `/v3/app`.
    Failure branch: none.
 
-## Try-It Funnel: Resume (Upload -> Score -> Before and After -> Download Gate)
+## Try-It Funnel: Resume (Upload -> Analyzing -> Score -> Before and After -> Download Gate)
 
 1. Entry condition: a visitor opens `/v3/try/resume`. The first screen says "Free to score. Create an account to download."
-   Exit condition: they optionally paste a job description in the composer, attach a resume with its paperclip, and press the circular Analyze for free send button, which scores it.
-   Failure branch: an unsupported, oversized or empty file is refused with the fix stated; offline, the file is kept and scoring waits for the connection.
+   Exit condition: they optionally paste a job description in the composer, attach a resume with its paperclip, and press the circular Analyze for free send button, which opens the analyzing page.
+   Failure branch: an unsupported, oversized or empty file is refused with the fix stated; offline, the file is kept and the Analyze button waits for the connection.
 
+2. Entry condition: `/v3/try/resume?step=analyzing` is its own page, reachable directly and by pressing Analyze for free. It carries the landing frame and proof strip, with a card showing the attached file name, "Analyzing your resume…" and a progress bar that fills as the run proceeds.
+   Exit condition: after 1.8 seconds the score opens at `?step=score`, replacing the analyzing entry so browser back returns to the upload rather than replaying the run.
+   Failure branch: browser back at any time returns to the upload; if the connection drops mid-run the offline notice appears above the card and the run still resolves.
 
-2. Entry condition: the score step shows the score out of 100, a verdict in words, and each issue with its impact and fix.
+3. Entry condition: the score step shows the score out of 100, a verdict in words, and each issue with its impact and fix.
    Exit condition: See it fixed opens the before and after.
    Failure branch: none.
 
-3. Entry condition: the before and after shows one page with a slider, by drag or arrow keys, and the score climbing from before to after.
+4. Entry condition: the before and after shows one page with a slider, by drag or arrow keys, and the score climbing from before to after.
    Exit condition: Download my resume. Anonymous visitors reach the gate; signed-in visitors download straight away.
    Failure branch: none.
 
-4. Entry condition: the gate says the tailored resume is saved and needs a free account to download.
+5. Entry condition: the gate says the tailored resume is saved and needs a free account to download.
    Exit condition: Google or a valid email downloads the resume and offers Resume Builder.
    Failure branch: an invalid email shows a field error describing the fix.
 
