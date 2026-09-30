@@ -81,16 +81,17 @@ export function FunnelCopilotView(props: FunnelCopilotViewProps) {
 function LandingStep({ dates, selectedDate, onDateChange, onLandingContinue }: FunnelCopilotViewProps) {
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col items-center pt-16 text-center sm:pt-20">
-      <section aria-labelledby="copilot-landing-title" className="flex max-w-4xl flex-col items-center">
+      <section aria-labelledby="copilot-landing-title" className="flex min-h-[calc(100dvh-30rem)] max-w-4xl flex-col items-center justify-center">
         <h1 id="copilot-landing-title" className="text-balance font-gowun text-4xl font-bold leading-none tracking-[-3.01px] text-landing-ink sm:text-6xl">
-          Pass your next interview with an answer ready when you need it.
+          Pass Your <span className="text-landing-bg">Next Interview.</span>
+          <span className="block">Land the Job. Or Don’t Pay!</span>
         </h1>
         <p className="mt-9 max-w-3xl text-base leading-7 text-landing-muted sm:text-xl sm:leading-8">Jobwhisper Copilot listens to the question and drafts a tailored answer in real time using your resume and the job description. Stay present in the conversation instead of memorizing scripts or searching for what to say.</p>
         <fieldset className="mt-12 w-full max-w-3xl">
           <legend className="mb-6 text-lg font-medium text-landing-ink">When is your next Interview?</legend>
           <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
             {dates.map((date) => (
-              <button key={date.value} type="button" aria-pressed={selectedDate === date.value} onClick={() => onDateChange(date.value)} className="grid min-h-20 place-items-center rounded-panel border border-border bg-surface px-2 py-3 text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus aria-pressed:border-accent aria-pressed:bg-accent aria-pressed:text-on-accent">
+              <button key={date.value} type="button" aria-pressed={selectedDate === date.value} onClick={() => onDateChange(date.value)} className="grid min-h-20 place-items-center rounded-panel border border-border bg-surface px-2 py-3 text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus aria-pressed:border-accent aria-pressed:bg-accent-subtle aria-pressed:text-accent-text">
                 <span className="text-xs font-medium">{date.weekday}</span>
                 <span className="text-lg font-semibold">{date.day}</span>
                 <span className="text-xs opacity-70">{date.month}</span>
@@ -100,7 +101,7 @@ function LandingStep({ dates, selectedDate, onDateChange, onLandingContinue }: F
         </fieldset>
         <label htmlFor="copilot-interview-date" className="sr-only">Select a Date</label>
         <input id="copilot-interview-date" type="date" value={selectedDate} onChange={(event) => onDateChange(event.target.value)} className="mt-5 min-h-12 w-full max-w-md rounded-panel border border-input bg-surface px-5 text-center text-base text-ink shadow-control outline-none focus-visible:ring-2 focus-visible:ring-focus" />
-        <button type="button" onClick={onLandingContinue} className="mt-7 min-h-12 rounded-full bg-accent px-8 text-base font-semibold text-on-accent hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Ace my Interview</button>
+        <button type="button" onClick={onLandingContinue} className="mt-7 min-h-[72px] rounded-full bg-accent px-8 text-[26px] font-medium tracking-[-0.1523px] text-on-accent hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Ace my Interview</button>
       </section>
       <MarketingDemo className="mt-28 max-w-[1510px]" />
     </div>
