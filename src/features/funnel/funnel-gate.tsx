@@ -37,7 +37,7 @@ export function FunnelGate({ title, body, preview, online, emailFieldId, onCreat
     <div data-slot="funnel-gate" className="grid gap-8">
       <div className="grid gap-4">
         <FunnelTitle>{title}</FunnelTitle>
-        <p className="text-center text-base leading-7 text-ink-muted">{body}</p>
+        <p className="text-center text-base leading-7 text-pretty text-ink-muted">{body}</p>
       </div>
       {preview}
       <form noValidate onSubmit={submit} className="mx-auto grid w-full max-w-md gap-5">

@@ -74,7 +74,7 @@ export function FunnelTrialView(props: FunnelTrialViewProps) {
           {questionIndex === 0 ? (
             <div className="grid gap-5 text-center">
               <p className="font-gowun text-2xl font-bold leading-tight text-ink sm:text-3xl">Try every Jobwhisper tool for 7 days.</p>
-              <p className="text-sm leading-6 text-ink-muted">Set up your job search first. If the plan fits, start Pro for ${props.offer.introUsd} today, then ${props.offer.monthlyUsd}/month. We remind you before renewal, and you can cancel before the first charge.</p>
+              <p className="text-sm leading-6 text-pretty text-ink-muted">Set up your job search first. If the plan fits, start Pro for ${props.offer.introUsd} today, then ${props.offer.monthlyUsd}/month. We remind you before renewal, and you can cancel before the first charge.</p>
             </div>
           ) : null}
           <FunnelQuestion
@@ -119,7 +119,7 @@ function RewardStep({ offer, questions, answers, resumeName, onClaim, onClose }:
       <ProOfferPanel onClaim={onClaim} copy={copy} />
 
       <div className="grid justify-items-center">
-        <button type="button" onClick={onClose} className="min-h-11 rounded-md px-2 text-sm font-medium text-ink-muted underline underline-offset-4 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+        <button type="button" onClick={onClose} className="min-h-11 rounded-md px-2 text-sm font-medium text-ink-muted underline underline-offset-4 transition-colors duration-fast hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
           Not now
         </button>
       </div>
@@ -225,7 +225,7 @@ function DoneStep({ offer, onStart }: FunnelTrialViewProps) {
         </ul>
       </section>
       <div className="grid justify-items-center gap-4 text-center">
-        <p className="max-w-md text-base leading-7 text-ink-muted">We’ll email you {offer.reminderDaysBefore} days before the week ends. Cancel from Billing any time before {until} and you pay nothing more.</p>
+        <p className="max-w-md text-base leading-7 text-pretty text-ink-muted">We’ll email you {offer.reminderDaysBefore} days before the week ends. Cancel from Billing any time before {until} and you pay nothing more.</p>
         <Button size="lg" onClick={onStart} className={cta}>
           Start with your setup
           <ArrowRight aria-hidden="true" className="size-4 rtl:rotate-180" />

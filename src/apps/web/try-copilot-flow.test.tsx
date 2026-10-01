@@ -13,14 +13,14 @@ describe('/v3/try/copilot', () => {
 
     expect(screen.getByRole('heading', { name: /Pass Your Next Interview/ })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Ace my Interview' }))
-    expect(screen.getByRole('heading', { name: 'What role are you looking to Ace. So we get you.' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'What role are you looking to ace?' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Product Manager' }))
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
 
     expect(screen.getByRole('heading', { name: 'Upload a resume, so we can tell you how to prepare' })).toBeInTheDocument()
     fireEvent.change(screen.getByLabelText('Your resume'), { target: { files: [new File(['resume'], 'resume.pdf', { type: 'application/pdf' })] } })
 
-    expect(screen.getByRole('heading', { name: 'What Interview stage are you preparing for?' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'What interview stage are you preparing for?' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: /Technical Stage/ }))
 
     expect(screen.getByRole('heading', { name: /You are set!/ })).toBeInTheDocument()

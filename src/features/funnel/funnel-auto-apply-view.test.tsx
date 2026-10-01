@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
@@ -133,13 +133,13 @@ describe('FunnelAutoApplyView', () => {
     expect(props.onApply).toHaveBeenCalledWith('coinbase-financial-engineering')
 
     await user.click(close)
-    expect(props.onSelectJob).toHaveBeenCalledWith(null)
+    await waitFor(() => expect(props.onSelectJob).toHaveBeenCalledWith(null))
   })
 
-  it('closes the side panel with Escape without leaving the funnel', () => {
+  it('closes the side panel with Escape without leaving the funnel', async () => {
     const props = renderView({ step: 'matches', selectedJobId: 'coinbase-financial-engineering' })
     fireEvent.keyDown(window, { key: 'Escape' })
-    expect(props.onSelectJob).toHaveBeenCalledWith(null)
+    await waitFor(() => expect(props.onSelectJob).toHaveBeenCalledWith(null))
     expect(props.onClose).not.toHaveBeenCalled()
   })
 

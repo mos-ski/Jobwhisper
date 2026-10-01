@@ -131,7 +131,7 @@ function UploadStep({ fileName, uploadError, jobDescription, online, liveActivit
         <h1 className="max-w-[802px] text-balance font-gowun text-[clamp(2.625rem,6.25vw,4rem)] font-bold leading-[1.0625] tracking-[-3.01px]">
           Let’s analyze your resume to see why you haven’t landed your dream role.
         </h1>
-        <p className="max-w-[642px] text-[clamp(1rem,2.05vw,1.3125rem)] leading-[1.42] text-landing-muted">
+        <p className="max-w-[642px] text-[clamp(1rem,2.05vw,1.3125rem)] leading-[1.42] text-pretty text-landing-muted">
           Attach a resume, get a free ATS check and we will re-write your resume for free. Add a job description to make it effective.
         </p>
 
@@ -178,7 +178,7 @@ function UploadStep({ fileName, uploadError, jobDescription, online, liveActivit
               aria-label="Analyze for free"
               disabled={!fileName || !online}
               onClick={onAnalyze}
-              className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:cursor-not-allowed"
+              className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full transition-transform duration-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:cursor-not-allowed active:scale-[0.96]"
             >
               <span
                 data-state={fileName && online ? 'ready' : 'waiting'}
@@ -285,7 +285,7 @@ function AnalyzingStep({ fileName, jobDescription, online, onClose, onAnalyzingC
               index > done ? null : (
                 <li
                   key={index}
-                  className={cn('flex items-start gap-2 leading-6', index < done ? 'text-landing-muted' : 'text-landing-ink')}
+                  className={cn('flex animate-fade-in-up items-start gap-2 leading-6 motion-reduce:animate-none', index < done ? 'text-landing-muted' : 'text-landing-ink')}
                 >
                   <span aria-hidden="true" className="shrink-0">{index < done ? '✓' : '>'}</span>
                   <span className="min-w-0 break-words">{step.label}</span>
@@ -401,6 +401,17 @@ function ringTone(score: number): string {
 
 function ScoreRing({ score }: { readonly score: number }) {
   const clamped = Math.min(Math.max(score, 0), 100)
+  const [drawn, setDrawn] = useState(false)
+  // rAF lets the browser paint the empty arc first so the stroke travels; the timeout is a
+  // failsafe for starved frames (background tab), where an empty ring must never persist.
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setDrawn(true))
+    const failsafe = window.setTimeout(() => setDrawn(true), 400)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.clearTimeout(failsafe)
+    }
+  }, [])
   return (
     <div className="relative mx-auto size-52 sm:size-60">
       <svg viewBox="0 0 120 120" aria-hidden="true" className="size-full -rotate-90">
@@ -413,8 +424,8 @@ function ScoreRing({ score }: { readonly score: number }) {
           strokeWidth="10"
           strokeLinecap="round"
           strokeDasharray={RING_LENGTH}
-          strokeDashoffset={RING_LENGTH * (1 - clamped / 100)}
-          className={ringTone(clamped)}
+          strokeDashoffset={drawn ? RING_LENGTH * (1 - clamped / 100) : RING_LENGTH}
+          className={cn(ringTone(clamped), 'transition-[stroke-dashoffset] duration-slow ease-out motion-reduce:transition-none')}
         />
       </svg>
       <p className="absolute inset-0 flex flex-col items-center justify-center">
@@ -491,7 +502,7 @@ function CompareStep({ rewrite, onDownload }: FunnelResumeViewProps) {
           reveal={reveal}
           onRevealChange={setReveal}
         />
-        <p className="text-center text-sm text-accent-muted">Drag across the page, or focus it and use the arrow keys. Changed lines are highlighted.</p>
+        <p className="text-center text-sm text-accent-muted text-pretty">Drag across the page, or focus it and use the arrow keys. Changed lines are highlighted.</p>
         <div className="sr-only">
           <h2>What the Jobwhisper version changes</h2>
           <p>Summary, before: {rewrite.document.summary}</p>
@@ -534,7 +545,7 @@ function DoneStep({ rewrite, onOpenEditor }: FunnelResumeViewProps) {
       <FunnelTitle eyebrow="Download started">Your resume is downloading.</FunnelTitle>
       <SavedResume rewrite={rewrite} />
       <div className="grid justify-items-center gap-4 text-center">
-        <p className="max-w-md text-base leading-7 text-ink-muted">
+        <p className="max-w-md text-base leading-7 text-pretty text-ink-muted">
           The Jobwhisper version scores {rewrite.scoreAfter}, up from {rewrite.scoreBefore}. It is saved to your account, so you can tailor it to the next job in a minute.
         </p>
         <Button size="lg" onClick={onOpenEditor} className={cta}>

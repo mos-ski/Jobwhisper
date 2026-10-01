@@ -28,8 +28,9 @@ export type FunnelQuestionProps = {
 
 const LETTERS = 'ABCDEFGHIJ'
 
-const tile = 'group flex min-h-14 w-full cursor-pointer items-center gap-4 rounded-2xl border border-border bg-surface px-4 py-3 text-start hover:border-ink-muted has-[:checked]:border-accent has-[:checked]:bg-accent-subtle has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus sm:px-5 sm:py-4'
-const key = 'flex size-8 shrink-0 items-center justify-center rounded-lg border border-input text-sm font-semibold text-ink-muted group-has-[:checked]:border-accent group-has-[:checked]:bg-accent group-has-[:checked]:text-on-accent'
+const tile = 'group flex min-h-14 w-full cursor-pointer items-center gap-4 rounded-2xl border border-border bg-surface px-4 py-3 text-start transition-colors duration-fast hover:border-ink-muted has-[:checked]:border-accent has-[:checked]:bg-accent-subtle has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus sm:px-5 sm:py-4'
+const key = 'flex size-8 shrink-0 items-center justify-center rounded border border-input text-sm font-semibold text-ink-muted transition-colors duration-fast group-has-[:checked]:border-accent group-has-[:checked]:bg-accent group-has-[:checked]:text-on-accent'
+const pill = 'group inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-full border border-border bg-surface pe-5 ps-2 text-base font-medium text-ink transition-colors duration-fast hover:border-ink-muted has-[:checked]:border-accent has-[:checked]:bg-accent-subtle has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus'
 
 function isTypingTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false
@@ -51,11 +52,11 @@ function QuestionFrame({ question, headingId, eyebrow, children }: QuestionFrame
     <div data-slot="funnel-question" data-kind={question.kind} className="grid gap-8">
       <div className="grid gap-3">
         <FunnelTitle id={headingId} eyebrow={eyebrow}>{question.ask}</FunnelTitle>
-        {question.note ? <p data-slot="funnel-question-note" className="text-center text-base leading-7 text-ink-muted">{question.note}</p> : null}
+        {question.note ? <p data-slot="funnel-question-note" className="text-center text-base leading-7 text-pretty text-ink-muted">{question.note}</p> : null}
       </div>
       {children}
       {question.banner ? (
-        <p data-slot="funnel-question-banner" className="mx-auto flex max-w-xl items-start gap-2 rounded-2xl bg-surface-subtle px-4 py-3 text-start text-sm leading-6 text-ink">
+        <p data-slot="funnel-question-banner" className="mx-auto flex max-w-xl items-start gap-2 rounded-2xl bg-surface-subtle px-4 py-3 text-start text-sm leading-6 text-pretty text-ink">
           <CircleCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-positive" />
           <span>{question.banner}</span>
         </p>
@@ -152,7 +153,7 @@ export function FunnelQuestion({ question, value, onChange, eyebrow, onAutoAdvan
             const checked = selected.includes(choice)
             const disabled = !checked && selected.length >= question.maxSelections
             return (
-              <label key={choice} className="group inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-full border border-border bg-surface pe-5 ps-2 text-base font-medium text-ink hover:border-ink-muted has-[:checked]:border-accent has-[:checked]:bg-accent-subtle has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus">
+              <label key={choice} className={pill}>
                 <input type="checkbox" name={question.id} value={choice} checked={checked} disabled={disabled} onChange={() => {
                   const next = checked ? selected.filter((item) => item !== choice) : [...selected, choice]
                   onChange(next.join('|'))
@@ -169,7 +170,7 @@ export function FunnelQuestion({ question, value, onChange, eyebrow, onAutoAdvan
               type="button"
               aria-expanded={showAll}
               onClick={() => setExpanded((wasExpanded) => !wasExpanded)}
-              className="min-h-11 rounded-full border border-border bg-surface px-5 text-sm font-semibold text-accent-text hover:border-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              className="min-h-11 rounded-full border border-border bg-surface px-5 text-sm font-semibold text-accent-text transition-colors duration-fast hover:border-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
             >
               {showAll ? 'Show less' : 'See More'}
             </button>
@@ -195,10 +196,7 @@ export function FunnelQuestion({ question, value, onChange, eyebrow, onAutoAdvan
               </label>
             ))
           : question.choices.map((choice, index) => (
-              <label
-                key={choice}
-                className="group inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-full border border-border bg-surface pe-5 ps-2 text-base font-medium text-ink hover:border-ink-muted has-[:checked]:border-accent has-[:checked]:bg-accent-subtle has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus"
-              >
+              <label key={choice} className={pill}>
                 <input type="radio" name={question.id} value={choice} checked={value === choice} onChange={() => choose(choice)} className="sr-only" />
                 <span aria-hidden="true" className={cn(key, 'size-7 rounded-full text-xs')}>
                   {value === choice ? <Check data-testid="funnel-pill-check" className="size-4" /> : LETTERS[index]}
@@ -262,7 +260,7 @@ function RangeAnswer({ min, max, step, defaultRange, value, onChange, unitToggle
               type="button"
               aria-pressed={activeUnit === option}
               onClick={() => onUnitChange?.(option)}
-              className={cn('min-h-11 rounded-full px-5 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus', activeUnit === option ? 'bg-accent text-on-accent' : 'text-ink-muted hover:text-ink')}
+              className={cn('min-h-11 rounded-full px-5 text-sm font-semibold transition-colors duration-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus', activeUnit === option ? 'bg-accent text-on-accent' : 'text-ink-muted hover:text-ink')}
             >
               {option}
             </button>
@@ -293,7 +291,7 @@ function RangeAnswer({ min, max, step, defaultRange, value, onChange, unitToggle
               onChange('')
               onSkip()
             }}
-            className="min-h-11 rounded-md text-sm font-semibold text-accent-text underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            className="min-h-11 rounded-md text-sm font-semibold text-accent-text underline underline-offset-4 transition-colors duration-fast hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
             {skipLabel}
           </button>
@@ -429,7 +427,7 @@ function TextAnswer({ labelledBy, placeholder, suggestions, value, onChange, onA
                 key={chip}
                 type="button"
                 onClick={() => pick(chip)}
-                className={cn('inline-flex min-h-11 items-center rounded-full border px-4 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus', value === chip ? 'border-accent bg-accent-subtle text-ink' : 'border-border bg-surface text-ink hover:border-ink-muted')}
+                className={cn('inline-flex min-h-11 items-center rounded-full border px-4 text-sm font-medium transition-colors duration-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus', value === chip ? 'border-accent bg-accent-subtle text-ink' : 'border-border bg-surface text-ink hover:border-ink-muted')}
               >
                 {chip}
               </button>

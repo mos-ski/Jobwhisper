@@ -176,7 +176,7 @@ function SearchingStep({ fileName, online, onSearchComplete }: Pick<FunnelAutoAp
             index > done ? null : (
               <li
                 key={index}
-                className={cn('flex items-start gap-2 leading-6', index < done ? 'text-ink-muted' : 'text-ink')}
+                className={cn('flex animate-fade-in-up items-start gap-2 leading-6 motion-reduce:animate-none', index < done ? 'text-ink-muted' : 'text-ink')}
               >
                 <span aria-hidden="true" className="shrink-0">{index < done ? '✓' : '>'}</span>
                 <span className="min-w-0 break-words">{step.label}</span>
@@ -300,9 +300,9 @@ function MatchHeader({ matches, answers }: Pick<FunnelAutoApplyViewProps, 'match
 
 function MatchRows({ matches, onSelectJob, onApply, selectedJobId }: FunnelAutoApplyViewProps) {
   return (
-    <ul aria-label="Matched jobs" className="divide-y divide-border rounded-2xl border border-border">
+    <ul aria-label="Matched jobs" className="divide-y divide-border overflow-hidden rounded-2xl border border-border">
         {matches.map((job) => (
-          <li key={job.id} className={cn('flex items-start gap-3 px-4 py-3', job.id === selectedJobId ? 'bg-accent-subtle' : 'hover:bg-surface-subtle')}>
+          <li key={job.id} className={cn('flex items-start gap-3 px-4 py-3 transition-colors duration-fast', job.id === selectedJobId ? 'bg-accent-subtle' : 'hover:bg-surface-subtle')}>
             <button
               type="button"
               onClick={() => onSelectJob(job.id)}
@@ -377,10 +377,30 @@ function matchLabel(percent: number): string {
   return 'Fair Match'
 }
 
+/** Matches the slide-out keyframe so the panel is gone exactly when the motion ends. */
+const PANEL_EXIT_MS = 200
+
 function JobDetailPanel({ job, onClose, onApply }: { readonly job: AutoApplyJob; readonly onClose: () => void; readonly onApply: (target: string) => void }) {
   const titleId = useId()
   const closeRef = useRef<HTMLButtonElement>(null)
   const openerRef = useRef<HTMLElement | null>(null)
+  const [closing, setClosing] = useState(false)
+
+  // Closing plays the slide-out before unmounting; reduced motion leaves straight away.
+  function requestClose() {
+    if (closing) return
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      onClose()
+      return
+    }
+    setClosing(true)
+  }
+
+  useEffect(() => {
+    if (!closing) return
+    const timer = window.setTimeout(() => onClose(), PANEL_EXIT_MS)
+    return () => window.clearTimeout(timer)
+  }, [closing, onClose])
 
   useEffect(() => {
     openerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
@@ -393,19 +413,29 @@ function JobDetailPanel({ job, onClose, onApply }: { readonly job: AutoApplyJob;
       if (event.key !== 'Escape') return
       // Capture phase, so the shell reads this as "close the panel", not "leave the funnel".
       event.preventDefault()
-      onClose()
+      requestClose()
     }
     window.addEventListener('keydown', onKeyDown, true)
     return () => window.removeEventListener('keydown', onKeyDown, true)
-  }, [onClose])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- requestClose only reads closing/onClose
+  }, [closing, onClose])
 
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-overlay lg:hidden" onClick={onClose} aria-hidden="true" />
+      <div
+        data-closing={closing || undefined}
+        onClick={requestClose}
+        aria-hidden="true"
+        className={cn('fixed inset-0 z-40 bg-overlay lg:hidden motion-reduce:animate-none', closing ? 'animate-fade-out' : 'animate-fade-in')}
+      />
       <aside
         data-slot="funnel-job-panel"
+        data-closing={closing || undefined}
         aria-labelledby={titleId}
-        className="animate-slide-in-bottom fixed inset-x-0 bottom-0 z-50 flex max-h-[90vh] w-full flex-col overflow-hidden rounded-t-xl border border-border bg-surface shadow-panel lg:static lg:z-auto lg:h-full lg:w-[26rem] lg:max-h-none lg:shrink-0 lg:animate-slide-in-right lg:rounded-none lg:border-0 lg:border-s lg:shadow-none lg:rtl:animate-slide-in-left motion-reduce:animate-none"
+        className={cn(
+          'fixed inset-x-0 bottom-0 z-50 flex max-h-[90vh] w-full flex-col overflow-hidden rounded-t-xl border border-border bg-surface shadow-panel lg:static lg:z-auto lg:h-full lg:w-[26rem] lg:max-h-none lg:shrink-0 lg:rounded-none lg:border-0 lg:border-s lg:shadow-none motion-reduce:animate-none',
+          closing ? 'animate-slide-out-bottom lg:animate-slide-out-right lg:rtl:animate-slide-out-left' : 'animate-slide-in-bottom lg:animate-slide-in-right lg:rtl:animate-slide-in-left',
+        )}
       >
         <div className="flex shrink-0 items-center justify-between px-6 pt-4 pb-1 lg:hidden">
           <div className="mx-auto h-1 w-10 rounded-full bg-muted" aria-hidden="true" />
@@ -418,7 +448,7 @@ function JobDetailPanel({ job, onClose, onApply }: { readonly job: AutoApplyJob;
           <button
             ref={closeRef}
             type="button"
-            onClick={onClose}
+            onClick={requestClose}
             aria-label="Close job details"
             className="grid size-10 shrink-0 place-items-center rounded-lg text-ink-muted transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
@@ -504,7 +534,7 @@ function JobDetailPanel({ job, onClose, onApply }: { readonly job: AutoApplyJob;
 
             <section className="grid gap-2">
               <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-muted">About the role</h3>
-              <p className="text-sm leading-6 text-ink-muted">{job.description}</p>
+              <p className="text-sm leading-6 text-pretty text-ink-muted">{job.description}</p>
             </section>
           </div>
 
@@ -519,7 +549,7 @@ function JobDetailPanel({ job, onClose, onApply }: { readonly job: AutoApplyJob;
                   <ExternalLink aria-hidden="true" className="size-4" />
                   Apply Manually
                 </a>
-                <button type="button" onClick={onClose} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-medium text-ink-muted transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                <button type="button" onClick={requestClose} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-medium text-ink-muted transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                   Close
                 </button>
               </>
@@ -529,7 +559,7 @@ function JobDetailPanel({ job, onClose, onApply }: { readonly job: AutoApplyJob;
                   <ExternalLink aria-hidden="true" className="size-4" />
                   View Listing
                 </a>
-                <button type="button" onClick={onClose} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-medium text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                <button type="button" onClick={requestClose} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-medium text-ink transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                   Close
                 </button>
               </>

@@ -58,7 +58,7 @@ function FunnelHeader() {
 
 function PrivacyNote() {
   return (
-    <p className="mx-auto mt-14 flex max-w-5xl items-start gap-2 text-xs leading-5 text-ink-muted sm:mt-16">
+    <p className="mx-auto mt-14 flex max-w-5xl items-start gap-2 text-xs leading-5 text-pretty text-ink-muted sm:mt-16">
       <ShieldCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
       Jobwhisper is SOC 2 certified and never sells your data. Learn more in our <a href="/terms" className="underline underline-offset-2">Terms</a> &amp; <a href="/privacy" className="underline underline-offset-2">Privacy</a>.
     </p>
@@ -86,12 +86,12 @@ function LandingStep({ dates, selectedDate, onDateChange, onLandingContinue }: F
           Pass Your <span className="text-landing-bg">Next Interview.</span>
           <span className="block">Land the Job. Or Don’t Pay!</span>
         </h1>
-        <p className="mt-9 max-w-3xl text-base leading-7 text-landing-muted sm:text-xl sm:leading-8">Jobwhisper Copilot listens to the question and drafts a tailored answer in real time using your resume and the job description. Stay present in the conversation instead of memorizing scripts or searching for what to say.</p>
+        <p className="mt-9 max-w-3xl text-base leading-7 text-pretty text-landing-muted sm:text-xl sm:leading-8">Jobwhisper Copilot listens to the question and drafts a tailored answer in real time using your resume and the job description. Stay present in the conversation instead of memorizing scripts or searching for what to say.</p>
         <fieldset className="mt-12 w-full max-w-3xl">
-          <legend className="mb-6 text-lg font-medium text-landing-ink">When is your next Interview?</legend>
+          <legend className="mb-6 text-lg font-medium text-landing-ink">When is your next interview?</legend>
           <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
             {dates.map((date) => (
-              <button key={date.value} type="button" aria-pressed={selectedDate === date.value} onClick={() => onDateChange(date.value)} className="grid min-h-20 place-items-center rounded-panel border border-border bg-surface px-2 py-3 text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus aria-pressed:border-accent aria-pressed:bg-accent-subtle aria-pressed:text-accent-text">
+              <button key={date.value} type="button" aria-pressed={selectedDate === date.value} onClick={() => onDateChange(date.value)} className="grid min-h-20 place-items-center rounded-panel border border-border bg-surface px-2 py-3 text-ink transition duration-fast hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus aria-pressed:border-accent aria-pressed:bg-accent-subtle aria-pressed:text-accent-text active:scale-[0.96]">
                 <span className="text-xs font-medium">{date.weekday}</span>
                 <span className="text-lg font-semibold">{date.day}</span>
                 <span className="text-xs opacity-70">{date.month}</span>
@@ -101,7 +101,7 @@ function LandingStep({ dates, selectedDate, onDateChange, onLandingContinue }: F
         </fieldset>
         <label htmlFor="copilot-interview-date" className="sr-only">Select a Date</label>
         <input id="copilot-interview-date" type="date" value={selectedDate} onChange={(event) => onDateChange(event.target.value)} className="mt-5 min-h-12 w-full max-w-md rounded-panel border border-input bg-surface px-5 text-center text-base text-ink shadow-control outline-none focus-visible:ring-2 focus-visible:ring-focus" />
-        <button type="button" onClick={onLandingContinue} className="mt-7 min-h-[72px] rounded-full bg-accent px-8 text-[26px] font-medium tracking-[-0.1523px] text-on-accent hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Ace my Interview</button>
+        <button type="button" onClick={onLandingContinue} className="mt-7 min-h-[72px] rounded-full bg-accent px-8 text-[26px] font-medium tracking-[-0.1523px] text-on-accent transition duration-normal hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-[0.96]">Ace my Interview</button>
       </section>
       <MarketingDemo className="mt-28 max-w-[1510px]" />
     </div>
@@ -112,7 +112,7 @@ function RoleStep({ role, onRoleChange, onRoleContinue }: FunnelCopilotViewProps
   return (
     <section aria-labelledby="copilot-role-title" className="mx-auto flex w-full max-w-5xl flex-col items-center pt-16 text-center sm:pt-20">
       <h1 id="copilot-role-title" className="max-w-4xl text-balance font-gowun text-4xl font-bold leading-none tracking-[-3.01px] text-landing-ink sm:text-6xl">
-        What role are you looking to Ace. So we get you.
+        What role are you looking to ace?
       </h1>
       <form className="mt-16 grid w-full max-w-xl justify-items-center gap-6" onSubmit={(event) => { event.preventDefault(); if (role.trim()) onRoleContinue() }}>
         <label htmlFor="copilot-role" className="text-lg font-medium text-landing-ink">Enter job role</label>
@@ -120,12 +120,12 @@ function RoleStep({ role, onRoleChange, onRoleContinue }: FunnelCopilotViewProps
         <p className="text-xs text-ink-muted">Or select from here</p>
         <div className="flex flex-wrap justify-center gap-2">
           {ROLE_SUGGESTIONS.map((suggestion) => (
-            <button key={suggestion} type="button" aria-pressed={role === suggestion} onClick={() => onRoleChange(suggestion)} className="min-h-11 rounded-full border border-border bg-surface px-4 text-sm font-medium text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus aria-pressed:border-accent aria-pressed:bg-accent-subtle aria-pressed:text-accent-text">
+            <button key={suggestion} type="button" aria-pressed={role === suggestion} onClick={() => onRoleChange(suggestion)} className="min-h-11 rounded-full border border-border bg-surface px-4 text-sm font-medium text-ink transition-colors duration-fast hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus aria-pressed:border-accent aria-pressed:bg-accent-subtle aria-pressed:text-accent-text">
               {suggestion}
             </button>
           ))}
         </div>
-        <button type="submit" disabled={!role.trim()} className="mt-2 min-h-11 rounded-full bg-accent px-7 text-sm font-medium text-on-accent disabled:bg-muted disabled:text-ink-muted">Continue</button>
+        <button type="submit" disabled={!role.trim()} className="mt-2 min-h-11 rounded-full bg-accent px-7 text-sm font-medium text-on-accent transition duration-fast disabled:bg-muted disabled:text-ink-muted active:scale-[0.96]">Continue</button>
       </form>
       <PrivacyNote />
     </section>
@@ -139,14 +139,14 @@ function UploadStep({ fileName, uploadError, onFile, onUploadContinue }: FunnelC
       <div className="mt-14 w-full max-w-5xl overflow-hidden rounded-panel border border-border bg-surface">
         <header className="flex min-h-12 items-center justify-between border-b border-border px-5">
           <h2 className="text-sm font-semibold">Resume</h2>
-          <button type="button" onClick={() => onFile(new File(['Jobwhisper sample resume'], 'sample-resume.pdf', { type: 'application/pdf' }))} className="inline-flex min-h-11 items-center rounded-md px-2 text-sm font-medium hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Use sample resume</button>
+          <button type="button" onClick={() => onFile(new File(['Jobwhisper sample resume'], 'sample-resume.pdf', { type: 'application/pdf' }))} className="inline-flex min-h-11 items-center rounded-md px-2 text-sm font-medium transition-colors duration-fast hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Use sample resume</button>
         </header>
         <div className="p-4 sm:p-5">
           <FunnelUpload fileName={fileName} error={uploadError} onFile={onFile} />
         </div>
         <footer className="flex min-h-16 items-center justify-between gap-4 border-t border-border px-5">
           <p className="truncate text-xs text-ink-muted">{fileName ?? 'Import a resume to start'}</p>
-          <button type="button" disabled={!fileName} onClick={onUploadContinue} className="inline-flex min-h-10 items-center rounded-full bg-accent px-5 text-sm font-medium text-on-accent disabled:bg-muted disabled:text-ink-muted">Continue</button>
+          <button type="button" disabled={!fileName} onClick={onUploadContinue} className="inline-flex min-h-10 items-center rounded-full bg-accent px-5 text-sm font-medium text-on-accent transition duration-fast disabled:bg-muted disabled:text-ink-muted active:scale-[0.96]">Continue</button>
         </footer>
       </div>
       <PrivacyNote />
@@ -157,13 +157,13 @@ function UploadStep({ fileName, uploadError, onFile, onUploadContinue }: FunnelC
 function StageStep({ selectedStage, onStageSelect }: FunnelCopilotViewProps) {
   return (
     <section aria-labelledby="copilot-stage-title" className="mx-auto flex w-full max-w-6xl flex-col items-center pt-12 sm:pt-16">
-      <h1 id="copilot-stage-title" className="max-w-3xl text-balance text-center font-gowun text-4xl font-bold leading-none tracking-[-3.01px] text-landing-ink sm:text-6xl">What Interview stage are you preparing for?</h1>
+      <h1 id="copilot-stage-title" className="max-w-3xl text-balance text-center font-gowun text-4xl font-bold leading-none tracking-[-3.01px] text-landing-ink sm:text-6xl">What interview stage are you preparing for?</h1>
       <div className="mt-14 grid w-full gap-5 md:grid-cols-3">
         {STAGES.map((stage) => (
-          <button key={stage.title} type="button" aria-pressed={selectedStage === stage.title} onClick={() => onStageSelect(stage.title)} className="grid min-h-64 justify-items-center gap-4 rounded-panel border border-transparent bg-surface-subtle p-7 text-center hover:border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus aria-pressed:border-accent aria-pressed:bg-accent-subtle">
+          <button key={stage.title} type="button" aria-pressed={selectedStage === stage.title} onClick={() => onStageSelect(stage.title)} className="grid min-h-64 justify-items-center gap-4 rounded-panel border border-transparent bg-surface-subtle p-7 text-center transition duration-fast hover:border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus aria-pressed:border-accent aria-pressed:bg-accent-subtle active:scale-[0.96]">
             <img src={stage.image} alt="" className="h-24 w-28 object-contain" />
             <span className="font-semibold text-ink">{stage.title}</span>
-            <span className="text-sm leading-6 text-ink-muted">{stage.body}</span>
+            <span className="text-sm leading-6 text-pretty text-ink-muted">{stage.body}</span>
           </button>
         ))}
       </div>

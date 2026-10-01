@@ -141,3 +141,31 @@ User review of the dark `bg-surface-inverse` stats bar: not liked. Replaced with
 light, container-less stat row: ink numbers (`font-gowun` 3xl/4xl) over muted
 `text-sm` labels, `divide-border` hairline dividers, centered at `max-w-2xl` under
 the title. No fill, no radius, no inverse surface.
+
+## Revision 5 — funnel-wide motion and typography pass
+
+Driven by the installed design skills (12-principles-of-animation, better-typography,
+make-interfaces-feel-better) across every funnel view, not just the matches step:
+
+- **Panel exit.** Closing the job panel now plays a 200ms slide-out
+  (`animate-slide-out-bottom`, `lg:animate-slide-out-right`, `lg:rtl:animate-slide-out-left`)
+  with the backdrop fading out, before unmounting. X, backdrop, Escape and both footer
+  Close buttons route through it; `prefers-reduced-motion` skips straight to the
+  unmount. New keyframes live in `tailwind.config.js` because `@layer utilities`
+  definitions cannot carry variants like `lg:`/`rtl:`. Close/Escape tests now `waitFor`
+  the callback.
+- **Press feedback.** `ui/button` scales to `0.96` while pressed with a
+  transform-aware transition, so every funnel CTA responds; circular icon buttons
+  (analyze, date pickers) get the same locally.
+- **Micro-interactions.** Answer tiles, unit/skip toggles, chips, pills, role cards,
+  stage cards, upload labels, progress segments and the shell close button all gain
+  `transition-colors` (or `transition-transform`) at `duration-fast`/`duration-normal`.
+- **Entrance motion.** Analysis and search log lines fade-up as they appear
+  (`animate-fade-in-up`, `motion-reduce:animate-none`); the ScoreRing stroke draws from
+  full circumference to its score via `stroke-dashoffset` (rAF for the first paint plus
+  a timer failsafe so a starved frame never leaves the ring empty; reduced motion
+  disables only the travel).
+- **Typography.** Body copy blocks (gate body, question notes/banners, trial copy,
+  copilot lede/privacy/stage copy, about-the-role, compare helper) use `text-pretty`
+  to avoid orphan words. The question key badge drops `rounded-lg` to `rounded` so
+  nested radii stay concentric.

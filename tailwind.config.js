@@ -182,6 +182,30 @@ const config: Config = {
           from: { opacity: '0', transform: 'translateY(100%)' },
           to: { opacity: '1', transform: 'translateY(0)' },
         },
+        'slide-out-right': {
+          from: { opacity: '1', transform: 'translateX(0)' },
+          to: { opacity: '0', transform: 'translateX(100%)' },
+        },
+        'slide-out-left': {
+          from: { opacity: '1', transform: 'translateX(0)' },
+          to: { opacity: '0', transform: 'translateX(-100%)' },
+        },
+        'slide-out-bottom': {
+          from: { opacity: '1', transform: 'translateY(0)' },
+          to: { opacity: '0', transform: 'translateY(100%)' },
+        },
+        'fade-in': {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        'fade-out': {
+          from: { opacity: '1' },
+          to: { opacity: '0' },
+        },
+        'fade-in-up': {
+          from: { opacity: '0', transform: 'translateY(8px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 200ms ease-out',
@@ -193,6 +217,12 @@ const config: Config = {
         'slide-in-right': 'slide-in-right 0.25s ease-out',
         'slide-in-left': 'slide-in-left 0.25s ease-out',
         'slide-in-bottom': 'slide-in-bottom 0.25s ease-out',
+        'slide-out-right': 'slide-out-right 0.2s ease-out',
+        'slide-out-left': 'slide-out-left 0.2s ease-out',
+        'slide-out-bottom': 'slide-out-bottom 0.2s ease-out',
+        'fade-in': 'fade-in 0.2s ease-out',
+        'fade-out': 'fade-out 0.2s ease-out',
+        'fade-in-up': 'fade-in-up 0.3s ease-out',
       },
       transitionDuration: {
         fast: 'var(--lf-duration-fast)',
