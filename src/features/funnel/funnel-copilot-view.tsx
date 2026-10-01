@@ -200,18 +200,12 @@ function UploadStep({ fileName, uploadError, onFile, onUploadContinue }: FunnelC
   return (
     <section aria-labelledby="copilot-upload-title" className="mx-auto flex w-full max-w-6xl flex-col items-center pt-12 sm:pt-16">
       <h1 id="copilot-upload-title" className="max-w-3xl text-balance text-center font-gowun text-4xl font-bold leading-none tracking-[-3.01px] text-landing-ink sm:text-6xl">Upload a resume, so we can tell you how to prepare</h1>
-      <div className="mt-14 w-full max-w-5xl overflow-hidden rounded-panel border border-border bg-surface">
-        <header className="flex min-h-12 items-center justify-between border-b border-border px-5">
-          <h2 className="text-sm font-semibold">Resume</h2>
-          <button type="button" onClick={() => onFile(new File(['Jobwhisper sample resume'], 'sample-resume.pdf', { type: 'application/pdf' }))} className="inline-flex min-h-11 items-center rounded-md px-2 text-sm font-medium transition-colors duration-fast hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Use sample resume</button>
-        </header>
-        <div className="p-4 sm:p-5">
-          <FunnelUpload fileName={fileName} error={uploadError} onFile={onFile} />
-        </div>
-        <footer className="flex min-h-16 items-center justify-between gap-4 border-t border-border px-5">
-          <p className="truncate text-xs text-ink-muted">{fileName ?? 'Import a resume to start'}</p>
-          <button type="button" disabled={!fileName} onClick={onUploadContinue} className="inline-flex min-h-10 items-center rounded-full bg-accent px-5 text-sm font-medium text-on-accent transition duration-fast disabled:bg-muted disabled:text-ink-muted active:scale-[0.96]">Continue</button>
-        </footer>
+      <div className="mt-14 w-full max-w-5xl">
+        <FunnelUpload fileName={fileName} error={uploadError} onFile={onFile} />
+      </div>
+      <div className="mt-4 flex flex-col items-center gap-2">
+        <button type="button" onClick={() => onFile(new File(['Jobwhisper sample resume'], 'sample-resume.pdf', { type: 'application/pdf' }))} className="inline-flex min-h-11 items-center rounded-md px-2 text-sm font-medium transition-colors duration-fast hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Use sample resume</button>
+        <button type="button" disabled={!fileName} onClick={onUploadContinue} className="inline-flex min-h-11 items-center rounded-full bg-accent px-7 text-sm font-medium text-on-accent transition duration-fast disabled:bg-muted disabled:text-ink-muted active:scale-[0.96]">Continue</button>
       </div>
       <PrivacyNote />
     </section>

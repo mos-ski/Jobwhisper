@@ -123,4 +123,33 @@ describe('FunnelCopilotView', () => {
     expect(screen.getByRole('button', { name: 'Remove Role One' })).not.toBeDisabled()
     expect(screen.getByRole('button', { name: 'Continue' })).toBeEnabled()
   })
+
+  it('presents the bare dropzone before a resume is imported', () => {
+    renderView({ step: 'upload' })
+
+    expect(screen.getByText('Drop a resume here, or browse files')).toBeInTheDocument()
+    expect(screen.getByText('PDF, DOC, DOCX or TXT · up to 5 MB')).toBeInTheDocument()
+    expect(screen.getByText('Import resume')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Use sample resume' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Continue' })).toBeDisabled()
+    expect(screen.queryByText('Import a resume to start')).not.toBeInTheDocument()
+  })
+
+  it('shows the uploaded file state and enables Continue', () => {
+    renderView({ step: 'upload', fileName: 'resume.pdf' })
+
+    expect(screen.getByText('resume.pdf')).toBeInTheDocument()
+    expect(screen.getByText('Resume uploaded')).toBeInTheDocument()
+    expect(screen.getByText('Change resume')).toBeInTheDocument()
+    expect(screen.queryByText('Import resume')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Continue' })).toBeEnabled()
+  })
+
+  it('announces a refused file with the fix and keeps Continue disabled', () => {
+    renderView({ step: 'upload', uploadError: 'That file is over 5 MB. Save it as a smaller PDF and try again.' })
+
+    expect(screen.getByRole('alert')).toHaveTextContent('That file is over 5 MB. Save it as a smaller PDF and try again.')
+    expect(screen.getByLabelText('Your resume')).toHaveAttribute('aria-invalid', 'true')
+    expect(screen.getByRole('button', { name: 'Continue' })).toBeDisabled()
+  })
 })

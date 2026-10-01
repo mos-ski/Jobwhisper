@@ -30,7 +30,7 @@ describe('/v3/try/copilot', () => {
 
   it('supports direct review of every Figma screen', () => {
     const { unmount } = render(<MemoryRouter initialEntries={['/v3/try/copilot?step=upload']}><WebRoutes /></MemoryRouter>)
-    expect(screen.getByText('Your resume')).toBeInTheDocument()
+    expect(screen.getByText('Drop a resume here, or browse files')).toBeInTheDocument()
     unmount()
 
     renderAt('/v3/try/copilot?step=offer')
