@@ -246,7 +246,7 @@
 
 ## Try-It Funnel: Auto Apply (Resume -> Preference Questionnaire -> Search -> Matches -> Apply Gate)
 
-1. Entry condition: a visitor opens `/v3/try/auto-apply`. The first screen says "Find your next role. Land the Job. Or Don’t Pay!"
+1. Entry condition: a visitor opens `/v3/try/auto-apply`. The first screen says "Get Your First Job Interview in as Little as 15 Days, or Don’t Pay."
    Exit condition: they upload a resume and explicitly start the remote-job search.
    Failure branch: a refused file states the fix and holds Continue.
 

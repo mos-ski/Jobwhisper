@@ -129,7 +129,7 @@ function UploadStep({ fileName, uploadError, jobDescription, online, liveActivit
 
       <div className="flex w-full max-w-[820px] flex-1 flex-col items-center justify-center gap-7 py-14 text-center">
         <h1 className="max-w-[802px] text-balance font-gowun text-[clamp(2.625rem,6.25vw,4rem)] font-bold leading-[1.0625] tracking-[-3.01px]">
-          Let’s analyze your resume to see why you haven’t landed your dream role.
+          See Your Resume the Way Recruiters See It.
         </h1>
         <p className="max-w-[642px] text-[clamp(1rem,2.05vw,1.3125rem)] leading-[1.42] text-pretty text-landing-muted">
           Attach a resume, get a free ATS check and we will re-write your resume for free. Add a job description to make it effective.

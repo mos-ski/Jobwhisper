@@ -18,7 +18,7 @@ describe('/v3/try/resume', () => {
     const image = new File(['x'], 'headshot.png', { type: 'image/png' })
     fireEvent.change(screen.getByLabelText(/Your resume/), { target: { files: [image] } })
     expect(screen.getByRole('alert')).toHaveTextContent('Upload a PDF, DOC, DOCX or TXT file')
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Let’s analyze your resume')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('See Your Resume the Way Recruiters See It.')
   })
 
   it('analyzes on its own page, scores, shows the rewrite, and asks for an account at download', async () => {

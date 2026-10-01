@@ -38,7 +38,7 @@ describe('FunnelAutoApplyView', () => {
   it('opens with the light Auto Apply resume-import page from the approved design', () => {
     renderView()
     expect(screen.getByRole('main')).toHaveAttribute('data-theme', 'light')
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/Find your next role\.\s*Land the Job\. Or Don’t Pay!/)
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/Get Your First Job Interview\s*in as Little as 15 Days, or Don’t Pay\./)
     expect(screen.getByText('Apply to jobs in 1-click.')).toBeInTheDocument()
     expect(screen.getByText('Trusted by 2M+ job seekers')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Jobwhisper home' })).toHaveAttribute('href', '/')

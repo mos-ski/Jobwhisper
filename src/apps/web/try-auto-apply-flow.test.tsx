@@ -19,7 +19,7 @@ describe('/v3/try/auto-apply', () => {
   it('keeps the landing focused on importing a resume', () => {
     renderAt('/v3/try/auto-apply')
 
-    expect(screen.getByRole('heading', { name: /Find your next role\.\s*Land the Job\. Or Don’t Pay!/ })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /Get Your First Job Interview\s*in as Little as 15 Days, or Don’t Pay\./ })).toBeInTheDocument()
     expect(screen.getByLabelText('Your resume')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'The #1 Site for Remote jobs' })).toBeInTheDocument()
     expect(screen.getByText('Trusted by 2M+ job seekers')).toBeInTheDocument()

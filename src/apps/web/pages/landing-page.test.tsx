@@ -67,7 +67,7 @@ describe('LandingPage', () => {
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: /Find the right role\.\s*Show up ready\.\s*Land the job\./,
+        name: /Get More Interviews\.\s*Ace Them\.\s*Land the Job\. Or Don’t Pay\./,
       }),
     ).toBeInTheDocument()
     // The announcement marquee carries a second copy so the loop has no seam; it is hidden

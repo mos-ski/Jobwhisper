@@ -33,7 +33,7 @@ describe('FunnelResumeView', () => {
   it('explains the free ATS check and keeps analysis disabled before upload', () => {
     renderView()
     expect(screen.getByText(/get a free ATS check/)).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Let’s analyze your resume')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('See Your Resume the Way Recruiters See It.')
     expect(screen.getByRole('region', { name: 'Trusted by 3,478 job seekers' })).toBeInTheDocument()
     expect(screen.getByText('More interviews')).toBeInTheDocument()
     expect(screen.getByText('ATS score')).toBeInTheDocument()

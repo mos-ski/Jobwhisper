@@ -223,7 +223,7 @@ function AutoApplyUploadLanding({ fileName, uploadError, online, onFile, onConti
           <div data-slot="auto-apply-upload-content" className="flex w-full flex-1 flex-col items-center justify-center gap-10 py-8">
           <header className="grid justify-items-center gap-1 text-center">
             <p className="text-xl font-bold leading-7 text-ink sm:text-2xl">Apply to jobs in 1-click.</p>
-            <h1 id="auto-apply-upload-title" className="font-gowun text-[clamp(2.75rem,5vw,4rem)] font-bold leading-none tracking-[-3.01px] text-landing-ink"><span className="block">Find your next role.</span><span className="block">Land the Job. Or Don’t Pay!</span></h1>
+            <h1 id="auto-apply-upload-title" className="font-gowun text-[clamp(2.75rem,5vw,4rem)] font-bold leading-none tracking-[-3.01px] text-landing-ink"><span className="block">Get Your First Job Interview</span><span className="block">in as Little as 15 Days, or Don’t Pay.</span></h1>
           </header>
           <div className="grid justify-items-center gap-1 text-center">
             <h2 className="text-lg font-semibold sm:text-xl">Browse handpicked jobs from the best companies</h2>
