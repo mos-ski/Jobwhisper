@@ -1,4 +1,5 @@
-import { ShieldCheck } from 'lucide-react'
+import { useState } from 'react'
+import { Plus, ShieldCheck, X } from 'lucide-react'
 
 import { ProOfferPanel, type ProOfferCopy } from '@/features/billing/pro-offer-widget'
 import { MarketingDemo } from '@/features/marketing/marketing-demo'
@@ -16,7 +17,7 @@ export type FunnelCopilotDateOption = {
 
 export type FunnelCopilotViewProps = {
   readonly step: FunnelCopilotStep
-  readonly role: string
+  readonly titles: readonly string[]
   readonly fileName?: string
   readonly uploadError?: string
   readonly selectedStage?: CopilotInterviewStage
@@ -24,7 +25,7 @@ export type FunnelCopilotViewProps = {
   readonly selectedDate: string
   readonly onDateChange: (value: string) => void
   readonly onLandingContinue: () => void
-  readonly onRoleChange: (role: string) => void
+  readonly onTitlesChange: (titles: readonly string[]) => void
   readonly onRoleContinue: () => void
   readonly onFile: (file: File) => void
   readonly onUploadContinue: () => void
@@ -33,6 +34,7 @@ export type FunnelCopilotViewProps = {
 }
 
 const ROLE_SUGGESTIONS = ['Product Manager', 'Software Engineer', 'Customer Success Manager', 'Data Analyst', 'Product Designer', 'Marketing Manager'] as const
+const TITLE_LIMIT = 5
 const STAGES: readonly { readonly title: CopilotInterviewStage; readonly image: string; readonly body: string }[] = [
   { title: 'General/Introductory', image: '/funnel/copilot/stage-general.png', body: 'Prepare for introductions, motivation questions, and the story behind your experience.' },
   { title: 'Technical Stage', image: '/funnel/copilot/stage-technical.png', body: 'Practice the role-specific questions that test how you think, decide, and execute.' },
@@ -108,24 +110,86 @@ function LandingStep({ dates, selectedDate, onDateChange, onLandingContinue }: F
   )
 }
 
-function RoleStep({ role, onRoleChange, onRoleContinue }: FunnelCopilotViewProps) {
+function RoleStep({ titles, onTitlesChange, onRoleContinue }: FunnelCopilotViewProps) {
+  const [draft, setDraft] = useState('')
+  const full = titles.length >= TITLE_LIMIT
+
+  function normalize(raw: string): string {
+    return raw.trim().replace(/\s+/g, ' ')
+  }
+
+  function add(raw: string): void {
+    const next = normalize(raw)
+    setDraft('')
+    if (!next || full) return
+    if (titles.some((title) => title.toLowerCase() === next.toLowerCase())) return
+    onTitlesChange([...titles, next])
+  }
+
+  function remove(title: string): void {
+    onTitlesChange(titles.filter((existing) => existing.toLowerCase() !== title.toLowerCase()))
+  }
+
+  function toggle(title: string): void {
+    if (titles.some((existing) => existing.toLowerCase() === title.toLowerCase())) remove(title)
+    else add(title)
+  }
+
   return (
     <section aria-labelledby="copilot-role-title" className="mx-auto flex w-full max-w-5xl flex-col items-center pt-16 text-center sm:pt-20">
       <h1 id="copilot-role-title" className="max-w-4xl text-balance font-gowun text-4xl font-bold leading-none tracking-[-3.01px] text-landing-ink sm:text-6xl">
-        What role are you looking to ace?
+        Tell us what job title(s) you have in mind.
       </h1>
-      <form className="mt-16 grid w-full max-w-xl justify-items-center gap-6" onSubmit={(event) => { event.preventDefault(); if (role.trim()) onRoleContinue() }}>
-        <label htmlFor="copilot-role" className="text-lg font-medium text-landing-ink">Enter job role</label>
-        <input id="copilot-role" value={role} onChange={(event) => onRoleChange(event.target.value)} placeholder="e.g. Customer Success Manager" className="min-h-14 w-full rounded-panel border border-input bg-surface px-5 text-center text-base text-ink shadow-control outline-none placeholder:text-ink-muted focus-visible:ring-2 focus-visible:ring-focus" />
-        <p className="text-xs text-ink-muted">Or select from here</p>
+      <form className="mt-12 grid w-full max-w-xl justify-items-center gap-6" onSubmit={(event) => event.preventDefault()}>
+        <label htmlFor="copilot-titles" className="sr-only">Job titles</label>
+        <input
+          id="copilot-titles"
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ',') {
+              event.preventDefault()
+              add(draft)
+            }
+          }}
+          placeholder="Add up to 5 job titles"
+          disabled={full}
+          className="min-h-14 w-full rounded-panel border border-input bg-surface px-5 text-left text-base text-ink shadow-control outline-none placeholder:text-ink-muted focus-visible:ring-2 focus-visible:ring-focus disabled:cursor-not-allowed disabled:bg-surface-subtle"
+        />
+        {titles.length > 0 ? (
+          <ul aria-label="Selected job titles" className="flex flex-wrap justify-center gap-2">
+            {titles.map((title) => (
+              <li key={title.toLowerCase()} className="inline-flex min-h-9 items-center gap-1 rounded-full border border-accent bg-accent-subtle ps-3 pe-1 text-sm font-medium text-ink">
+                {title}
+                <button type="button" aria-label={`Remove ${title}`} onClick={() => remove(title)} className="grid size-7 place-items-center rounded-full text-ink-muted transition-colors duration-fast hover:bg-surface hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                  <X aria-hidden="true" className="size-3.5" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        <p className="text-sm text-ink-muted">Select more job titles to get more results.</p>
         <div className="flex flex-wrap justify-center gap-2">
-          {ROLE_SUGGESTIONS.map((suggestion) => (
-            <button key={suggestion} type="button" aria-pressed={role === suggestion} onClick={() => onRoleChange(suggestion)} className="min-h-11 rounded-full border border-border bg-surface px-4 text-sm font-medium text-ink transition-colors duration-fast hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus aria-pressed:border-accent aria-pressed:bg-accent-subtle aria-pressed:text-accent-text">
-              {suggestion}
-            </button>
-          ))}
+          {ROLE_SUGGESTIONS.map((suggestion) => {
+            const selected = titles.some((title) => title.toLowerCase() === suggestion.toLowerCase())
+            return (
+              <button
+                key={suggestion}
+                type="button"
+                aria-pressed={selected}
+                disabled={full && !selected}
+                onClick={() => toggle(suggestion)}
+                className="inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full border border-border bg-surface px-4 text-sm font-medium text-ink transition-colors duration-fast hover:border-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus aria-pressed:border-accent aria-pressed:bg-accent-subtle aria-pressed:text-accent-text disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {suggestion}
+                {!selected ? <Plus aria-hidden="true" className="size-3.5" /> : null}
+              </button>
+            )
+          })}
         </div>
-        <button type="submit" disabled={!role.trim()} className="mt-2 min-h-11 rounded-full bg-accent px-7 text-sm font-medium text-on-accent transition duration-fast disabled:bg-muted disabled:text-ink-muted active:scale-[0.96]">Continue</button>
+        <button type="button" onClick={onRoleContinue} disabled={titles.length === 0} className="mt-2 min-h-11 rounded-full bg-accent px-7 text-sm font-medium text-on-accent transition duration-fast disabled:bg-muted disabled:text-ink-muted active:scale-[0.96]">
+          Continue
+        </button>
       </form>
       <PrivacyNote />
     </section>

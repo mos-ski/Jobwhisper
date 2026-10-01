@@ -36,7 +36,7 @@ function interviewWeek(today: Date): readonly FunnelCopilotDateOption[] {
 export function TryCopilotPage() {
   const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
-  const [role, setRole] = useState(params.get('role') ?? '')
+  const [titles, setTitles] = useState<readonly string[]>(() => params.getAll('role').slice(0, 5))
   const [fileName, setFileName] = useState<string | undefined>()
   const [uploadError, setUploadError] = useState<string | undefined>()
   const [selectedStage, setSelectedStage] = useState<CopilotInterviewStage | undefined>()
@@ -46,13 +46,13 @@ export function TryCopilotPage() {
 
   function go(next: FunnelCopilotStep) {
     const search = new URLSearchParams({ step: next })
-    if (role.trim()) search.set('role', role.trim())
+    titles.forEach((title) => search.append('role', title))
     setParams(search)
   }
 
   return <FunnelCopilotView
     step={step}
-    role={role}
+    titles={titles}
     fileName={fileName}
     uploadError={uploadError}
     selectedStage={selectedStage}
@@ -60,7 +60,7 @@ export function TryCopilotPage() {
     selectedDate={selectedDate}
     onDateChange={setSelectedDate}
     onLandingContinue={() => go('role')}
-    onRoleChange={setRole}
+    onTitlesChange={setTitles}
     onRoleContinue={() => go('upload')}
     onFile={(file) => {
       const error = resumeUploadError(file)

@@ -13,8 +13,9 @@ describe('/v3/try/copilot', () => {
 
     expect(screen.getByRole('heading', { name: /Pass Your Next Interview/ })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Ace my Interview' }))
-    expect(screen.getByRole('heading', { name: 'What role are you looking to ace?' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Tell us what job title(s) you have in mind.' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Product Manager' }))
+    expect(screen.getByRole('button', { name: 'Remove Product Manager' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
 
     expect(screen.getByRole('heading', { name: 'Upload a resume, so we can tell you how to prepare' })).toBeInTheDocument()

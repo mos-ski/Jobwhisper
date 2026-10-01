@@ -265,3 +265,19 @@
 5. Entry condition: the gate names the jobs waiting and says each application is approved before it goes.
    Exit condition: Google or a valid email opens `/v3/auto-apply/review` with the answers carried over.
    Failure branch: an invalid email shows a field error describing the fix.
+
+## Try-It Funnel: Copilot (Landing -> Job Titles -> Resume -> Stage -> Offer)
+
+1. Entry condition: a visitor opens `/v3/try/copilot`. The landing says "Pass Your Next Interview. Land the Job. Or Don't Pay!" with the live demo, and the CTA Ace my Interview starts setup.
+   Exit condition: the CTA opens `?step=role`.
+2. Entry condition: `?step=role` asks "Tell us what job title(s) you have in mind." The visitor types titles (Enter or comma commits) or toggles the six suggestions — up to five, held as chips with remove buttons, deduped case-insensitively, deep-linked as repeated `?role=` params.
+   Exit condition: Continue (enabled at one or more titles) opens `?step=upload`.
+   Failure branch: at five titles the input and fresh suggestions disable; duplicates are ignored silently, so there is no error state.
+3. Entry condition: `?step=upload` imports a resume (drop, browse, or sample) with the same validation copy as the resume funnel.
+   Exit condition: a valid file opens `?step=stage`.
+   Failure branch: a bad or oversized file shows the field-level fix message and keeps the visitor on the step.
+4. Entry condition: `?step=stage` offers General/Introductory, Technical Stage and Final Interview under the company-logo proof row.
+   Exit condition: picking a stage advances to `?step=offer`; the choice is held in page state while the titles stay in the URL as repeated `?role=` params.
+5. Entry condition: `?step=offer` reads "You are set! You've unlocked Pro for 7 days." with the Pro panel (7 days of Pro for $10, cancel anytime before it renews).
+   Exit condition: Start my 7 days for $10 navigates straight to `/v3/interview-copilot`.
+   Failure branch: none on this step — the offer is a single claim action; the resume-import step carries the funnel's only field-level error.
