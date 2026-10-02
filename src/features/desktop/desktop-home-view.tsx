@@ -14,6 +14,7 @@ export type DesktopHomeViewProps = {
   readonly onOpenSession: (id: string) => void
   readonly onViewAllSessions: () => void
   readonly onManageCredits: () => void
+  readonly onTopUp: () => void
   readonly onRetry?: () => void
 }
 
@@ -26,7 +27,7 @@ const LAUNCHERS: readonly { readonly kind: DesktopSessionKind; readonly title: s
 const KIND_LABELS: Record<DesktopSessionKind, string> = { interview: 'Interview', coding: 'Coding', meeting: 'Meeting' }
 const when = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })
 
-export function DesktopHomeView({ firstName, calendarPrompt, onConnectCalendar, onDismissCalendar, onLaunch, sessions, credits, onOpenSession, onViewAllSessions, onManageCredits, onRetry }: DesktopHomeViewProps) {
+export function DesktopHomeView({ firstName, calendarPrompt, onConnectCalendar, onDismissCalendar, onLaunch, sessions, credits, onOpenSession, onViewAllSessions, onManageCredits, onTopUp, onRetry }: DesktopHomeViewProps) {
   return (
     <div className="mx-auto w-full max-w-4xl px-6 pb-12 pt-6">
       <h1 className="font-gowun text-3xl text-ink">Welcome {firstName}, what would you like to do today?</h1>
@@ -101,7 +102,10 @@ export function DesktopHomeView({ firstName, calendarPrompt, onConnectCalendar, 
         <section aria-labelledby="desktop-credits" className="rounded-panel border border-border bg-surface p-5">
           <div className="flex items-center justify-between gap-3">
             <h2 id="desktop-credits" className="font-gowun text-base text-ink">Credits</h2>
-            <button type="button" onClick={onManageCredits} className="min-h-9 rounded-md text-sm font-semibold text-accent-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Manage</button>
+            <div className="flex items-center gap-3">
+              <button type="button" onClick={onTopUp} className="min-h-9 rounded-md text-sm font-semibold text-accent-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Top up</button>
+              <button type="button" onClick={onManageCredits} className="min-h-9 rounded-md text-sm font-semibold text-ink-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Manage</button>
+            </div>
           </div>
           {credits ? (
             <>

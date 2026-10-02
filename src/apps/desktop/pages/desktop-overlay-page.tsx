@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
+import type { DesktopAppearance } from '@/contracts/desktop.draft'
 import { DesktopOverlayView } from '@/features/desktop/desktop-overlay-view'
 import { desktopTranscript } from '@/mocks/desktop'
 
-export function DesktopOverlayPage() {
+export function DesktopOverlayPage({ appearance }: { readonly appearance: DesktopAppearance }) {
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const kind = params.get('kind') ?? 'interview'
@@ -21,6 +22,7 @@ export function DesktopOverlayPage() {
           elapsedLabel="02:06"
           answer={!dismissed && latest?.kind === 'answer' ? { question: latest.question, runs: latest.runs } : undefined}
           micOn={micOn}
+          appearance={appearance}
           onToggleMic={() => setMicOn((value) => !value)}
           onExpand={() => navigate(`/desktop/session?kind=${kind}`)}
           onEnd={() => navigate(`/desktop/complete?kind=${kind}`)}

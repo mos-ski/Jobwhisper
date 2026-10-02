@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
+import type { DesktopCredits } from '@/contracts/desktop.draft'
 import { DesktopHomeView, type DesktopHomeViewProps } from '@/features/desktop/desktop-home-view'
-import { desktopCredits, desktopRecentSessions, desktopUser } from '@/mocks/desktop'
+import { desktopRecentSessions, desktopUser } from '@/mocks/desktop'
 
 function readSessions(state: string | null): DesktopHomeViewProps['sessions'] {
   if (state === 'loading') return { status: 'loading' }
@@ -11,7 +12,7 @@ function readSessions(state: string | null): DesktopHomeViewProps['sessions'] {
   return { status: 'ready', items: desktopRecentSessions }
 }
 
-export function DesktopHomePage() {
+export function DesktopHomePage({ credits, onTopUp }: { readonly credits: DesktopCredits; readonly onTopUp: () => void }) {
   const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
   const [calendarPrompt, setCalendarPrompt] = useState(true)
@@ -28,10 +29,11 @@ export function DesktopHomePage() {
       onDismissCalendar={() => setCalendarPrompt(false)}
       onLaunch={(kind) => navigate(`/desktop/configure?kind=${kind}`)}
       sessions={readSessions(params.get('state'))}
-      credits={params.get('state') === 'loading' ? undefined : desktopCredits}
+      credits={params.get('state') === 'loading' ? undefined : credits}
       onOpenSession={() => openSettings('usage')}
       onViewAllSessions={() => openSettings('usage')}
       onManageCredits={() => openSettings('billing')}
+      onTopUp={onTopUp}
       onRetry={() => setParams({})}
     />
   )

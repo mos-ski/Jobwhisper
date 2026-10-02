@@ -1,6 +1,6 @@
 import { Maximize2, Mic, MicOff } from 'lucide-react'
 
-import type { DesktopAnswerRun, DesktopConnection } from '@/contracts/desktop.draft'
+import type { DesktopAnswerRun, DesktopAppearance, DesktopConnection } from '@/contracts/desktop.draft'
 import { JobwhisperIcon, cn } from '@/ui'
 
 import { AnswerText } from './desktop-session-view'
@@ -15,14 +15,16 @@ export type DesktopOverlayViewProps = {
   readonly onExpand: () => void
   readonly onEnd: () => void
   readonly onDismiss: () => void
+  /** Follows Settings → Window appearance: clear floats the bar over the call. */
+  readonly appearance?: DesktopAppearance
 }
 
 const CONNECTION_LABEL: Record<DesktopConnection, string> = { connected: 'Connected', fair: 'Fair connection', unstable: 'Unstable connection' }
 
 /** The compact bar that floats over the call, with the latest answer under it. */
-export function DesktopOverlayView({ connection, elapsedLabel, answer, micOn, onToggleMic, onExpand, onEnd, onDismiss }: DesktopOverlayViewProps) {
+export function DesktopOverlayView({ connection, elapsedLabel, answer, micOn, onToggleMic, onExpand, onEnd, onDismiss, appearance = 'solid' }: DesktopOverlayViewProps) {
   return (
-    <div className="w-[26rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-border bg-surface text-ink shadow-panel">
+    <div className={cn('w-[26rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-border text-ink shadow-panel', appearance === 'clear' ? 'bg-surface/75 backdrop-blur-md' : 'bg-surface')}>
       <div className="flex items-center gap-2 border-b border-border px-3 py-2">
         <JobwhisperIcon className="h-4 w-5 shrink-0 text-accent" />
         <span className="text-sm font-semibold">Jobwhisper</span>

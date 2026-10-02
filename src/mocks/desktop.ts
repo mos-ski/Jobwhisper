@@ -15,7 +15,9 @@ export const desktopRecentSessions: readonly DesktopSessionSummary[] = [
   { id: 'ds-4', title: 'Project review <> Cosella', kind: 'meeting', startedAt: '2026-09-24T17:59:00', durationMinutes: 37 },
 ]
 
-export const desktopCredits: DesktopCredits = { balance: 1017, usedThisPeriod: 1140, periodAllowance: 2000, spentAllTime: 1213 }
+// Balance plus period usage always sums to the period allowance (2000), so the home card
+// and the usage report tell the same story.
+export const desktopCredits: DesktopCredits = { balance: 1017, usedThisPeriod: 983, periodAllowance: 2000, spentAllTime: 1213 }
 
 export const desktopKnowledgeBase: readonly string[] = [
   '04-customer-case-studies.pdf',

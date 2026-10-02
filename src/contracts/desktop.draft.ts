@@ -20,6 +20,9 @@ export type DesktopCredits = {
   readonly spentAllTime: number
 }
 
+/** Window appearance: `solid` panels, or `clear` floating glass over the live call. */
+export type DesktopAppearance = 'solid' | 'clear'
+
 /** A run of text in a Copilot answer; `emphasis` marks the facts drawn from the resume. */
 export type DesktopAnswerRun = { readonly text: string; readonly emphasis?: boolean }
 

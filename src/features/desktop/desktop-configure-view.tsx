@@ -21,6 +21,8 @@ export type DesktopConfigureViewProps = {
   readonly languages: readonly string[]
   readonly onBack: () => void
   readonly onStart: (config: DesktopSessionConfig) => void
+  /** Jump straight into the session without filling any of this in. */
+  readonly onStartWithoutSetup: () => void
 }
 
 const TITLES: Record<DesktopSessionKind, string> = { interview: 'Configure your interview', coding: 'Configure your coding session', meeting: 'Configure your meeting' }
@@ -48,7 +50,7 @@ const RESPONSE_TYPES: readonly { readonly value: DesktopResponseType; readonly l
 
 const field = 'min-h-12 w-full rounded-lg border border-input bg-surface px-3 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus'
 
-export function DesktopConfigureView({ kind, step, onStepChange, roles, knowledgeBase, resume, suggestedContext, models, languages, onBack, onStart }: DesktopConfigureViewProps) {
+export function DesktopConfigureView({ kind, step, onStepChange, roles, knowledgeBase, resume, suggestedContext, models, languages, onBack, onStart, onStartWithoutSetup }: DesktopConfigureViewProps) {
   const [role, setRole] = useState('')
   const [company, setCompany] = useState('')
   const [resumeAttached, setResumeAttached] = useState(false)
@@ -232,6 +234,9 @@ export function DesktopConfigureView({ kind, step, onStepChange, roles, knowledg
           <button type="button" onClick={step === 2 ? () => onStepChange(1) : onBack} className="inline-flex min-h-10 items-center gap-2 rounded-md text-sm font-semibold text-ink-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
             <ArrowLeft aria-hidden="true" className="size-4 rtl:rotate-180" />
             Back
+          </button>
+          <button type="button" onClick={onStartWithoutSetup} className="inline-flex min-h-10 items-center gap-1.5 rounded-md text-sm font-semibold text-accent-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+            Start without setup
           </button>
           <Button type="submit" disabled={step === 1 && !role.trim()}>{step === 1 ? 'Continue' : 'Start session'}</Button>
         </footer>

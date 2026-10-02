@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { AppWindow, BarChart3, Code2, CreditCard, ExternalLink, Gift, Maximize2, Mic, MonitorUp, Plug, SlidersHorizontal, User, Users, Video } from 'lucide-react'
 
-import type { DesktopCredits, DesktopSessionKind, DesktopSessionSummary } from '@/contracts/desktop.draft'
+import type { DesktopAppearance, DesktopCredits, DesktopSessionKind, DesktopSessionSummary } from '@/contracts/desktop.draft'
 import { Avatar, Button, Dialog, DialogClose, DialogPopup, DialogTitle, Switch, cn } from '@/ui'
 
 export type DesktopSettingsSection = 'general' | 'interview' | 'coding' | 'meeting' | 'billing' | 'usage' | 'window' | 'account' | 'connectors'
@@ -18,6 +18,12 @@ export type DesktopSettingsDialogProps = {
   readonly liveKind?: DesktopSessionKind
   readonly theme: DesktopTheme
   readonly onThemeChange: (theme: DesktopTheme) => void
+  /** Controlled so the live overlay window matches what this row says. */
+  readonly appearance: DesktopAppearance
+  readonly onAppearanceChange: (appearance: DesktopAppearance) => void
+  /** The same switch as the title bar — the two never disagree. */
+  readonly stealth: boolean
+  readonly onToggleStealth: () => void
   readonly user: { readonly fullName: string; readonly email: string }
   readonly credits: DesktopCredits
   readonly planLabel: string
@@ -149,8 +155,7 @@ function CaptureKeyCard() {
 }
 
 export function DesktopSettingsDialog(props: DesktopSettingsDialogProps) {
-  const { open, onOpenChange, section, onSectionChange, liveKind, theme, onThemeChange, user, credits, planLabel, planNote, sessions, version, platform, calendarConnected, onConnectCalendar, onAddCredits, onOpenBilling, onOpenWhatsNew, onSignOut } = props
-  const [stealth, setStealth] = useState(false)
+  const { open, onOpenChange, section, onSectionChange, liveKind, theme, onThemeChange, appearance, onAppearanceChange, stealth, onToggleStealth, user, credits, planLabel, planNote, sessions, version, platform, calendarConnected, onConnectCalendar, onAddCredits, onOpenBilling, onOpenWhatsNew, onSignOut } = props
   const [meetingDetection, setMeetingDetection] = useState(true)
   const [textSize, setTextSize] = useState<'small' | 'medium' | 'large'>('medium')
   const [autoScroll, setAutoScroll] = useState(true)
@@ -158,7 +163,6 @@ export function DesktopSettingsDialog(props: DesktopSettingsDialogProps) {
   const [answerStyle, setAnswerStyle] = useState<'direct' | 'pointers'>('direct')
   const [autoCopy, setAutoCopy] = useState(true)
   const [othersTranscript, setOthersTranscript] = useState(true)
-  const [appearance, setAppearance] = useState<'solid' | 'clear'>('solid')
   const [alwaysOnTop, setAlwaysOnTop] = useState(false)
   const applies = (kind: DesktopSessionKind) => (liveKind === kind ? `Applies to a running ${KIND_LABELS[kind]} session` : 'Applies from the next answer on.')
 
@@ -207,7 +211,7 @@ export function DesktopSettingsDialog(props: DesktopSettingsDialogProps) {
                   />
                 </Card>
                 <Card title="Desktop">
-                  <Row title="Stealth mode" description="Invisible in screenshots, recordings and screen shares. You still see everything." control={<Switch checked={stealth} onCheckedChange={setStealth} aria-label="Stealth mode" />} />
+                  <Row title="Stealth mode" description="Invisible in screenshots, recordings and screen shares. You still see everything. Turns on automatically before every session starts." control={<Switch checked={stealth} onCheckedChange={onToggleStealth} aria-label="Stealth mode" />} />
                   <Row title="Meeting detection" description="Get a nudge to start a session when a call starts: Zoom, Teams, Webex, Slack huddles, and Google Meet or Zoom in your browser." control={<Switch checked={meetingDetection} onCheckedChange={setMeetingDetection} aria-label="Meeting detection" />} />
                 </Card>
                 <Card title="Keyboard shortcuts" description="These work during a live call. ⌘ is Ctrl on Windows and Linux.">
@@ -264,7 +268,7 @@ export function DesktopSettingsDialog(props: DesktopSettingsDialogProps) {
               <>
                 <Card title="Credits" description="One pool, spent by every Jobwhisper feature.">
                   <Row title="Balance" description={`${credits.periodAllowance.toLocaleString('en-US')} granted this period · ${credits.spentAllTime.toLocaleString('en-US')} spent all time`} control={<span className="text-sm text-ink">{credits.balance.toLocaleString('en-US')} credits</span>} />
-                  <Row title="Add credits" description="Top up in your browser. Payment never happens inside this window." control={<Button variant="secondary" size="sm" onClick={onAddCredits}>Add credits <ExternalLink aria-hidden="true" className="size-4" /></Button>} />
+                  <Row title="Add credits" description="Top up without leaving the app." control={<Button variant="secondary" size="sm" onClick={onAddCredits}>Add credits</Button>} />
                 </Card>
                 <Card title="Plan">
                   <Row title="Current plan" description={planNote} control={<span className="text-sm text-ink">{planLabel}</span>} />
@@ -295,7 +299,7 @@ export function DesktopSettingsDialog(props: DesktopSettingsDialogProps) {
               <>
                 <Card title="Appearance">
                   <Row title="Theme" description="System follows your computer's own light or dark setting." control={<Segmented label="Theme" value={theme} onChange={onThemeChange} options={[{ value: 'system', label: 'System' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]} />} />
-                  <Row title="Window appearance" description="Clear makes the live call transparent, with every panel floating as its own pane of glass over your desktop. Other screens stay solid." control={<Segmented label="Window appearance" value={appearance} onChange={setAppearance} options={[{ value: 'solid', label: 'Solid' }, { value: 'clear', label: 'Clear' }]} />} />
+                  <Row title="Window appearance" description="Clear makes the mini reply window transparent over the call; Solid fills it. Other screens stay solid." control={<Segmented label="Window appearance" value={appearance} onChange={onAppearanceChange} options={[{ value: 'solid', label: 'Solid' }, { value: 'clear', label: 'Clear' }]} />} />
                 </Card>
                 <Card title="Window">
                   <Row title="Size" description="Expand this window to fill your screen." control={<Button variant="secondary" size="sm" leadingIcon={<Maximize2 aria-hidden="true" className="size-4" />}>Maximize</Button>} />
