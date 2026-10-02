@@ -421,12 +421,13 @@ const appRoutes = [
 const desktopRoutes = [
   { href: '/desktop', label: 'Desktop sign in', description: 'Movable, resizable window with the sign-in screen.' },
   { href: '/desktop/permissions', label: 'Desktop permissions', description: 'Screen and microphone permission steps.' },
-  { href: '/desktop/home', label: 'Desktop home', description: 'Launch cards, recent sessions and credits. States: ?state=loading, error, empty.' },
-  { href: '/desktop/configure?kind=interview', label: 'Desktop configure', description: 'Two steps: role, resume preview, Knowledge Base and context; then response type, model and behaviour (&step=2). kind=coding or meeting.' },
-  { href: '/desktop/session?kind=interview', label: 'Desktop live session', description: 'Pill toolbar, transcript with answer cards, AI chat and session credits. ?state=empty, &connection=fair or unstable.' },
-  { href: '/desktop/overlay', label: 'Desktop overlay', description: 'Compact bar over the call with the latest answer.' },
-  { href: '/desktop/home?settings=general', label: 'Desktop settings', description: 'Nine sections: general, interview, coding, meeting, billing, usage, window, account, connectors.' },
-  { href: '/desktop/home?whatsnew=1', label: "Desktop what's new", description: 'Release notes dialog.' },
+  { href: '/desktop/home', label: 'Desktop home', description: 'Launch cards, recent sessions (rows resume the session) and a credits card with Top up. States: ?state=loading, error, empty.' },
+  { href: '/desktop/configure?kind=interview', label: 'Desktop configure', description: 'Two steps: role, resume preview, Knowledge Base and context; then response type, model and behaviour (&step=2). kind=coding or meeting. Start without setup jumps straight in; Start session warns under an hour of credits (&state=lowcredits previews it).' },
+  { href: '/desktop/session?kind=interview', label: 'Desktop live session', description: 'Pill toolbar, transcript that pauses scroll on hover/focus/tap, AI chat with screenshot attach, external mic picker and session credits. ?state=empty, &connection=fair or unstable, &resume=1 shows the resume banner.' },
+  { href: '/desktop/overlay', label: 'Desktop overlay', description: 'Compact bar over the call with the latest answer; follows the Window appearance setting (solid or clear).' },
+  { href: '/desktop/home?settings=general', label: 'Desktop settings', description: 'Nine sections: general (mic input source), interview, coding, meeting, billing (in-app Add credits), usage, window, account, connectors.' },
+  { href: '/desktop/home?whatsnew=1', label: "Desktop what's new", description: 'Release notes dialog; opened from the bell or the avatar menu, dot clears once read.' },
+  { href: '/desktop/home?topup=1', label: 'Desktop add credits', description: 'In-app credit top-up dialog (presets, custom amount, auto-reload); raises the live wallet on purchase.' },
   { href: '/desktop/complete?kind=interview', label: 'Desktop complete', description: 'Blue completion screen with session feedback.' },
 ] as const
 

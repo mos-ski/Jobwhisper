@@ -216,3 +216,13 @@ The Edit canvas adds `ResumeExtraSectionKind`, `ResumeExtraSection` and `ResumeE
 
 
 `ResumeDocument.improvedBullets` (optional) carries a Chat rewrite across every role: per role, per bullet, the new wording or `null` to leave it. When present it replaces `improvedFirstRoleBullets` as what the rewrite changes, and each changed bullet is accepted or rejected on its own (keys `bullet-<role>-<index>`, plus `summary` and `skills`). Production's rewrite endpoint should return this shape so partial acceptance maps one-to-one.
+
+## Desktop Draft Contract
+
+`src/contracts/desktop.draft.ts` types the desktop prototype: `DesktopSessionKind`, `DesktopSessionSummary`, `DesktopCredits`, `DesktopAppearance`, `DesktopAnswerRun` / `DesktopTranscriptEntry`, `DesktopChatMessage`, `DesktopSessionConfig`, `DesktopReleaseNote`, and the response/connection/activity enums. Points production should carry into the real contract:
+
+- **The credits invariant.** `balance + usedThisPeriod === periodAllowance` at rest; the home card and the Settings usage bar must derive from one snapshot, not two counters that can drift (the prototype shipped with a drift bug before this rule was written down). Top-ups add to `balance` only — they are extra beyond the period grant, so the invariant holds for the grant portion.
+- **`DesktopAppearance` (`'solid' | 'clear'`)** decides whether the mini reply window floats as glass over the call. It is a per-user window preference and should persist server-side with the rest of settings, not per install only.
+- **Microphone source** is deliberately *not* in the contract: the device list is OS state, and the prototype passes `microphoneSources` down as a prop. Production should own device enumeration in the shell and treat the chosen device id as session-scoped state.
+- **Resume-from-history** needs no new fields — it reuses `DesktopSessionSummary` (`id`, `kind`, `title`) — but production should confirm a session can be reopened with its transcript intact; the prototype replays the canned transcript behind `?resume=1`.
+- **The top-up purchase event** currently takes `(credits: number)` locally. The real one needs idempotency, the amount charged, and the resulting balance in one response so the UI cannot show a balance that disagrees with the receipt.

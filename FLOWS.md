@@ -281,3 +281,36 @@
 5. Entry condition: `?step=offer` reads "You are set! You've unlocked Pro for 7 days." with the Pro panel (7 days of Pro for $10, cancel anytime before it renews).
    Exit condition: Start my 7 days for $10 navigates straight to `/v3/interview-copilot`.
    Failure branch: none on this step — the offer is a single claim action; the resume-import step carries the funnel's only field-level error.
+
+## Desktop App: Home -> Configure -> Live Session -> Complete
+
+1. Entry condition: the desktop window is signed in and `/desktop/home` opens.
+   Exit condition: a launch card picks interview, coding or meeting and opens `/desktop/configure?kind=<kind>`.
+   Failure branch: `?state=error` shows a recoverable card with Try again; `?state=loading` shows skeletons; `?state=empty` shows the empty sessions list.
+2. Entry condition: configure step 1 (role, resume, Knowledge Base, context).
+   Exit condition: Continue opens step 2 (`?step=2`), or Start without setup jumps straight to `/desktop/session` with a generic title and no configuration.
+   Failure branch: Start session stays disabled until a role is chosen (step 1's only gate).
+3. Entry condition: step 2 (response type, model, language, behaviour switches).
+   Exit condition: Start session opens `/desktop/session?kind=<kind>&title=<role · company>`.
+   Failure branch: when the wallet covers under an hour (`< 60` credits; `?state=lowcredits` previews at 42), a Low on credits dialog intercepts — Top up opens `?topup=1` and drops the pending start, Start anyway proceeds as normal.
+4. Entry condition: `/desktop/session` opens — stealth turns on automatically regardless of the header switch.
+   Exit condition: End Session navigates to `/desktop/complete?kind=<kind>`.
+   Failure branch: `&connection=fair|unstable` changes the status dot and label; `?state=empty` renders the no-transcript resting state; hovering, focusing or tapping a transcript row pauses auto-scroll and shows Jump to latest; the mic popover swaps input source mid-call; the camera button stages a screenshot chip in the AI chat that Send clears.
+5. Entry condition: complete screen with feedback selected.
+   Exit condition: Home returns to `/desktop/home`, where the session now heads the recent list.
+   Failure branch: none — feedback is optional.
+
+## Desktop App: Resume a Session From History
+
+1. Entry condition: `/desktop/home` lists recent sessions.
+   Exit condition: clicking a row opens `/desktop/session?kind=<kind>&title=<title>&resume=1` with the Resumed from history banner; View all still opens Settings → Usage for the full list.
+   Failure branch: `?state=error` on home keeps resume unreachable behind the retry card.
+
+## Desktop App: Credits Top-up (Any Screen)
+
+1. Entry condition: Top up on the home credits card, Add credits in Settings → Billing, or Top up in the low-credit start warning.
+   Exit condition: `?topup=1` opens the Add Interview Copilot credits dialog (presets $10/$20/$50 or custom, auto-reload checkbox).
+   Failure branch: below $10 or a non-whole-credit amount shows the inline fix message and keeps Continue to checkout disabled.
+2. Entry condition: amount selected.
+   Exit condition: Continue to checkout shows Processing…, then N credits added with the new balance; Done closes the dialog and the home card, settings balance and usage bar all reflect the purchase.
+   Failure branch: none in the prototype — production owns payment decline here.
