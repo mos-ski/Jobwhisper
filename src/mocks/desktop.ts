@@ -85,11 +85,13 @@ export const desktopChat: readonly DesktopChatMessage[] = [
 ]
 
 export const desktopReleaseNote: DesktopReleaseNote = {
-  version: '1.0.13',
-  date: '2026-09-16',
+  version: '1.0.14',
+  date: '2026-10-02',
   items: [
-    { title: 'Meeting playbooks', detail: 'Pick a playbook when you set up a meeting. Sales discovery, standup, investor pitch and more. It fills the agenda, briefs the copilot, and adds its own hot buttons to the live session. You can build your own too.' },
-    { title: 'Google Calendar', detail: 'Connect Google Calendar in Settings and the app shows your next meetings, nudges you before each one, and starts the copilot with the title filled in.' },
-    { title: 'A fuller dashboard', detail: 'The home screen now shows your recent sessions and remaining credits beside the launch cards.' },
+    { title: 'A bell for updates', detail: 'The new notifications bell in the title bar lights up when an update lands. Tap it, or open What’s new from the menu, and it reads like a changelog — no more hunting through Settings.' },
+    { title: 'Credits that add up', detail: 'Copilot’s credit count now lines up with your balance: what you see on the home card is what the usage report counts. Short on credits? Top up from inside the app, and we’ll warn you before a session if your balance won’t cover the first hour.' },
+    { title: 'A calmer live session', detail: 'Hover, focus or tap an answer in the transcript to pause the scroll and shade it while you read. Jump back to the latest line whenever you’re ready, and attach a screenshot straight to the AI chat.' },
+    { title: 'Interviews without the ceremony', detail: 'Start a session straight from the configure screen, and Copilot turns stealth mode on for you before the meeting starts. Your mic picker now lists external microphones, so interviews can run on the mic you actually use.' },
+    { title: 'Pick up where you left off', detail: 'Recent sessions on the home screen now resume the interview instead of opening a usage report, and report answers render bold highlights the way Copilot wrote them.' },
   ],
 }

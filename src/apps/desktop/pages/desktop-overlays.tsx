@@ -22,7 +22,7 @@ function applyTheme(theme: DesktopTheme) {
 }
 
 /** Settings (`?settings=<section>`) and What's new (`?whatsnew=1`), openable from any window screen. */
-export function DesktopOverlays() {
+export function DesktopOverlays({ onWhatsNewSeen }: { readonly onWhatsNewSeen: () => void }) {
   const [params, setParams] = useSearchParams()
   const navigate = useNavigate()
   const [theme, setTheme] = useState<DesktopTheme>(readStoredTheme)
@@ -40,6 +40,12 @@ export function DesktopOverlays() {
     applyTheme(theme)
     window.localStorage.setItem(THEME_STORAGE_KEY, theme)
   }, [theme])
+
+  // The dialog opens from the URL, so mark the release note read there rather than in onOpenChange.
+  const whatsNewOpen = params.get('whatsnew') === '1'
+  useEffect(() => {
+    if (whatsNewOpen) onWhatsNewSeen()
+  }, [whatsNewOpen, onWhatsNewSeen])
 
   return (
     <>
@@ -70,7 +76,11 @@ export function DesktopOverlays() {
         }}
         onSignOut={() => navigate('/desktop')}
       />
-      <DesktopWhatsNewDialog open={params.get('whatsnew') === '1'} onOpenChange={(open) => { if (!open) set('whatsnew', null) }} note={desktopReleaseNote} />
+      <DesktopWhatsNewDialog
+        open={whatsNewOpen}
+        onOpenChange={(open) => { if (!open) set('whatsnew', null) }}
+        note={desktopReleaseNote}
+      />
     </>
   )
 }

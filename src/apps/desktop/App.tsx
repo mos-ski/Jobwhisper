@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { Navigate, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
@@ -21,6 +21,8 @@ export default function DesktopApp() {
   const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
   const [stealth, setStealth] = useState(false)
+  const [whatsNewSeen, setWhatsNewSeen] = useState(false)
+  const markWhatsNewSeen = useCallback(() => setWhatsNewSeen(true), [])
   const page = location.pathname.replace(/^\/desktop\/?/, '')
 
   // The floating overlay is not a window, so it sits outside the shell entirely.
@@ -44,6 +46,8 @@ export default function DesktopApp() {
             onToggleStealth={() => setStealth((value) => !value)}
             onOpenSettings={() => openParam('settings', 'general')}
             onOpenWhatsNew={() => openParam('whatsnew', '1')}
+            onOpenNotifications={() => openParam('whatsnew', '1')}
+            hasNotifications={!whatsNewSeen}
             onSignOut={() => navigate('/desktop')}
           />
         ) : undefined
@@ -60,7 +64,7 @@ export default function DesktopApp() {
           <Route path="*" element={<Navigate to="/desktop" replace />} />
         </Routes>
       </AnimatePresence>
-      <DesktopOverlays />
+      <DesktopOverlays onWhatsNewSeen={markWhatsNewSeen} />
     </DesktopShell>
   )
 }

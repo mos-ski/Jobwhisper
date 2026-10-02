@@ -9,12 +9,14 @@ export type DesktopHeaderProps = {
   readonly onToggleStealth: () => void
   readonly onOpenSettings: () => void
   readonly onOpenWhatsNew: () => void
+  /** Opens What's new from the notifications bell; clears the dot once the dialog shows. */
+  readonly onOpenNotifications: () => void
   readonly onSignOut: () => void
   readonly hasNotifications?: boolean
 }
 
 /** The title bar's right side on every screen but the live session. */
-export function DesktopHeader({ userName, avatarSrc, stealth, onToggleStealth, onOpenSettings, onOpenWhatsNew, onSignOut, hasNotifications = false }: DesktopHeaderProps) {
+export function DesktopHeader({ userName, avatarSrc, stealth, onToggleStealth, onOpenSettings, onOpenWhatsNew, onOpenNotifications, onSignOut, hasNotifications = false }: DesktopHeaderProps) {
   return (
     <div className="flex items-center gap-2">
       <button
@@ -30,6 +32,7 @@ export function DesktopHeader({ userName, avatarSrc, stealth, onToggleStealth, o
       <button
         type="button"
         aria-label={hasNotifications ? 'Notifications, new' : 'Notifications'}
+        onClick={onOpenNotifications}
         className="relative grid size-9 place-items-center rounded-lg text-ink-muted hover:bg-surface hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
       >
         <Bell aria-hidden="true" className="size-4" />
