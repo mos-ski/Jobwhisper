@@ -35,7 +35,7 @@ import { AddCreditsDialog } from '@/features/billing/add-credits-dialog'
 import { AppShell } from '@/features/dashboard/app-nav'
 import { KnowledgeBasePickerDialog } from '@/features/documents/knowledge-base-picker-dialog'
 import { centsToCredits, creditsToCents } from '@/lib/credits'
-import { AiSuggestionAction, Avatar, Badge, Checkbox, cn, DataTable, Dialog, DialogPopup, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, NoticeBar, NoticeCard, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, Tooltip, TooltipContent, TooltipTrigger, UploadedFileDialog } from '@/ui'
+import { AiSuggestionAction, Avatar, Badge, Checkbox, cn, DataTable, Dialog, DialogPopup, DocumentDropAction, FormField, FormPanel, FormPanelFooter, FormSelectField, FormTextArea, JobwhisperAiIcon, ListPickerDialog, NoticeBar, NoticeCard, RichText, ShellBar, SourcePicker, Tabs, TabsContent, TabsList, TabsTrigger, Tooltip, TooltipContent, TooltipTrigger, UploadedFileDialog } from '@/ui'
 import { useCameraStream } from '@/hooks/useCameraStream'
 import { clearDefaultResumePreference, getDefaultResumePreference, setDefaultResumePreference } from '@/lib/resume-preference'
 import { useTypewriter } from '@/hooks/useTypewriter'
@@ -1531,7 +1531,7 @@ export function InterviewReportView({ homeHref, scenariosHref, practiceHref, rep
                       </div>
                       <div>
                         <h2 className="font-gowun text-xl font-bold leading-8">Summary</h2>
-                        <p className="mt-2 text-base leading-7 text-ink-muted">{report.summary}</p>
+                        <p className="mt-2 text-base leading-7 text-ink-muted"><RichText text={report.summary} /></p>
                       </div>
                     </div>
 
@@ -1574,7 +1574,7 @@ export function InterviewReportView({ homeHref, scenariosHref, practiceHref, rep
                               <span className="rounded-soft bg-ink/10 px-1.5 py-0.5 text-xs font-medium text-ink">{entry.timestamp}</span>
                               <span className={cn('text-sm font-medium', entry.speaker === 'You' ? 'text-accent-text' : 'text-ink')}>{entry.speaker}</span>
                             </div>
-                            <p className="text-base leading-7 text-ink">{entry.text}</p>
+                            <p className="text-base leading-7 text-ink"><RichText text={entry.text} /></p>
                           </div>
                         ))}
                       </div>
@@ -1644,7 +1644,7 @@ function RubricTable<TStatus extends string>({
               <td className="px-4 py-2.5">
                 <Badge className={toneClasses[row.status]}>{label[row.status]}</Badge>
               </td>
-              <td className="px-4 py-2.5 text-ink-muted">{row.notes}</td>
+              <td className="px-4 py-2.5 text-ink-muted"><RichText text={row.notes} /></td>
             </tr>
           ))}
         </tbody>
@@ -1661,7 +1661,7 @@ function ScorecardSection({ title, items, divider = false }: { readonly title: s
         {items.map((item, index) => (
           <li key={index} className="flex items-start gap-2 text-sm text-ink-muted">
             <span className="mt-2 size-1 shrink-0 rounded-full bg-muted" aria-hidden="true" />
-            <span>{item}</span>
+            <span><RichText text={item} /></span>
           </li>
         ))}
       </ul>

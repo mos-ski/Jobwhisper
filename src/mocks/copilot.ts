@@ -177,9 +177,9 @@ export const copilotReport: CopilotReport = {
   subtitle: 'Interview · 34 min · Desktop',
   score: 78,
   summary:
-    'Strong product thinking and clear communication. You demonstrated solid prioritization frameworks and stakeholder management. The main gaps were in metrics depth and technical trade-off discussions. Focus on leading with measurable outcomes.',
+    '**Strong product thinking** and clear communication. You demonstrated solid prioritization frameworks and stakeholder management. The main gaps were in **metrics depth** and technical trade-off discussions. Focus on leading with **measurable outcomes**.',
   whatWentWell: [
-    'Clear prioritization framework using RICE scoring',
+    'Clear prioritization framework using **RICE scoring**',
     'Strong stakeholder management language, showed genuine partnership',
     'Good recovery when challenged on a product decision',
   ],
@@ -200,7 +200,7 @@ export const copilotReport: CopilotReport = {
     'Walk me through how you collaborate with engineering when a feature requires technical trade-offs.',
   ],
   rubric: [
-    { element: 'Product Thinking', status: 'strong', notes: 'Clear framework for prioritization. Showed genuine product intuition.' },
+    { element: 'Product Thinking', status: 'strong', notes: '**Clear framework** for prioritization. Showed genuine product intuition.' },
     { element: 'Metrics & Data', status: 'needs-work', notes: 'Mentioned top-level KPIs but lacked depth on how to define and track them.' },
     { element: 'Stakeholder Management', status: 'strong', notes: 'Language showed partnership, not handoff. Good cross-functional examples.' },
     { element: 'Technical Depth', status: 'partial', notes: 'Acknowledged trade-offs but didn\'t explain how they were evaluated.' },
@@ -211,7 +211,7 @@ export const copilotReport: CopilotReport = {
     userPercent: 52,
     otherPercent: 48,
     otherLabel: 'Interviewer',
-    tip: 'Good balance. Slightly less talking would leave more room for follow-up questions.',
+    tip: 'Good balance. **Slightly less talking** would leave more room for follow-up questions.',
   },
   transcript: [
     { id: 'ct-1', speaker: 'Interviewer', isUser: false, timestamp: '00:12', text: 'Tell me about a time you had to make a difficult product prioritization decision.' },

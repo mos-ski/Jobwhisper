@@ -48,6 +48,7 @@ import {
   NoticeBar,
   NoticeCard,
   PermissionSteps,
+  RichText,
   ShellBar,
   SourcePicker,
   type SourcePickerOption,
@@ -1017,7 +1018,7 @@ function CopilotScorecardSection({ title, items, divider = false }: { readonly t
         {items.map((item, index) => (
           <li key={index} className="flex items-start gap-2 text-sm text-ink-muted">
             <span className="mt-2 size-1 shrink-0 rounded-full bg-muted" aria-hidden="true" />
-            <span>{item}</span>
+            <span><RichText text={item} /></span>
           </li>
         ))}
       </ul>
@@ -1082,7 +1083,7 @@ function RubricTable<TStatus extends string>({
               <td className="px-4 py-2.5">
                 <Badge className={toneClasses[row.status]}>{label[row.status]}</Badge>
               </td>
-              <td className="px-4 py-2.5 text-ink-muted">{row.notes}</td>
+              <td className="px-4 py-2.5 text-ink-muted"><RichText text={row.notes} /></td>
             </tr>
           ))}
         </tbody>
@@ -1112,7 +1113,7 @@ function CopilotTalkTimeCard({ talkTime }: { readonly talkTime: CopilotTalkTime 
         <span>You, {talkTime.userPercent}%</span>
         <span>{talkTime.otherLabel}, {talkTime.otherPercent}%</span>
       </div>
-      <p className="mt-3 text-sm leading-6 text-ink-muted">{talkTime.tip}</p>
+      <p className="mt-3 text-sm leading-6 text-ink-muted"><RichText text={talkTime.tip} /></p>
     </div>
   )
 }
@@ -1160,7 +1161,7 @@ export function CopilotReportView({ homeHref, historyHref, report, mode }: Copil
                       </div>
                       <div>
                         <h2 className="font-gowun text-xl font-bold leading-8">Summary</h2>
-                        <p className="mt-2 text-base leading-7 text-ink-muted">{report.summary}</p>
+                        <p className="mt-2 text-base leading-7 text-ink-muted"><RichText text={report.summary} /></p>
                       </div>
                     </div>
 
@@ -1205,7 +1206,7 @@ export function CopilotReportView({ homeHref, historyHref, report, mode }: Copil
                               <span className="rounded-soft bg-ink/10 px-1.5 py-0.5 text-xs font-medium text-ink">{entry.timestamp}</span>
                               <span className={cn('text-sm font-medium', entry.isUser ? 'text-accent-text' : 'text-ink')}>{entry.speaker}</span>
                             </div>
-                            <p className="text-base leading-7 text-ink">{entry.text}</p>
+                            <p className="text-base leading-7 text-ink"><RichText text={entry.text} /></p>
                           </div>
                         ))}
                       </div>

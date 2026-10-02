@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { History } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import type { DesktopChatMessage, DesktopResponseLength } from '@/contracts/desktop.draft'
@@ -35,6 +36,14 @@ export function DesktopSessionPage({ stealth, onToggleStealth, microphone, onMic
   return (
     <DesktopSessionView
       title={params.get('title') || 'Product Manager · Guwe'}
+      notice={
+        params.get('resume') === '1' ? (
+          <p role="status" className="flex items-center gap-2 rounded-lg bg-accent-subtle px-3 py-2 text-sm font-medium text-accent-text">
+            <History aria-hidden="true" className="size-4 shrink-0" />
+            Resumed from history — picking up where this session left off.
+          </p>
+        ) : undefined
+      }
       connection={params.get('connection') === 'unstable' ? 'unstable' : params.get('connection') === 'fair' ? 'fair' : 'connected'}
       activity={empty ? 'listening' : 'answering'}
       elapsedLabel={clock(seconds)}

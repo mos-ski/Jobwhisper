@@ -11,7 +11,8 @@ export type DesktopHomeViewProps = {
   readonly onLaunch: (kind: DesktopSessionKind) => void
   readonly sessions: { readonly status: 'loading' } | { readonly status: 'error' } | { readonly status: 'ready'; readonly items: readonly DesktopSessionSummary[] }
   readonly credits?: DesktopCredits
-  readonly onOpenSession: (id: string) => void
+  /** Opening a past session resumes it in the live window instead of filing it away. */
+  readonly onOpenSession: (session: DesktopSessionSummary) => void
   readonly onViewAllSessions: () => void
   readonly onManageCredits: () => void
   readonly onTopUp: () => void
@@ -81,7 +82,7 @@ export function DesktopHomeView({ firstName, calendarPrompt, onConnectCalendar, 
             <ul className="mt-2 divide-y divide-border">
               {sessions.items.map((session) => (
                 <li key={session.id}>
-                  <button type="button" onClick={() => onOpenSession(session.id)} className="flex min-h-16 w-full items-center justify-between gap-3 py-2 text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                  <button type="button" onClick={() => onOpenSession(session)} className="flex min-h-16 w-full items-center justify-between gap-3 py-2 text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                     <span className="min-w-0">
                       <span className="block truncate text-sm font-semibold text-ink">{session.title}</span>
                       <span className="block truncate text-sm text-ink-muted">

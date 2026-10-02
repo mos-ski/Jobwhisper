@@ -51,4 +51,12 @@ describe('desktop live session', () => {
     fireEvent.change(select, { target: { value: 'Scarlett Solo (USB)' } })
     expect(select.value).toBe('Scarlett Solo (USB)')
   })
+
+  it('resumes a past session from the home screen, with a banner', async () => {
+    renderAt('/desktop/home')
+
+    fireEvent.click(await screen.findByRole('button', { name: /Relics/ }))
+    expect(await screen.findByText(/Resumed from history/)).toBeInTheDocument()
+    expect(screen.getByText('Product Manager', { selector: 'span.truncate' })).toBeInTheDocument()
+  })
 })

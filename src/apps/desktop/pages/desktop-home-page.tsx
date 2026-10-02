@@ -30,7 +30,9 @@ export function DesktopHomePage({ credits, onTopUp }: { readonly credits: Deskto
       onLaunch={(kind) => navigate(`/desktop/configure?kind=${kind}`)}
       sessions={readSessions(params.get('state'))}
       credits={params.get('state') === 'loading' ? undefined : credits}
-      onOpenSession={() => openSettings('usage')}
+      onOpenSession={(session) =>
+        navigate(`/desktop/session?kind=${session.kind}&title=${encodeURIComponent(session.title)}&resume=1`)
+      }
       onViewAllSessions={() => openSettings('usage')}
       onManageCredits={() => openSettings('billing')}
       onTopUp={onTopUp}
