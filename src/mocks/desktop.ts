@@ -28,6 +28,9 @@ export const desktopKnowledgeBase: readonly string[] = [
 
 export const desktopRoles: readonly string[] = ['Product Manager', 'Senior Product Manager', 'Product Designer', 'Software Engineer', 'Data Analyst']
 
+// The first entry is what an interview hears by default; the rest are the externals a plugged-in mic shows up as.
+export const desktopMicrophoneSources: readonly string[] = ['System default', 'MacBook Pro Microphone', 'AirPods Pro', 'Blue Yeti USB Microphone', 'Scarlett Solo (USB)']
+
 export const desktopSuggestedContext =
   'Help me prepare concise, outcome-focused answers for the Guwe Product Manager interview, drawing on my leadership of five AI and crypto products, three MVP launches in five months, and independent development of 12 live apps. Emphasize my Bloomvest KYC and savings-goal work that increased weekly active users by 45%, plus Rebble’s WhatsApp crypto trading experience. Support me most with articulating product strategy, prioritization trade-offs, and measurable impact.'
 

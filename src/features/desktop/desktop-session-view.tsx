@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { ArrowDown, ArrowLeft, Camera, MoreHorizontal, CornerDownRight, EyeOff, GripVertical, MessageSquare, Mic, MicOff, Minimize2, Plus, Send, Settings } from 'lucide-react'
+import { ArrowDown, ArrowLeft, Camera, Check, ChevronDown, MoreHorizontal, CornerDownRight, EyeOff, GripVertical, Image as ImageIcon, MessageSquare, Mic, MicOff, Minimize2, Plus, Send, Settings, X } from 'lucide-react'
 
 import type { DesktopActivity, DesktopAnswerRun, DesktopChatMessage, DesktopConnection, DesktopResponseLength, DesktopTranscriptEntry } from '@/contracts/desktop.draft'
 import { Dialog, DialogClose, DialogPopup, DialogTitle, Menu, MenuContent, MenuItem, MenuTrigger, Popover, PopoverContent, PopoverTrigger, Skeleton, cn } from '@/ui'
@@ -17,6 +17,10 @@ export type DesktopSessionViewProps = {
   readonly onAsk: (text: string) => void
   readonly micOn: boolean
   readonly onToggleMic: () => void
+  /** Desktop only: external microphones get a picker; the browser session keeps its plain mute button. */
+  readonly microphoneSources?: readonly string[]
+  readonly microphoneSource?: string
+  readonly onMicrophoneSourceChange?: (source: string) => void
   /** Desktop only: stealth and the floating overlay have no meaning in a browser tab. */
   readonly stealth?: boolean
   readonly onToggleStealth?: () => void
@@ -57,15 +61,41 @@ export function AnswerText({ runs }: { readonly runs: readonly DesktopAnswerRun[
   )
 }
 
+function MicrophoneSources({ sources, source, onPick, className }: { readonly sources: readonly string[]; readonly source: string; readonly onPick: (source: string) => void; readonly className?: string }) {
+  return (
+    <div role="radiogroup" aria-label="Microphone source" className={cn('grid gap-1', className)}>
+      {sources.map((item) => (
+        <button
+          key={item}
+          type="button"
+          role="radio"
+          aria-checked={source === item}
+          onClick={() => onPick(item)}
+          className="flex min-h-11 w-full items-center justify-between gap-3 rounded-lg px-3 text-start text-sm font-medium text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+        >
+          <span className="truncate">{item}</span>
+          {source === item ? <Check aria-hidden="true" className="size-4 shrink-0 text-accent-text" /> : null}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export function DesktopSessionView(props: DesktopSessionViewProps) {
-  const { title, connection, activity, elapsedLabel, length, onLengthChange, transcript, chat, onAsk, micOn, onToggleMic, stealth, onToggleStealth, onCapture, onCompact, onBack, notice, loading = false, screenPreview, onOpenSettings, onEnd, modelLabel, creditsUsed, minutesLeftLabel } = props
+  const { title, connection, activity, elapsedLabel, length, onLengthChange, transcript, chat, onAsk, micOn, onToggleMic, microphoneSources, microphoneSource, onMicrophoneSourceChange, stealth, onToggleStealth, onCapture, onCompact, onBack, notice, loading = false, screenPreview, onOpenSettings, onEnd, modelLabel, creditsUsed, minutesLeftLabel } = props
   const [chatOpen, setChatOpen] = useState(true)
   // Phones show one pane at a time; from md up both sit side by side.
   const [phonePane, setPhonePane] = useState<'interview' | 'chat'>('interview')
   const [controlsOpen, setControlsOpen] = useState(false)
   const [draft, setDraft] = useState('')
   const [atLatest, setAtLatest] = useState(true)
+  // Staged for the next AI chat message; cleared when it is sent.
+  const [attachment, setAttachment] = useState<string | null>(null)
   const listRef = useRef<HTMLDivElement>(null)
+
+  const sources = microphoneSources ?? []
+  const source = microphoneSource ?? sources[0] ?? ''
+  const pickable = Boolean(onMicrophoneSourceChange) && sources.length > 0
 
   useEffect(() => {
     const list = listRef.current
@@ -77,6 +107,12 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
     if (!value) return
     onAsk(value)
     setDraft('')
+    setAttachment(null)
+  }
+
+  const capture = () => {
+    setAttachment(`Screenshot · ${elapsedLabel}`)
+    onCapture()
   }
 
   return (
@@ -124,10 +160,16 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
                 </button>
               ))}
             </div>
+            {pickable ? (
+              <>
+                <p className="mt-5 text-xs font-semibold uppercase tracking-wide text-ink-muted">Microphone source</p>
+                <MicrophoneSources sources={sources} source={source} onPick={(item) => onMicrophoneSourceChange?.(item)} className="mt-2" />
+              </>
+            ) : null}
             <ul className="mt-4 grid gap-1">
               {[
                 { label: micOn ? 'Mute microphone' : 'Unmute microphone', icon: micOn ? Mic : MicOff, onClick: onToggleMic },
-                { label: 'Capture the screen', icon: Camera, onClick: onCapture },
+                { label: 'Capture the screen', icon: Camera, onClick: capture },
                 ...(onToggleStealth ? [{ label: stealth ? 'Turn stealth off' : 'Turn stealth on', icon: EyeOff, onClick: onToggleStealth }] : []),
                 ...(onCompact ? [{ label: 'Shrink to the overlay', icon: Minimize2, onClick: onCompact }] : []),
                 { label: 'Settings', icon: Settings, onClick: onOpenSettings },
@@ -176,13 +218,34 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
             ))}
           </div>
           <span className={cn(pill, 'font-semibold tabular-nums')} aria-label={`Elapsed ${elapsedLabel}`}>{elapsedLabel}</span>
-          <button type="button" aria-label={micOn ? 'Mute microphone' : 'Unmute microphone'} aria-pressed={!micOn} onClick={onToggleMic} className={iconButton}>
-            {micOn ? <Mic aria-hidden="true" className="size-4" /> : <MicOff aria-hidden="true" className="size-4 text-danger" />}
-          </button>
+          {pickable ? (
+            <Popover>
+              <PopoverTrigger aria-label={`Microphone, ${source}${micOn ? '' : ', muted'}`} className={iconButton}>
+                {micOn ? <Mic aria-hidden="true" className="size-4" /> : <MicOff aria-hidden="true" className="size-4 text-danger" />}
+                <ChevronDown aria-hidden="true" className="size-3 text-ink-muted" />
+              </PopoverTrigger>
+              <PopoverContent side="bottom" align="end" className="w-72">
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Microphone source</p>
+                <MicrophoneSources sources={sources} source={source} onPick={(item) => onMicrophoneSourceChange?.(item)} className="mt-2" />
+                <button
+                  type="button"
+                  onClick={onToggleMic}
+                  className="mt-3 flex min-h-11 w-full items-center gap-2 rounded-lg border border-input px-3 text-sm font-semibold text-ink hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                >
+                  {micOn ? <MicOff aria-hidden="true" className="size-4 text-danger" /> : <Mic aria-hidden="true" className="size-4" />}
+                  {micOn ? 'Mute microphone' : 'Unmute microphone'}
+                </button>
+              </PopoverContent>
+            </Popover>
+          ) : (
+            <button type="button" aria-label={micOn ? 'Mute microphone' : 'Unmute microphone'} aria-pressed={!micOn} onClick={onToggleMic} className={iconButton}>
+              {micOn ? <Mic aria-hidden="true" className="size-4" /> : <MicOff aria-hidden="true" className="size-4 text-danger" />}
+            </button>
+          )}
           <button type="button" aria-label={chatOpen ? 'Hide the AI chat' : 'Show the AI chat'} aria-pressed={chatOpen} onClick={() => setChatOpen((open) => !open)} className={cn(iconButton, 'hidden md:grid')}>
             <MessageSquare aria-hidden="true" className="size-4" />
           </button>
-          <button type="button" aria-label="Capture the screen and answer" onClick={onCapture} className={iconButton}>
+          <button type="button" aria-label="Capture the screen and answer" onClick={capture} className={iconButton}>
             <Camera aria-hidden="true" className="size-4" />
           </button>
           {onToggleStealth ? (
@@ -242,7 +305,19 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
             ) : (
               <ol className="divide-y divide-border">
                 {transcript.map((entry) => (
-                  <li key={entry.id} className="py-4">
+                  <li
+                    key={entry.id}
+                    tabIndex={0}
+                    // Hovering, focusing or tapping an answer stops the scroll so it can be read in place.
+                    onMouseEnter={() => setAtLatest(false)}
+                    onFocus={() => setAtLatest(false)}
+                    onClick={() => setAtLatest(false)}
+                    className={cn(
+                      'rounded-lg py-4 hover:bg-surface-subtle focus-visible:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+                      // The answer carries a faint shade at rest so it reads as tappable on touch, where hover does not exist.
+                      entry.kind === 'answer' && 'bg-surface-subtle/40',
+                    )}
+                  >
                     {entry.kind === 'interviewer' ? (
                       <>
                         <p className="text-xs font-semibold text-ink-muted">{entry.speaker ?? 'Interviewer'}</p>
@@ -319,6 +394,15 @@ export function DesktopSessionView(props: DesktopSessionViewProps) {
                 send(draft)
               }}
             >
+              {attachment ? (
+                <div className="flex items-center gap-2 rounded-lg border border-input bg-surface px-3 py-2">
+                  <ImageIcon aria-hidden="true" className="size-4 shrink-0 text-ink-muted" />
+                  <span className="min-w-0 flex-1 truncate text-xs font-medium text-ink">{attachment}</span>
+                  <button type="button" aria-label="Remove screenshot" onClick={() => setAttachment(null)} className="grid size-7 shrink-0 place-items-center rounded-md text-ink-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                    <X aria-hidden="true" className="size-3.5" />
+                  </button>
+                </div>
+              ) : null}
               <div className="flex items-center gap-2">
                 <label className="min-w-0 flex-1">
                   <span className="sr-only">Ask a follow-up</span>

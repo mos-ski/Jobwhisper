@@ -37,10 +37,13 @@ export type DesktopOverlaysProps = {
   readonly onAppearanceChange: (appearance: DesktopAppearance) => void
   readonly stealth: boolean
   readonly onToggleStealth: () => void
+  readonly microphone: string
+  readonly onMicrophoneChange: (source: string) => void
+  readonly microphoneSources: readonly string[]
 }
 
 /** Settings (`?settings=`), What's new (`?whatsnew=1`) and the top-up dialog (`?topup=1`), openable from any window screen. */
-export function DesktopOverlays({ onWhatsNewSeen, credits, onTopUp, appearance, onAppearanceChange, stealth, onToggleStealth }: DesktopOverlaysProps) {
+export function DesktopOverlays({ onWhatsNewSeen, credits, onTopUp, appearance, onAppearanceChange, stealth, onToggleStealth, microphone, onMicrophoneChange, microphoneSources }: DesktopOverlaysProps) {
   const [params, setParams] = useSearchParams()
   const navigate = useNavigate()
   const [theme, setTheme] = useState<DesktopTheme>(readStoredTheme)
@@ -79,6 +82,9 @@ export function DesktopOverlays({ onWhatsNewSeen, credits, onTopUp, appearance, 
         onAppearanceChange={onAppearanceChange}
         stealth={stealth}
         onToggleStealth={onToggleStealth}
+        microphone={microphone}
+        onMicrophoneChange={onMicrophoneChange}
+        microphoneSources={microphoneSources}
         user={desktopUser}
         credits={credits}
         planLabel="Free"

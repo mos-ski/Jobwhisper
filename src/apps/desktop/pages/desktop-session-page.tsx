@@ -11,7 +11,13 @@ function clock(seconds: number) {
   return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`
 }
 
-export function DesktopSessionPage({ stealth, onToggleStealth }: { readonly stealth: boolean; readonly onToggleStealth: () => void }) {
+export function DesktopSessionPage({ stealth, onToggleStealth, microphone, onMicrophoneChange, microphoneSources }: {
+  readonly stealth: boolean
+  readonly onToggleStealth: () => void
+  readonly microphone: string
+  readonly onMicrophoneChange: (source: string) => void
+  readonly microphoneSources: readonly string[]
+}) {
   const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
   const kind = readDesktopKind(params.get('kind'))
@@ -43,6 +49,9 @@ export function DesktopSessionPage({ stealth, onToggleStealth }: { readonly stea
       ])}
       micOn={micOn}
       onToggleMic={() => setMicOn((value) => !value)}
+      microphoneSources={microphoneSources}
+      microphoneSource={microphone}
+      onMicrophoneSourceChange={onMicrophoneChange}
       stealth={stealth}
       onToggleStealth={onToggleStealth}
       onCapture={() => undefined}

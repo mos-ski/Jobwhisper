@@ -24,6 +24,10 @@ export type DesktopSettingsDialogProps = {
   /** The same switch as the title bar — the two never disagree. */
   readonly stealth: boolean
   readonly onToggleStealth: () => void
+  /** The live call's input, including any plugged-in external mic. */
+  readonly microphone: string
+  readonly onMicrophoneChange: (source: string) => void
+  readonly microphoneSources: readonly string[]
   readonly user: { readonly fullName: string; readonly email: string }
   readonly credits: DesktopCredits
   readonly planLabel: string
@@ -155,7 +159,7 @@ function CaptureKeyCard() {
 }
 
 export function DesktopSettingsDialog(props: DesktopSettingsDialogProps) {
-  const { open, onOpenChange, section, onSectionChange, liveKind, theme, onThemeChange, appearance, onAppearanceChange, stealth, onToggleStealth, user, credits, planLabel, planNote, sessions, version, platform, calendarConnected, onConnectCalendar, onAddCredits, onOpenBilling, onOpenWhatsNew, onSignOut } = props
+  const { open, onOpenChange, section, onSectionChange, liveKind, theme, onThemeChange, appearance, onAppearanceChange, stealth, onToggleStealth, microphone, onMicrophoneChange, microphoneSources, user, credits, planLabel, planNote, sessions, version, platform, calendarConnected, onConnectCalendar, onAddCredits, onOpenBilling, onOpenWhatsNew, onSignOut } = props
   const [meetingDetection, setMeetingDetection] = useState(true)
   const [textSize, setTextSize] = useState<'small' | 'medium' | 'large'>('medium')
   const [autoScroll, setAutoScroll] = useState(true)
@@ -201,10 +205,8 @@ export function DesktopSettingsDialog(props: DesktopSettingsDialogProps) {
                     control={
                       <label>
                         <span className="sr-only">Input source</span>
-                        <select className="min-h-10 rounded-lg border border-input bg-surface px-3 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-                          <option>System default</option>
-                          <option>MacBook Pro Microphone</option>
-                          <option>AirPods Pro</option>
+                        <select value={microphone} onChange={(event) => onMicrophoneChange(event.target.value)} className="min-h-10 rounded-lg border border-input bg-surface px-3 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+                          {microphoneSources.map((item) => <option key={item} value={item}>{item}</option>)}
                         </select>
                       </label>
                     }

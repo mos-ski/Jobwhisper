@@ -8,7 +8,7 @@ import { DesktopPageTransition } from '@/features/desktop/desktop-page-transitio
 import { DesktopPermissionsView } from '@/features/desktop/desktop-permissions-view'
 import { DesktopShell } from '@/features/desktop/desktop-shell'
 import { DesktopSignInView } from '@/features/desktop/desktop-sign-in-view'
-import { desktopCredits, desktopUser } from '@/mocks/desktop'
+import { desktopCredits, desktopMicrophoneSources, desktopUser } from '@/mocks/desktop'
 
 import { DesktopOverlays } from './pages/desktop-overlays'
 import { DesktopCompletePage } from './pages/desktop-complete-page'
@@ -25,6 +25,7 @@ export default function DesktopApp() {
   const [whatsNewSeen, setWhatsNewSeen] = useState(false)
   const [extraCredits, setExtraCredits] = useState(0)
   const [appearance, setAppearance] = useState<DesktopAppearance>('solid')
+  const [microphone, setMicrophone] = useState(desktopMicrophoneSources[0] ?? 'System default')
   const markWhatsNewSeen = useCallback(() => setWhatsNewSeen(true), [])
   const addCredits = useCallback((amount: number) => setExtraCredits((value) => value + amount), [])
   const credits: DesktopCredits = useMemo(() => ({ ...desktopCredits, balance: desktopCredits.balance + extraCredits }), [extraCredits])
@@ -69,7 +70,7 @@ export default function DesktopApp() {
           <Route path="permissions" element={<DesktopPageTransition><DesktopPermissionsView /></DesktopPageTransition>} />
           <Route path="home" element={<DesktopPageTransition><DesktopHomePage credits={credits} onTopUp={() => openParam('topup', '1')} /></DesktopPageTransition>} />
           <Route path="configure" element={<DesktopPageTransition><DesktopConfigurePage credits={credits} onTopUp={() => openParam('topup', '1')} /></DesktopPageTransition>} />
-          <Route path="session" element={<DesktopPageTransition><DesktopSessionPage stealth={stealth} onToggleStealth={() => setStealth((value) => !value)} /></DesktopPageTransition>} />
+          <Route path="session" element={<DesktopPageTransition><DesktopSessionPage stealth={stealth} onToggleStealth={() => setStealth((value) => !value)} microphone={microphone} onMicrophoneChange={setMicrophone} microphoneSources={desktopMicrophoneSources} /></DesktopPageTransition>} />
           <Route path="complete" element={<DesktopPageTransition><DesktopCompletePage /></DesktopPageTransition>} />
           <Route path="*" element={<Navigate to="/desktop" replace />} />
         </Routes>
@@ -82,6 +83,9 @@ export default function DesktopApp() {
         onAppearanceChange={setAppearance}
         stealth={stealth}
         onToggleStealth={() => setStealth((value) => !value)}
+        microphone={microphone}
+        onMicrophoneChange={setMicrophone}
+        microphoneSources={desktopMicrophoneSources}
       />
     </DesktopShell>
   )
